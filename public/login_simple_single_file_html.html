@@ -1,0 +1,220 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>VulnScanner · Sign in</title>
+<style>
+  :root{
+    --bg:#0b0d12;--panel:#11151b;--muted:#1a2029;--text:#e7eaee;--sub:#93a0b4;--brand:#5b8cff;--good:#2ecc71;--warn:#f1c40f;--bad:#ff5b6e;--border:#222937;
+  }
+  *{box-sizing:border-box}
+  body{margin:0;background:radial-gradient(1200px 800px at 10% -10%, rgba(91,140,255,.18), transparent),radial-gradient(1000px 700px at 100% 0, rgba(106,247,255,.08), transparent), var(--bg);color:var(--text);font:14px/1.5 system-ui,-apple-system,Segoe UI,Roboto,Helvetica,Arial}
+  a{color:#9db7ff;text-decoration:none}
+  a:hover{text-decoration:underline}
+  .wrap{min-height:100vh;display:grid;place-items:center;padding:24px}
+  .card{width:100%;max-width:460px;background:var(--panel);border:1px solid var(--border);border-radius:18px;box-shadow:0 10px 40px rgba(0,0,0,.35)}
+  .head{padding:20px 20px 0 20px}
+  .logo{width:36px;height:36px;border-radius:10px;background:linear-gradient(135deg,var(--brand),#8a6bff)}
+  .brand{display:flex;gap:12px;align-items:center}
+  .brand h1{margin:0;font-size:18px}
+  .sub{color:var(--sub);font-size:12px;margin-top:4px}
+  .tabs{display:grid;grid-template-columns:1fr 1fr;border-bottom:1px solid var(--border);margin-top:14px}
+  .tab{padding:12px;text-align:center;cursor:pointer;color:var(--sub)}
+  .tab.active{color:var(--text);border-bottom:2px solid var(--brand)}
+  .body{padding:20px;display:grid;gap:12px}
+  .field{display:grid;gap:6px}
+  .label{text-transform:uppercase;letter-spacing:.08em;font-size:11px;color:var(--sub)}
+  .input{background:#0f1420;border:1px solid var(--border);border-radius:12px;color:var(--text);padding:10px}
+  .row{display:flex;gap:10px;align-items:center}
+  .btn{border:1px solid var(--border);background:var(--brand);color:#fff;padding:10px 12px;border-radius:12px;cursor:pointer}
+  .btn.secondary{background:var(--muted);color:var(--text)}
+  .btn.ghost{background:transparent}
+  .hint{color:var(--sub);font-size:12px}
+  .error{background:rgba(255,91,110,.12);border:1px solid rgba(255,91,110,.4);color:#ffc3ca;padding:10px;border-radius:12px;font-size:13px}
+  .ok{background:rgba(46,204,113,.12);border:1px solid rgba(46,204,113,.4);color:#baf3cd;padding:10px;border-radius:12px;font-size:13px}
+  .hidden{display:none}
+  .right{margin-left:auto}
+  .otp{letter-spacing:.3em;text-align:center;font:20px/1.2 ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace}
+  .sep{height:1px;background:var(--border);margin:6px 0}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <div class="card">
+    <div class="head">
+      <div class="brand"><div class="logo"></div><div><h1>VulnScanner</h1><div class="sub">Secure access to scan & reports</div></div></div>
+      <div class="tabs">
+        <div class="tab active" id="tab-signin">Sign in</div>
+        <div class="tab" id="tab-signup">Create account</div>
+      </div>
+    </div>
+
+    <!-- Sign in -->
+    <div class="body" id="view-signin">
+      <div class="error hidden" id="err-signin"></div>
+      <div class="field"><label class="label" for="in-email">Email</label><input id="in-email" class="input" type="email" placeholder="you@org.com" /></div>
+      <div class="field"><label class="label" for="in-pass">Password</label><input id="in-pass" class="input" type="password" placeholder="••••••••" /></div>
+      <div class="row"><label class="row"><input type="checkbox" id="in-remember" /> <span class="hint">Remember me on this device</span></label><a class="right" href="#" id="lnk-forgot">Forgot password?</a></div>
+      <div class="row"><button class="btn" id="btn-signin">Continue</button></div>
+      <div class="hint">New here? <a href="#" id="lnk-to-signup">Create an account</a></div>
+    </div>
+
+    <!-- Sign up -->
+    <div class="body hidden" id="view-signup">
+      <div class="error hidden" id="err-signup"></div>
+      <div class="field"><label class="label" for="up-name">Full name</label><input id="up-name" class="input" type="text" placeholder="Ada Lovelace" /></div>
+      <div class="field"><label class="label" for="up-org">Organization</label><input id="up-org" class="input" type="text" placeholder="Acme Security" /></div>
+      <div class="field"><label class="label" for="up-email">Work email</label><input id="up-email" class="input" type="email" placeholder="ada@acme.com" /></div>
+      <div class="field"><label class="label" for="up-pass">Password</label><input id="up-pass" class="input" type="password" placeholder="Min 8 characters" /></div>
+      <div class="row"><label class="row"><input type="checkbox" id="up-terms" /> <span class="hint">I agree to the Terms</span></label></div>
+      <div class="row"><button class="btn" id="btn-signup">Create account</button><button class="btn secondary" id="btn-cancel-signup">Cancel</button></div>
+      <div class="hint">Admins create read‑only accounts for teammates inside the app.</div>
+    </div>
+
+    <!-- Verify email -->
+    <div class="body hidden" id="view-verify">
+      <div class="ok" id="msg-verify">We sent a 6‑digit code to <span id="ver-email"></span>. Enter it below to verify your account.</div>
+      <input id="ver-code" class="input otp" maxlength="6" pattern="[0-9]{6}" placeholder="000000" />
+      <div class="hint" id="ver-hint"></div>
+      <div class="row"><button class="btn" id="btn-verify">Verify</button><button class="btn secondary" id="btn-resend">Resend</button></div>
+      <div class="sep"></div>
+      <div class="hint">After verification, you’ll be redirected to the app.</div>
+    </div>
+
+    <!-- Reset password (demo only) -->
+    <div class="body hidden" id="view-reset">
+      <div class="field"><label class="label" for="rp-email">Email</label><input id="rp-email" class="input" type="email" placeholder="you@org.com" /></div>
+      <div class="row"><button class="btn" id="btn-reset">Send reset link</button><button class="btn secondary" id="btn-cancel-reset">Back</button></div>
+      <div class="hint" id="rp-hint"></div>
+    </div>
+  </div>
+</div>
+
+<script>
+// Simple in-browser demo store (localStorage). Replace with real backend later.
+const DB_KEY = 'vuln_users';
+const AUTH_KEY = 'vuln_auth_user';
+const APP_URL = 'index.html'; // change if your app file has a different name
+
+function loadUsers(){ return JSON.parse(localStorage.getItem(DB_KEY)||'[]'); }
+function saveUsers(xs){ localStorage.setItem(DB_KEY, JSON.stringify(xs)); }
+function findUser(email){ return loadUsers().find(u=>u.email.toLowerCase()===email.toLowerCase()); }
+function upsertUser(user){
+  const xs = loadUsers();
+  const i = xs.findIndex(u=>u.email.toLowerCase()===user.email.toLowerCase());
+  if(i>=0) xs[i]=user; else xs.push(user); saveUsers(xs);
+}
+function setAuthed(user){ localStorage.setItem(AUTH_KEY, JSON.stringify({ email:user.email, role:user.role||'Admin' })); }
+
+// Views
+const views = {
+  signin: document.getElementById('view-signin'),
+  signup: document.getElementById('view-signup'),
+  verify: document.getElementById('view-verify'),
+  reset:  document.getElementById('view-reset'),
+};
+const tabs = { signin: document.getElementById('tab-signin'), signup: document.getElementById('tab-signup') };
+
+function show(name){
+  Object.values(views).forEach(v=>v.classList.add('hidden'));
+  views[name].classList.remove('hidden');
+  if(name==='signin'||name==='signup'){
+    tabs.signin.classList.toggle('active', name==='signin');
+    tabs.signup.classList.toggle('active', name==='signup');
+  }
+}
+
+// Tab links
+tabs.signin.onclick=()=>show('signin');
+  tabs.signup.onclick=()=>show('signup');
+  document.getElementById('lnk-to-signup').onclick=(e)=>{e.preventDefault(); show('signup');};
+
+// Forgot password
+const lnkForgot=document.getElementById('lnk-forgot');
+lnkForgot.onclick=(e)=>{e.preventDefault(); show('reset');}
+
+document.getElementById('btn-cancel-reset').onclick=()=>show('signin');
+
+document.getElementById('btn-reset').onclick=()=>{
+  const email = document.getElementById('rp-email').value.trim();
+  if(!email) return;
+  document.getElementById('rp-hint').textContent = `If ${email} exists, a reset link was sent. (Demo only)`;
+};
+
+// Sign up flow (US-1 + US-2 alignment)
+function genCode(){ return (''+Math.floor(100000 + Math.random()*900000)); }
+let pendingVerify = { email:null, code:null };
+
+function startVerification(email){
+  const code = genCode();
+  pendingVerify = { email, code };
+  document.getElementById('ver-email').textContent = email;
+  document.getElementById('ver-code').value='';
+  // Demo helper: show the code so you can complete the flow without email
+  document.getElementById('ver-hint').textContent = `Demo: your code is ${code}`;
+  show('verify');
+}
+
+function submitSignup(){
+  const name = document.getElementById('up-name').value.trim();
+  const org = document.getElementById('up-org').value.trim();
+  const email = document.getElementById('up-email').value.trim();
+  const pass = document.getElementById('up-pass').value;
+  const terms = document.getElementById('up-terms').checked;
+  const err = document.getElementById('err-signup');
+  err.classList.add('hidden');
+  if(!name||!org||!email||!pass){ err.textContent='Fill out all fields.'; err.classList.remove('hidden'); return; }
+  if(pass.length<8){ err.textContent='Password must be at least 8 characters.'; err.classList.remove('hidden'); return; }
+  if(!terms){ err.textContent='Please accept the Terms.'; err.classList.remove('hidden'); return; }
+  if(findUser(email)){ err.textContent='An account with this email already exists.'; err.classList.remove('hidden'); return; }
+  const user = { name, org, email, pass, role:'Admin', verified:false, createdAt:Date.now() };
+  upsertUser(user);
+  // Simulate sending email and move to verify screen
+  startVerification(email);
+}
+
+document.getElementById('btn-signup').onclick=submitSignup;
+document.getElementById('btn-cancel-signup').onclick=()=>show('signin');
+
+document.getElementById('btn-resend').onclick=()=>{
+  if(pendingVerify.email) startVerification(pendingVerify.email);
+};
+
+document.getElementById('btn-verify').onclick=()=>{
+  const code = document.getElementById('ver-code').value.trim();
+  if(code===pendingVerify.code){
+    const u = findUser(pendingVerify.email);
+    if(u){ u.verified=true; upsertUser(u); setAuthed(u); }
+    window.location.href = APP_URL; // go to app after successful verify
+  } else {
+    alert('Incorrect code.');
+  }
+};
+
+// Sign in
+function submitSignin(){
+  const email = document.getElementById('in-email').value.trim();
+  const pass = document.getElementById('in-pass').value;
+  const remember = document.getElementById('in-remember').checked;
+  const err = document.getElementById('err-signin');
+  err.classList.add('hidden');
+  const u = findUser(email);
+  if(!u || u.pass!==pass){ err.textContent='Invalid email or password.'; err.classList.remove('hidden'); return; }
+  if(!u.verified){ startVerification(email); return; }
+  setAuthed(u);
+  if(remember) localStorage.setItem('remember_'+u.email, '1');
+  window.location.href = APP_URL;
+}
+
+document.getElementById('btn-signin').onclick=submitSignin;
+
+// Seed a demo user for quick testing (password: testtest)
+(function seed(){
+  if(!findUser('admin@example.com')){
+    upsertUser({ name:'Demo Admin', org:'Acme', email:'admin@example.com', pass:'testtest', role:'Admin', verified:true, createdAt:Date.now() });
+  }
+})();
+</script>
+</body>
+</html>

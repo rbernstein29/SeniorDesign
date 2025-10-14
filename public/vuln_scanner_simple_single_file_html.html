@@ -1,0 +1,364 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>VulnScanner · Simple UI</title>
+<style>
+  :root{
+    --bg:#0b0d12;--panel:#11151b;--muted:#1a2029;--text:#e7eaee;--sub:#93a0b4;--brand:#5b8cff;--ok:#2ecc71;--warn:#f1c40f;--bad:#ff5b6e;
+    --border: #222937;
+  }
+  *{box-sizing:border-box}
+  body{margin:0;background:var(--bg);color:var(--text);font:14px/1.5 system-ui,-apple-system,Segoe UI,Roboto,Helvetica,Arial,"Apple Color Emoji","Segoe UI Emoji"}
+  a{color:inherit}
+  .app{display:grid;grid-template-columns:240px 1fr;min-height:100vh}
+  .side{background:var(--panel);border-right:1px solid var(--border)}
+  .brand{padding:16px 14px;display:flex;gap:10px;align-items:center}
+  .logo{width:28px;height:28px;border-radius:8px;background:linear-gradient(135deg,var(--brand),#8a6bff)}
+  .brand h1{font-size:16px;margin:0}
+  .nav{padding:6px}
+  .nav button{width:100%;text-align:left;border:0;background:transparent;color:var(--text);padding:10px 12px;border-radius:10px;cursor:pointer;display:flex;gap:10px;align-items:center}
+  .nav button:hover{background:var(--muted)}
+  .nav button.active{background:var(--brand);color:#fff}
+  .main{display:flex;flex-direction:column}
+  .top{height:56px;border-bottom:1px solid var(--border);display:flex;align-items:center;justify-content:space-between;padding:0 16px;background:rgba(0,0,0,.15);backdrop-filter: blur(6px)}
+  .search{background:var(--panel);border:1px solid var(--border);border-radius:10px;padding:8px 10px;color:var(--text);width:320px}
+  .wrap{padding:20px;display:grid;gap:16px}
+  .grid{display:grid;gap:16px}
+  .g-4{grid-template-columns:repeat(4,minmax(0,1fr))}
+  @media (max-width: 1000px){.app{grid-template-columns: 72px 1fr}.brand span{display:none}.g-4{grid-template-columns:repeat(2,minmax(0,1fr))}}
+  @media (max-width: 640px){.g-4{grid-template-columns:1fr}}
+  .card{background:var(--panel);border:1px solid var(--border);border-radius:16px;box-shadow:0 1px 0 rgba(255,255,255,.02) inset}
+  .card h3{margin:0 0 6px 0;font-size:16px}
+  .card .head{padding:14px 16px;border-bottom:1px solid var(--border)}
+  .card .body{padding:16px}
+  .stat{padding:14px 16px}
+  .stat .label{text-transform:uppercase;letter-spacing:.08em;font-size:11px;color:var(--sub)}
+  .stat .value{font-size:26px;margin-top:6px}
+  .row{display:flex;gap:12px;align-items:center}
+  .btn{border:1px solid var(--border);background:var(--muted);color:var(--text);padding:8px 10px;border-radius:10px;cursor:pointer}
+  .btn:hover{filter:brightness(1.1)}
+  .btn.ghost{background:transparent}
+  .btn.brand{background:var(--brand);border-color:transparent;color:#fff}
+  .btn.small{padding:6px 8px;font-size:12px}
+  .badge{display:inline-block;padding:3px 8px;border-radius:999px;font-size:12px;border:1px solid var(--border);background:rgba(255,255,255,.03)}
+  .badge.ok{background:rgba(46,204,113,.15);color:#baf3cd;border-color:rgba(46,204,113,.3)}
+  .badge.warn{background:rgba(241,196,15,.15);color:#fbe6a1;border-color:rgba(241,196,15,.3)}
+  .badge.bad{background:rgba(255,91,110,.15);color:#ffc3ca;border-color:rgba(255,91,110,.3)}
+  table{width:100%;border-collapse:collapse}
+  th,td{padding:10px 8px;border-bottom:1px solid var(--border);text-align:left}
+  th{color:var(--sub);font-weight:600;font-size:12px;text-transform:uppercase;letter-spacing:.05em}
+  .progress{height:8px;background:#0f1420;border-radius:6px;overflow:hidden}
+  .progress>span{display:block;height:100%;background:linear-gradient(90deg,var(--brand),#6af7ff)}
+  .field{display:grid;gap:6px;margin-bottom:10px}
+  .input,.select,.textarea{background:#0f1420;border:1px solid var(--border);border-radius:10px;color:var(--text);padding:9px 10px}
+  .textarea{min-height:70px}
+  .hint{color:var(--sub);font-size:12px}
+  .hidden{display:none}
+</style>
+</head>
+<body>
+<div class="app">
+  <aside class="side">
+    <div class="brand"><div class="logo"></div><h1>VulnScanner</h1><span>&nbsp;· Simple</span></div>
+    <nav class="nav" id="nav"></nav>
+  </aside>
+  <section class="main">
+    <header class="top">
+      <div class="row"><input class="search" placeholder="Search…" /></div>
+      <div class="row"><span id="clock" class="hint"></span></div>
+    </header>
+    <div class="wrap">
+      <!-- Dashboard -->
+      <section id="page-dashboard" class="grid">
+        <div class="grid g-4">
+          <div class="card stat"><div class="label">Active Scans</div><div class="value" id="stat-active">0</div></div>
+          <div class="card stat"><div class="label">Findings (14d)</div><div class="value" id="stat-findings">0</div></div>
+          <div class="card stat"><div class="label">Critical (14d)</div><div class="value" id="stat-critical">0</div></div>
+          <div class="card stat"><div class="label">Coverage</div><div class="value">82%</div></div>
+        </div>
+        <div class="card">
+          <div class="head"><h3>Latest scans</h3><div class="hint">Quick glance at recent activity.</div></div>
+          <div class="body">
+            <div class="table-wrap">
+              <table id="tbl-latest">
+                <thead><tr><th>ID</th><th>Target</th><th>Status</th><th>Progress</th><th>Findings</th></tr></thead>
+                <tbody></tbody>
+              </table>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- Scans -->
+      <section id="page-scans" class="hidden">
+        <div class="grid" style="grid-template-columns:380px 1fr;gap:16px">
+          <div class="card">
+            <div class="head"><h3>New scan</h3><div class="hint">Enter target, pick tests, run or schedule.</div></div>
+            <div class="body">
+              <div class="field">
+                <label>Target type</label>
+                <select id="new-type" class="select">
+                  <option value="IP">IP</option>
+                  <option value="IP Range" selected>IP Range</option>
+                  <option value="Domain">Domain</option>
+                  <option value="Host List">Host List</option>
+                </select>
+              </div>
+              <div class="field">
+                <label>Target</label>
+                <textarea id="new-target" class="textarea" placeholder="10.0.0.0/24"></textarea>
+                <div class="hint">Supports IPv4/IPv6, CIDR, FQDNs.</div>
+              </div>
+              <div class="field">
+                <label>Tests</label>
+                <label><input type="checkbox" class="ck-test" value="tls-misconfig" checked /> TLS Misconfig</label>
+                <label><input type="checkbox" class="ck-test" value="cve-2021-44228" checked /> CVE‑2021‑44228</label>
+                <label><input type="checkbox" class="ck-test" value="smb-signing" /> SMB Signing</label>
+                <label><input type="checkbox" class="ck-test" value="exposed-admin" /> Exposed Admin Panels</label>
+              </div>
+              <div class="row">
+                <button class="btn brand" id="btn-start">Start scan</button>
+                <button class="btn ghost" id="btn-clear">Clear</button>
+              </div>
+            </div>
+          </div>
+
+          <div class="card">
+            <div class="head row" style="justify-content:space-between"><div><h3 style="margin:0">All scans</h3><div class="hint">Status, progress, export.</div></div>
+              <div class="row"><button class="btn small" id="btn-json">Export JSON</button><button class="btn small" id="btn-csv">Export CSV</button></div>
+            </div>
+            <div class="body">
+              <table id="tbl-scans">
+                <thead><tr><th>ID</th><th>Target</th><th>Status</th><th>Progress</th><th>Schedule</th><th>Actions</th></tr></thead>
+                <tbody></tbody>
+              </table>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- Reports -->
+      <section id="page-reports" class="hidden">
+        <div class="card">
+          <div class="head row" style="justify-content:space-between">
+            <div><h3 style="margin:0">Reports</h3><div class="hint">Downloadable results.</div></div>
+            <select id="rep-filter" class="select small">
+              <option value="all">All severities</option>
+              <option value="critical">Has Critical</option>
+              <option value="high">Has High</option>
+            </select>
+          </div>
+          <div class="body">
+            <table id="tbl-reports">
+              <thead><tr><th>Report</th><th>Scan</th><th>Created</th><th>Findings</th><th>Critical</th><th>High</th></tr></thead>
+              <tbody></tbody>
+            </table>
+          </div>
+        </div>
+      </section>
+
+      <!-- Assets (very light) -->
+      <section id="page-assets" class="hidden">
+        <div class="card">
+          <div class="head"><h3>Assets</h3><div class="hint">Inventory</div></div>
+          <div class="body">
+            <table id="tbl-assets"><thead><tr><th>Host</th><th>OS</th><th>Services</th><th>Last seen</th><th>Risk</th></tr></thead><tbody></tbody></table>
+          </div>
+        </div>
+      </section>
+
+      <!-- Settings placeholder -->
+      <section id="page-settings" class="hidden">
+        <div class="card"><div class="head"><h3>Settings</h3></div><div class="body"><div class="hint">Retention 90 days · Default export JSON</div></div></div>
+      </section>
+    </div>
+  </section>
+</div>
+
+<script>
+// --- Simple SPA nav ---------------------------------------------------------
+const PAGES = [
+  {id:'dashboard', name:'Dashboard', icon:'📊'},
+  {id:'scans', name:'Scans', icon:'🛡️'},
+  {id:'assets', name:'Assets', icon:'🖥️'},
+  {id:'reports', name:'Reports', icon:'📄'},
+  {id:'settings', name:'Settings', icon:'⚙️'},
+];
+const nav = document.getElementById('nav');
+PAGES.forEach(p=>{
+  const b=document.createElement('button');
+  b.innerHTML = `<span>${p.icon}</span><span>${p.name}</span>`;
+  b.onclick=()=>showPage(p.id);
+  b.id = 'nav-'+p.id;
+  nav.appendChild(b);
+});
+function showPage(id){
+  PAGES.forEach(p=>{
+    document.getElementById('page-'+p.id).classList.toggle('hidden', p.id!==id);
+    document.getElementById('nav-'+p.id).classList.toggle('active', p.id===id);
+  });
+  localStorage.setItem('page', id);
+}
+showPage(localStorage.getItem('page')||'dashboard');
+
+// --- Live clock -------------------------------------------------------------
+const clockEl = document.getElementById('clock');
+setInterval(()=>clockEl.textContent = new Date().toLocaleString(), 1000);
+
+// --- Demo data --------------------------------------------------------------
+let scans = [
+  {id:'SCN-24098', target:'10.0.0.0/24', type:'IP Range', status:'Running', progress:62, findings:{Critical:3,High:12,Medium:21,Low:40}, scheduled:false},
+  {id:'SCN-24097', target:'auth.example.com', type:'Domain', status:'Completed', progress:100, findings:{Critical:0,High:2,Medium:6,Low:11}, scheduled:false},
+  {id:'SCN-24096', target:'172.16.5.10, 172.16.5.11', type:'Host List', status:'Queued', progress:0, findings:{Critical:0,High:0,Medium:0,Low:0}, scheduled:true, cron:'0 2 * * 1,3,5'},
+];
+const assets = [
+  {id:'10.0.0.12', os:'Ubuntu 22.04', services:['ssh','http','postgres'], lastSeen:'Today 14:11', risk:'Medium'},
+  {id:'10.0.0.31', os:'Windows Server 2019', services:['rdp','smb'], lastSeen:'Today 13:08', risk:'High'},
+  {id:'auth.example.com', os:'AlmaLinux 9', services:['nginx','ssh'], lastSeen:'Yesterday 20:32', risk:'Low'},
+];
+const reports = [
+  {id:'RPT-8821', scanId:'SCN-24097', createdAt:Date.now()-2*3600e3, findings:19, critical:0, high:2},
+  {id:'RPT-8816', scanId:'SCN-24095', createdAt:Date.now()-2*86400e3, findings:47, critical:3, high:11},
+];
+
+// --- Rendering helpers ------------------------------------------------------
+function el(tag, attrs={}, inner=''){
+  const n=document.createElement(tag);Object.assign(n, attrs);n.innerHTML=inner;return n;
+}
+function progBar(v){return `<div class="progress"><span style="width:${Math.max(0,Math.min(100,v))}%"></span></div>`}
+function badge(txt, kind){return `<span class="badge ${kind||''}">${txt}</span>`}
+
+// Dashboard mini table
+function renderLatest(){
+  const tb=document.querySelector('#tbl-latest tbody');
+  tb.innerHTML='';
+  scans.slice(0,3).forEach(s=>{
+    tb.appendChild(el('tr',{},`
+      <td><strong>${s.id}</strong></td>
+      <td>${s.target}</td>
+      <td>${s.status==='Completed'?badge('Completed','ok'):s.status==='Running'?badge('Running'):badge(s.status)}</td>
+      <td style="width:220px">${progBar(s.progress)}</td>
+      <td>
+        ${badge('Critical: '+(s.findings?.Critical??0),'bad')}
+        ${badge('High: '+(s.findings?.High??0),'warn')}
+      </td>
+    `));
+  });
+}
+
+// Scans table
+function renderScans(){
+  const tb=document.querySelector('#tbl-scans tbody');
+  tb.innerHTML='';
+  scans.forEach(s=>{
+    const tr=el('tr');
+    tr.innerHTML = `
+      <td><strong>${s.id}</strong></td>
+      <td>${s.target}</td>
+      <td>${s.status==='Completed'?badge('Completed','ok'):s.status==='Running'?badge('Running'):badge(s.status)}</td>
+      <td style="width:200px">${progBar(s.progress)}</td>
+      <td>${s.scheduled ? (s.cron||'Scheduled') : '—'}</td>
+      <td><button class="btn small ghost" data-id="${s.id}">Cancel</button></td>`;
+    tr.querySelector('button').onclick=()=>cancelScan(s.id);
+    tb.appendChild(tr);
+  });
+  updateStats();
+}
+
+function updateStats(){
+  document.getElementById('stat-active').textContent = scans.filter(s=>s.status==='Running').length;
+  const sum14 = scans.reduce((a,s)=>a + (s.findings? (s.findings.Critical+s.findings.High+s.findings.Medium+s.findings.Low) : 0), 0);
+  document.getElementById('stat-findings').textContent = sum14;
+  document.getElementById('stat-critical').textContent = scans.reduce((a,s)=>a + (s.findings?.Critical||0), 0);
+}
+
+// Assets
+function renderAssets(){
+  const tb=document.querySelector('#tbl-assets tbody');
+  tb.innerHTML='';
+  assets.forEach(a=>tb.appendChild(el('tr',{},`
+    <td><strong>${a.id}</strong></td>
+    <td>${a.os}</td>
+    <td>${a.services.join(', ')}</td>
+    <td>${a.lastSeen}</td>
+    <td>${badge(a.risk, a.risk==='High'?'bad':a.risk==='Medium'?'warn':'ok')}</td>
+  `)));
+}
+
+// Reports
+function renderReports(){
+  const f=document.getElementById('rep-filter').value;
+  const tb=document.querySelector('#tbl-reports tbody');
+  tb.innerHTML='';
+  reports.filter(r => f==='all' || (f==='critical'? r.critical>0 : r.high>0)).forEach(r=>{
+    tb.appendChild(el('tr',{},`
+      <td><strong>${r.id}</strong></td>
+      <td>${badge(r.scanId)}</td>
+      <td>${new Date(r.createdAt).toLocaleString()}</td>
+      <td>${r.findings}</td>
+      <td>${r.critical}</td>
+      <td>${r.high}</td>
+    `));
+  });
+}
+
+document.getElementById('rep-filter').onchange=renderReports;
+
+// --- Actions ----------------------------------------------------------------
+function startScan(){
+  const target = document.getElementById('new-target').value.trim();
+  const type = document.getElementById('new-type').value;
+  const tests = Array.from(document.querySelectorAll('.ck-test:checked')).map(x=>x.value);
+  if(!target){alert('Enter a target');return}
+  const id = 'SCN-' + Math.floor(10000+Math.random()*90000);
+  const s = {id, target, type, status:'Running', progress:0, findings:{Critical:0,High:0,Medium:0,Low:0}, scheduled:false};
+  scans.unshift(s);
+  renderScans();renderLatest();showPage('scans');
+  // Fake progress
+  const timer = setInterval(()=>{
+    s.progress += Math.random()*12;
+    if(s.progress>=100){s.progress=100;s.status='Completed'; clearInterval(timer);
+      // fake findings
+      s.findings = {Critical: Math.random()<0.3?Math.floor(Math.random()*3):0, High: Math.floor(Math.random()*5), Medium: Math.floor(Math.random()*8), Low: Math.floor(Math.random()*10)};
+      renderReports();
+    }
+    renderScans();renderLatest();
+  }, 800);
+}
+function cancelScan(id){
+  const s=scans.find(x=>x.id===id);
+  if(!s) return; if(s.status!=='Running') return; s.status='Canceled'; renderScans();renderLatest();
+}
+
+function clearForm(){
+  document.getElementById('new-target').value='';
+  document.querySelectorAll('.ck-test').forEach(x=>x.checked=false);
+}
+
+document.getElementById('btn-start').onclick=startScan;
+  document.getElementById('btn-clear').onclick=clearForm;
+
+// export helpers
+function download(filename, text){
+  const a=document.createElement('a');
+  a.href=URL.createObjectURL(new Blob([text],{type:'text/plain'}));
+  a.download=filename;a.click();URL.revokeObjectURL(a.href);
+}
+
+document.getElementById('btn-json').onclick=()=>{
+  download(`scans_${new Date().toISOString().slice(0,19).replace(/[:T]/g,'-')}.json`, JSON.stringify(scans,null,2));
+};
+
+document.getElementById('btn-csv').onclick=()=>{
+  const headers=['id','target','type','status','progress','scheduled','cron'];
+  const rows=scans.map(s=>headers.map(h=>JSON.stringify(s[h]??'')).join(','));
+  download(`scans_${new Date().toISOString().slice(0,19).replace(/[:T]/g,'-')}.csv`, [headers.join(','),...rows].join('\n'));
+};
+
+// first paint
+renderLatest();renderScans();renderAssets();renderReports();
+</script>
+</body>
+</html>
