@@ -7,4 +7,4 @@
     - /secrets
         - secrets.env
     - .gitignore
-        -/secrets
+        - /secrets
