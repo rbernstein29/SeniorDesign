@@ -4,27 +4,27 @@
 - 3.4.7
 
 * System dependencies
-- git
-- ruby
-- gem
-- bundle
+    - git
+    - ruby
+    - gem
+    - bundle
 
 * Configuration
-- git clone repo
-- cd into directory and run bundle install
+    - git clone repo
+    - cd into directory and run bundle install
 
 * Database creation
-- tbd
+    - tbd
 
 * Database initialization
-- tbd
+    - tbd
 
 * How to run the test suite
-- tbd
+    - tbd
 
 * Services (job queues, cache servers, search engines, etc.)
-- tbd
+    - tbd
 
 * Deployment instructions
-- "rails s" to start web server
-- static html in public folder
+    - "rails s" to start web server
+    - static html in public folder
