@@ -1,7 +1,7 @@
 # README
 
-* Ruby version 
-- 3.4.7
+* Ruby version
+    - 3.4.7
 
 * System dependencies
     - git
