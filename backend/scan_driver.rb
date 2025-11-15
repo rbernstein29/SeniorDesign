@@ -4,15 +4,16 @@
 # Connect to the organization network from an IP or domain.
 #
 # Parameters:
-#   String network: the IP or domain of the target network
+#   String ip: the IP of the target network
 #
 # Returns:
 #   1: succcessful connection
 #   Error: connection unsuccessful
 
-def connect_network(network)
+def connect_network(ip)
     #
     #
+end
 
 
 # Disconnect from all current networks
@@ -24,6 +25,7 @@ def connect_network(network)
 def disconnect_network()
     #
     #
+end
 
 
 # Attacks a system vulnerability using a Metasploit exploit
@@ -38,6 +40,7 @@ def disconnect_network()
 def attack(exploit)
     #
     #
+end
 
 
 # Convert the results of a scan into a json string
@@ -51,6 +54,7 @@ def attack(exploit)
 def result_to_json(results_raw)
     #
     #
+end
 
 
 # Call the metasploit framework
@@ -64,10 +68,12 @@ def result_to_json(results_raw)
 def get_exploit(exploit_id)
     #
     #
+end
 
 
 # Main body of the scan_driver. Responsible for running the scans and exploits
 
-def main()
+def main
     #
     #
+end
