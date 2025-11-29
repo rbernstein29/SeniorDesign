@@ -1,5 +1,5 @@
 # driver.rb: This file is responsible for executing the scans and exploits on a network
-
+require 'json'
 
 # Connect to the organization network from an IP or domain.
 #
@@ -52,8 +52,9 @@ end
 #   String results: the JSON string of the results
 
 def result_to_json(results_raw)
-    #
-    #
+    JSON.generate(results_raw)
+rescue JSON::GeneratorError => e
+    puts "JSON Generation Error: #{e.message}"
 end
 
 
