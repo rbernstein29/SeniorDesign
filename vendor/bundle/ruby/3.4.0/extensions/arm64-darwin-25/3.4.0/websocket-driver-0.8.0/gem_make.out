@@ -1,0 +1,19 @@
+current directory: /Users/robbie/projects/school/SeniorDesign/vendor/bundle/ruby/3.4.0/gems/websocket-driver-0.8.0/ext/websocket-driver
+/opt/homebrew/opt/ruby/bin/ruby extconf.rb
+creating Makefile
+
+current directory: /Users/robbie/projects/school/SeniorDesign/vendor/bundle/ruby/3.4.0/gems/websocket-driver-0.8.0/ext/websocket-driver
+make DESTDIR\= sitearchdir\=./.gem.20260204-57925-9icge0 sitelibdir\=./.gem.20260204-57925-9icge0 clean
+
+current directory: /Users/robbie/projects/school/SeniorDesign/vendor/bundle/ruby/3.4.0/gems/websocket-driver-0.8.0/ext/websocket-driver
+make DESTDIR\= sitearchdir\=./.gem.20260204-57925-9icge0 sitelibdir\=./.gem.20260204-57925-9icge0
+compiling websocket_mask.c
+linking shared-object websocket_mask.bundle
+ld: warning: search path '/opt/homebrew/Cellar/openssl@3/3.5.2/lib' not found
+
+current directory: /Users/robbie/projects/school/SeniorDesign/vendor/bundle/ruby/3.4.0/gems/websocket-driver-0.8.0/ext/websocket-driver
+make DESTDIR\= sitearchdir\=./.gem.20260204-57925-9icge0 sitelibdir\=./.gem.20260204-57925-9icge0 install
+/usr/bin/install -c -m 0755 websocket_mask.bundle ./.gem.20260204-57925-9icge0
+
+current directory: /Users/robbie/projects/school/SeniorDesign/vendor/bundle/ruby/3.4.0/gems/websocket-driver-0.8.0/ext/websocket-driver
+make DESTDIR\= sitearchdir\=./.gem.20260204-57925-9icge0 sitelibdir\=./.gem.20260204-57925-9icge0 clean

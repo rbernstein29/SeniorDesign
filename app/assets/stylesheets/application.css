@@ -1,10 +1,32 @@
-/*
- * This is a manifest file that'll be compiled into application.css.
- *
- * With Propshaft, assets are served efficiently without preprocessing steps. You can still include
- * application-wide styles in this file, but keep in mind that CSS precedence will follow the standard
- * cascading order, meaning styles declared later in the document or manifest will override earlier ones,
- * depending on specificity.
- *
- * Consider organizing styles into separate files for maintainability.
- */
+ :root{
+    --bg:#0b0d12;--panel:#11151b;--muted:#1a2029;--text:#e7eaee;--sub:#93a0b4;--brand:#5b8cff;--good:#2ecc71;--warn:#f1c40f;--bad:#ff5b6e;--border:#222937;
+  }
+  *{box-sizing:border-box}
+  body{margin:0;background:radial-gradient(1200px 800px at 10% -10%, rgba(91,140,255,.18), transparent),radial-gradient(1000px 700px at 100% 0, rgba(106,247,255,.08), transparent), var(--bg);color:var(--text);font:14px/1.5 system-ui,-apple-system,Segoe UI,Roboto,Helvetica,Arial}
+  a{color:#9db7ff;text-decoration:none}
+  a:hover{text-decoration:underline}
+  .wrap{min-height:100vh;display:grid;place-items:center;padding:24px}
+  .card{width:100%;max-width:460px;background:var(--panel);border:1px solid var(--border);border-radius:18px;box-shadow:0 10px 40px rgba(0,0,0,.35)}
+  .head{padding:20px 20px 0 20px}
+  .logo{width:36px;height:36px;border-radius:10px;background:linear-gradient(135deg,var(--brand),#8a6bff)}
+  .brand{display:flex;gap:12px;align-items:center}
+  .brand h1{margin:0;font-size:18px}
+  .sub{color:var(--sub);font-size:12px;margin-top:4px}
+  .tabs{display:grid;grid-template-columns:1fr 1fr;border-bottom:1px solid var(--border);margin-top:14px}
+  .tab{padding:12px;text-align:center;cursor:pointer;color:var(--sub)}
+  .tab.active{color:var(--text);border-bottom:2px solid var(--brand)}
+  .body{padding:20px;display:grid;gap:12px}
+  .field{display:grid;gap:6px}
+  .label{text-transform:uppercase;letter-spacing:.08em;font-size:11px;color:var(--sub)}
+  .input{background:#0f1420;border:1px solid var(--border);border-radius:12px;color:var(--text);padding:10px}
+  .row{display:flex;gap:10px;align-items:center}
+  .btn{border:1px solid var(--border);background:var(--brand);color:#fff;padding:10px 12px;border-radius:12px;cursor:pointer}
+  .btn.secondary{background:var(--muted);color:var(--text)}
+  .btn.ghost{background:transparent}
+  .hint{color:var(--sub);font-size:12px}
+  .error{background:rgba(255,91,110,.12);border:1px solid rgba(255,91,110,.4);color:#ffc3ca;padding:10px;border-radius:12px;font-size:13px}
+  .ok{background:rgba(46,204,113,.12);border:1px solid rgba(46,204,113,.4);color:#baf3cd;padding:10px;border-radius:12px;font-size:13px}
+  .hidden{display:none}
+  .right{margin-left:auto}
+  .otp{letter-spacing:.3em;text-align:center;font:20px/1.2 ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace}
+  .sep{height:1px;background:var(--border);margin:6px 0}

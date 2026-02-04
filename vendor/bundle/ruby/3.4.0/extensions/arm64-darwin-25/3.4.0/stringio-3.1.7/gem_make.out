@@ -1,0 +1,20 @@
+current directory: /Users/robbie/projects/school/SeniorDesign/vendor/bundle/ruby/3.4.0/gems/stringio-3.1.7/ext/stringio
+/opt/homebrew/opt/ruby/bin/ruby extconf.rb
+checking for rb_io_mode_t in ruby/io.h... no
+creating Makefile
+
+current directory: /Users/robbie/projects/school/SeniorDesign/vendor/bundle/ruby/3.4.0/gems/stringio-3.1.7/ext/stringio
+make DESTDIR\= sitearchdir\=./.gem.20260204-57925-pm6otd sitelibdir\=./.gem.20260204-57925-pm6otd clean
+
+current directory: /Users/robbie/projects/school/SeniorDesign/vendor/bundle/ruby/3.4.0/gems/stringio-3.1.7/ext/stringio
+make DESTDIR\= sitearchdir\=./.gem.20260204-57925-pm6otd sitelibdir\=./.gem.20260204-57925-pm6otd
+compiling stringio.c
+linking shared-object stringio.bundle
+ld: warning: search path '/opt/homebrew/Cellar/openssl@3/3.5.2/lib' not found
+
+current directory: /Users/robbie/projects/school/SeniorDesign/vendor/bundle/ruby/3.4.0/gems/stringio-3.1.7/ext/stringio
+make DESTDIR\= sitearchdir\=./.gem.20260204-57925-pm6otd sitelibdir\=./.gem.20260204-57925-pm6otd install
+/usr/bin/install -c -m 0755 stringio.bundle ./.gem.20260204-57925-pm6otd
+
+current directory: /Users/robbie/projects/school/SeniorDesign/vendor/bundle/ruby/3.4.0/gems/stringio-3.1.7/ext/stringio
+make DESTDIR\= sitearchdir\=./.gem.20260204-57925-pm6otd sitelibdir\=./.gem.20260204-57925-pm6otd clean

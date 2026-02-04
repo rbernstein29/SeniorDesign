@@ -1,0 +1,20 @@
+current directory: /Users/robbie/projects/school/SeniorDesign/vendor/bundle/ruby/3.4.0/gems/erb-5.1.1/ext/erb/escape
+/opt/homebrew/opt/ruby/bin/ruby extconf.rb
+checking for rb_ext_ractor_safe() in ruby.h... yes
+creating Makefile
+
+current directory: /Users/robbie/projects/school/SeniorDesign/vendor/bundle/ruby/3.4.0/gems/erb-5.1.1/ext/erb/escape
+make DESTDIR\= sitearchdir\=./.gem.20260204-57925-c0dg8p sitelibdir\=./.gem.20260204-57925-c0dg8p clean
+
+current directory: /Users/robbie/projects/school/SeniorDesign/vendor/bundle/ruby/3.4.0/gems/erb-5.1.1/ext/erb/escape
+make DESTDIR\= sitearchdir\=./.gem.20260204-57925-c0dg8p sitelibdir\=./.gem.20260204-57925-c0dg8p
+compiling escape.c
+linking shared-object erb/escape.bundle
+ld: warning: search path '/opt/homebrew/Cellar/openssl@3/3.5.2/lib' not found
+
+current directory: /Users/robbie/projects/school/SeniorDesign/vendor/bundle/ruby/3.4.0/gems/erb-5.1.1/ext/erb/escape
+make DESTDIR\= sitearchdir\=./.gem.20260204-57925-c0dg8p sitelibdir\=./.gem.20260204-57925-c0dg8p install
+/usr/bin/install -c -m 0755 escape.bundle ./.gem.20260204-57925-c0dg8p/erb
+
+current directory: /Users/robbie/projects/school/SeniorDesign/vendor/bundle/ruby/3.4.0/gems/erb-5.1.1/ext/erb/escape
+make DESTDIR\= sitearchdir\=./.gem.20260204-57925-c0dg8p sitelibdir\=./.gem.20260204-57925-c0dg8p clean
