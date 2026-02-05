@@ -1,0 +1,317 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Scan Configuration</title>
+    <style>
+        :root {
+            --primary-blue: #2563eb;
+            --bg-color: #f8f9fa;
+            --border-color: #dee2e6;
+            --text-color: #343a40;
+            --label-color: #495057;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+            background-color: #f3f4f6;
+            display: flex;
+            justify-content: center;
+            padding: 40px;
+            margin: 0;
+        }
+
+        .card {
+            background: white;
+            padding: 40px;
+            border-radius: 8px;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.05);
+            width: 100%;
+            max-width: 900px;
+        }
+
+        h1 {
+            text-align: center;
+            color: #333;
+            font-size: 24px;
+            margin-bottom: 30px;
+            padding-bottom: 20px;
+            border-bottom: 1px solid #eee;
+        }
+
+        /* Grid Layout */
+        .form-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            column-gap: 40px;
+            row-gap: 20px;
+        }
+
+        /* Form Elements */
+        .form-group {
+            display: flex;
+            flex-direction: column;
+            margin-bottom: 10px;
+        }
+
+        label {
+            font-weight: 600;
+            font-size: 14px;
+            color: var(--label-color);
+            margin-bottom: 8px;
+        }
+
+        /* Add red asterisk to required labels */
+        label.required::after {
+            content: " *";
+            color: #dc3545;
+        }
+
+        input[type="text"],
+        input[type="datetime-local"],
+        select {
+            padding: 10px 12px;
+            border: 1px solid var(--border-color);
+            border-radius: 4px;
+            font-size: 14px;
+            color: #333;
+            transition: border-color 0.2s;
+        }
+
+        input:focus, select:focus {
+            outline: none;
+            border-color: var(--primary-blue);
+            box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.1);
+        }
+
+        /* Special Boxed Groups (Radio/Checkbox containers) */
+        .boxed-group {
+            background-color: #f8f9fa;
+            border: 1px solid var(--border-color);
+            border-radius: 4px;
+            padding: 12px;
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+        }
+
+        .radio-option {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            font-size: 14px;
+            cursor: pointer;
+        }
+
+        input[type="radio"], input[type="checkbox"] {
+            accent-color: var(--primary-blue);
+            cursor: pointer;
+        }
+
+        /* Buttons */
+        .btn-group {
+            margin-top: 30px;
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+        }
+
+        .btn-outline {
+            background: white;
+            border: 1px solid #ced4da;
+            color: #495057;
+            padding: 12px;
+            border-radius: 4px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.2s;
+            font-size: 14px;
+            width: 100%;
+        }
+
+        .btn-outline:hover {
+            background-color: #f8f9fa;
+            border-color: #adb5bd;
+        }
+
+        .btn-primary {
+            background-color: var(--primary-blue);
+            color: white;
+            border: none;
+            padding: 14px;
+            border-radius: 4px;
+            font-weight: 600;
+            font-size: 15px;
+            cursor: pointer;
+            width: 100%;
+            transition: background-color 0.2s;
+        }
+
+        .btn-primary:hover {
+            background-color: #1d4ed8;
+        }
+
+        /* File input hidden styling */
+        #file-upload-name {
+            font-size: 12px;
+            color: #28a745;
+            margin-left: 10px;
+            font-weight: normal;
+        }
+
+    </style>
+</head>
+<body>
+
+    <div class="card">
+        <h1>Scan Configuration</h1>
+        
+        <form id="scanForm">
+            <div class="form-grid">
+                
+                <div class="column">
+                    
+                    <div class="form-group">
+                        <label class="required">Scan Mode</label>
+                        <div class="boxed-group">
+                            <label class="radio-option">
+                                <input type="radio" name="scanMode" value="safe" required> Safe
+                            </label>
+                            <label class="radio-option">
+                                <input type="radio" name="scanMode" value="exploits" required> Exploits
+                            </label>
+                        </div>
+                    </div>
+
+                    <div class="form-group">
+                        <label class="required">Target Scope</label>
+                        <div class="boxed-group">
+                            <label class="radio-option">
+                                <input type="radio" name="scope" value="individual" checked required> Individual Network
+                            </label>
+                            <label class="radio-option">
+                                <input type="radio" name="scope" value="range" required> Range of Networks
+                            </label>
+                        </div>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="network" class="required">Network / Network Range</label>
+                        <input type="text" id="network" placeholder="e.g. 192.168.1.1/24" required>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="exclude" class="required">Exclude Network</label>
+                        <input type="text" id="exclude" placeholder="e.g. 192.168.1.5" required>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="port" class="required">Port / Port Range</label>
+                        <input type="text" id="port" placeholder="e.g. 80, 443, 8000-8080" required>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="os" class="required">Operating System</label>
+                        <select id="os" required>
+                            <option value="">Select OS</option>
+                            <option value="win11">Windows 10/11</option>
+                            <option value="server2019">Windows Server 2019</option>
+                            <option value="linux">Linux (Ubuntu/CentOS)</option>
+                            <option value="macos">macOS</option>
+                        </select>
+                    </div>
+
+                </div>
+
+                <div class="column">
+                    
+                    <div class="form-group">
+                        <label for="asset" class="required">Asset Types</label>
+                        <select id="asset" required>
+                            <option value="server">Server</option>
+                            <option value="workstation">Workstation</option>
+                            <option value="network_device">Network Device</option>
+                        </select>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="scanType" class="required">Scan Type</label>
+                        <select id="scanType" required>
+                            <option value="full">Full</option>
+                            <option value="quick">Quick</option>
+                            <option value="custom">Custom</option>
+                        </select>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="credential" class="required">Credential</label>
+                        <input type="text" id="credential" placeholder="Enter credential ID or Path" required>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="schedule">Schedule</label>
+                        <input type="datetime-local" id="schedule">
+                    </div>
+
+                    <div class="form-group">
+                        <label for="cve">CVE ID</label>
+                        <input type="text" id="cve" placeholder="e.g. CVE-2024-XXXX">
+                    </div>
+
+                    <div class="form-group">
+                        <label class="required">Report Format</label>
+                        <div class="boxed-group">
+                            <label class="radio-option">
+                                <input type="checkbox" name="format" value="json" checked required> JSON
+                            </label>
+                            <label class="radio-option">
+                                <input type="checkbox" name="format" value="pdf"> PDF
+                            </label>
+							<label class="radio-option">
+                                <input type="checkbox" name="format" value="txt"> TXT
+                            </label>
+							<label class="radio-option">
+                                <input type="checkbox" name="format" value="csv"> CSV
+                            </label>
+                        </div>
+                    </div>
+
+                </div>
+            </div>
+
+            <div class="btn-group">
+                
+                <input type="file" id="jsonFile" accept=".json" style="display: none;">
+                
+                <button type="button" class="btn-outline" onclick="document.getElementById('jsonFile').click()">
+                    Import Asset JSON <span id="file-upload-name"></span>
+                </button>
+
+                <button type="submit" class="btn-primary">Generate Report</button>
+            </div>
+        </form>
+    </div>
+
+    <script>
+        // Handle File Selection
+        document.getElementById('jsonFile').addEventListener('change', function(e) {
+            const fileName = e.target.files[0] ? e.target.files[0].name : "";
+            const label = document.getElementById('file-upload-name');
+            if (fileName) {
+                label.textContent = "✓ " + fileName;
+                // Optional: Read the file here using FileReader if needed
+            } else {
+                label.textContent = "";
+            }
+        });
+
+        // Handle Form Submit
+        document.getElementById('scanForm').addEventListener('submit', function(e) {
+            e.preventDefault();
+            // If the browser validation passes, this code runs
+            alert("Configuration Validated! Generating Report...");
+        });
+    </script>
+</body>
+</html>
