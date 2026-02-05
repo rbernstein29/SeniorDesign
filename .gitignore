@@ -1,1 +1,35 @@
+# --- Ruby/Rails Specifics ---
+# Ignore the entire temporary directory (includes cache, pids, sockets)
+/tmp
+/cache
 
+# Ignore the Bootsnap cache specifically (if not in tmp)
+bootsnap/
+
+# Logs
+/log/*.log
+/log/*.pid
+
+# gem dependencies (if installed locally)
+/.bundle/
+/vendor/bundle/
+
+# Database (SQLite)
+/db/*.sqlite3
+/db/*.sqlite3-journal
+
+# Rails environment configuration (Sensitive)
+/config/master.key
+/config/credentials.yml.enc
+
+# Assets (if using older Rails pipelines)
+/public/assets
+/public/packs
+/public/packs-test
+/node_modules
+
+# --- OS & Editors (Keep these from the previous list) ---
+.DS_Store
+.vscode/
+.idea/
+.env
