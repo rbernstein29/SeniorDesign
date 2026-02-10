@@ -1,2 +1,286 @@
-#list of assets
-<h1>Assets</h1>
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Asset Management</title>
+    <%= csrf_meta_tags %>
+    <style>
+        :root {
+            --primary-blue: #3b82f6;
+            --dark-blue: #1d4ed8;
+            --bg-color: #f3f4f6;
+            --success-green: #10b981;
+            --danger-red: #ef4444;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+            background-color: var(--bg-color);
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+        }
+
+        .page-header {
+            background: white;
+            padding: 30px 40px;
+            border-radius: 12px;
+            box-shadow: 0 10px 25px rgba(0,0,0,0.05);
+            margin-bottom: 30px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .page-header h1 {
+            font-size: 28px;
+            color: #1f2937;
+            margin: 0;
+        }
+
+        .page-header p {
+            color: #6b7280;
+            margin-top: 5px;
+            font-size: 14px;
+        }
+
+        .btn {
+            padding: 12px 24px;
+            border-radius: 8px;
+            font-weight: 600;
+            font-size: 14px;
+            cursor: pointer;
+            text-decoration: none;
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            transition: all 0.2s;
+            border: none;
+        }
+
+        .btn-primary {
+            background: linear-gradient(to bottom, #3b82f6, #2563eb);
+            color: white;
+            box-shadow: 0 4px 12px rgba(37, 99, 235, 0.3);
+        }
+
+        .btn-primary:hover {
+            background: linear-gradient(to bottom, #4f8df9, #326bf5);
+            transform: translateY(-2px);
+            box-shadow: 0 6px 16px rgba(37, 99, 235, 0.4);
+        }
+
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 20px;
+            margin-bottom: 30px;
+        }
+
+        .stat-card {
+            background: white;
+            padding: 25px;
+            border-radius: 12px;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.05);
+        }
+
+        .stat-card h3 {
+            font-size: 14px;
+            color: #6b7280;
+            margin-bottom: 10px;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .stat-card .number {
+            font-size: 36px;
+            font-weight: 700;
+            color: var(--primary-blue);
+        }
+
+        .table-container {
+            background: white;
+            border-radius: 12px;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.05);
+            overflow: hidden;
+        }
+
+        .table-header {
+            padding: 20px 30px;
+            border-bottom: 2px solid #f3f4f6;
+        }
+
+        .table-header h2 {
+            font-size: 18px;
+            color: #1f2937;
+            font-weight: 700;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+
+        thead {
+            background-color: #f9fafb;
+        }
+
+        th {
+            padding: 15px 20px;
+            text-align: left;
+            font-weight: 600;
+            font-size: 13px;
+            color: #6b7280;
+            text-transform: uppercase;
+        }
+
+        td {
+            padding: 18px 20px;
+            border-top: 1px solid #f3f4f6;
+            font-size: 14px;
+            color: #1f2937;
+        }
+
+        tbody tr:hover {
+            background-color: #f9fafb;
+        }
+
+        .badge {
+            display: inline-block;
+            padding: 4px 12px;
+            border-radius: 12px;
+            font-size: 12px;
+            font-weight: 600;
+            text-transform: uppercase;
+        }
+
+        .badge-safe {
+            background-color: #d1fae5;
+            color: #065f46;
+        }
+
+        .badge-exploits {
+            background-color: #fed7aa;
+            color: #92400e;
+        }
+
+        .empty-state {
+            padding: 80px 40px;
+            text-align: center;
+        }
+
+        .empty-state h3 {
+            font-size: 20px;
+            color: #6b7280;
+            margin: 20px 0 10px;
+        }
+
+        .empty-state p {
+            color: #9ca3af;
+            margin-bottom: 20px;
+        }
+
+        code {
+            background-color: #f3f4f6;
+            padding: 2px 6px;
+            border-radius: 4px;
+            font-family: 'Courier New', monospace;
+            font-size: 13px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        
+        <div class="page-header">
+            <div>
+                <h1>🔒 Asset Management</h1>
+                <p>Manage your network scan assets and configurations</p>
+            </div>
+            <%= link_to new_asset_path, class: "btn btn-primary" do %>
+                <span>➕</span> Add New Asset
+            <% end %>
+        </div>
+
+        <div class="stats-grid">
+            <div class="stat-card">
+                <h3>Total Assets</h3>
+                <div class="number"><%= @assets.count %></div>
+            </div>
+            <div class="stat-card">
+                <h3>Safe Mode</h3>
+                <div class="number"><%= @assets.select { |a| (a[:scanMode] || a['scanMode']) == 'safe' }.count %></div>
+            </div>
+            <div class="stat-card">
+                <h3>Exploit Mode</h3>
+                <div class="number"><%= @assets.select { |a| (a[:scanMode] || a['scanMode']) == 'exploits' }.count %></div>
+            </div>
+            <div class="stat-card">
+                <h3>Servers</h3>
+                <div class="number"><%= @assets.select { |a| (a[:asset] || a['asset']) == 'server' }.count %></div>
+            </div>
+        </div>
+
+        <div class="table-container">
+            <div class="table-header">
+                <h2>All Assets</h2>
+            </div>
+
+            <% if @assets.any? %>
+                <table>
+                    <thead>
+                        <tr>
+                            <th>ID</th>
+                            <th>Network</th>
+                            <th>Scan Mode</th>
+                            <th>Asset Type</th>
+                            <th>OS</th>
+                            <th>Scan Type</th>
+                            <th>Ports</th>
+                            <th>Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <% @assets.each_with_index do |asset, index| %>
+                            <tr>
+                                <td><strong>#<%= index + 1 %></strong></td>
+                                <td><code><%= asset[:network] || asset['network'] %></code></td>
+                                <td>
+                                    <% scan_mode = asset[:scanMode] || asset['scanMode'] %>
+                                    <span class="badge badge-<%= scan_mode %>">
+                                        <%= scan_mode&.upcase %>
+                                    </span>
+                                </td>
+                                <td><%= (asset[:asset] || asset['asset'])&.humanize %></td>
+                                <td><%= (asset[:os] || asset['os'])&.upcase %></td>
+                                <td><%= (asset[:scanType] || asset['scanType'])&.capitalize %></td>
+                                <td><code><%= asset[:port] || asset['port'] %></code></td>
+                                <td>
+                                    <%= link_to "View", asset_path(index + 1), style: "color: var(--primary-blue); text-decoration: none; font-weight: 600;" %>
+                                </td>
+                            </tr>
+                        <% end %>
+                    </tbody>
+                </table>
+            <% else %>
+                <div class="empty-state">
+                    <h3>No Assets Yet</h3>
+                    <p>Get started by adding your first scan asset configuration</p>
+                    <%= link_to "Add Your First Asset", new_asset_path, class: "btn btn-primary" %>
+                </div>
+            <% end %>
+        </div>
+
+    </div>
+</body>
+</html>

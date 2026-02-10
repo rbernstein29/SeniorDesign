@@ -3,9 +3,10 @@ Rails.application.routes.draw do
   
   # Homepage
   root "pages#app"
+  get "/app" to: "pages#app"
 
   # Additional roots here
-  get "/app", to: "pages#app"
+  resources :assets, only: [:index, :new, :create, :show]
 
   namespace :api do 
     resources :items, only: [:index, :create,]
