@@ -1,4 +1,6 @@
 Rails.application.routes.draw do
+  resource :session
+  resources :passwords, param: :token
   # Define your application routes per the DSL in https://guides.rubyonrails.org/routing.html
   
   # Homepage
@@ -6,9 +8,16 @@ Rails.application.routes.draw do
 
   # Additional roots here
   get "/app", to: "pages#app"
+  get "/home", to: "pages#home"
+  get "/scan", to: "pages#scan_config"
 
   namespace :api do 
-    resources :items, only: [:index, :create,]
+    resources :users, only: [:index, :show, :create,] do
+      collection do
+        post :signin
+        post :signout
+      end
+    end
   end
   # Reveal health status on /up that returns 200 if the app boots with no exceptions, otherwise 500.
   # Can be used by load balancers and uptime monitors to verify that the app is live.

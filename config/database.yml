@@ -18,11 +18,16 @@ default: &default
   # For details on connection pooling, see Rails configuration guide
   # https://guides.rubyonrails.org/configuring.html#database-pooling
   pool: <%= ENV.fetch("RAILS_MAX_THREADS") { 5 } %>
+  database: vulnerability_scanner
+  username: aegis
+  password: goodyear
+  host: 127.0.0.1
+  port: 5433
+  schema_search_path: "vuln_scanner"
 
 
 development:
   <<: *default
-  database: server_development
 
   # The specified database role being used to connect to PostgreSQL.
   # To create additional roles in PostgreSQL see `$ createuser --help`.

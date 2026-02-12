@@ -5860,3 +5860,1092 @@ LINE 10:  WHERE a.attrelid = '"items"'::regclass
 ):
   
 app/controllers/api/items_controller.rb:20:in 'Api::ItemsController#create'
+  [1m[36mActiveRecord::SchemaMigration Load (2.1ms)[0m  [1m[34mSELECT "schema_migrations"."version" FROM "schema_migrations" ORDER BY "schema_migrations"."version" ASC /*application='Server'*/[0m
+  [1m[36mActiveRecord::SchemaMigration Load (1.2ms)[0m  [1m[34mSELECT "schema_migrations"."version" FROM "schema_migrations" ORDER BY "schema_migrations"."version" ASC /*application='Server'*/[0m
+  [1m[36mActiveRecord::SchemaMigration Load (1.3ms)[0m  [1m[34mSELECT "schema_migrations"."version" FROM "schema_migrations" ORDER BY "schema_migrations"."version" ASC /*application='Server'*/[0m
+  [1m[36mActiveRecord::SchemaMigration Load (1.2ms)[0m  [1m[34mSELECT "schema_migrations"."version" FROM "schema_migrations" ORDER BY "schema_migrations"."version" ASC /*application='Server'*/[0m
+Started GET "/" for 127.0.0.1 at 2026-02-05 16:34:29 -0500
+  [1m[36mActiveRecord::SchemaMigration Load (2.2ms)[0m  [1m[34mSELECT "schema_migrations"."version" FROM "schema_migrations" ORDER BY "schema_migrations"."version" ASC /*application='Server'*/[0m
+Processing by PagesController#app as HTML
+  Rendering layout layouts/application.html.erb
+  Rendering pages/app.html.erb within layouts/application
+  Rendered pages/app.html.erb within layouts/application (Duration: 0.3ms | GC: 0.0ms)
+  Rendered layout layouts/application.html.erb (Duration: 6.0ms | GC: 0.0ms)
+Completed 200 OK in 46ms (Views: 10.0ms | ActiveRecord: 0.0ms (0 queries, 0 cached) | GC: 0.2ms)
+
+
+Started GET "/" for 127.0.0.1 at 2026-02-05 16:35:58 -0500
+  [1m[36mActiveRecord::SchemaMigration Load (1.5ms)[0m  [1m[34mSELECT "schema_migrations"."version" FROM "schema_migrations" ORDER BY "schema_migrations"."version" ASC /*application='Server'*/[0m
+Processing by PagesController#app as HTML
+  Rendering layout layouts/application.html.erb
+  Rendering pages/app.html.erb within layouts/application
+  Rendered pages/app.html.erb within layouts/application (Duration: 0.3ms | GC: 0.0ms)
+  Rendered layout layouts/application.html.erb (Duration: 7.0ms | GC: 0.0ms)
+Completed 200 OK in 47ms (Views: 11.1ms | ActiveRecord: 0.0ms (0 queries, 0 cached) | GC: 0.1ms)
+
+
+Started POST "/api/items" for 127.0.0.1 at 2026-02-05 16:36:19 -0500
+Processing by Api::ItemsController#create as */*
+  Parameters: {"item" => {"name" => "", "email" => "[FILTERED]", "password_hash" => "[FILTERED]", "org_id" => "", "access_level" => "admin"}}
+[31mUnpermitted parameters: :email, :password_hash, :org_id, :access_level. Context: { controller: Api::ItemsController, action: create, request: #<ActionDispatch::Request:0x000000013000ec50>, params: {"item" => {"name" => "", "email" => "[FILTERED]", "password_hash" => "[FILTERED]", "org_id" => "", "access_level" => "admin"}, "controller" => "api/items", "action" => "create"} }[0m
+Completed 500 Internal Server Error in 83ms (ActiveRecord: 11.6ms (0 queries, 0 cached) | GC: 0.0ms)
+
+
+  
+ActiveRecord::StatementInvalid (PG::UndefinedTable: ERROR:  relation "items" does not exist
+LINE 10:  WHERE a.attrelid = '"items"'::regclass
+                             ^
+)
+Caused by: PG::UndefinedTable (ERROR:  relation "items" does not exist
+LINE 10:  WHERE a.attrelid = '"items"'::regclass
+                             ^
+)
+
+Information for: ActiveRecord::StatementInvalid (PG::UndefinedTable: ERROR:  relation "items" does not exist
+LINE 10:  WHERE a.attrelid = '"items"'::regclass
+                             ^
+):
+  
+
+Information for cause: PG::UndefinedTable (ERROR:  relation "items" does not exist
+LINE 10:  WHERE a.attrelid = '"items"'::regclass
+                             ^
+):
+  
+app/controllers/api/items_controller.rb:20:in 'Api::ItemsController#create'
+Started GET "/" for 127.0.0.1 at 2026-02-05 16:39:12 -0500
+Processing by PagesController#app as HTML
+  Rendering layout layouts/application.html.erb
+  Rendering pages/app.html.erb within layouts/application
+  Rendered pages/app.html.erb within layouts/application (Duration: 0.5ms | GC: 0.0ms)
+  Rendered layout layouts/application.html.erb (Duration: 2.5ms | GC: 0.0ms)
+Completed 200 OK in 34ms (Views: 5.9ms | ActiveRecord: 0.0ms (0 queries, 0 cached) | GC: 0.0ms)
+
+
+Started GET "/favicon.ico" for 127.0.0.1 at 2026-02-05 16:39:12 -0500
+  
+ActionController::RoutingError (No route matches [GET] "/favicon.ico"):
+  
+Started POST "/api/items" for 127.0.0.1 at 2026-02-05 16:39:13 -0500
+Processing by Api::ItemsController#create as */*
+  Parameters: {"user" => {"name" => "", "description" => ""}, "item" => {"user" => {"name" => "", "description" => ""}}}
+[31mUnpermitted parameter: :user. Context: { controller: Api::ItemsController, action: create, request: #<ActionDispatch::Request:0x0000000130dcad30>, params: {"user" => {"name" => "", "description" => ""}, "controller" => "api/items", "action" => "create", "item" => {"user" => {"name" => "", "description" => ""}}} }[0m
+Completed 500 Internal Server Error in 58ms (ActiveRecord: 5.4ms (0 queries, 0 cached) | GC: 0.1ms)
+
+
+  
+ActiveRecord::StatementInvalid (PG::UndefinedTable: ERROR:  relation "items" does not exist
+LINE 10:  WHERE a.attrelid = '"items"'::regclass
+                             ^
+)
+Caused by: PG::UndefinedTable (ERROR:  relation "items" does not exist
+LINE 10:  WHERE a.attrelid = '"items"'::regclass
+                             ^
+)
+
+Information for: ActiveRecord::StatementInvalid (PG::UndefinedTable: ERROR:  relation "items" does not exist
+LINE 10:  WHERE a.attrelid = '"items"'::regclass
+                             ^
+):
+  
+
+Information for cause: PG::UndefinedTable (ERROR:  relation "items" does not exist
+LINE 10:  WHERE a.attrelid = '"items"'::regclass
+                             ^
+):
+  
+app/controllers/api/items_controller.rb:20:in 'Api::ItemsController#create'
+Started POST "/api/items" for 127.0.0.1 at 2026-02-05 16:39:34 -0500
+Processing by Api::ItemsController#create as */*
+  Parameters: {"user" => {"name" => "", "email" => "[FILTERED]", "password_hash" => "[FILTERED]", "org_id" => "", "access_level" => "admin"}, "item" => {"user" => {"name" => "", "email" => "[FILTERED]", "password_hash" => "[FILTERED]", "org_id" => "", "access_level" => "admin"}}}
+[31mUnpermitted parameter: :user. Context: { controller: Api::ItemsController, action: create, request: #<ActionDispatch::Request:0x0000000130709d98>, params: {"user" => {"name" => "", "email" => "[FILTERED]", "password_hash" => "[FILTERED]", "org_id" => "", "access_level" => "admin"}, "controller" => "api/items", "action" => "create", "item" => {"user" => {"name" => "", "email" => "[FILTERED]", "password_hash" => "[FILTERED]", "org_id" => "", "access_level" => "admin"}}} }[0m
+Completed 500 Internal Server Error in 29ms (ActiveRecord: 1.2ms (0 queries, 0 cached) | GC: 0.0ms)
+
+
+  
+ActiveRecord::StatementInvalid (PG::UndefinedTable: ERROR:  relation "items" does not exist
+LINE 10:  WHERE a.attrelid = '"items"'::regclass
+                             ^
+)
+Caused by: PG::UndefinedTable (ERROR:  relation "items" does not exist
+LINE 10:  WHERE a.attrelid = '"items"'::regclass
+                             ^
+)
+
+Information for: ActiveRecord::StatementInvalid (PG::UndefinedTable: ERROR:  relation "items" does not exist
+LINE 10:  WHERE a.attrelid = '"items"'::regclass
+                             ^
+):
+  
+
+Information for cause: PG::UndefinedTable (ERROR:  relation "items" does not exist
+LINE 10:  WHERE a.attrelid = '"items"'::regclass
+                             ^
+):
+  
+app/controllers/api/items_controller.rb:20:in 'Api::ItemsController#create'
+Started GET "/" for 127.0.0.1 at 2026-02-05 16:40:29 -0500
+Processing by PagesController#app as HTML
+  Rendering layout layouts/application.html.erb
+  Rendering pages/app.html.erb within layouts/application
+  Rendered pages/app.html.erb within layouts/application (Duration: 0.3ms | GC: 0.0ms)
+  Rendered layout layouts/application.html.erb (Duration: 2.9ms | GC: 0.0ms)
+Completed 200 OK in 29ms (Views: 3.4ms | ActiveRecord: 0.0ms (0 queries, 0 cached) | GC: 0.0ms)
+
+
+Started GET "/favicon.ico" for 127.0.0.1 at 2026-02-05 16:40:29 -0500
+  
+ActionController::RoutingError (No route matches [GET] "/favicon.ico"):
+  
+Started POST "/api/users" for 127.0.0.1 at 2026-02-05 16:40:33 -0500
+  
+ActionController::RoutingError (No route matches [POST] "/api/users"):
+  
+Started GET "/" for 127.0.0.1 at 2026-02-05 16:41:15 -0500
+Processing by PagesController#app as HTML
+  Rendering layout layouts/application.html.erb
+  Rendering pages/app.html.erb within layouts/application
+  Rendered pages/app.html.erb within layouts/application (Duration: 0.4ms | GC: 0.0ms)
+  Rendered layout layouts/application.html.erb (Duration: 3.2ms | GC: 0.0ms)
+Completed 200 OK in 31ms (Views: 5.0ms | ActiveRecord: 0.0ms (0 queries, 0 cached) | GC: 0.5ms)
+
+
+Started GET "/favicon.ico" for 127.0.0.1 at 2026-02-05 16:41:15 -0500
+  
+ActionController::RoutingError (No route matches [GET] "/favicon.ico"):
+  
+Started POST "/api/users" for 127.0.0.1 at 2026-02-05 16:41:18 -0500
+Processing by Api::UsersController#create as */*
+  Parameters: {"user" => {"name" => "", "email" => "[FILTERED]", "password_hash" => "[FILTERED]", "org_id" => "", "access_level" => "admin"}}
+Completed 500 Internal Server Error in 70ms (ActiveRecord: 1.5ms (0 queries, 0 cached) | GC: 0.0ms)
+
+
+  
+ActiveRecord::StatementInvalid (PG::UndefinedTable: ERROR:  relation "users" does not exist
+LINE 10:  WHERE a.attrelid = '"users"'::regclass
+                             ^
+)
+Caused by: PG::UndefinedTable (ERROR:  relation "users" does not exist
+LINE 10:  WHERE a.attrelid = '"users"'::regclass
+                             ^
+)
+
+Information for: ActiveRecord::StatementInvalid (PG::UndefinedTable: ERROR:  relation "users" does not exist
+LINE 10:  WHERE a.attrelid = '"users"'::regclass
+                             ^
+):
+  
+
+Information for cause: PG::UndefinedTable (ERROR:  relation "users" does not exist
+LINE 10:  WHERE a.attrelid = '"users"'::regclass
+                             ^
+):
+  
+app/controllers/api/users_controller.rb:20:in 'Api::UsersController#create'
+  [1m[35m (4.3ms)[0m  [1m[34mSELECT version(); /*application='Server'*/[0m
+Started GET "/" for 127.0.0.1 at 2026-02-05 17:06:57 -0500
+  [1m[35m (43.1ms)[0m  [1m[35mCREATE TABLE "schema_migrations" ("version" character varying NOT NULL PRIMARY KEY) /*application='Server'*/[0m
+  [1m[35m (91.8ms)[0m  [1m[35mCREATE TABLE "ar_internal_metadata" ("key" character varying NOT NULL PRIMARY KEY, "value" character varying, "created_at" timestamp(6) NOT NULL, "updated_at" timestamp(6) NOT NULL) /*application='Server'*/[0m
+  [1m[36mActiveRecord::SchemaMigration Load (26.8ms)[0m  [1m[34mSELECT "schema_migrations"."version" FROM "schema_migrations" ORDER BY "schema_migrations"."version" ASC /*application='Server'*/[0m
+Processing by PagesController#app as HTML
+  Rendering layout layouts/application.html.erb
+  Rendering pages/app.html.erb within layouts/application
+  Rendered pages/app.html.erb within layouts/application (Duration: 0.6ms | GC: 0.0ms)
+  Rendered layout layouts/application.html.erb (Duration: 7.5ms | GC: 0.0ms)
+Completed 200 OK in 48ms (Views: 11.3ms | ActiveRecord: 0.0ms (0 queries, 0 cached) | GC: 0.2ms)
+
+
+Started GET "/favicon.ico" for 127.0.0.1 at 2026-02-05 17:06:58 -0500
+  
+ActionController::RoutingError (No route matches [GET] "/favicon.ico"):
+  
+Started POST "/api/users" for 127.0.0.1 at 2026-02-05 17:07:03 -0500
+Processing by Api::UsersController#create as */*
+  Parameters: {"user" => {"name" => "", "email" => "[FILTERED]", "password_hash" => "[FILTERED]", "org_id" => "", "access_level" => "admin"}}
+Completed 500 Internal Server Error in 1256ms (ActiveRecord: 287.3ms (0 queries, 0 cached) | GC: 1.9ms)
+
+
+  
+ActiveRecord::StatementInvalid (PG::UndefinedTable: ERROR:  relation "users" does not exist
+LINE 10:  WHERE a.attrelid = '"users"'::regclass
+                             ^
+)
+Caused by: PG::UndefinedTable (ERROR:  relation "users" does not exist
+LINE 10:  WHERE a.attrelid = '"users"'::regclass
+                             ^
+)
+
+Information for: ActiveRecord::StatementInvalid (PG::UndefinedTable: ERROR:  relation "users" does not exist
+LINE 10:  WHERE a.attrelid = '"users"'::regclass
+                             ^
+):
+  
+
+Information for cause: PG::UndefinedTable (ERROR:  relation "users" does not exist
+LINE 10:  WHERE a.attrelid = '"users"'::regclass
+                             ^
+):
+  
+app/controllers/api/users_controller.rb:20:in 'Api::UsersController#create'
+Started GET "/" for 127.0.0.1 at 2026-02-05 17:17:46 -0500
+Processing by PagesController#app as HTML
+  Rendering layout layouts/application.html.erb
+  Rendering pages/app.html.erb within layouts/application
+  Rendered pages/app.html.erb within layouts/application (Duration: 0.4ms | GC: 0.0ms)
+  Rendered layout layouts/application.html.erb (Duration: 4.5ms | GC: 0.0ms)
+Completed 200 OK in 36ms (Views: 5.7ms | ActiveRecord: 0.0ms (0 queries, 0 cached) | GC: 0.0ms)
+
+
+Started GET "/favicon.ico" for 127.0.0.1 at 2026-02-05 17:17:46 -0500
+  
+ActionController::RoutingError (No route matches [GET] "/favicon.ico"):
+  
+Started POST "/api/users" for 127.0.0.1 at 2026-02-05 17:17:49 -0500
+Processing by Api::UsersController#create as */*
+  Parameters: {"user" => {"name" => "", "email" => "[FILTERED]", "password_hash" => "[FILTERED]", "org_id" => "", "access_level" => "admin"}}
+Completed 500 Internal Server Error in 785ms (ActiveRecord: 331.0ms (0 queries, 0 cached) | GC: 0.0ms)
+
+
+  
+ActiveRecord::StatementInvalid (PG::UndefinedTable: ERROR:  relation "users" does not exist
+LINE 10:  WHERE a.attrelid = '"users"'::regclass
+                             ^
+)
+Caused by: PG::UndefinedTable (ERROR:  relation "users" does not exist
+LINE 10:  WHERE a.attrelid = '"users"'::regclass
+                             ^
+)
+
+Information for: ActiveRecord::StatementInvalid (PG::UndefinedTable: ERROR:  relation "users" does not exist
+LINE 10:  WHERE a.attrelid = '"users"'::regclass
+                             ^
+):
+  
+
+Information for cause: PG::UndefinedTable (ERROR:  relation "users" does not exist
+LINE 10:  WHERE a.attrelid = '"users"'::regclass
+                             ^
+):
+  
+app/controllers/api/users_controller.rb:20:in 'Api::UsersController#create'
+Started GET "/" for 127.0.0.1 at 2026-02-05 17:20:05 -0500
+Processing by PagesController#app as HTML
+  Rendering layout layouts/application.html.erb
+  Rendering pages/app.html.erb within layouts/application
+  Rendered pages/app.html.erb within layouts/application (Duration: 0.7ms | GC: 0.0ms)
+  Rendered layout layouts/application.html.erb (Duration: 3.7ms | GC: 0.0ms)
+Completed 200 OK in 30ms (Views: 5.3ms | ActiveRecord: 0.0ms (0 queries, 0 cached) | GC: 0.0ms)
+
+
+Started GET "/favicon.ico" for 127.0.0.1 at 2026-02-05 17:20:05 -0500
+  
+ActionController::RoutingError (No route matches [GET] "/favicon.ico"):
+  
+Started POST "/api/users" for 127.0.0.1 at 2026-02-05 17:20:08 -0500
+Processing by Api::UsersController#create as */*
+  Parameters: {"user" => {"name" => "", "email" => "[FILTERED]", "password_hash" => "[FILTERED]", "org_id" => "", "access_level" => "admin"}}
+  [1m[36mTRANSACTION (17.6ms)[0m  [1m[35mBEGIN /*action='create',application='Server',controller='users'*/[0m
+  ↳ app/controllers/api/users_controller.rb:21:in 'Api::UsersController#create'
+  [1m[36mUser Create (60.0ms)[0m  [1m[32mINSERT INTO "vuln_scanner"."users" ("name", "email", "password_hash", "org_id", "access_level", "is_active", "created_at", "updated_at") VALUES ('', '', '', NULL, 'admin', TRUE, '2026-02-05 22:20:09.169878', '2026-02-05 22:20:09.169878') RETURNING "id", "created_at", "updated_at" /*action='create',application='Server',controller='users'*/[0m
+  ↳ app/controllers/api/users_controller.rb:21:in 'Api::UsersController#create'
+  [1m[36mTRANSACTION (14.8ms)[0m  [1m[31mROLLBACK /*action='create',application='Server',controller='users'*/[0m
+  ↳ app/controllers/api/users_controller.rb:21:in 'Api::UsersController#create'
+Completed 500 Internal Server Error in 1165ms (ActiveRecord: 1019.6ms (1 query, 0 cached) | GC: 1.9ms)
+
+
+  
+ActiveRecord::NotNullViolation (PG::NotNullViolation: ERROR:  null value in column "org_id" of relation "users" violates not-null constraint
+DETAIL:  Failing row contains (1, , , , null, admin, t, 2026-02-05 22:20:09.169878, 2026-02-05 22:20:09.169878).
+)
+Caused by: PG::NotNullViolation (ERROR:  null value in column "org_id" of relation "users" violates not-null constraint
+DETAIL:  Failing row contains (1, , , , null, admin, t, 2026-02-05 22:20:09.169878, 2026-02-05 22:20:09.169878).
+)
+
+Information for: ActiveRecord::NotNullViolation (PG::NotNullViolation: ERROR:  null value in column "org_id" of relation "users" violates not-null constraint
+DETAIL:  Failing row contains (1, , , , null, admin, t, 2026-02-05 22:20:09.169878, 2026-02-05 22:20:09.169878).
+):
+  
+
+Information for cause: PG::NotNullViolation (ERROR:  null value in column "org_id" of relation "users" violates not-null constraint
+DETAIL:  Failing row contains (1, , , , null, admin, t, 2026-02-05 22:20:09.169878, 2026-02-05 22:20:09.169878).
+):
+  
+app/controllers/api/users_controller.rb:21:in 'Api::UsersController#create'
+Started POST "/api/users" for 127.0.0.1 at 2026-02-05 17:20:36 -0500
+Processing by Api::UsersController#create as */*
+  Parameters: {"user" => {"name" => "Test Name", "email" => "[FILTERED]", "password_hash" => "[FILTERED]", "org_id" => "Test Company", "access_level" => "admin"}}
+  [1m[36mTRANSACTION (81.5ms)[0m  [1m[35mBEGIN /*action='create',application='Server',controller='users'*/[0m
+  ↳ app/controllers/api/users_controller.rb:21:in 'Api::UsersController#create'
+  [1m[36mUser Create (163.5ms)[0m  [1m[32mINSERT INTO "vuln_scanner"."users" ("name", "email", "password_hash", "org_id", "access_level", "is_active", "created_at", "updated_at") VALUES ('Test Name', 'test@email.com', 'abc123', 0, 'admin', TRUE, '2026-02-05 22:20:36.959865', '2026-02-05 22:20:36.959865') RETURNING "id", "created_at", "updated_at" /*action='create',application='Server',controller='users'*/[0m
+  ↳ app/controllers/api/users_controller.rb:21:in 'Api::UsersController#create'
+  [1m[36mTRANSACTION (226.6ms)[0m  [1m[31mROLLBACK /*action='create',application='Server',controller='users'*/[0m
+  ↳ app/controllers/api/users_controller.rb:21:in 'Api::UsersController#create'
+Completed 500 Internal Server Error in 430ms (ActiveRecord: 471.6ms (1 query, 0 cached) | GC: 0.0ms)
+
+
+  
+ActiveRecord::InvalidForeignKey (PG::ForeignKeyViolation: ERROR:  insert or update on table "users" violates foreign key constraint "users_org_id_fkey"
+DETAIL:  Key (org_id)=(0) is not present in table "organizations".
+)
+Caused by: PG::ForeignKeyViolation (ERROR:  insert or update on table "users" violates foreign key constraint "users_org_id_fkey"
+DETAIL:  Key (org_id)=(0) is not present in table "organizations".
+)
+
+Information for: ActiveRecord::InvalidForeignKey (PG::ForeignKeyViolation: ERROR:  insert or update on table "users" violates foreign key constraint "users_org_id_fkey"
+DETAIL:  Key (org_id)=(0) is not present in table "organizations".
+):
+  
+
+Information for cause: PG::ForeignKeyViolation (ERROR:  insert or update on table "users" violates foreign key constraint "users_org_id_fkey"
+DETAIL:  Key (org_id)=(0) is not present in table "organizations".
+):
+  
+app/controllers/api/users_controller.rb:21:in 'Api::UsersController#create'
+Started POST "/api/users" for 127.0.0.1 at 2026-02-05 17:23:02 -0500
+Processing by Api::UsersController#create as */*
+  Parameters: {"user" => {"name" => "Test Name", "email" => "[FILTERED]", "password_hash" => "[FILTERED]", "org_id" => "1", "access_level" => "admin"}}
+  [1m[36mTRANSACTION (311.3ms)[0m  [1m[35mBEGIN /*action='create',application='Server',controller='users'*/[0m
+  ↳ app/controllers/api/users_controller.rb:21:in 'Api::UsersController#create'
+  [1m[36mUser Create (609.8ms)[0m  [1m[32mINSERT INTO "vuln_scanner"."users" ("name", "email", "password_hash", "org_id", "access_level", "is_active", "created_at", "updated_at") VALUES ('Test Name', 'test@email.com', 'abc123', 1, 'admin', TRUE, '2026-02-05 22:23:02.391310', '2026-02-05 22:23:02.391310') RETURNING "id", "created_at", "updated_at" /*action='create',application='Server',controller='users'*/[0m
+  ↳ app/controllers/api/users_controller.rb:21:in 'Api::UsersController#create'
+  [1m[36mTRANSACTION (90.9ms)[0m  [1m[35mCOMMIT /*action='create',application='Server',controller='users'*/[0m
+  ↳ app/controllers/api/users_controller.rb:21:in 'Api::UsersController#create'
+Completed 201 Created in 764ms (Views: 8.6ms | ActiveRecord: 1011.9ms (1 query, 0 cached) | GC: 0.9ms)
+
+
+  [1m[35mSQL (15.9ms)[0m  [1m[35mSET search_path TO vuln_scanner /*application='Server'*/[0m
+  [1m[36mUser Load (578.9ms)[0m  [1m[34mSELECT "vuln_scanner"."users".* FROM "vuln_scanner"."users" /* loading for pp */ LIMIT 11 /*application='Server'*/[0m
+Started GET "/" for 127.0.0.1 at 2026-02-05 17:29:27 -0500
+Processing by PagesController#app as HTML
+  Rendering layout layouts/application.html.erb
+  Rendering pages/app.html.erb within layouts/application
+  Rendered pages/app.html.erb within layouts/application (Duration: 1.1ms | GC: 0.0ms)
+  Rendered layout layouts/application.html.erb (Duration: 11.4ms | GC: 0.0ms)
+Completed 200 OK in 42ms (Views: 14.0ms | ActiveRecord: 0.0ms (0 queries, 0 cached) | GC: 0.0ms)
+
+
+Started GET "/favicon.ico" for 127.0.0.1 at 2026-02-05 17:29:27 -0500
+  
+ActionController::RoutingError (No route matches [GET] "/favicon.ico"):
+  
+Started POST "/api/user" for 127.0.0.1 at 2026-02-05 17:29:39 -0500
+  
+ActionController::RoutingError (No route matches [POST] "/api/user"):
+  
+Started GET "/" for 127.0.0.1 at 2026-02-05 17:29:53 -0500
+Processing by PagesController#app as HTML
+  Rendering layout layouts/application.html.erb
+  Rendering pages/app.html.erb within layouts/application
+  Rendered pages/app.html.erb within layouts/application (Duration: 0.0ms | GC: 0.0ms)
+  Rendered layout layouts/application.html.erb (Duration: 0.8ms | GC: 0.0ms)
+Completed 200 OK in 29ms (Views: 1.4ms | ActiveRecord: 0.0ms (0 queries, 0 cached) | GC: 0.0ms)
+
+
+Started GET "/favicon.ico" for 127.0.0.1 at 2026-02-05 17:29:53 -0500
+  
+ActionController::RoutingError (No route matches [GET] "/favicon.ico"):
+  
+Started POST "/api/user" for 127.0.0.1 at 2026-02-05 17:30:00 -0500
+  
+ActionController::RoutingError (No route matches [POST] "/api/user"):
+  
+Started GET "/" for 127.0.0.1 at 2026-02-05 17:30:22 -0500
+Processing by PagesController#app as HTML
+  Rendering layout layouts/application.html.erb
+  Rendering pages/app.html.erb within layouts/application
+  Rendered pages/app.html.erb within layouts/application (Duration: 0.0ms | GC: 0.0ms)
+  Rendered layout layouts/application.html.erb (Duration: 1.5ms | GC: 0.0ms)
+Completed 200 OK in 33ms (Views: 2.8ms | ActiveRecord: 0.0ms (0 queries, 0 cached) | GC: 0.0ms)
+
+
+Started GET "/favicon.ico" for 127.0.0.1 at 2026-02-05 17:30:22 -0500
+  
+ActionController::RoutingError (No route matches [GET] "/favicon.ico"):
+  
+Started POST "/api/users" for 127.0.0.1 at 2026-02-05 17:30:29 -0500
+Processing by Api::UsersController#create as */*
+  Parameters: {"request_string" => {"users" => {"name" => "Test Name2", "email" => "[FILTERED]", "password_hash" => "[FILTERED]", "org_id" => "2", "access_level" => "admin"}}, "user" => {}}
+Completed 400 Bad Request in 69ms (ActiveRecord: 0.0ms (0 queries, 0 cached) | GC: 0.0ms)
+
+
+  
+ActionController::ParameterMissing (param is missing or the value is empty or invalid: user):
+  
+app/controllers/api/users_controller.rb:29:in 'Api::UsersController#user_params'
+app/controllers/api/users_controller.rb:20:in 'Api::UsersController#create'
+Started GET "/" for 127.0.0.1 at 2026-02-05 17:30:53 -0500
+Processing by PagesController#app as HTML
+  Rendering layout layouts/application.html.erb
+  Rendering pages/app.html.erb within layouts/application
+  Rendered pages/app.html.erb within layouts/application (Duration: 0.0ms | GC: 0.0ms)
+  Rendered layout layouts/application.html.erb (Duration: 3.2ms | GC: 0.0ms)
+Completed 200 OK in 32ms (Views: 4.3ms | ActiveRecord: 0.0ms (0 queries, 0 cached) | GC: 0.0ms)
+
+
+Started GET "/favicon.ico" for 127.0.0.1 at 2026-02-05 17:30:53 -0500
+  
+ActionController::RoutingError (No route matches [GET] "/favicon.ico"):
+  
+Started POST "/api/users" for 127.0.0.1 at 2026-02-05 17:30:59 -0500
+Processing by Api::UsersController#create as */*
+  Parameters: {"request_string" => {"user" => {"name" => "Test Name2", "email" => "[FILTERED]", "password_hash" => "[FILTERED]", "org_id" => "2", "access_level" => "admin"}}, "user" => {}}
+Completed 400 Bad Request in 67ms (ActiveRecord: 0.0ms (0 queries, 0 cached) | GC: 0.2ms)
+
+
+  
+ActionController::ParameterMissing (param is missing or the value is empty or invalid: user):
+  
+app/controllers/api/users_controller.rb:29:in 'Api::UsersController#user_params'
+app/controllers/api/users_controller.rb:20:in 'Api::UsersController#create'
+Started GET "/" for 127.0.0.1 at 2026-02-05 17:34:27 -0500
+Processing by PagesController#app as HTML
+  Rendering layout layouts/application.html.erb
+  Rendering pages/app.html.erb within layouts/application
+  Rendered pages/app.html.erb within layouts/application (Duration: 0.1ms | GC: 0.0ms)
+  Rendered layout layouts/application.html.erb (Duration: 3.6ms | GC: 0.0ms)
+Completed 200 OK in 32ms (Views: 5.0ms | ActiveRecord: 0.0ms (0 queries, 0 cached) | GC: 0.0ms)
+
+
+Started GET "/favicon.ico" for 127.0.0.1 at 2026-02-05 17:34:27 -0500
+  
+ActionController::RoutingError (No route matches [GET] "/favicon.ico"):
+  
+Started POST "/api/users" for 127.0.0.1 at 2026-02-05 17:34:33 -0500
+Processing by Api::UsersController#create as */*
+  Parameters: {"request_string" => {"user" => {"name" => "Test Name2", "email" => "[FILTERED]", "password_hash" => "[FILTERED]", "org_id" => "2", "access_level" => "admin"}}, "user" => {}}
+Completed 400 Bad Request in 63ms (ActiveRecord: 0.0ms (0 queries, 0 cached) | GC: 0.0ms)
+
+
+  
+ActionController::ParameterMissing (param is missing or the value is empty or invalid: user):
+  
+app/controllers/api/users_controller.rb:29:in 'Api::UsersController#user_params'
+app/controllers/api/users_controller.rb:20:in 'Api::UsersController#create'
+Started GET "/" for 127.0.0.1 at 2026-02-05 17:39:39 -0500
+Processing by PagesController#app as HTML
+  Rendering layout layouts/application.html.erb
+  Rendering pages/app.html.erb within layouts/application
+  Rendered pages/app.html.erb within layouts/application (Duration: 0.0ms | GC: 0.0ms)
+  Rendered layout layouts/application.html.erb (Duration: 1.3ms | GC: 0.0ms)
+Completed 200 OK in 29ms (Views: 1.9ms | ActiveRecord: 0.0ms (0 queries, 0 cached) | GC: 0.0ms)
+
+
+Started GET "/favicon.ico" for 127.0.0.1 at 2026-02-05 17:39:39 -0500
+  
+ActionController::RoutingError (No route matches [GET] "/favicon.ico"):
+  
+Started POST "/api/users" for 127.0.0.1 at 2026-02-05 17:39:44 -0500
+Processing by Api::UsersController#create as */*
+  Parameters: {"user" => {"name" => "Test Name2", "email" => "[FILTERED]", "password_hash" => "[FILTERED]", "org_id" => "2", "access_level" => "admin"}}
+  [1m[36mTRANSACTION (18.6ms)[0m  [1m[35mBEGIN /*action='create',application='Server',controller='users'*/[0m
+  ↳ app/controllers/api/users_controller.rb:21:in 'Api::UsersController#create'
+  [1m[36mUser Create (85.6ms)[0m  [1m[32mINSERT INTO "vuln_scanner"."users" ("name", "email", "password_hash", "org_id", "access_level", "is_active", "created_at", "updated_at") VALUES ('Test Name2', 'test2@email.com', '1234567', 2, 'admin', TRUE, '2026-02-05 22:39:44.857967', '2026-02-05 22:39:44.857967') RETURNING "id", "created_at", "updated_at" /*action='create',application='Server',controller='users'*/[0m
+  ↳ app/controllers/api/users_controller.rb:21:in 'Api::UsersController#create'
+  [1m[36mTRANSACTION (23.4ms)[0m  [1m[31mROLLBACK /*action='create',application='Server',controller='users'*/[0m
+  ↳ app/controllers/api/users_controller.rb:21:in 'Api::UsersController#create'
+Completed 500 Internal Server Error in 740ms (ActiveRecord: 327.5ms (1 query, 0 cached) | GC: 1.4ms)
+
+
+  
+ActiveRecord::InvalidForeignKey (PG::ForeignKeyViolation: ERROR:  insert or update on table "users" violates foreign key constraint "users_org_id_fkey"
+DETAIL:  Key (org_id)=(2) is not present in table "organizations".
+)
+Caused by: PG::ForeignKeyViolation (ERROR:  insert or update on table "users" violates foreign key constraint "users_org_id_fkey"
+DETAIL:  Key (org_id)=(2) is not present in table "organizations".
+)
+
+Information for: ActiveRecord::InvalidForeignKey (PG::ForeignKeyViolation: ERROR:  insert or update on table "users" violates foreign key constraint "users_org_id_fkey"
+DETAIL:  Key (org_id)=(2) is not present in table "organizations".
+):
+  
+
+Information for cause: PG::ForeignKeyViolation (ERROR:  insert or update on table "users" violates foreign key constraint "users_org_id_fkey"
+DETAIL:  Key (org_id)=(2) is not present in table "organizations".
+):
+  
+app/controllers/api/users_controller.rb:21:in 'Api::UsersController#create'
+Started POST "/api/users" for 127.0.0.1 at 2026-02-05 17:40:05 -0500
+Processing by Api::UsersController#create as */*
+  Parameters: {"user" => {"name" => "Test Name2", "email" => "[FILTERED]", "password_hash" => "[FILTERED]", "org_id" => "1", "access_level" => "admin"}}
+  [1m[36mTRANSACTION (22.9ms)[0m  [1m[35mBEGIN /*action='create',application='Server',controller='users'*/[0m
+  ↳ app/controllers/api/users_controller.rb:21:in 'Api::UsersController#create'
+  [1m[36mUser Create (44.7ms)[0m  [1m[32mINSERT INTO "vuln_scanner"."users" ("name", "email", "password_hash", "org_id", "access_level", "is_active", "created_at", "updated_at") VALUES ('Test Name2', 'test2@email.com', '1234567', 1, 'admin', TRUE, '2026-02-05 22:40:05.057303', '2026-02-05 22:40:05.057303') RETURNING "id", "created_at", "updated_at" /*action='create',application='Server',controller='users'*/[0m
+  ↳ app/controllers/api/users_controller.rb:21:in 'Api::UsersController#create'
+  [1m[36mTRANSACTION (86.9ms)[0m  [1m[35mCOMMIT /*action='create',application='Server',controller='users'*/[0m
+  ↳ app/controllers/api/users_controller.rb:21:in 'Api::UsersController#create'
+Completed 201 Created in 167ms (Views: 6.9ms | ActiveRecord: 154.5ms (1 query, 0 cached) | GC: 0.2ms)
+
+
+Started GET "/" for 127.0.0.1 at 2026-02-06 16:31:36 -0500
+  [1m[35mSQL (13.7ms)[0m  [1m[35mSET search_path TO vuln_scanner /*application='Server'*/[0m
+  [1m[35m (64.1ms)[0m  [1m[35mCREATE TABLE "schema_migrations" ("version" character varying NOT NULL PRIMARY KEY) /*application='Server'*/[0m
+  [1m[35m (18.2ms)[0m  [1m[35mCREATE TABLE "ar_internal_metadata" ("key" character varying NOT NULL PRIMARY KEY, "value" character varying, "created_at" timestamp(6) NOT NULL, "updated_at" timestamp(6) NOT NULL) /*application='Server'*/[0m
+  [1m[36mActiveRecord::SchemaMigration Load (15.8ms)[0m  [1m[34mSELECT "schema_migrations"."version" FROM "schema_migrations" ORDER BY "schema_migrations"."version" ASC /*application='Server'*/[0m
+Processing by PagesController#app as HTML
+  Rendering layout layouts/application.html.erb
+  Rendering pages/app.html.erb within layouts/application
+  Rendered pages/app.html.erb within layouts/application (Duration: 0.3ms | GC: 0.0ms)
+  Rendered layout layouts/application.html.erb (Duration: 5.9ms | GC: 0.0ms)
+Completed 200 OK in 45ms (Views: 9.7ms | ActiveRecord: 0.0ms (0 queries, 0 cached) | GC: 0.0ms)
+
+
+Started POST "/api/undefined" for 127.0.0.1 at 2026-02-06 16:32:01 -0500
+  
+ActionController::RoutingError (No route matches [POST] "/api/undefined"):
+  
+Started GET "/" for 127.0.0.1 at 2026-02-06 16:41:48 -0500
+Processing by PagesController#app as HTML
+  Rendering layout layouts/application.html.erb
+  Rendering pages/app.html.erb within layouts/application
+  Rendered pages/app.html.erb within layouts/application (Duration: 0.6ms | GC: 0.0ms)
+  Rendered layout layouts/application.html.erb (Duration: 7.6ms | GC: 0.0ms)
+Completed 200 OK in 41ms (Views: 11.2ms | ActiveRecord: 0.0ms (0 queries, 0 cached) | GC: 0.8ms)
+
+
+Started GET "/favicon.ico" for 127.0.0.1 at 2026-02-06 16:41:48 -0500
+  
+ActionController::RoutingError (No route matches [GET] "/favicon.ico"):
+  
+  [1m[35mSQL (14.2ms)[0m  [1m[35mSET search_path TO vuln_scanner /*application='Server'*/[0m
+  [1m[36mActiveRecord::SchemaMigration Load (14.8ms)[0m  [1m[34mSELECT "schema_migrations"."version" FROM "schema_migrations" ORDER BY "schema_migrations"."version" ASC /*application='Server'*/[0m
+  [1m[35mSQL (14.4ms)[0m  [1m[35mSET search_path TO vuln_scanner /*application='Server'*/[0m
+  [1m[36mActiveRecord::SchemaMigration Load (16.9ms)[0m  [1m[34mSELECT "schema_migrations"."version" FROM "schema_migrations" ORDER BY "schema_migrations"."version" ASC /*application='Server'*/[0m
+  [1m[36mCACHE ActiveRecord::SchemaMigration Load (0.1ms)[0m  [1m[34mSELECT "schema_migrations"."version" FROM "schema_migrations" ORDER BY "schema_migrations"."version" ASC[0m
+  [1m[35mSQL (18.2ms)[0m  [1m[35mSET search_path TO vuln_scanner /*application='Server'*/[0m
+  [1m[35m (15.6ms)[0m  [1m[34mSELECT pg_try_advisory_lock(1632732573829939365) /*application='Server'*/[0m
+  [1m[36mActiveRecord::SchemaMigration Load (16.0ms)[0m  [1m[34mSELECT "schema_migrations"."version" FROM "schema_migrations" ORDER BY "schema_migrations"."version" ASC /*application='Server'*/[0m
+  [1m[36mActiveRecord::InternalMetadata Load (15.4ms)[0m  [1m[34mSELECT * FROM "ar_internal_metadata" WHERE "ar_internal_metadata"."key" = 'environment' ORDER BY "ar_internal_metadata"."key" ASC LIMIT 1 /*application='Server'*/[0m
+  [1m[36mActiveRecord::InternalMetadata Create (50.5ms)[0m  [1m[32mINSERT INTO "ar_internal_metadata" ("key", "value", "created_at", "updated_at") VALUES ('environment', 'development', '2026-02-06 22:19:06.299801', '2026-02-06 22:19:06.299804') RETURNING "key" /*application='Server'*/[0m
+Migrating to RenamePasswordHashToPasswordDigest (20260206221732)
+  [1m[36mTRANSACTION (14.9ms)[0m  [1m[35mBEGIN /*application='Server'*/[0m
+  [1m[35m (31.5ms)[0m  [1m[35mALTER TABLE "users" RENAME COLUMN "password_hash" TO "password_digest" /*application='Server'*/[0m
+  [1m[36mActiveRecord::SchemaMigration Create (15.1ms)[0m  [1m[32mINSERT INTO "schema_migrations" ("version") VALUES ('20260206221732') RETURNING "version" /*application='Server'*/[0m
+  [1m[36mTRANSACTION (15.6ms)[0m  [1m[35mCOMMIT /*application='Server'*/[0m
+  [1m[35m (14.7ms)[0m  [1m[34mSELECT pg_advisory_unlock(1632732573829939365) /*application='Server'*/[0m
+  [1m[36mActiveRecord::SchemaMigration Load (14.3ms)[0m  [1m[34mSELECT "schema_migrations"."version" FROM "schema_migrations" ORDER BY "schema_migrations"."version" ASC /*application='Server'*/[0m
+Started GET "/" for 127.0.0.1 at 2026-02-06 17:34:15 -0500
+  [1m[35mSQL (14.8ms)[0m  [1m[35mSET search_path TO vuln_scanner /*application='Server'*/[0m
+  [1m[36mActiveRecord::SchemaMigration Load (19.3ms)[0m  [1m[34mSELECT "schema_migrations"."version" FROM "schema_migrations" ORDER BY "schema_migrations"."version" ASC /*application='Server'*/[0m
+Processing by PagesController#app as HTML
+  Rendering layout layouts/application.html.erb
+  Rendering pages/app.html.erb within layouts/application
+  Rendered pages/app.html.erb within layouts/application (Duration: 0.3ms | GC: 0.0ms)
+  Rendered layout layouts/application.html.erb (Duration: 3.0ms | GC: 0.2ms)
+Completed 200 OK in 40ms (Views: 4.5ms | ActiveRecord: 0.0ms (0 queries, 0 cached) | GC: 0.2ms)
+
+
+Started GET "/favicon.ico" for 127.0.0.1 at 2026-02-06 17:34:17 -0500
+  
+ActionController::RoutingError (No route matches [GET] "/favicon.ico"):
+  
+Started POST "/api/users" for 127.0.0.1 at 2026-02-06 17:34:44 -0500
+  
+LoadError (cannot load such file -- bcrypt):
+  
+app/models/user.rb:3:in '<class:User>'
+app/models/user.rb:1:in '<main>'
+Started GET "/" for 127.0.0.1 at 2026-02-06 17:36:14 -0500
+  [1m[35mSQL (14.9ms)[0m  [1m[35mSET search_path TO vuln_scanner /*application='Server'*/[0m
+  [1m[36mActiveRecord::SchemaMigration Load (106.0ms)[0m  [1m[34mSELECT "schema_migrations"."version" FROM "schema_migrations" ORDER BY "schema_migrations"."version" ASC /*application='Server'*/[0m
+Processing by PagesController#app as HTML
+  Rendering layout layouts/application.html.erb
+  Rendering pages/app.html.erb within layouts/application
+  Rendered pages/app.html.erb within layouts/application (Duration: 0.3ms | GC: 0.0ms)
+  Rendered layout layouts/application.html.erb (Duration: 7.6ms | GC: 0.0ms)
+Completed 200 OK in 47ms (Views: 11.5ms | ActiveRecord: 0.0ms (0 queries, 0 cached) | GC: 0.0ms)
+
+
+Started GET "/favicon.ico" for 127.0.0.1 at 2026-02-06 17:36:16 -0500
+  
+ActionController::RoutingError (No route matches [GET] "/favicon.ico"):
+  
+Started POST "/api/users" for 127.0.0.1 at 2026-02-06 17:36:22 -0500
+Processing by Api::UsersController#create as */*
+  Parameters: {"user" => {"name" => "First Last", "email" => "[FILTERED]", "password" => "[FILTERED]", "password_confirmation" => "[FILTERED]", "org_id" => "Company", "access_level" => "admin"}}
+  [1m[35mSQL (15.3ms)[0m  [1m[35mSET search_path TO vuln_scanner /*action='create',application='Server',controller='users'*/[0m
+  ↳ app/controllers/api/users_controller.rb:19:in 'Api::UsersController#create'
+  [1m[36mTRANSACTION (79.0ms)[0m  [1m[35mBEGIN /*action='create',application='Server',controller='users'*/[0m
+  ↳ app/controllers/api/users_controller.rb:20:in 'Api::UsersController#create'
+  [1m[36mUser Create (119.0ms)[0m  [1m[32mINSERT INTO "vuln_scanner"."users" ("name", "email", "password_digest", "org_id", "access_level", "is_active", "created_at", "updated_at") VALUES ('First Last', 'company@email.com', '$2a$12$.n3G.c9kNz6iMnFTQzidJuxDIyXy.aU9to9cjLSbgndee6rzzlYuS', 0, 'admin', TRUE, '2026-02-06 22:36:23.021606', '2026-02-06 22:36:23.021606') RETURNING "id", "created_at", "updated_at" /*action='create',application='Server',controller='users'*/[0m
+  ↳ app/controllers/api/users_controller.rb:20:in 'Api::UsersController#create'
+  [1m[36mTRANSACTION (230.1ms)[0m  [1m[31mROLLBACK /*action='create',application='Server',controller='users'*/[0m
+  ↳ app/controllers/api/users_controller.rb:20:in 'Api::UsersController#create'
+Completed 500 Internal Server Error in 1210ms (ActiveRecord: 677.1ms (2 queries, 0 cached) | GC: 60.7ms)
+
+
+  
+ActiveRecord::InvalidForeignKey (PG::ForeignKeyViolation: ERROR:  insert or update on table "users" violates foreign key constraint "users_org_id_fkey"
+DETAIL:  Key (org_id)=(0) is not present in table "organizations".
+)
+Caused by: PG::ForeignKeyViolation (ERROR:  insert or update on table "users" violates foreign key constraint "users_org_id_fkey"
+DETAIL:  Key (org_id)=(0) is not present in table "organizations".
+)
+
+Information for: ActiveRecord::InvalidForeignKey (PG::ForeignKeyViolation: ERROR:  insert or update on table "users" violates foreign key constraint "users_org_id_fkey"
+DETAIL:  Key (org_id)=(0) is not present in table "organizations".
+):
+  
+
+Information for cause: PG::ForeignKeyViolation (ERROR:  insert or update on table "users" violates foreign key constraint "users_org_id_fkey"
+DETAIL:  Key (org_id)=(0) is not present in table "organizations".
+):
+  
+app/controllers/api/users_controller.rb:20:in 'Api::UsersController#create'
+Started POST "/api/users" for 127.0.0.1 at 2026-02-06 17:36:35 -0500
+Processing by Api::UsersController#create as */*
+  Parameters: {"user" => {"name" => "First Last", "email" => "[FILTERED]", "password" => "[FILTERED]", "password_confirmation" => "[FILTERED]", "org_id" => "1", "access_level" => "admin"}}
+  [1m[36mTRANSACTION (112.1ms)[0m  [1m[35mBEGIN /*action='create',application='Server',controller='users'*/[0m
+  ↳ app/controllers/api/users_controller.rb:20:in 'Api::UsersController#create'
+  [1m[36mUser Create (134.3ms)[0m  [1m[32mINSERT INTO "vuln_scanner"."users" ("name", "email", "password_digest", "org_id", "access_level", "is_active", "created_at", "updated_at") VALUES ('First Last', 'company@email.com', '$2a$12$PhwncMlq0XiCClyOI3ZfheqtkaXN5uRoA00FpUYdpTb.EKl37x2FC', 1, 'admin', TRUE, '2026-02-06 22:36:36.192201', '2026-02-06 22:36:36.192201') RETURNING "id", "created_at", "updated_at" /*action='create',application='Server',controller='users'*/[0m
+  ↳ app/controllers/api/users_controller.rb:20:in 'Api::UsersController#create'
+  [1m[36mTRANSACTION (52.0ms)[0m  [1m[35mCOMMIT /*action='create',application='Server',controller='users'*/[0m
+  ↳ app/controllers/api/users_controller.rb:20:in 'Api::UsersController#create'
+Completed 201 Created in 456ms (Views: 2.9ms | ActiveRecord: 296.4ms (1 query, 0 cached) | GC: 2.7ms)
+
+
+Started POST "/api/users/signin" for 127.0.0.1 at 2026-02-06 17:37:10 -0500
+  
+ActionController::RoutingError (No route matches [POST] "/api/users/signin"):
+  
+Started GET "/" for 127.0.0.1 at 2026-02-06 17:39:17 -0500
+Processing by PagesController#app as HTML
+  Rendering layout layouts/application.html.erb
+  Rendering pages/app.html.erb within layouts/application
+  Rendered pages/app.html.erb within layouts/application (Duration: 0.6ms | GC: 0.0ms)
+  Rendered layout layouts/application.html.erb (Duration: 3.7ms | GC: 0.0ms)
+Completed 200 OK in 29ms (Views: 5.1ms | ActiveRecord: 0.0ms (0 queries, 0 cached) | GC: 0.0ms)
+
+
+Started GET "/favicon.ico" for 127.0.0.1 at 2026-02-06 17:39:17 -0500
+  
+ActionController::RoutingError (No route matches [GET] "/favicon.ico"):
+  
+Started POST "/api/users/signin" for 127.0.0.1 at 2026-02-06 17:39:22 -0500
+Processing by Api::UsersController#signin as */*
+  Parameters: {"user" => {"email" => "[FILTERED]", "password" => "[FILTERED]"}}
+  [1m[36mUser Load (14.4ms)[0m  [1m[34mSELECT "vuln_scanner"."users".* FROM "vuln_scanner"."users" WHERE "vuln_scanner"."users"."email" = 'company@email.com' LIMIT 1 /*action='signin',application='Server',controller='users'*/[0m
+  ↳ app/controllers/api/users_controller.rb:29:in 'Api::UsersController#signin'
+Completed 200 OK in 449ms (Views: 0.2ms | ActiveRecord: 129.2ms (1 query, 0 cached) | GC: 0.0ms)
+
+
+Started POST "/api/users/signin" for 127.0.0.1 at 2026-02-06 17:39:31 -0500
+Processing by Api::UsersController#signin as */*
+  Parameters: {"user" => {"email" => "[FILTERED]", "password" => "[FILTERED]"}}
+  [1m[36mUser Load (41.0ms)[0m  [1m[34mSELECT "vuln_scanner"."users".* FROM "vuln_scanner"."users" WHERE "vuln_scanner"."users"."email" = 'company@email.com' LIMIT 1 /*action='signin',application='Server',controller='users'*/[0m
+  ↳ app/controllers/api/users_controller.rb:29:in 'Api::UsersController#signin'
+Completed 401 Unauthorized in 290ms (Views: 0.8ms | ActiveRecord: 41.0ms (1 query, 0 cached) | GC: 0.0ms)
+
+
+Started GET "/" for 127.0.0.1 at 2026-02-10 12:46:13 -0500
+  
+ActiveRecord::DatabaseConnectionError (There is an issue connecting with your hostname: 127.0.0.1.
+
+Please check your database configuration and ensure there is a valid connection to your database.
+)
+Caused by: PG::ConnectionBad (connection to server at "127.0.0.1", port 5433 failed: Connection refused
+	Is the server running on that host and accepting TCP/IP connections?
+)
+
+Information for: ActiveRecord::DatabaseConnectionError (There is an issue connecting with your hostname: 127.0.0.1.
+
+Please check your database configuration and ensure there is a valid connection to your database.
+):
+  
+activerecord (8.0.3) lib/active_record/connection_adapters/postgresql_adapter.rb:67:in 'ActiveRecord::ConnectionAdapters::PostgreSQLAdapter.new_client'
+activerecord (8.0.3) lib/active_record/connection_adapters/postgresql_adapter.rb:939:in 'ActiveRecord::ConnectionAdapters::PostgreSQLAdapter#connect'
+activerecord (8.0.3) lib/active_record/connection_adapters/postgresql_adapter.rb:951:in 'ActiveRecord::ConnectionAdapters::PostgreSQLAdapter#reconnect'
+activerecord (8.0.3) lib/active_record/connection_adapters/abstract_adapter.rb:669:in 'block in ActiveRecord::ConnectionAdapters::AbstractAdapter#reconnect!'
+activesupport (8.0.3) lib/active_support/concurrency/null_lock.rb:9:in 'ActiveSupport::Concurrency::NullLock#synchronize'
+activerecord (8.0.3) lib/active_record/connection_adapters/abstract_adapter.rb:668:in 'ActiveRecord::ConnectionAdapters::AbstractAdapter#reconnect!'
+activerecord (8.0.3) lib/active_record/connection_adapters/abstract_adapter.rb:773:in 'block in ActiveRecord::ConnectionAdapters::AbstractAdapter#verify!'
+activesupport (8.0.3) lib/active_support/concurrency/null_lock.rb:9:in 'ActiveSupport::Concurrency::NullLock#synchronize'
+activerecord (8.0.3) lib/active_record/connection_adapters/abstract_adapter.rb:763:in 'ActiveRecord::ConnectionAdapters::AbstractAdapter#verify!'
+activerecord (8.0.3) lib/active_record/connection_adapters/abstract_adapter.rb:781:in 'ActiveRecord::ConnectionAdapters::AbstractAdapter#connect!'
+activerecord (8.0.3) lib/active_record/connection_adapters/abstract_adapter.rb:987:in 'block in ActiveRecord::ConnectionAdapters::AbstractAdapter#with_raw_connection'
+activesupport (8.0.3) lib/active_support/concurrency/null_lock.rb:9:in 'ActiveSupport::Concurrency::NullLock#synchronize'
+activerecord (8.0.3) lib/active_record/connection_adapters/abstract_adapter.rb:986:in 'ActiveRecord::ConnectionAdapters::AbstractAdapter#with_raw_connection'
+activerecord (8.0.3) lib/active_record/connection_adapters/postgresql/quoting.rb:128:in 'ActiveRecord::ConnectionAdapters::PostgreSQL::Quoting#quote_string'
+activerecord (8.0.3) lib/active_record/connection_adapters/abstract/quoting.rb:76:in 'ActiveRecord::ConnectionAdapters::Quoting#quote'
+activerecord (8.0.3) lib/active_record/connection_adapters/postgresql/quoting.rb:122:in 'ActiveRecord::ConnectionAdapters::PostgreSQL::Quoting#quote'
+activerecord (8.0.3) lib/active_record/connection_adapters/postgresql/schema_statements.rb:1142:in 'ActiveRecord::ConnectionAdapters::PostgreSQL::SchemaStatements#quoted_scope'
+activerecord (8.0.3) lib/active_record/connection_adapters/postgresql/schema_statements.rb:1119:in 'ActiveRecord::ConnectionAdapters::PostgreSQL::SchemaStatements#data_source_sql'
+activerecord (8.0.3) lib/active_record/connection_adapters/abstract/schema_statements.rb:60:in 'ActiveRecord::ConnectionAdapters::SchemaStatements#table_exists?'
+activerecord (8.0.3) lib/active_record/schema_migration.rb:55:in 'block in ActiveRecord::SchemaMigration#create_table'
+activerecord (8.0.3) lib/active_record/connection_adapters/abstract/connection_pool.rb:422:in 'ActiveRecord::ConnectionAdapters::ConnectionPool#with_connection'
+activerecord (8.0.3) lib/active_record/schema_migration.rb:54:in 'ActiveRecord::SchemaMigration#create_table'
+activerecord (8.0.3) lib/active_record/migration.rb:1430:in 'ActiveRecord::Migrator#initialize'
+activerecord (8.0.3) lib/active_record/migration.rb:1278:in 'Class#new'
+activerecord (8.0.3) lib/active_record/migration.rb:1278:in 'ActiveRecord::MigrationContext#open'
+activerecord (8.0.3) lib/active_record/migration.rb:762:in 'block (2 levels) in ActiveRecord::Migration.pending_migrations'
+activerecord (8.0.3) lib/active_record/migration/pending_migration_connection.rb:8:in 'ActiveRecord::PendingMigrationConnection.with_temporary_pool'
+activerecord (8.0.3) lib/active_record/migration.rb:761:in 'block in ActiveRecord::Migration.pending_migrations'
+activerecord (8.0.3) lib/active_record/migration.rb:760:in 'Array#each'
+activerecord (8.0.3) lib/active_record/migration.rb:760:in 'ActiveRecord::Migration.pending_migrations'
+activerecord (8.0.3) lib/active_record/migration.rb:739:in 'ActiveRecord::Migration.check_pending_migrations'
+activerecord (8.0.3) lib/active_record/migration.rb:659:in 'block (2 levels) in ActiveRecord::Migration::CheckPending#call'
+activesupport (8.0.3) lib/active_support/file_update_checker.rb:85:in 'ActiveSupport::FileUpdateChecker#execute'
+activerecord (8.0.3) lib/active_record/migration.rb:664:in 'block in ActiveRecord::Migration::CheckPending#call'
+activerecord (8.0.3) lib/active_record/migration.rb:656:in 'Thread::Mutex#synchronize'
+activerecord (8.0.3) lib/active_record/migration.rb:656:in 'ActiveRecord::Migration::CheckPending#call'
+actionpack (8.0.3) lib/action_dispatch/middleware/callbacks.rb:31:in 'block in ActionDispatch::Callbacks#call'
+activesupport (8.0.3) lib/active_support/callbacks.rb:100:in 'ActiveSupport::Callbacks#run_callbacks'
+actionpack (8.0.3) lib/action_dispatch/middleware/callbacks.rb:30:in 'ActionDispatch::Callbacks#call'
+actionpack (8.0.3) lib/action_dispatch/middleware/executor.rb:16:in 'ActionDispatch::Executor#call'
+actionpack (8.0.3) lib/action_dispatch/middleware/actionable_exceptions.rb:18:in 'ActionDispatch::ActionableExceptions#call'
+actionpack (8.0.3) lib/action_dispatch/middleware/debug_exceptions.rb:31:in 'ActionDispatch::DebugExceptions#call'
+web-console (4.2.1) lib/web_console/middleware.rb:132:in 'WebConsole::Middleware#call_app'
+web-console (4.2.1) lib/web_console/middleware.rb:28:in 'block in WebConsole::Middleware#call'
+web-console (4.2.1) lib/web_console/middleware.rb:17:in 'Kernel#catch'
+web-console (4.2.1) lib/web_console/middleware.rb:17:in 'WebConsole::Middleware#call'
+actionpack (8.0.3) lib/action_dispatch/middleware/show_exceptions.rb:32:in 'ActionDispatch::ShowExceptions#call'
+railties (8.0.3) lib/rails/rack/logger.rb:41:in 'Rails::Rack::Logger#call_app'
+railties (8.0.3) lib/rails/rack/logger.rb:29:in 'Rails::Rack::Logger#call'
+actionpack (8.0.3) lib/action_dispatch/middleware/remote_ip.rb:96:in 'ActionDispatch::RemoteIp#call'
+actionpack (8.0.3) lib/action_dispatch/middleware/request_id.rb:34:in 'ActionDispatch::RequestId#call'
+rack (3.2.3) lib/rack/method_override.rb:28:in 'Rack::MethodOverride#call'
+rack (3.2.3) lib/rack/runtime.rb:24:in 'Rack::Runtime#call'
+actionpack (8.0.3) lib/action_dispatch/middleware/server_timing.rb:61:in 'block in ActionDispatch::ServerTiming#call'
+actionpack (8.0.3) lib/action_dispatch/middleware/server_timing.rb:26:in 'ActionDispatch::ServerTiming::Subscriber#collect_events'
+actionpack (8.0.3) lib/action_dispatch/middleware/server_timing.rb:60:in 'ActionDispatch::ServerTiming#call'
+actionpack (8.0.3) lib/action_dispatch/middleware/executor.rb:16:in 'ActionDispatch::Executor#call'
+propshaft (1.3.1) lib/propshaft/server.rb:37:in 'Propshaft::Server#call'
+actionpack (8.0.3) lib/action_dispatch/middleware/static.rb:27:in 'ActionDispatch::Static#call'
+rack (3.2.3) lib/rack/sendfile.rb:131:in 'Rack::Sendfile#call'
+actionpack (8.0.3) lib/action_dispatch/middleware/host_authorization.rb:143:in 'ActionDispatch::HostAuthorization#call'
+railties (8.0.3) lib/rails/engine.rb:535:in 'Rails::Engine#call'
+puma (7.0.4) lib/puma/configuration.rb:299:in 'Puma::Configuration::ConfigMiddleware#call'
+puma (7.0.4) lib/puma/request.rb:101:in 'block in Puma::Request#handle_request'
+puma (7.0.4) lib/puma/thread_pool.rb:346:in 'Puma::ThreadPool#with_force_shutdown'
+puma (7.0.4) lib/puma/request.rb:100:in 'Puma::Request#handle_request'
+puma (7.0.4) lib/puma/server.rb:506:in 'Puma::Server#process_client'
+puma (7.0.4) lib/puma/server.rb:265:in 'block in Puma::Server#run'
+puma (7.0.4) lib/puma/thread_pool.rb:173:in 'block in Puma::ThreadPool#spawn_thread'
+
+Information for cause: PG::ConnectionBad (connection to server at "127.0.0.1", port 5433 failed: Connection refused
+	Is the server running on that host and accepting TCP/IP connections?
+):
+  
+pg-1.6.2-arm64 (darwin) lib/pg/connection.rb:751:in 'PG::Connection::Pollable#polling_loop'
+pg-1.6.2-arm64 (darwin) lib/pg/connection.rb:795:in 'PG::Connection#async_connect_or_reset'
+pg-1.6.2-arm64 (darwin) lib/pg/connection.rb:951:in 'PG::Connection.connect_to_hosts'
+pg-1.6.2-arm64 (darwin) lib/pg/connection.rb:871:in 'PG::Connection.new'
+pg-1.6.2-arm64 (darwin) lib/pg.rb:88:in 'PG.connect'
+activerecord (8.0.3) lib/active_record/connection_adapters/postgresql_adapter.rb:58:in 'ActiveRecord::ConnectionAdapters::PostgreSQLAdapter.new_client'
+activerecord (8.0.3) lib/active_record/connection_adapters/postgresql_adapter.rb:939:in 'ActiveRecord::ConnectionAdapters::PostgreSQLAdapter#connect'
+activerecord (8.0.3) lib/active_record/connection_adapters/postgresql_adapter.rb:951:in 'ActiveRecord::ConnectionAdapters::PostgreSQLAdapter#reconnect'
+activerecord (8.0.3) lib/active_record/connection_adapters/abstract_adapter.rb:669:in 'block in ActiveRecord::ConnectionAdapters::AbstractAdapter#reconnect!'
+activesupport (8.0.3) lib/active_support/concurrency/null_lock.rb:9:in 'ActiveSupport::Concurrency::NullLock#synchronize'
+activerecord (8.0.3) lib/active_record/connection_adapters/abstract_adapter.rb:668:in 'ActiveRecord::ConnectionAdapters::AbstractAdapter#reconnect!'
+activerecord (8.0.3) lib/active_record/connection_adapters/abstract_adapter.rb:773:in 'block in ActiveRecord::ConnectionAdapters::AbstractAdapter#verify!'
+activesupport (8.0.3) lib/active_support/concurrency/null_lock.rb:9:in 'ActiveSupport::Concurrency::NullLock#synchronize'
+activerecord (8.0.3) lib/active_record/connection_adapters/abstract_adapter.rb:763:in 'ActiveRecord::ConnectionAdapters::AbstractAdapter#verify!'
+activerecord (8.0.3) lib/active_record/connection_adapters/abstract_adapter.rb:781:in 'ActiveRecord::ConnectionAdapters::AbstractAdapter#connect!'
+activerecord (8.0.3) lib/active_record/connection_adapters/abstract_adapter.rb:987:in 'block in ActiveRecord::ConnectionAdapters::AbstractAdapter#with_raw_connection'
+activesupport (8.0.3) lib/active_support/concurrency/null_lock.rb:9:in 'ActiveSupport::Concurrency::NullLock#synchronize'
+activerecord (8.0.3) lib/active_record/connection_adapters/abstract_adapter.rb:986:in 'ActiveRecord::ConnectionAdapters::AbstractAdapter#with_raw_connection'
+activerecord (8.0.3) lib/active_record/connection_adapters/postgresql/quoting.rb:128:in 'ActiveRecord::ConnectionAdapters::PostgreSQL::Quoting#quote_string'
+activerecord (8.0.3) lib/active_record/connection_adapters/abstract/quoting.rb:76:in 'ActiveRecord::ConnectionAdapters::Quoting#quote'
+activerecord (8.0.3) lib/active_record/connection_adapters/postgresql/quoting.rb:122:in 'ActiveRecord::ConnectionAdapters::PostgreSQL::Quoting#quote'
+activerecord (8.0.3) lib/active_record/connection_adapters/postgresql/schema_statements.rb:1142:in 'ActiveRecord::ConnectionAdapters::PostgreSQL::SchemaStatements#quoted_scope'
+activerecord (8.0.3) lib/active_record/connection_adapters/postgresql/schema_statements.rb:1119:in 'ActiveRecord::ConnectionAdapters::PostgreSQL::SchemaStatements#data_source_sql'
+activerecord (8.0.3) lib/active_record/connection_adapters/abstract/schema_statements.rb:60:in 'ActiveRecord::ConnectionAdapters::SchemaStatements#table_exists?'
+activerecord (8.0.3) lib/active_record/schema_migration.rb:55:in 'block in ActiveRecord::SchemaMigration#create_table'
+activerecord (8.0.3) lib/active_record/connection_adapters/abstract/connection_pool.rb:422:in 'ActiveRecord::ConnectionAdapters::ConnectionPool#with_connection'
+activerecord (8.0.3) lib/active_record/schema_migration.rb:54:in 'ActiveRecord::SchemaMigration#create_table'
+activerecord (8.0.3) lib/active_record/migration.rb:1430:in 'ActiveRecord::Migrator#initialize'
+activerecord (8.0.3) lib/active_record/migration.rb:1278:in 'Class#new'
+activerecord (8.0.3) lib/active_record/migration.rb:1278:in 'ActiveRecord::MigrationContext#open'
+activerecord (8.0.3) lib/active_record/migration.rb:762:in 'block (2 levels) in ActiveRecord::Migration.pending_migrations'
+activerecord (8.0.3) lib/active_record/migration/pending_migration_connection.rb:8:in 'ActiveRecord::PendingMigrationConnection.with_temporary_pool'
+activerecord (8.0.3) lib/active_record/migration.rb:761:in 'block in ActiveRecord::Migration.pending_migrations'
+activerecord (8.0.3) lib/active_record/migration.rb:760:in 'Array#each'
+activerecord (8.0.3) lib/active_record/migration.rb:760:in 'ActiveRecord::Migration.pending_migrations'
+activerecord (8.0.3) lib/active_record/migration.rb:739:in 'ActiveRecord::Migration.check_pending_migrations'
+activerecord (8.0.3) lib/active_record/migration.rb:659:in 'block (2 levels) in ActiveRecord::Migration::CheckPending#call'
+activesupport (8.0.3) lib/active_support/file_update_checker.rb:85:in 'ActiveSupport::FileUpdateChecker#execute'
+activerecord (8.0.3) lib/active_record/migration.rb:664:in 'block in ActiveRecord::Migration::CheckPending#call'
+activerecord (8.0.3) lib/active_record/migration.rb:656:in 'Thread::Mutex#synchronize'
+activerecord (8.0.3) lib/active_record/migration.rb:656:in 'ActiveRecord::Migration::CheckPending#call'
+actionpack (8.0.3) lib/action_dispatch/middleware/callbacks.rb:31:in 'block in ActionDispatch::Callbacks#call'
+activesupport (8.0.3) lib/active_support/callbacks.rb:100:in 'ActiveSupport::Callbacks#run_callbacks'
+actionpack (8.0.3) lib/action_dispatch/middleware/callbacks.rb:30:in 'ActionDispatch::Callbacks#call'
+actionpack (8.0.3) lib/action_dispatch/middleware/executor.rb:16:in 'ActionDispatch::Executor#call'
+actionpack (8.0.3) lib/action_dispatch/middleware/actionable_exceptions.rb:18:in 'ActionDispatch::ActionableExceptions#call'
+actionpack (8.0.3) lib/action_dispatch/middleware/debug_exceptions.rb:31:in 'ActionDispatch::DebugExceptions#call'
+web-console (4.2.1) lib/web_console/middleware.rb:132:in 'WebConsole::Middleware#call_app'
+web-console (4.2.1) lib/web_console/middleware.rb:28:in 'block in WebConsole::Middleware#call'
+web-console (4.2.1) lib/web_console/middleware.rb:17:in 'Kernel#catch'
+web-console (4.2.1) lib/web_console/middleware.rb:17:in 'WebConsole::Middleware#call'
+actionpack (8.0.3) lib/action_dispatch/middleware/show_exceptions.rb:32:in 'ActionDispatch::ShowExceptions#call'
+railties (8.0.3) lib/rails/rack/logger.rb:41:in 'Rails::Rack::Logger#call_app'
+railties (8.0.3) lib/rails/rack/logger.rb:29:in 'Rails::Rack::Logger#call'
+actionpack (8.0.3) lib/action_dispatch/middleware/remote_ip.rb:96:in 'ActionDispatch::RemoteIp#call'
+actionpack (8.0.3) lib/action_dispatch/middleware/request_id.rb:34:in 'ActionDispatch::RequestId#call'
+rack (3.2.3) lib/rack/method_override.rb:28:in 'Rack::MethodOverride#call'
+rack (3.2.3) lib/rack/runtime.rb:24:in 'Rack::Runtime#call'
+actionpack (8.0.3) lib/action_dispatch/middleware/server_timing.rb:61:in 'block in ActionDispatch::ServerTiming#call'
+actionpack (8.0.3) lib/action_dispatch/middleware/server_timing.rb:26:in 'ActionDispatch::ServerTiming::Subscriber#collect_events'
+actionpack (8.0.3) lib/action_dispatch/middleware/server_timing.rb:60:in 'ActionDispatch::ServerTiming#call'
+actionpack (8.0.3) lib/action_dispatch/middleware/executor.rb:16:in 'ActionDispatch::Executor#call'
+propshaft (1.3.1) lib/propshaft/server.rb:37:in 'Propshaft::Server#call'
+actionpack (8.0.3) lib/action_dispatch/middleware/static.rb:27:in 'ActionDispatch::Static#call'
+rack (3.2.3) lib/rack/sendfile.rb:131:in 'Rack::Sendfile#call'
+actionpack (8.0.3) lib/action_dispatch/middleware/host_authorization.rb:143:in 'ActionDispatch::HostAuthorization#call'
+railties (8.0.3) lib/rails/engine.rb:535:in 'Rails::Engine#call'
+puma (7.0.4) lib/puma/configuration.rb:299:in 'Puma::Configuration::ConfigMiddleware#call'
+puma (7.0.4) lib/puma/request.rb:101:in 'block in Puma::Request#handle_request'
+puma (7.0.4) lib/puma/thread_pool.rb:346:in 'Puma::ThreadPool#with_force_shutdown'
+puma (7.0.4) lib/puma/request.rb:100:in 'Puma::Request#handle_request'
+puma (7.0.4) lib/puma/server.rb:506:in 'Puma::Server#process_client'
+puma (7.0.4) lib/puma/server.rb:265:in 'block in Puma::Server#run'
+puma (7.0.4) lib/puma/thread_pool.rb:173:in 'block in Puma::ThreadPool#spawn_thread'
+Started GET "/" for 127.0.0.1 at 2026-02-11 20:34:13 -0500
+  [1m[35mSQL (17.9ms)[0m  [1m[35mSET search_path TO vuln_scanner /*application='Server'*/[0m
+  [1m[36mActiveRecord::SchemaMigration Load (18.2ms)[0m  [1m[34mSELECT "schema_migrations"."version" FROM "schema_migrations" ORDER BY "schema_migrations"."version" ASC /*application='Server'*/[0m
+  
+ActiveRecord::PendingMigrationError (
+
+Migrations are pending. To resolve this issue, run:
+
+        bin/rails db:migrate
+
+You have 2 pending migrations:
+
+db/migrate/20260210212912_create_sessions.rb
+db/migrate/20260210213554_rename_email_to_email_address.rb
+
+
+):
+  
+activerecord (8.0.3) lib/active_record/migration.rb:742:in 'ActiveRecord::Migration.check_pending_migrations'
+activerecord (8.0.3) lib/active_record/migration.rb:659:in 'block (2 levels) in ActiveRecord::Migration::CheckPending#call'
+activesupport (8.0.3) lib/active_support/file_update_checker.rb:85:in 'ActiveSupport::FileUpdateChecker#execute'
+activerecord (8.0.3) lib/active_record/migration.rb:664:in 'block in ActiveRecord::Migration::CheckPending#call'
+activerecord (8.0.3) lib/active_record/migration.rb:656:in 'Thread::Mutex#synchronize'
+activerecord (8.0.3) lib/active_record/migration.rb:656:in 'ActiveRecord::Migration::CheckPending#call'
+actionpack (8.0.3) lib/action_dispatch/middleware/callbacks.rb:31:in 'block in ActionDispatch::Callbacks#call'
+activesupport (8.0.3) lib/active_support/callbacks.rb:100:in 'ActiveSupport::Callbacks#run_callbacks'
+actionpack (8.0.3) lib/action_dispatch/middleware/callbacks.rb:30:in 'ActionDispatch::Callbacks#call'
+actionpack (8.0.3) lib/action_dispatch/middleware/executor.rb:16:in 'ActionDispatch::Executor#call'
+actionpack (8.0.3) lib/action_dispatch/middleware/actionable_exceptions.rb:18:in 'ActionDispatch::ActionableExceptions#call'
+actionpack (8.0.3) lib/action_dispatch/middleware/debug_exceptions.rb:31:in 'ActionDispatch::DebugExceptions#call'
+web-console (4.2.1) lib/web_console/middleware.rb:132:in 'WebConsole::Middleware#call_app'
+web-console (4.2.1) lib/web_console/middleware.rb:28:in 'block in WebConsole::Middleware#call'
+web-console (4.2.1) lib/web_console/middleware.rb:17:in 'Kernel#catch'
+web-console (4.2.1) lib/web_console/middleware.rb:17:in 'WebConsole::Middleware#call'
+actionpack (8.0.3) lib/action_dispatch/middleware/show_exceptions.rb:32:in 'ActionDispatch::ShowExceptions#call'
+railties (8.0.3) lib/rails/rack/logger.rb:41:in 'Rails::Rack::Logger#call_app'
+railties (8.0.3) lib/rails/rack/logger.rb:29:in 'Rails::Rack::Logger#call'
+actionpack (8.0.3) lib/action_dispatch/middleware/remote_ip.rb:96:in 'ActionDispatch::RemoteIp#call'
+actionpack (8.0.3) lib/action_dispatch/middleware/request_id.rb:34:in 'ActionDispatch::RequestId#call'
+rack (3.2.3) lib/rack/method_override.rb:28:in 'Rack::MethodOverride#call'
+rack (3.2.3) lib/rack/runtime.rb:24:in 'Rack::Runtime#call'
+actionpack (8.0.3) lib/action_dispatch/middleware/server_timing.rb:61:in 'block in ActionDispatch::ServerTiming#call'
+actionpack (8.0.3) lib/action_dispatch/middleware/server_timing.rb:26:in 'ActionDispatch::ServerTiming::Subscriber#collect_events'
+actionpack (8.0.3) lib/action_dispatch/middleware/server_timing.rb:60:in 'ActionDispatch::ServerTiming#call'
+actionpack (8.0.3) lib/action_dispatch/middleware/executor.rb:16:in 'ActionDispatch::Executor#call'
+propshaft (1.3.1) lib/propshaft/server.rb:37:in 'Propshaft::Server#call'
+actionpack (8.0.3) lib/action_dispatch/middleware/static.rb:27:in 'ActionDispatch::Static#call'
+rack (3.2.3) lib/rack/sendfile.rb:131:in 'Rack::Sendfile#call'
+actionpack (8.0.3) lib/action_dispatch/middleware/host_authorization.rb:143:in 'ActionDispatch::HostAuthorization#call'
+railties (8.0.3) lib/rails/engine.rb:535:in 'Rails::Engine#call'
+puma (7.0.4) lib/puma/configuration.rb:299:in 'Puma::Configuration::ConfigMiddleware#call'
+puma (7.0.4) lib/puma/request.rb:101:in 'block in Puma::Request#handle_request'
+puma (7.0.4) lib/puma/thread_pool.rb:346:in 'Puma::ThreadPool#with_force_shutdown'
+puma (7.0.4) lib/puma/request.rb:100:in 'Puma::Request#handle_request'
+puma (7.0.4) lib/puma/server.rb:506:in 'Puma::Server#process_client'
+puma (7.0.4) lib/puma/server.rb:265:in 'block in Puma::Server#run'
+puma (7.0.4) lib/puma/thread_pool.rb:173:in 'block in Puma::ThreadPool#spawn_thread'
+  [1m[35mSQL (19.4ms)[0m  [1m[35mSET search_path TO vuln_scanner /*application='Server'*/[0m
+  [1m[35m (17.6ms)[0m  [1m[34mSELECT pg_try_advisory_lock(1632732573829939365) /*application='Server'*/[0m
+  [1m[36mActiveRecord::SchemaMigration Load (16.5ms)[0m  [1m[34mSELECT "schema_migrations"."version" FROM "schema_migrations" ORDER BY "schema_migrations"."version" ASC /*application='Server'*/[0m
+  [1m[36mActiveRecord::InternalMetadata Load (17.4ms)[0m  [1m[34mSELECT * FROM "ar_internal_metadata" WHERE "ar_internal_metadata"."key" = 'environment' ORDER BY "ar_internal_metadata"."key" ASC LIMIT 1 /*application='Server'*/[0m
+Migrating to CreateSessions (20260210212912)
+  [1m[36mTRANSACTION (14.8ms)[0m  [1m[35mBEGIN /*application='Server'*/[0m
+  [1m[35m (77.8ms)[0m  [1m[35mCREATE TABLE "sessions" ("id" bigserial primary key, "user_id" bigint NOT NULL, "ip_address" character varying, "user_agent" character varying, "created_at" timestamp(6) NOT NULL, "updated_at" timestamp(6) NOT NULL, CONSTRAINT "fk_rails_758836b4f0"
+FOREIGN KEY ("user_id")
+  REFERENCES "users" ("id")
+) /*application='Server'*/[0m
+  [1m[35m (15.2ms)[0m  [1m[35mCREATE INDEX "index_sessions_on_user_id" ON "sessions" ("user_id") /*application='Server'*/[0m
+  [1m[36mActiveRecord::SchemaMigration Create (22.7ms)[0m  [1m[32mINSERT INTO "schema_migrations" ("version") VALUES ('20260210212912') RETURNING "version" /*application='Server'*/[0m
+  [1m[36mTRANSACTION (24.4ms)[0m  [1m[35mCOMMIT /*application='Server'*/[0m
+Migrating to RenameEmailToEmailAddress (20260210213554)
+  [1m[36mTRANSACTION (16.1ms)[0m  [1m[35mBEGIN /*application='Server'*/[0m
+  [1m[35m (33.4ms)[0m  [1m[35mALTER TABLE "users" RENAME COLUMN "email" TO "email_address" /*application='Server'*/[0m
+  [1m[36mActiveRecord::SchemaMigration Create (18.6ms)[0m  [1m[32mINSERT INTO "schema_migrations" ("version") VALUES ('20260210213554') RETURNING "version" /*application='Server'*/[0m
+  [1m[36mTRANSACTION (17.6ms)[0m  [1m[35mCOMMIT /*application='Server'*/[0m
+  [1m[35m (27.6ms)[0m  [1m[34mSELECT pg_advisory_unlock(1632732573829939365) /*application='Server'*/[0m
+  [1m[36mActiveRecord::SchemaMigration Load (18.2ms)[0m  [1m[34mSELECT "schema_migrations"."version" FROM "schema_migrations" ORDER BY "schema_migrations"."version" ASC /*application='Server'*/[0m
+Started GET "/" for 127.0.0.1 at 2026-02-11 20:35:20 -0500
+  [1m[35mSQL (17.3ms)[0m  [1m[35mSET search_path TO vuln_scanner /*application='Server'*/[0m
+  [1m[36mActiveRecord::SchemaMigration Load (19.7ms)[0m  [1m[34mSELECT "schema_migrations"."version" FROM "schema_migrations" ORDER BY "schema_migrations"."version" ASC /*application='Server'*/[0m
+Processing by PagesController#app as HTML
+Redirected to http://127.0.0.1:3000/session/new
+Filter chain halted as :require_authentication rendered or redirected
+Completed 302 Found in 47ms (ActiveRecord: 0.0ms (0 queries, 0 cached) | GC: 0.7ms)
+
+
+Started GET "/session/new" for 127.0.0.1 at 2026-02-11 20:35:21 -0500
+Processing by SessionsController#new as HTML
+  Rendering layout layouts/application.html.erb
+  Rendering sessions/new.html.erb within layouts/application
+  Rendered sessions/new.html.erb within layouts/application (Duration: 8.7ms | GC: 0.3ms)
+  Rendered layout layouts/application.html.erb (Duration: 14.0ms | GC: 0.3ms)
+Completed 200 OK in 45ms (Views: 15.4ms | ActiveRecord: 0.0ms (0 queries, 0 cached) | GC: 0.9ms)
+
+
+  [1m[35mSQL (14.2ms)[0m  [1m[35mSET search_path TO vuln_scanner /*application='Server'*/[0m
+  [1m[36mActiveRecord::SchemaMigration Load (19.0ms)[0m  [1m[34mSELECT "schema_migrations"."version" FROM "schema_migrations" ORDER BY "schema_migrations"."version" ASC /*application='Server'*/[0m
+Started GET "/session/new" for 127.0.0.1 at 2026-02-11 20:53:03 -0500
+Processing by SessionsController#new as HTML
+  Rendering layout layouts/application.html.erb
+  Rendering sessions/new.html.erb within layouts/application
+  Rendered sessions/new.html.erb within layouts/application (Duration: 2.1ms | GC: 0.0ms)
+  Rendered layout layouts/application.html.erb (Duration: 3.1ms | GC: 0.0ms)
+Completed 200 OK in 30ms (Views: 4.9ms | ActiveRecord: 0.0ms (0 queries, 0 cached) | GC: 0.0ms)
+
+
+  [1m[35mSQL (14.5ms)[0m  [1m[35mSET search_path TO vuln_scanner /*application='Server'*/[0m
+  [1m[36mActiveRecord::SchemaMigration Load (15.2ms)[0m  [1m[34mSELECT "schema_migrations"."version" FROM "schema_migrations" ORDER BY "schema_migrations"."version" ASC /*application='Server'*/[0m
+Started GET "/" for 127.0.0.1 at 2026-02-11 20:55:23 -0500
+Processing by PagesController#app as HTML
+Redirected to http://127.0.0.1:3000/session/new
+Filter chain halted as :require_authentication rendered or redirected
+Completed 302 Found in 26ms (ActiveRecord: 0.0ms (0 queries, 0 cached) | GC: 0.0ms)
+
+
+Started GET "/session/new" for 127.0.0.1 at 2026-02-11 20:55:23 -0500
+Processing by SessionsController#new as HTML
+  Rendering layout layouts/application.html.erb
+  Rendering sessions/new.html.erb within layouts/application
+  Rendered sessions/new.html.erb within layouts/application (Duration: 1.7ms | GC: 0.0ms)
+  Rendered layout layouts/application.html.erb (Duration: 2.2ms | GC: 0.0ms)
+Completed 200 OK in 29ms (Views: 3.0ms | ActiveRecord: 0.0ms (0 queries, 0 cached) | GC: 0.0ms)
+
+
+Started GET "/session/new" for 127.0.0.1 at 2026-02-11 21:04:27 -0500
+Processing by SessionsController#new as HTML
+  Rendering layout layouts/application.html.erb
+  Rendering sessions/new.html.erb within layouts/application
+  Rendered sessions/new.html.erb within layouts/application (Duration: 1.8ms | GC: 0.0ms)
+  Rendered layout layouts/application.html.erb (Duration: 2.6ms | GC: 0.0ms)
+Completed 200 OK in 29ms (Views: 3.8ms | ActiveRecord: 0.0ms (0 queries, 0 cached) | GC: 0.6ms)
+
+
+Started GET "/" for 127.0.0.1 at 2026-02-11 21:04:30 -0500
+Processing by PagesController#app as HTML
+  Rendering layout layouts/application.html.erb
+  Rendering pages/app.html.erb within layouts/application
+  Rendered pages/app.html.erb within layouts/application (Duration: 0.6ms | GC: 0.0ms)
+  Rendered layout layouts/application.html.erb (Duration: 1.4ms | GC: 0.0ms)
+Completed 200 OK in 30ms (Views: 2.0ms | ActiveRecord: 0.0ms (0 queries, 0 cached) | GC: 0.0ms)
+
+
+Started POST "/api/users" for 127.0.0.1 at 2026-02-11 21:05:01 -0500
+Processing by Api::UsersController#create as */*
+  Parameters: {"user" => {"name" => "My Name", "email_address" => "[FILTERED]", "password" => "[FILTERED]", "password_confirmation" => "[FILTERED]", "org_id" => "1", "access_level" => "admin"}}
+  [1m[35mSQL (19.7ms)[0m  [1m[35mSET search_path TO vuln_scanner /*action='create',application='Server',controller='users'*/[0m
+  ↳ app/controllers/api/users_controller.rb:20:in 'Api::UsersController#create'
+  [1m[36mTRANSACTION (15.0ms)[0m  [1m[35mBEGIN /*action='create',application='Server',controller='users'*/[0m
+  ↳ app/controllers/api/users_controller.rb:21:in 'Api::UsersController#create'
+  [1m[36mUser Create (79.0ms)[0m  [1m[32mINSERT INTO "vuln_scanner"."users" ("name", "email_address", "password_digest", "org_id", "access_level", "is_active", "created_at", "updated_at") VALUES ('My Name', 'my.email@email.com', '$2a$12$vNytXAr5yc.aPK2yDGnG8etM8M6RREAiaU9ydFNTHaj3JzBHX9ksC', 1, 'admin', TRUE, '2026-02-12 02:05:02.503665', '2026-02-12 02:05:02.503665') RETURNING "id", "created_at", "updated_at" /*action='create',application='Server',controller='users'*/[0m
+  ↳ app/controllers/api/users_controller.rb:21:in 'Api::UsersController#create'
+  [1m[36mTRANSACTION (22.4ms)[0m  [1m[35mCOMMIT /*action='create',application='Server',controller='users'*/[0m
+  ↳ app/controllers/api/users_controller.rb:21:in 'Api::UsersController#create'
+Completed 201 Created in 1046ms (Views: 6.2ms | ActiveRecord: 398.8ms (2 queries, 0 cached) | GC: 2.5ms)
+
+
+Started POST "/api/users/signin" for 127.0.0.1 at 2026-02-11 21:05:22 -0500
+Processing by Api::UsersController#signin as */*
+  Parameters: {"user" => {"email_address" => "[FILTERED]", "password" => "[FILTERED]"}}
+  [1m[36mUser Load (270.3ms)[0m  [1m[34mSELECT "vuln_scanner"."users".* FROM "vuln_scanner"."users" WHERE "vuln_scanner"."users"."email_address" = 'my.email@email.com' LIMIT 1 /*action='signin',application='Server',controller='users'*/[0m
+  ↳ app/controllers/api/users_controller.rb:30:in 'Api::UsersController#signin'
+Completed 401 Unauthorized in 579ms (Views: 0.1ms | ActiveRecord: 270.2ms (1 query, 0 cached) | GC: 0.5ms)
+
+
+Started POST "/api/users/signin" for 127.0.0.1 at 2026-02-11 21:05:36 -0500
+Processing by Api::UsersController#signin as */*
+  Parameters: {"user" => {"email_address" => "[FILTERED]", "password" => "[FILTERED]"}}
+  [1m[36mUser Load (75.5ms)[0m  [1m[34mSELECT "vuln_scanner"."users".* FROM "vuln_scanner"."users" WHERE "vuln_scanner"."users"."email_address" = 'my.email@email.com' LIMIT 1 /*action='signin',application='Server',controller='users'*/[0m
+  ↳ app/controllers/api/users_controller.rb:30:in 'Api::UsersController#signin'
+  [1m[36mTRANSACTION (121.0ms)[0m  [1m[35mBEGIN /*action='signin',application='Server',controller='users'*/[0m
+  ↳ app/controllers/concerns/authentication.rb:42:in 'Authentication#start_new_session_for'
+  [1m[36mSession Create (175.3ms)[0m  [1m[32mINSERT INTO "sessions" ("user_id", "ip_address", "user_agent", "created_at", "updated_at") VALUES (8, '127.0.0.1', 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10.15; rv:147.0) Gecko/20100101 Firefox/147.0', '2026-02-12 02:05:37.786340', '2026-02-12 02:05:37.786340') RETURNING "id" /*action='signin',application='Server',controller='users'*/[0m
+  ↳ app/controllers/concerns/authentication.rb:42:in 'Authentication#start_new_session_for'
+  [1m[36mTRANSACTION (244.9ms)[0m  [1m[35mCOMMIT /*action='signin',application='Server',controller='users'*/[0m
+  ↳ app/controllers/concerns/authentication.rb:42:in 'Authentication#start_new_session_for'
+Completed 200 OK in 1257ms (Views: 0.3ms | ActiveRecord: 1014.5ms (2 queries, 0 cached) | GC: 0.8ms)
+
+
+Started GET "/" for 127.0.0.1 at 2026-02-11 21:09:13 -0500
+Processing by PagesController#app as HTML
+  Rendering layout layouts/application.html.erb
+  Rendering pages/app.html.erb within layouts/application
+  Rendered pages/app.html.erb within layouts/application (Duration: 0.1ms | GC: 0.0ms)
+  Rendered layout layouts/application.html.erb (Duration: 1.7ms | GC: 0.0ms)
+Completed 200 OK in 28ms (Views: 2.0ms | ActiveRecord: 0.0ms (0 queries, 0 cached) | GC: 0.0ms)
+
+
+Started GET "/favicon.ico" for 127.0.0.1 at 2026-02-11 21:09:13 -0500
+  
+ActionController::RoutingError (No route matches [GET] "/favicon.ico"):
+  
+Started POST "/api/users/signin" for 127.0.0.1 at 2026-02-11 21:09:20 -0500
+Processing by Api::UsersController#signin as */*
+  Parameters: {"user" => {"email_address" => "[FILTERED]", "password" => "[FILTERED]"}}
+  [1m[36mUser Load (553.4ms)[0m  [1m[34mSELECT "vuln_scanner"."users".* FROM "vuln_scanner"."users" WHERE "vuln_scanner"."users"."email_address" = 'my.email@email.com' LIMIT 1 /*action='signin',application='Server',controller='users'*/[0m
+  ↳ app/controllers/api/users_controller.rb:30:in 'Api::UsersController#signin'
+  [1m[36mTRANSACTION (19.8ms)[0m  [1m[35mBEGIN /*action='signin',application='Server',controller='users'*/[0m
+  ↳ app/controllers/concerns/authentication.rb:42:in 'Authentication#start_new_session_for'
+  [1m[36mSession Create (38.4ms)[0m  [1m[32mINSERT INTO "sessions" ("user_id", "ip_address", "user_agent", "created_at", "updated_at") VALUES (8, '127.0.0.1', 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10.15; rv:147.0) Gecko/20100101 Firefox/147.0', '2026-02-12 02:09:21.221980', '2026-02-12 02:09:21.221980') RETURNING "id" /*action='signin',application='Server',controller='users'*/[0m
+  ↳ app/controllers/concerns/authentication.rb:42:in 'Authentication#start_new_session_for'
+  [1m[36mTRANSACTION (46.4ms)[0m  [1m[35mCOMMIT /*action='signin',application='Server',controller='users'*/[0m
+  ↳ app/controllers/concerns/authentication.rb:42:in 'Authentication#start_new_session_for'
+Completed 200 OK in 980ms (Views: 0.2ms | ActiveRecord: 658.0ms (2 queries, 0 cached) | GC: 0.0ms)
+
+
+Started POST "/api/users/signout" for 127.0.0.1 at 2026-02-11 21:09:23 -0500
+  
+ActionController::RoutingError (No route matches [POST] "/api/users/signout"):
+  
+Started GET "/" for 127.0.0.1 at 2026-02-11 21:09:56 -0500
+Processing by PagesController#app as HTML
+  Rendering layout layouts/application.html.erb
+  Rendering pages/app.html.erb within layouts/application
+  Rendered pages/app.html.erb within layouts/application (Duration: 0.6ms | GC: 0.0ms)
+  Rendered layout layouts/application.html.erb (Duration: 3.8ms | GC: 0.0ms)
+Completed 200 OK in 30ms (Views: 5.3ms | ActiveRecord: 0.0ms (0 queries, 0 cached) | GC: 0.0ms)
+
+
+Started GET "/favicon.ico" for 127.0.0.1 at 2026-02-11 21:09:56 -0500
+  
+ActionController::RoutingError (No route matches [GET] "/favicon.ico"):
+  
+Started POST "/api/users/signin" for 127.0.0.1 at 2026-02-11 21:10:00 -0500
+Processing by Api::UsersController#signin as */*
+  Parameters: {"user" => {"email_address" => "[FILTERED]", "password" => "[FILTERED]"}}
+  [1m[36mUser Load (17.0ms)[0m  [1m[34mSELECT "vuln_scanner"."users".* FROM "vuln_scanner"."users" WHERE "vuln_scanner"."users"."email_address" = 'my.email@email.com' LIMIT 1 /*action='signin',application='Server',controller='users'*/[0m
+  ↳ app/controllers/api/users_controller.rb:30:in 'Api::UsersController#signin'
+  [1m[36mTRANSACTION (14.6ms)[0m  [1m[35mBEGIN /*action='signin',application='Server',controller='users'*/[0m
+  ↳ app/controllers/concerns/authentication.rb:42:in 'Authentication#start_new_session_for'
+  [1m[36mSession Create (30.8ms)[0m  [1m[32mINSERT INTO "sessions" ("user_id", "ip_address", "user_agent", "created_at", "updated_at") VALUES (8, '127.0.0.1', 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10.15; rv:147.0) Gecko/20100101 Firefox/147.0', '2026-02-12 02:10:01.362528', '2026-02-12 02:10:01.362528') RETURNING "id" /*action='signin',application='Server',controller='users'*/[0m
+  ↳ app/controllers/concerns/authentication.rb:42:in 'Authentication#start_new_session_for'
+  [1m[36mTRANSACTION (15.3ms)[0m  [1m[35mCOMMIT /*action='signin',application='Server',controller='users'*/[0m
+  ↳ app/controllers/concerns/authentication.rb:42:in 'Authentication#start_new_session_for'
+Completed 200 OK in 600ms (Views: 5.0ms | ActiveRecord: 257.1ms (2 queries, 0 cached) | GC: 0.5ms)
+
+
+Started POST "/api/users/signout" for 127.0.0.1 at 2026-02-11 21:10:04 -0500
+Processing by Api::UsersController#signout as */*
+  Parameters: {"user" => {}}
+  [1m[36mSession Load (128.4ms)[0m  [1m[34mSELECT "sessions".* FROM "sessions" WHERE "sessions"."id" = 3 LIMIT 1 /*action='signout',application='Server',controller='users'*/[0m
+  ↳ app/controllers/concerns/authentication.rb:29:in 'Authentication#find_session_by_cookie'
+  [1m[36mTRANSACTION (15.0ms)[0m  [1m[35mBEGIN /*action='signout',application='Server',controller='users'*/[0m
+  ↳ app/controllers/concerns/authentication.rb:49:in 'Authentication#terminate_session'
+  [1m[36mSession Destroy (74.2ms)[0m  [1m[31mDELETE FROM "sessions" WHERE "sessions"."id" = 3 /*action='signout',application='Server',controller='users'*/[0m
+  ↳ app/controllers/concerns/authentication.rb:49:in 'Authentication#terminate_session'
+  [1m[36mTRANSACTION (21.0ms)[0m  [1m[35mCOMMIT /*action='signout',application='Server',controller='users'*/[0m
+  ↳ app/controllers/concerns/authentication.rb:49:in 'Authentication#terminate_session'
+Completed 200 OK in 286ms (Views: 3.8ms | ActiveRecord: 238.4ms (2 queries, 0 cached) | GC: 0.5ms)
+
+

@@ -30,7 +30,7 @@ signin_toggle_btn.addEventListener("click", toggle_signin);
 create_account_toggle_btn.addEventListener("click", toggle_create_account);
 
 
-// Handle sign in of user
+// Handle user sign in
 async function signin() {
 	const email = document.getElementById("in-email").value;
 	const pass = document.getElementById("in-pass").value;
@@ -38,18 +38,34 @@ async function signin() {
 
 	console.log("Email: ", email, " Password: ", pass, "Remember Me: ", remember_me);
 
-	const user = { name: email, description: pass };
+	const user = { user: { email_address: email, password: pass } };
 
-	const request = await create_post_request(user);
+	const request = await create_post_request(user, "users/signin");
 	const response = await send_request(request);
 
 	console.log(response);
 }
 
+
+// Handle user sign out
+async function signout() {
+	const user = { user: {} };
+
+	const request = await create_post_request(user, "users/signout");
+	const response = await send_request(request);
+
+	console.log(response);
+}
+
+
 // Sign in button and event
 const signin_btn = document.getElementById("btn-signin");
 signin_btn.addEventListener("click", signin);
 
+
+// Sign out button and event
+const signout_btn = document.getElementById("btn-signout");
+signout_btn.addEventListener("click", signout);
 
 // Handle account creation
 async function create_account() {
@@ -59,7 +75,14 @@ async function create_account() {
 	const pass = document.getElementById("up-pass").value;
 	const terms = document.getElementById("up-terms").checked;
 
-	console.log("Name: ", name, "Org: ", org, "Email: ", email, "Password: ", pass, "Terms : ", terms)
+	console.log("Name: ", name, "Org: ", org, "Email: ", email, "Password: ", pass, "Terms : ", terms);
+
+	const user = { user: { name: name, email_address: email, password: pass, password_confirmation: pass, org_id: org, access_level: "admin" } };
+
+	const request = await create_post_request(user, "users");
+	const response = await send_request(request);
+
+	console.log(response);
 }
 
 // Create account button and event
