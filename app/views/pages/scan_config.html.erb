@@ -6,16 +6,16 @@
     <title>Scan Configuration</title>
     <style>
         :root {
-            --primary-blue: #2563eb;
-            --bg-color: #f8f9fa;
+            --primary-blue: #3b82f6;
+            --dark-blue: #1d4ed8;
+            --bg-color: #f3f4f6;
             --border-color: #dee2e6;
             --text-color: #343a40;
-            --label-color: #495057;
         }
 
         body {
             font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
-            background-color: #f3f4f6;
+            background-color: var(--bg-color);
             display: flex;
             justify-content: center;
             padding: 40px;
@@ -25,19 +25,19 @@
         .card {
             background: white;
             padding: 40px;
-            border-radius: 8px;
-            box-shadow: 0 4px 12px rgba(0,0,0,0.05);
+            border-radius: 12px;
+            box-shadow: 0 10px 25px rgba(0,0,0,0.05);
             width: 100%;
             max-width: 900px;
         }
 
         h1 {
             text-align: center;
-            color: #333;
+            color: #1f2937;
             font-size: 24px;
             margin-bottom: 30px;
             padding-bottom: 20px;
-            border-bottom: 1px solid #eee;
+            border-bottom: 2px solid #f3f4f6;
         }
 
         /* Grid Layout */
@@ -48,7 +48,6 @@
             row-gap: 20px;
         }
 
-        /* Form Elements */
         .form-group {
             display: flex;
             flex-direction: column;
@@ -58,38 +57,38 @@
         label {
             font-weight: 600;
             font-size: 14px;
-            color: var(--label-color);
+            color: #4b5563;
             margin-bottom: 8px;
         }
 
-        /* Add red asterisk to required labels */
         label.required::after {
             content: " *";
-            color: #dc3545;
+            color: #ef4444;
         }
 
         input[type="text"],
         input[type="datetime-local"],
         select {
-            padding: 10px 12px;
-            border: 1px solid var(--border-color);
-            border-radius: 4px;
+            padding: 12px;
+            border: 2px solid #e5e7eb;
+            border-radius: 8px;
             font-size: 14px;
             color: #333;
-            transition: border-color 0.2s;
+            transition: all 0.2s ease;
+            background-color: #f9fafb;
         }
 
         input:focus, select:focus {
             outline: none;
             border-color: var(--primary-blue);
-            box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.1);
+            background-color: #fff;
+            box-shadow: 0 0 0 4px rgba(59, 130, 246, 0.1);
         }
 
-        /* Special Boxed Groups (Radio/Checkbox containers) */
         .boxed-group {
-            background-color: #f8f9fa;
-            border: 1px solid var(--border-color);
-            border-radius: 4px;
+            background-color: #f9fafb;
+            border: 2px solid #e5e7eb;
+            border-radius: 8px;
             padding: 12px;
             display: flex;
             flex-direction: column;
@@ -99,65 +98,122 @@
         .radio-option {
             display: flex;
             align-items: center;
-            gap: 8px;
+            gap: 10px;
             font-size: 14px;
             cursor: pointer;
+            font-weight: 500;
         }
 
         input[type="radio"], input[type="checkbox"] {
             accent-color: var(--primary-blue);
+            width: 16px;
+            height: 16px;
             cursor: pointer;
         }
 
-        /* Buttons */
+        /* Buttons Container */
         .btn-group {
-            margin-top: 30px;
+            margin-top: 40px;
             display: flex;
             flex-direction: column;
-            gap: 15px;
+            gap: 20px;
         }
 
+        /* Import Button (Subtle) */
         .btn-outline {
             background: white;
-            border: 1px solid #ced4da;
-            color: #495057;
-            padding: 12px;
-            border-radius: 4px;
+            border: 2px dashed #cbd5e1;
+            color: #64748b;
+            padding: 15px;
+            border-radius: 8px;
             font-weight: 600;
             cursor: pointer;
             transition: all 0.2s;
             font-size: 14px;
             width: 100%;
+            text-align: center;
         }
 
         .btn-outline:hover {
-            background-color: #f8f9fa;
-            border-color: #adb5bd;
+            border-color: var(--primary-blue);
+            color: var(--primary-blue);
+            background-color: #eff6ff;
         }
 
-        .btn-primary {
-            background-color: var(--primary-blue);
-            color: white;
-            border: none;
-            padding: 14px;
-            border-radius: 4px;
-            font-weight: 600;
-            font-size: 15px;
-            cursor: pointer;
+        /* --- THE SATISFYING BUTTON --- */
+        .btn-3d {
+            position: relative;
             width: 100%;
-            transition: background-color 0.2s;
+            display: inline-block;
+            cursor: pointer;
+            outline: none;
+            border: 0;
+            vertical-align: middle;
+            text-decoration: none;
+            background: transparent;
+            padding: 0;
+            font-size: 16px;
+            font-family: inherit;
         }
 
-        .btn-primary:hover {
-            background-color: #1d4ed8;
+        .btn-3d-content {
+            position: relative;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            width: 100%;
+            height: 60px; /* Nice and chunky */
+            padding: 0 20px;
+            background: linear-gradient(to bottom, #3b82f6, #2563eb); /* Subtle gradient */
+            border-radius: 12px;
+            color: white;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            transition: transform 0.1s cubic-bezier(0.4, 0, 0.2, 1);
+            z-index: 2;
+            
+            /* The 3D Depth (Sides of the button) */
+            border-bottom: 6px solid #1e40af; 
+            box-shadow: 0 10px 20px -8px rgba(37, 99, 235, 0.5);
         }
 
-        /* File input hidden styling */
-        #file-upload-name {
-            font-size: 12px;
-            color: #28a745;
-            margin-left: 10px;
-            font-weight: normal;
+        /* Hover State: Slight brightness */
+        .btn-3d:hover .btn-3d-content {
+            background: linear-gradient(to bottom, #4f8df9, #326bf5);
+            transform: translateY(-2px);
+        }
+
+        /* Active/Pressed State: The Clunk */
+        .btn-3d:active .btn-3d-content {
+            transform: translateY(4px); /* Moves down 4px */
+            border-bottom-width: 2px; /* Border shrinks */
+            box-shadow: none; /* Shadow disappears */
+        }
+
+        /* Loading State Animation */
+        .btn-3d.loading .btn-3d-content {
+            background: #4b5563;
+            border-bottom-color: #1f2937;
+            pointer-events: none;
+            transform: translateY(4px);
+            border-bottom-width: 2px;
+        }
+
+        /* Spinner */
+        .spinner {
+            display: none;
+            width: 20px;
+            height: 20px;
+            border: 3px solid rgba(255,255,255,0.3);
+            border-radius: 50%;
+            border-top-color: #fff;
+            animation: spin 1s ease-in-out infinite;
+            margin-right: 10px;
+        }
+
+        @keyframes spin {
+            to { transform: rotate(360deg); }
         }
 
     </style>
@@ -171,7 +227,6 @@
             <div class="form-grid">
                 
                 <div class="column">
-                    
                     <div class="form-group">
                         <label class="required">Scan Mode</label>
                         <div class="boxed-group">
@@ -221,11 +276,9 @@
                             <option value="macos">macOS</option>
                         </select>
                     </div>
-
                 </div>
 
                 <div class="column">
-                    
                     <div class="form-group">
                         <label for="asset" class="required">Asset Types</label>
                         <select id="asset" required>
@@ -268,49 +321,67 @@
                             <label class="radio-option">
                                 <input type="checkbox" name="format" value="pdf"> PDF
                             </label>
-							<label class="radio-option">
-                                <input type="checkbox" name="format" value="txt"> TXT
-                            </label>
-							<label class="radio-option">
-                                <input type="checkbox" name="format" value="csv"> CSV
-                            </label>
                         </div>
                     </div>
-
                 </div>
             </div>
 
             <div class="btn-group">
-                
                 <input type="file" id="jsonFile" accept=".json" style="display: none;">
-                
                 <button type="button" class="btn-outline" onclick="document.getElementById('jsonFile').click()">
-                    Import Asset JSON <span id="file-upload-name"></span>
+                    📂 Import Asset JSON <span id="file-upload-name"></span>
                 </button>
 
-                <button type="submit" class="btn-primary">Generate Report</button>
+                <button type="submit" class="btn-3d" id="generateBtn">
+                    <span class="btn-3d-content">
+                        <span class="spinner"></span>
+                        <span class="btn-text">Add Asset</span>
+                    </span>
+                </button>
             </div>
         </form>
     </div>
 
     <script>
-        // Handle File Selection
+        // File Upload Logic
         document.getElementById('jsonFile').addEventListener('change', function(e) {
             const fileName = e.target.files[0] ? e.target.files[0].name : "";
             const label = document.getElementById('file-upload-name');
-            if (fileName) {
-                label.textContent = "✓ " + fileName;
-                // Optional: Read the file here using FileReader if needed
-            } else {
-                label.textContent = "";
-            }
+            label.textContent = fileName ? `— ${fileName}` : "";
+            label.style.fontWeight = "bold";
+            label.style.color = "#2563eb";
         });
 
-        // Handle Form Submit
+        // Form Submit & Button Animation Logic
         document.getElementById('scanForm').addEventListener('submit', function(e) {
-            e.preventDefault();
-            // If the browser validation passes, this code runs
-            alert("Configuration Validated! Generating Report...");
+            e.preventDefault(); // Stop actual submit for demo
+            
+            const btn = document.getElementById('generateBtn');
+            const spinner = btn.querySelector('.spinner');
+            const text = btn.querySelector('.btn-text');
+
+            // 1. Add loading class to button (changes color/state)
+            btn.classList.add('loading');
+            spinner.style.display = 'inline-block';
+            text.textContent = 'Scanning...';
+
+            // 2. Simulate a delay (e.g., 2 seconds)
+            setTimeout(() => {
+                // 3. Success State
+                spinner.style.display = 'none';
+                text.textContent = '✓ Asset Ready';
+                btn.querySelector('.btn-3d-content').style.background = '#10b981'; // Green
+                btn.querySelector('.btn-3d-content').style.borderBottomColor = '#059669'; // Dark Green border
+                
+                // 4. Reset after another second (optional)
+                setTimeout(() => {
+                    btn.classList.remove('loading');
+                    text.textContent = 'Add Asset';
+                    btn.querySelector('.btn-3d-content').style.background = ''; // Reset to CSS default
+                    btn.querySelector('.btn-3d-content').style.borderBottomColor = ''; 
+                }, 3000);
+                
+            }, 2000);
         });
     </script>
 </body>

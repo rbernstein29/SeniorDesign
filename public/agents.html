@@ -1,0 +1,418 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Network Agents - VulnScanner</title>
+    <style>
+        :root {
+            --primary-blue: #3b82f6;
+            --dark-blue: #1d4ed8;
+            --bg-color: #f3f4f6;
+            --border-color: #dee2e6;
+            --text-color: #343a40;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+            background-color: var(--bg-color);
+            margin: 0;
+            padding: 40px;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+
+        .header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 30px;
+        }
+
+        h1 {
+            color: #1f2937;
+            font-size: 28px;
+            margin: 0;
+        }
+
+        .card {
+            background: white;
+            padding: 30px;
+            border-radius: 12px;
+            box-shadow: 0 10px 25px rgba(0,0,0,0.05);
+            margin-bottom: 20px;
+        }
+
+        /* Button Styles */
+        .btn {
+            padding: 12px 24px;
+            border-radius: 8px;
+            font-weight: 600;
+            cursor: pointer;
+            border: none;
+            font-size: 14px;
+            transition: all 0.2s;
+        }
+
+        .btn-primary {
+            background: linear-gradient(to bottom, #3b82f6, #2563eb);
+            color: white;
+            border-bottom: 4px solid #1e40af;
+            box-shadow: 0 4px 10px rgba(37, 99, 235, 0.3);
+        }
+
+        .btn-primary:hover {
+            transform: translateY(-2px);
+            background: linear-gradient(to bottom, #4f8df9, #326bf5);
+        }
+
+        .btn-primary:active {
+            transform: translateY(2px);
+            border-bottom-width: 2px;
+        }
+
+        .btn-secondary {
+            background: white;
+            border: 2px solid #e5e7eb;
+            color: #4b5563;
+        }
+
+        .btn-secondary:hover {
+            border-color: var(--primary-blue);
+            color: var(--primary-blue);
+            background-color: #eff6ff;
+        }
+
+        .btn-danger {
+            background: #ef4444;
+            color: white;
+            border: none;
+        }
+
+        .btn-danger:hover {
+            background: #dc2626;
+        }
+
+        /* Table Styles */
+        .agents-table {
+            width: 100%;
+            border-collapse: separate;
+            border-spacing: 0;
+        }
+
+        .agents-table th {
+            background-color: #f9fafb;
+            padding: 12px 16px;
+            text-align: left;
+            font-weight: 600;
+            font-size: 12px;
+            color: #6b7280;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+            border-bottom: 2px solid #e5e7eb;
+        }
+
+        .agents-table td {
+            padding: 16px;
+            border-bottom: 1px solid #e5e7eb;
+        }
+
+        .agents-table tr:hover {
+            background-color: #f9fafb;
+        }
+
+        /* Status Badge */
+        .status-badge {
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            padding: 6px 12px;
+            border-radius: 999px;
+            font-size: 12px;
+            font-weight: 600;
+        }
+
+        .status-connected {
+            background: #dcfce7;
+            color: #166534;
+        }
+
+        .status-disconnected {
+            background: #f3f4f6;
+            color: #6b7280;
+        }
+
+        .status-dot {
+            width: 8px;
+            height: 8px;
+            border-radius: 50%;
+        }
+
+        .dot-green {
+            background-color: #22c55e;
+        }
+
+        .dot-gray {
+            background-color: #9ca3af;
+        }
+
+        /* Code Style */
+        code {
+            background-color: #f3f4f6;
+            padding: 4px 8px;
+            border-radius: 4px;
+            font-family: ui-monospace, monospace;
+            font-size: 13px;
+            color: #1f2937;
+        }
+
+        /* Empty State */
+        .empty-state {
+            text-align: center;
+            padding: 60px 20px;
+            color: #6b7280;
+        }
+
+        .empty-state h3 {
+            font-size: 18px;
+            margin-bottom: 8px;
+            color: #374151;
+        }
+
+        .empty-state p {
+            margin-bottom: 24px;
+        }
+
+        /* Info Box */
+        .info-box {
+            background-color: #eff6ff;
+            border: 2px solid #bfdbfe;
+            border-radius: 8px;
+            padding: 16px;
+            margin-bottom: 20px;
+        }
+
+        .info-box h3 {
+            margin: 0 0 8px 0;
+            color: #1e40af;
+            font-size: 16px;
+        }
+
+        .info-box ul {
+            margin: 8px 0;
+            padding-left: 20px;
+        }
+
+        .info-box li {
+            color: #1e3a8a;
+            margin: 4px 0;
+        }
+
+        /* Action Buttons */
+        .action-buttons {
+            display: flex;
+            gap: 8px;
+        }
+
+        .btn-sm {
+            padding: 6px 12px;
+            font-size: 13px;
+        }
+
+        /* Loading Spinner */
+        .spinner {
+            border: 3px solid #f3f4f6;
+            border-top: 3px solid var(--primary-blue);
+            border-radius: 50%;
+            width: 20px;
+            height: 20px;
+            animation: spin 1s linear infinite;
+            display: inline-block;
+            margin-left: 8px;
+        }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>🛡️ Network Agents</h1>
+            <button class="btn btn-primary" onclick="createAgent()">
+                + Deploy New Agent
+            </button>
+        </div>
+
+        <div class="info-box">
+            <h3>What are Network Agents?</h3>
+            <ul>
+                <li>Deploy agents on private networks to enable scanning without VPN</li>
+                <li>Each agent creates a secure SSH tunnel back to this server</li>
+                <li>Agents are lightweight Python scripts with pre-configured SSH keys</li>
+                <li>Click "Deploy" to generate a custom installer package</li>
+            </ul>
+        </div>
+
+        <div class="card" id="agents-card">
+            <!-- Agents table will be loaded here -->
+            <div style="text-align: center; padding: 20px;">
+                <div class="spinner"></div>
+                <p style="margin-top: 12px; color: #6b7280;">Loading agents...</p>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // This will be populated by Rails API
+        let agents = [];
+
+        // Load agents from Rails backend
+        async function loadAgents() {
+            try {
+                // TODO: Replace with actual API endpoint
+                // const response = await fetch('/api/agents');
+                // agents = await response.json();
+                
+                // For now, show empty state
+                agents = [];
+                renderAgents();
+            } catch (error) {
+                console.error('Failed to load agents:', error);
+                renderError();
+            }
+        }
+
+        function renderAgents() {
+            const card = document.getElementById('agents-card');
+            
+            if (agents.length === 0) {
+                card.innerHTML = `
+                    <div class="empty-state">
+                        <h3>No agents deployed yet</h3>
+                        <p>Deploy your first agent to start scanning private networks</p>
+                        <button class="btn btn-primary" onclick="createAgent()">
+                            Deploy Your First Agent
+                        </button>
+                    </div>
+                `;
+                return;
+            }
+
+            const tableHTML = `
+                <table class="agents-table">
+                    <thead>
+                        <tr>
+                            <th>Agent ID</th>
+                            <th>Status</th>
+                            <th>Platform</th>
+                            <th>Hostname</th>
+                            <th>Last Seen</th>
+                            <th>Tunnel Port</th>
+                            <th>Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        ${agents.map(agent => `
+                            <tr>
+                                <td><code>${agent.agent_id.substring(0, 8)}...</code></td>
+                                <td>
+                                    <span class="status-badge ${agent.connected ? 'status-connected' : 'status-disconnected'}">
+                                        <span class="status-dot ${agent.connected ? 'dot-green' : 'dot-gray'}"></span>
+                                        ${agent.connected ? 'Connected' : 'Offline'}
+                                    </span>
+                                </td>
+                                <td>${agent.platform || '—'}</td>
+                                <td>${agent.hostname || '—'}</td>
+                                <td>${agent.last_seen ? timeAgo(agent.last_seen) : 'Never'}</td>
+                                <td>${agent.tunnel_port}</td>
+                                <td>
+                                    <div class="action-buttons">
+                                        <button class="btn btn-secondary btn-sm" onclick="downloadAgent('${agent.id}')">
+                                            Download
+                                        </button>
+                                        <button class="btn btn-danger btn-sm" onclick="deleteAgent('${agent.id}')">
+                                            Delete
+                                        </button>
+                                    </div>
+                                </td>
+                            </tr>
+                        `).join('')}
+                    </tbody>
+                </table>
+            `;
+            
+            card.innerHTML = tableHTML;
+        }
+
+        function renderError() {
+            const card = document.getElementById('agents-card');
+            card.innerHTML = `
+                <div class="empty-state">
+                    <h3>⚠️ Failed to load agents</h3>
+                    <p>Could not connect to the server</p>
+                    <button class="btn btn-secondary" onclick="loadAgents()">
+                        Retry
+                    </button>
+                </div>
+            `;
+        }
+
+        async function createAgent() {
+            if (!confirm('Create a new agent? This will generate SSH keys and a download package.')) {
+                return;
+            }
+
+            try {
+                // TODO: Call Rails API to create agent
+                // const response = await fetch('/agents', { method: 'POST' });
+                // const agent = await response.json();
+                
+                alert('Agent created! Implement Rails backend to enable downloads.');
+                // window.location.href = `/agents/${agent.id}/download`;
+            } catch (error) {
+                alert('Failed to create agent: ' + error.message);
+            }
+        }
+
+        async function downloadAgent(id) {
+            // TODO: Trigger download
+            window.location.href = `/agents/${id}/download`;
+        }
+
+        async function deleteAgent(id) {
+            if (!confirm('Delete this agent? The SSH tunnel will be terminated.')) {
+                return;
+            }
+
+            try {
+                // TODO: Call Rails API
+                // await fetch(`/agents/${id}`, { method: 'DELETE' });
+                alert('Agent deleted');
+                loadAgents();
+            } catch (error) {
+                alert('Failed to delete agent: ' + error.message);
+            }
+        }
+
+        function timeAgo(timestamp) {
+            const seconds = Math.floor((Date.now() - new Date(timestamp)) / 1000);
+            if (seconds < 60) return seconds + 's ago';
+            if (seconds < 3600) return Math.floor(seconds / 60) + 'm ago';
+            if (seconds < 86400) return Math.floor(seconds / 3600) + 'h ago';
+            return Math.floor(seconds / 86400) + 'd ago';
+        }
+
+        // Load agents on page load
+        loadAgents();
+
+        // Auto-refresh every 30 seconds
+        setInterval(loadAgents, 30000);
+    </script>
+</body>
+</html>
