@@ -1,4 +1,7 @@
 class AssetsController < ApplicationController
+
+  allow_unauthenticated_access
+
   def index
     # Show list of all assets
     @@assets ||= []
