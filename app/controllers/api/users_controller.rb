@@ -5,7 +5,7 @@ module Api
    
     # GET /api/users
     def index
-      users = Item.all
+      users = User.all
       render json: users
     end
 
@@ -19,9 +19,9 @@ module Api
     def create
       user = User.new(user_params)
       if user.save
-        render json: user, status: :created
+        render json: { success: true, url: "/assets" }, status: :created
       else
-        render json: { errors: user.errors.full_messages }, status: :unprocessable_entity
+        render json: { success: false, errors: user.errors.full_messages }, status: :unprocessable_entity
       end
     end
 
@@ -31,7 +31,7 @@ module Api
 
       if user&.authenticate(params[:user][:password])
         start_new_session_for user
-        render json: { success: true }
+        render json: { success: true, url: "/assets" }
       else
         render json: { success: false }, status: :unauthorized
       end
@@ -42,7 +42,9 @@ module Api
       terminate_session
       render json: { success: true }
     end
- 
+
+    private
+
     def user_params
       params.require(:user).permit(:name, :email_address, :password, :password_confirmation, :org_id, :access_level)
     end

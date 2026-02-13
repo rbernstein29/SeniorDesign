@@ -10,11 +10,27 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.0].define(version: 2026_02_10_213554) do
+ActiveRecord::Schema[8.0].define(version: 2026_02_10_220523) do
   create_schema "vuln_scanner"
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "pg_catalog.plpgsql"
+
+  create_table "agents", force: :cascade do |t|
+    t.string "agent_id", null: false
+    t.integer "organization_id", default: 1
+    t.text "ssh_public_key"
+    t.text "ssh_private_key"
+    t.string "ssh_key_fingerprint"
+    t.integer "tunnel_port", null: false
+    t.string "platform"
+    t.string "hostname"
+    t.string "status", default: "created"
+    t.datetime "last_seen"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["agent_id"], name: "index_agents_on_agent_id", unique: true
+  end
 
   create_table "asset_use_cases", id: :serial, force: :cascade do |t|
     t.integer "asset_id", null: false

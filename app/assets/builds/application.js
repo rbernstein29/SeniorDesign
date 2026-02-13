@@ -15,7 +15,7 @@ async function send_request(request) {
   try {
     const response = await fetch(request);
     const data = await response.json();
-    console.log(data);
+    return data;
   } catch (error) {
     console.error("Request error: ", error);
   }
@@ -46,9 +46,18 @@ async function signin() {
   const remember_me = document.getElementById("in-remember").checked;
   console.log("Email: ", email, " Password: ", pass, "Remember Me: ", remember_me);
   const user = { user: { email_address: email, password: pass } };
-  const request = await create_post_request(user, "users/signin");
-  const response = await send_request(request);
-  console.log(response);
+  try {
+    const request = await create_post_request(user, "users/signin");
+    const response = await send_request(request);
+    console.log(response);
+    console.log(response.success);
+    if (response.success) {
+      console.log(response.url);
+      window.location.href = response.url;
+    }
+  } catch (error) {
+    console.log("Error during sign in: ", error);
+  }
 }
 async function signout() {
   const user = { user: {} };
@@ -62,15 +71,26 @@ var signout_btn = document.getElementById("btn-signout");
 signout_btn.addEventListener("click", signout);
 async function create_account() {
   const name = document.getElementById("up-name").value;
-  const org = document.getElementById("up-org").value;
+  const org_name = document.getElementById("up-org").value;
   const email = document.getElementById("up-email").value;
   const pass = document.getElementById("up-pass").value;
   const terms = document.getElementById("up-terms").checked;
-  console.log("Name: ", name, "Org: ", org, "Email: ", email, "Password: ", pass, "Terms : ", terms);
-  const user = { user: { name, email_address: email, password: pass, password_confirmation: pass, org_id: org, access_level: "admin" } };
-  const request = await create_post_request(user, "users");
-  const response = await send_request(request);
-  console.log(response);
+  console.log("Name: ", name, "Org: ", org_name, "Email: ", email, "Password: ", pass, "Terms : ", terms);
+  const user = { name, email_address: email, password: pass, password_confirmation: pass };
+  const org = { org_name };
+  const account = { user, organization: org };
+  try {
+    const request = await create_post_request(account, "accounts");
+    const response = await send_request(request);
+    console.log(response);
+    console.log(response.success);
+    if (response.success) {
+      console.log(response.url);
+      window.location.href = response.url;
+    }
+  } catch (error) {
+    console.log("Error creating account: ", error);
+  }
 }
 var create_account_btn = document.getElementById("btn-signup");
 create_account_btn.addEventListener("click", create_account);

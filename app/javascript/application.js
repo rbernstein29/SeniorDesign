@@ -39,11 +39,23 @@ async function signin() {
 	console.log("Email: ", email, " Password: ", pass, "Remember Me: ", remember_me);
 
 	const user = { user: { email_address: email, password: pass } };
+	
+	try {
+		const request = await create_post_request(user, "users/signin");
+		const response = await send_request(request);
 
-	const request = await create_post_request(user, "users/signin");
-	const response = await send_request(request);
+		console.log(response);
+		console.log(response.success);
 
-	console.log(response);
+		if (response.success) {
+			console.log(response.url);
+			window.location.href = response.url;
+		}
+
+	}
+	catch (error) {
+		console.log("Error during sign in: ", error);
+	}
 }
 
 
@@ -67,23 +79,41 @@ signin_btn.addEventListener("click", signin);
 const signout_btn = document.getElementById("btn-signout");
 signout_btn.addEventListener("click", signout);
 
+
 // Handle account creation
 async function create_account() {
 	const name = document.getElementById("up-name").value;
-	const org = document.getElementById("up-org").value;
+	const org_name = document.getElementById("up-org").value;
 	const email = document.getElementById("up-email").value;
 	const pass = document.getElementById("up-pass").value;
 	const terms = document.getElementById("up-terms").checked;
 
-	console.log("Name: ", name, "Org: ", org, "Email: ", email, "Password: ", pass, "Terms : ", terms);
+	console.log("Name: ", name, "Org: ", org_name, "Email: ", email, "Password: ", pass, "Terms : ", terms);
 
-	const user = { user: { name: name, email_address: email, password: pass, password_confirmation: pass, org_id: org, access_level: "admin" } };
+	const user = { name: name, email_address: email, password: pass, password_confirmation: pass };
+	const org = { org_name: org_name };
+	const account = { user: user, organization: org };
 
-	const request = await create_post_request(user, "users");
-	const response = await send_request(request);
+	try {
+		const request = await create_post_request(account, "accounts");
+		const response = await send_request(request);
 
-	console.log(response);
+		console.log(response);
+		console.log(response.success);
+
+		if (response.success) {
+			console.log(response.url);
+			window.location.href = response.url;
+		}
+
+	}
+	catch (error) {
+		console.log("Error creating account: ", error);
+	}
+	
 }
+
+
 
 // Create account button and event
 const create_account_btn = document.getElementById("btn-signup");
