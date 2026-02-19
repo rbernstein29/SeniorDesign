@@ -28,6 +28,9 @@ bootsnap/
 /public/packs-test
 /node_modules
 
+# AI
+/.claude/
+
 # --- OS & Editors (Keep these from the previous list) ---
 .DS_Store
 .vscode/
