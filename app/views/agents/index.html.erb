@@ -1,0 +1,576 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Network Agents — VulnScan</title>
+    <%= csrf_meta_tags %>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;600;700&family=Sora:wght@300;400;600;700&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --bg:        #080c14;
+            --surface:   #0d1525;
+            --surface2:  #111b30;
+            --border:    rgba(59,130,246,0.15);
+            --blue:      #3b82f6;
+            --blue-dim:  rgba(59,130,246,0.12);
+            --blue-glow: rgba(59,130,246,0.35);
+            --cyan:      #22d3ee;
+            --green:     #10b981;
+            --orange:    #f59e0b;
+            --red:       #ef4444;
+            --purple:    #8b5cf6;
+            --text:      #e2e8f0;
+            --muted:     #64748b;
+            --mono:      'JetBrains Mono', monospace;
+            --sans:      'Sora', sans-serif;
+        }
+
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+
+        body {
+            font-family: var(--sans);
+            background: var(--bg);
+            color: var(--text);
+            min-height: 100vh;
+        }
+
+        body::before {
+            content: '';
+            position: fixed;
+            inset: 0;
+            background-image:
+                linear-gradient(rgba(59,130,246,0.03) 1px, transparent 1px),
+                linear-gradient(90deg, rgba(59,130,246,0.03) 1px, transparent 1px);
+            background-size: 40px 40px;
+            pointer-events: none;
+            z-index: 0;
+        }
+
+        .layout {
+            position: relative;
+            z-index: 1;
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 30px 30px 40px 84px;
+        }
+
+        /* ── Page Header ── */
+        .page-header {
+            background: var(--surface);
+            border: 1px solid var(--border);
+            padding: 28px 36px;
+            border-radius: 16px;
+            margin-bottom: 28px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .page-title {
+            font-size: 26px;
+            font-weight: 700;
+            color: #f1f5f9;
+        }
+
+        .page-sub {
+            color: var(--muted);
+            margin-top: 4px;
+            font-size: 13px;
+            font-family: var(--mono);
+        }
+
+        /* ── Buttons ── */
+        .btn {
+            padding: 11px 22px;
+            border-radius: 8px;
+            font-weight: 600;
+            font-size: 13px;
+            cursor: pointer;
+            text-decoration: none;
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            transition: all 0.2s;
+            border: none;
+            font-family: var(--sans);
+        }
+
+        .btn-primary {
+            background: linear-gradient(135deg, var(--blue), #1d4ed8);
+            color: white;
+            box-shadow: 0 4px 16px var(--blue-glow);
+        }
+
+        .btn-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 24px var(--blue-glow);
+        }
+
+        .btn-secondary {
+            background: transparent;
+            border: 1px solid rgba(255,255,255,0.1);
+            color: #94a3b8;
+        }
+
+        .btn-secondary:hover {
+            border-color: var(--blue);
+            color: #60a5fa;
+            background: var(--blue-dim);
+        }
+
+        .btn-danger {
+            background: rgba(239,68,68,0.12);
+            border: 1px solid rgba(239,68,68,0.25);
+            color: #f87171;
+        }
+
+        .btn-danger:hover {
+            background: rgba(239,68,68,0.2);
+            border-color: rgba(239,68,68,0.4);
+        }
+
+        .btn-sm {
+            padding: 6px 14px;
+            font-size: 12px;
+            font-family: var(--mono);
+        }
+
+        /* ── Stats ── */
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 16px;
+            margin-bottom: 28px;
+        }
+
+        @media (max-width: 900px) { .stats-grid { grid-template-columns: repeat(2, 1fr); } }
+
+        .stat-card {
+            background: var(--surface);
+            border: 1px solid var(--border);
+            padding: 22px 24px;
+            border-radius: 12px;
+            position: relative;
+            overflow: hidden;
+            transition: border-color 0.3s;
+        }
+
+        .stat-card::after {
+            content: '';
+            position: absolute;
+            top: 0; left: 0; right: 0;
+            height: 2px;
+            background: var(--accent, var(--blue));
+        }
+
+        .stat-card.green  { --accent: var(--green); }
+        .stat-card.orange { --accent: var(--orange); }
+        .stat-card.purple { --accent: var(--purple); }
+        .stat-card:hover  { border-color: rgba(59,130,246,0.35); }
+
+        .stat-label {
+            font-family: var(--mono);
+            font-size: 10px;
+            letter-spacing: 1.5px;
+            text-transform: uppercase;
+            color: var(--muted);
+            margin-bottom: 10px;
+        }
+
+        .stat-number {
+            font-family: var(--mono);
+            font-size: 36px;
+            font-weight: 700;
+            color: #f1f5f9;
+        }
+
+        /* ── Info Box ── */
+        .info-box {
+            background: rgba(59,130,246,0.06);
+            border: 1px solid rgba(59,130,246,0.2);
+            border-radius: 12px;
+            padding: 20px 24px;
+            margin-bottom: 28px;
+            display: flex;
+            gap: 16px;
+            align-items: flex-start;
+        }
+
+        .info-box-icon {
+            font-size: 22px;
+            flex-shrink: 0;
+            margin-top: 2px;
+        }
+
+        .info-box-title {
+            font-size: 14px;
+            font-weight: 700;
+            color: #93c5fd;
+            margin-bottom: 10px;
+        }
+
+        .info-box-list {
+            list-style: none;
+            display: flex;
+            flex-direction: column;
+            gap: 6px;
+        }
+
+        .info-box-list li {
+            font-size: 13px;
+            color: #7dd3fc;
+            display: flex;
+            align-items: flex-start;
+            gap: 8px;
+        }
+
+        .info-box-list li::before {
+            content: '//';
+            font-family: var(--mono);
+            font-size: 11px;
+            color: var(--blue);
+            flex-shrink: 0;
+            margin-top: 1px;
+        }
+
+        /* ── Main Card ── */
+        .main-card {
+            background: var(--surface);
+            border: 1px solid var(--border);
+            border-radius: 16px;
+            overflow: hidden;
+        }
+
+        .card-header {
+            padding: 20px 28px;
+            border-bottom: 1px solid rgba(255,255,255,0.06);
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+
+        .card-title {
+            font-size: 15px;
+            font-weight: 600;
+            color: #f1f5f9;
+        }
+
+        .card-subtitle {
+            font-family: var(--mono);
+            font-size: 10px;
+            color: var(--muted);
+            letter-spacing: 1px;
+        }
+
+        /* ── Table ── */
+        table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+
+        thead { background: rgba(255,255,255,0.03); }
+
+        th {
+            padding: 14px 20px;
+            text-align: left;
+            font-family: var(--mono);
+            font-weight: 600;
+            font-size: 10px;
+            color: var(--muted);
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        td {
+            padding: 18px 20px;
+            border-top: 1px solid rgba(255,255,255,0.04);
+            font-size: 13px;
+            color: #cbd5e1;
+        }
+
+        tbody tr { transition: background 0.15s; }
+        tbody tr:hover { background: rgba(59,130,246,0.04); }
+
+        .agent-id-cell {
+            font-family: var(--mono);
+            font-size: 12px;
+            color: #93c5fd;
+            background: rgba(59,130,246,0.1);
+            border: 1px solid rgba(59,130,246,0.2);
+            padding: 4px 10px;
+            border-radius: 6px;
+            display: inline-block;
+        }
+
+        /* ── Status Badge ── */
+        .status-badge {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            padding: 5px 12px;
+            border-radius: 20px;
+            font-family: var(--mono);
+            font-size: 11px;
+            font-weight: 700;
+            letter-spacing: 0.5px;
+        }
+
+        .status-connected {
+            background: rgba(16,185,129,0.12);
+            border: 1px solid rgba(16,185,129,0.25);
+            color: #34d399;
+        }
+
+        .status-disconnected {
+            background: rgba(100,116,139,0.12);
+            border: 1px solid rgba(100,116,139,0.2);
+            color: var(--muted);
+        }
+
+        .status-dot {
+            width: 7px;
+            height: 7px;
+            border-radius: 50%;
+            flex-shrink: 0;
+        }
+
+        .dot-green {
+            background: var(--green);
+            box-shadow: 0 0 6px var(--green);
+            animation: pulse 2s infinite;
+        }
+
+        .dot-gray { background: var(--muted); }
+
+        @keyframes pulse {
+            0%, 100% { opacity: 1; }
+            50%       { opacity: 0.5; }
+        }
+
+        .platform-tag {
+            display: inline-block;
+            padding: 3px 10px;
+            border-radius: 6px;
+            font-family: var(--mono);
+            font-size: 11px;
+            background: var(--surface2);
+            border: 1px solid rgba(255,255,255,0.06);
+            color: #94a3b8;
+        }
+
+        .tunnel-port {
+            font-family: var(--mono);
+            font-size: 12px;
+            color: #c4b5fd;
+            background: rgba(139,92,246,0.1);
+            border: 1px solid rgba(139,92,246,0.2);
+            padding: 3px 10px;
+            border-radius: 6px;
+            display: inline-block;
+        }
+
+        .action-buttons {
+            display: flex;
+            gap: 8px;
+        }
+
+        /* ── Empty / Loading / Error States ── */
+        .state-box {
+            padding: 80px 40px;
+            text-align: center;
+        }
+
+        .state-icon {
+            font-size: 48px;
+            margin-bottom: 16px;
+            display: block;
+            opacity: 0.6;
+        }
+
+        .state-title {
+            font-size: 18px;
+            font-weight: 600;
+            color: #94a3b8;
+            margin-bottom: 8px;
+        }
+
+        .state-sub {
+            font-size: 13px;
+            color: var(--muted);
+            margin-bottom: 24px;
+        }
+
+        /* Spinner */
+        .spinner {
+            width: 36px;
+            height: 36px;
+            border: 3px solid rgba(59,130,246,0.15);
+            border-top-color: var(--blue);
+            border-radius: 50%;
+            animation: spin 0.9s linear infinite;
+            margin: 0 auto 16px;
+        }
+
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+
+        /* Animations */
+        @keyframes fadeUp {
+            from { opacity: 0; transform: translateY(16px); }
+            to   { opacity: 1; transform: translateY(0); }
+        }
+
+        .page-header { animation: fadeUp 0.4s ease both; }
+        .stats-grid  { animation: fadeUp 0.4s 0.08s ease both; }
+        .info-box    { animation: fadeUp 0.4s 0.12s ease both; }
+        .main-card   { animation: fadeUp 0.4s 0.18s ease both; }
+    </style>
+</head>
+<body>
+
+    <%= render 'shared/sidebar', current_page: 'agents' %>
+
+    <div class="layout">
+
+        <!-- Page Header -->
+        <div class="page-header">
+            <div>
+                <div class="page-title">🤖 Network Agents</div>
+                <div class="page-sub">// deploy and manage distributed scanning agents</div>
+            </div>
+            <%= button_to "➕ Deploy New Agent", agents_path, method: :post,
+                data: { confirm: "Create a new agent? This will generate SSH keys and a download package." },
+                class: "btn btn-primary" %>
+        </div>
+
+        <!-- Stats -->
+        <div class="stats-grid">
+            <div class="stat-card">
+                <div class="stat-label">Total Agents</div>
+                <div class="stat-number"><%= @agents.count %></div>
+            </div>
+            <div class="stat-card green">
+                <div class="stat-label">Connected</div>
+                <div class="stat-number"><%= @agents.count { |a| a[:connected] || a['connected'] } %></div>
+            </div>
+            <div class="stat-card orange">
+                <div class="stat-label">Offline</div>
+                <div class="stat-number"><%= @agents.count { |a| !(a[:connected] || a['connected']) } %></div>
+            </div>
+            <div class="stat-card purple">
+                <div class="stat-label">Tunnel Ports</div>
+                <div class="stat-number"><%= @agents.count %></div>
+            </div>
+        </div>
+
+        <!-- Info Box -->
+        <div class="info-box">
+            <div class="info-box-icon">ℹ️</div>
+            <div>
+                <div class="info-box-title">What are Network Agents?</div>
+                <ul class="info-box-list">
+                    <li>Deploy agents on private networks to enable scanning without VPN</li>
+                    <li>Each agent creates a secure SSH tunnel back to this server</li>
+                    <li>Agents are lightweight Python scripts with pre-configured SSH keys</li>
+                    <li>Click Deploy New Agent to generate a custom installer package</li>
+                </ul>
+            </div>
+        </div>
+
+        <!-- Agents Table -->
+        <div class="main-card">
+            <div class="card-header">
+                <div class="card-title">Deployed Agents</div>
+                <div class="card-subtitle">AUTO-REFRESH: 30s</div>
+            </div>
+
+            <div id="agents-container">
+                <% if @agents.any? %>
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>Agent ID</th>
+                                <th>Status</th>
+                                <th>Platform</th>
+                                <th>Hostname</th>
+                                <th>Last Seen</th>
+                                <th>Tunnel Port</th>
+                                <th>Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <% @agents.each do |agent| %>
+                                <% connected = agent[:connected] || agent['connected'] %>
+                                <tr>
+                                    <td>
+                                        <span class="agent-id-cell">
+                                            <%= (agent[:agent_id] || agent['agent_id'])&.to_s&.first(8) %>...
+                                        </span>
+                                    </td>
+                                    <td>
+                                        <span class="status-badge <%= connected ? 'status-connected' : 'status-disconnected' %>">
+                                            <span class="status-dot <%= connected ? 'dot-green' : 'dot-gray' %>"></span>
+                                            <%= connected ? 'Connected' : 'Offline' %>
+                                        </span>
+                                    </td>
+                                    <td>
+                                        <span class="platform-tag">
+                                            <%= agent[:platform] || agent['platform'] || '—' %>
+                                        </span>
+                                    </td>
+                                    <td><%= agent[:hostname] || agent['hostname'] || '—' %></td>
+                                    <td>
+                                        <span style="font-family: var(--mono); font-size: 12px; color: var(--muted);">
+                                            <%= agent[:last_seen] || agent['last_seen'] ? time_ago_in_words(agent[:last_seen] || agent['last_seen']) + ' ago' : 'Never' %>
+                                        </span>
+                                    </td>
+                                    <td>
+                                        <span class="tunnel-port">:<%= agent[:tunnel_port] || agent['tunnel_port'] %></span>
+                                    </td>
+                                    <td>
+                                        <div class="action-buttons">
+                                            <%= link_to "⬇ Download", download_agent_path(agent[:id] || agent['id']),
+                                                class: "btn btn-secondary btn-sm" %>
+                                            <%= button_to "✕ Delete", agent_path(agent[:id] || agent['id']),
+                                                method: :delete,
+                                                data: { confirm: "Delete this agent? The SSH tunnel will be terminated." },
+                                                class: "btn btn-danger btn-sm" %>
+                                        </div>
+                                    </td>
+                                </tr>
+                            <% end %>
+                        </tbody>
+                    </table>
+                <% else %>
+                    <div class="state-box">
+                        <span class="state-icon">🤖</span>
+                        <div class="state-title">No Agents Deployed</div>
+                        <div class="state-sub">Deploy your first agent to start scanning private networks</div>
+                        <%= button_to "➕ Deploy Your First Agent", agents_path, method: :post,
+                            data: { confirm: "Create a new agent? This will generate SSH keys and a download package." },
+                            class: "btn btn-primary" %>
+                    </div>
+                <% end %>
+            </div>
+        </div>
+
+    </div>
+
+    <script>
+        // Auto-refresh the page every 30 seconds to poll agent status
+        setTimeout(() => location.reload(), 30000);
+
+        // Live countdown display in the subtitle
+        let countdown = 30;
+        const subtitle = document.querySelector('.card-subtitle');
+        setInterval(() => {
+            countdown--;
+            if (subtitle) subtitle.textContent = `AUTO-REFRESH: ${countdown}s`;
+            if (countdown <= 0) countdown = 30;
+        }, 1000);
+    </script>
+</body>
+</html>

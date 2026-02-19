@@ -1,0 +1,374 @@
+<%# app/views/shared/_sidebar.html.erb %>
+<%# Usage: <%= render 'shared/sidebar', current_page: 'assets' %> %>
+
+<style>
+  /* ── Sidebar Overlay ── */
+  .sidebar-overlay {
+    position: fixed;
+    inset: 0;
+    background: rgba(0, 0, 0, 0.5);
+    backdrop-filter: blur(4px);
+    z-index: 998;
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity 0.3s ease;
+  }
+
+  .sidebar-overlay.open {
+    opacity: 1;
+    pointer-events: all;
+  }
+
+  /* ── Sidebar Panel ── */
+  .sidebar {
+    position: fixed;
+    top: 0;
+    left: 0;
+    height: 100vh;
+    width: 280px;
+    background: #0f172a;
+    z-index: 999;
+    transform: translateX(-100%);
+    transition: transform 0.35s cubic-bezier(0.4, 0, 0.2, 1);
+    display: flex;
+    flex-direction: column;
+    border-right: 1px solid rgba(59, 130, 246, 0.2);
+    box-shadow: 4px 0 30px rgba(0, 0, 0, 0.5);
+    overflow: hidden;
+  }
+
+  .sidebar::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 1px;
+    background: linear-gradient(90deg, transparent, #3b82f6, transparent);
+  }
+
+  .sidebar.open {
+    transform: translateX(0);
+  }
+
+  /* Sidebar Header */
+  .sidebar-header {
+    padding: 28px 24px 20px;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.07);
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+  }
+
+  .sidebar-brand {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    text-decoration: none;
+  }
+
+  .sidebar-brand-icon {
+    width: 36px;
+    height: 36px;
+    background: linear-gradient(135deg, #3b82f6, #1d4ed8);
+    border-radius: 8px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 16px;
+    box-shadow: 0 4px 12px rgba(59, 130, 246, 0.4);
+  }
+
+  .sidebar-brand-text {
+    font-family: 'Courier New', monospace;
+    font-size: 15px;
+    font-weight: 700;
+    color: #f1f5f9;
+    letter-spacing: 0.5px;
+  }
+
+  .sidebar-brand-sub {
+    font-size: 10px;
+    color: #64748b;
+    letter-spacing: 1.5px;
+    text-transform: uppercase;
+    font-family: 'Courier New', monospace;
+  }
+
+  .sidebar-close {
+    background: none;
+    border: 1px solid rgba(255,255,255,0.1);
+    color: #64748b;
+    width: 30px;
+    height: 30px;
+    border-radius: 6px;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 16px;
+    transition: all 0.2s;
+    flex-shrink: 0;
+  }
+
+  .sidebar-close:hover {
+    background: rgba(255,255,255,0.07);
+    color: #e2e8f0;
+    border-color: rgba(255,255,255,0.2);
+  }
+
+  /* Nav Section */
+  .sidebar-nav {
+    flex: 1;
+    padding: 16px 0;
+    overflow-y: auto;
+  }
+
+  .sidebar-section-label {
+    padding: 10px 24px 6px;
+    font-size: 10px;
+    font-weight: 700;
+    letter-spacing: 1.5px;
+    text-transform: uppercase;
+    color: #475569;
+    font-family: 'Courier New', monospace;
+  }
+
+  .sidebar-nav-item {
+    display: flex;
+    align-items: center;
+    gap: 14px;
+    padding: 12px 24px;
+    text-decoration: none;
+    color: #94a3b8;
+    font-size: 14px;
+    font-weight: 500;
+    transition: all 0.2s;
+    position: relative;
+    margin: 2px 10px;
+    border-radius: 8px;
+  }
+
+  .sidebar-nav-item:hover {
+    background: rgba(59, 130, 246, 0.1);
+    color: #e2e8f0;
+  }
+
+  .sidebar-nav-item.active {
+    background: rgba(59, 130, 246, 0.15);
+    color: #60a5fa;
+    border: 1px solid rgba(59, 130, 246, 0.25);
+  }
+
+  .sidebar-nav-item.active::before {
+    content: '';
+    position: absolute;
+    left: 0;
+    top: 50%;
+    transform: translateY(-50%);
+    width: 3px;
+    height: 60%;
+    background: #3b82f6;
+    border-radius: 0 2px 2px 0;
+  }
+
+  .nav-icon {
+    font-size: 16px;
+    width: 20px;
+    text-align: center;
+  }
+
+  .nav-label {
+    flex: 1;
+  }
+
+  .nav-badge {
+    background: rgba(59, 130, 246, 0.2);
+    color: #60a5fa;
+    font-size: 10px;
+    font-weight: 700;
+    padding: 2px 7px;
+    border-radius: 10px;
+    font-family: 'Courier New', monospace;
+  }
+
+  /* Sidebar Footer */
+  .sidebar-footer {
+    padding: 20px 24px;
+    border-top: 1px solid rgba(255,255,255,0.07);
+  }
+
+  .sidebar-user {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 10px 12px;
+    border-radius: 8px;
+    background: rgba(255,255,255,0.04);
+    border: 1px solid rgba(255,255,255,0.07);
+  }
+
+  .sidebar-user-avatar {
+    width: 32px;
+    height: 32px;
+    border-radius: 50%;
+    background: linear-gradient(135deg, #3b82f6, #8b5cf6);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 14px;
+    flex-shrink: 0;
+  }
+
+  .sidebar-user-name {
+    font-size: 13px;
+    font-weight: 600;
+    color: #e2e8f0;
+  }
+
+  .sidebar-user-role {
+    font-size: 11px;
+    color: #64748b;
+  }
+
+  .sidebar-logout {
+    margin-left: auto;
+    color: #475569;
+    font-size: 16px;
+    text-decoration: none;
+    transition: color 0.2s;
+  }
+
+  .sidebar-logout:hover {
+    color: #ef4444;
+  }
+
+  /* ── Hamburger Toggle Button ── */
+  .sidebar-toggle {
+    position: fixed;
+    top: 20px;
+    left: 20px;
+    z-index: 997;
+    background: #0f172a;
+    border: 1px solid rgba(59, 130, 246, 0.3);
+    color: #60a5fa;
+    width: 44px;
+    height: 44px;
+    border-radius: 10px;
+    cursor: pointer;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 5px;
+    transition: all 0.2s;
+    box-shadow: 0 4px 16px rgba(0,0,0,0.3);
+  }
+
+  .sidebar-toggle:hover {
+    background: rgba(59, 130, 246, 0.15);
+    border-color: rgba(59, 130, 246, 0.5);
+    box-shadow: 0 4px 20px rgba(59, 130, 246, 0.2);
+  }
+
+  .hamburger-line {
+    width: 18px;
+    height: 2px;
+    background: #60a5fa;
+    border-radius: 2px;
+    transition: all 0.3s;
+  }
+</style>
+
+<!-- Hamburger Toggle Button -->
+<button class="sidebar-toggle" onclick="openSidebar()" title="Open Navigation">
+  <span class="hamburger-line"></span>
+  <span class="hamburger-line"></span>
+  <span class="hamburger-line"></span>
+</button>
+
+<!-- Overlay -->
+<div class="sidebar-overlay" id="sidebarOverlay" onclick="closeSidebar()"></div>
+
+<!-- Sidebar -->
+<nav class="sidebar" id="sidebar">
+  <div class="sidebar-header">
+    <a href="<%= root_path %>" class="sidebar-brand">
+      <div class="sidebar-brand-icon">🔍</div>
+      <div>
+        <div class="sidebar-brand-text">VulnScan</div>
+        <div class="sidebar-brand-sub">Security Platform</div>
+      </div>
+    </a>
+    <button class="sidebar-close" onclick="closeSidebar()">✕</button>
+  </div>
+
+  <div class="sidebar-nav">
+    <div class="sidebar-section-label">Main</div>
+
+    <a href="<%= root_path %>" class="sidebar-nav-item <%= current_page == 'home' ? 'active' : '' %>">
+      <span class="nav-icon">🏠</span>
+      <span class="nav-label">Dashboard</span>
+    </a>
+
+    <a href="<%= (scans_path rescue '#') %>" class="sidebar-nav-item <%= current_page == 'scans' ? 'active' : '' %>">
+      <span class="nav-icon">🔬</span>
+      <span class="nav-label">Scans</span>
+    </a>
+
+    <a href="<%= assets_path %>" class="sidebar-nav-item <%= current_page == 'assets' ? 'active' : '' %>">
+      <span class="nav-icon">🖥️</span>
+      <span class="nav-label">Asset Management</span>
+    </a>
+
+    <a href="<%= (agents_path rescue '#') %>" class="sidebar-nav-item <%= current_page == 'agents' ? 'active' : '' %>">
+      <span class="nav-icon">🤖</span>
+      <span class="nav-label">Agents</span>
+    </a>
+
+    <div class="sidebar-section-label" style="margin-top:8px;">Reports & Config</div>
+
+    <a href="<%= (reports_path rescue '#') %>" class="sidebar-nav-item <%= current_page == 'reports' ? 'active' : '' %>">
+      <span class="nav-icon">📊</span>
+      <span class="nav-label">View Reports</span>
+      <span class="nav-badge">NEW</span>
+    </a>
+
+    <a href="<%= (settings_path rescue '#') %>" class="sidebar-nav-item <%= current_page == 'settings' ? 'active' : '' %>">
+      <span class="nav-icon">⚙️</span>
+      <span class="nav-label">Settings</span>
+    </a>
+  </div>
+
+  <div class="sidebar-footer">
+    <div class="sidebar-user">
+      <div class="sidebar-user-avatar">👤</div>
+      <div>
+        <div class="sidebar-user-name"><%= Current.session&.email || 'Admin User' %></div>
+        <div class="sidebar-user-role">Security Analyst</div>
+      </div>
+      <%= link_to (destroy_user_session_path rescue '#'), class: 'sidebar-logout', title: 'Logout' do %>
+        ⎋
+      <% end %>
+    </div>
+  </div>
+</nav>
+
+<script>
+  function openSidebar() {
+    document.getElementById('sidebar').classList.add('open');
+    document.getElementById('sidebarOverlay').classList.add('open');
+    document.body.style.overflow = 'hidden';
+  }
+
+  function closeSidebar() {
+    document.getElementById('sidebar').classList.remove('open');
+    document.getElementById('sidebarOverlay').classList.remove('open');
+    document.body.style.overflow = '';
+  }
+
+  // Close on Escape key
+  document.addEventListener('keydown', function(e) {
+    if (e.key === 'Escape') closeSidebar();
+  });
+</script>
