@@ -1,0 +1,306 @@
+<!doctype html>
+<html lan="en">
+  <head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <% content_for :title, "Aegis" %>
+    <%= csrf_meta_tags %>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;600;700&family=Sora:wght@300;400;600;700&display=swap" rel="stylesheet">
+    <style>
+      :root {
+        --bg:     #0b0d12;
+        --panel:  #11151b;
+        --muted:  #1a2029;
+        --text:   #e7eaee;
+        --sub:    #93a0b4;
+        --brand:  #5b8cff;
+        --good:   #2ecc71;
+        --border: #222937;
+      }
+
+      * {
+        box-sizing: border-box;
+      }
+
+      body {
+        margin: 0;
+        background:
+          radial-gradient(1200px 800px at 10% -10%, rgba(91, 140, 255, .18), transparent),
+          radial-gradient(1000px 700px at 100% 0, rgba(106, 247, 255, .08), transparent),
+          var(--bg);
+        color: var(--text);
+        font: 14px/1.5 system-ui, -apple-system, Segoe UI, Roboto, Helvetica, Arial;
+      }
+
+      a {
+        color: #9db7ff;
+        text-decoration: none;
+      }
+
+      a:hover {
+        text-decoration: underline;
+      }
+
+      /* Layout */
+
+      .wrap {
+        min-height: 100vh;
+        display: grid;
+        place-items: center;
+        padding: 24px;
+      }
+
+      .card {
+        width: 100%;
+        max-width: 460px;
+        background: var(--panel);
+        border: 1px solid var(--border);
+        border-radius: 18px;
+        box-shadow: 0 10px 40px rgba(0, 0, 0, .35);
+      }
+
+      /* Header */
+
+      .head {
+        padding: 20px 20px 0 20px;
+      }
+
+      .brand {
+        display: flex;
+        gap: 12px;
+        align-items: center;
+      }
+
+      .brand h1 {
+        margin: 0;
+        font-size: 18px;
+      }
+
+      .logo {
+        width: 36px;
+        height: 36px;
+        border-radius: 10px;
+        background: linear-gradient(135deg, var(--brand), #8a6bff);
+      }
+
+      /* Tabs */
+
+      .tabs {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        border-bottom: 1px solid var(--border);
+        margin-top: 14px;
+      }
+
+      .tab {
+        padding: 12px;
+        text-align: center;
+        cursor: pointer;
+        color: var(--sub);
+      }
+
+      .tab.active {
+        color: var(--text);
+        border-bottom: 2px solid var(--brand);
+      }
+
+      /* Body */
+
+      .body {
+        padding: 20px;
+        display: grid;
+        gap: 12px;
+      }
+
+      .field {
+        display: grid;
+        gap: 6px;
+        padding: 5px;
+      }
+
+      .label {
+        text-transform: uppercase;
+        letter-spacing: .08em;
+        font-size: 11px;
+        color: var(--sub);
+      }
+
+      .input {
+        background: #0f1420;
+        border: 1px solid var(--border);
+        border-radius: 12px;
+        color: var(--text);
+        padding: 10px;
+      }
+
+      .row {
+        display: flex;
+        gap: 10px;
+        padding: 5px;
+        align-items: center;
+      }
+
+      /* Buttons */
+
+      .btn {
+        border: 1px solid var(--border);
+        background: var(--brand);
+        color: #fff;
+        padding: 10px 12px;
+        border-radius: 12px;
+        cursor: pointer;
+      }
+
+      .btn.secondary {
+        background: var(--muted);
+        color: var(--text);
+      }
+
+      /* Alerts */
+
+      .error {
+        background: rgba(255, 91, 110, .12);
+        border: 1px solid rgba(255, 91, 110, .4);
+        color: #ffc3ca;
+        padding: 10px;
+        border-radius: 12px;
+        font-size: 13px;
+      }
+
+      /* Verification & Reset */
+
+      .ok {
+        background: rgba(46, 204, 113, .12);
+        border: 1px solid rgba(46, 204, 113, .4);
+        color: #baf3cd;
+        padding: 10px;
+        border-radius: 12px;
+        font-size: 13px;
+      }
+
+      .otp {
+        letter-spacing: .3em;
+        text-align: center;
+        font: 20px/1.2 ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas,
+          "Liberation Mono", "Courier New", monospace;
+      }
+
+      .sep {
+        height: 1px;
+        background: var(--border);
+        margin: 6px 0;
+      }
+
+      /* Misc */
+
+      .hint {
+        color: var(--sub);
+        font-size: 12px;
+      }
+
+      .hidden {
+        display: none;
+      }
+
+      .right {
+        margin-left: auto;
+      }
+    </style>
+  </head>
+  <body>
+    <div class="wrap">
+      <div class="card">
+        <div class="head">
+          <div class="brand"><div class="logo"></div><div><h1>Aegis</h1></div></div>
+          <% active_signin = params[:tab] != "signup" %>
+          <% active_signup = params[:tab] == "signup" %>
+
+          <div class="tabs">
+            <%= link_to "Sign In", login_path(tab: "signin"), class: "tab #{active_signin ? 'active' : ''}" %>
+            <%= link_to "Create Account", login_path(tab: "signup"), class: "tab #{active_signup ? 'active' : ''}" %>
+          </div>
+
+        </div>
+
+        <!-- Sign in -->
+        <div class="body <%= active_signin ? '' : 'hidden' %>" id="view-signin">
+          <% if flash[:alert] %>
+            <div class="error" id="err-signin"><%= flash[:alert] %></div>
+          <% else %>
+            <div class="error hidden" id="err-signin"></div>
+          <% end %>
+
+          <%= form_with url: session_path, method: :post, id: "form-signin" do |f| %>
+            <div class="field">
+              <%= f.email_field :email_address, id: "in-email", class: "input", placeholder: "Email" %>
+            </div>
+            <div class="field">
+              <%= f.password_field :password, id: "in-pass", class: "input", placeholder: "Password" %>
+            </div>
+            <div class="row">
+              <label class="row">
+                <input type="checkbox" id="in-remember" />
+                <span class="hint">Remember me on this device</span>
+              </label>
+              <a class="right" href="#" id="lnk-forgot">Forgot password?</a>
+            </div>
+            <div class="row">
+              <%= f.submit "Sign In", class: "btn", id: "btn-signin" %>
+            </div>
+          <% end %>
+        </div>
+
+        <!-- Sign up -->
+        <div class="body <%= active_signup ? '' : 'hidden' %>" id="view-signup">
+          <%= form_with url: accounts_path, method: :post, id: "form-signup" do %>
+            <div class="field">
+              <input type="text" name="user[name]" id="up-name" class="input" placeholder="Full Name" />
+            </div>
+            <div class="field">
+              <input type="text" name="organization[org_name]" id="up-org" class="input" placeholder="Organization" />
+            </div>
+            <div class="field">
+              <input type="email" name="user[email_address]" id="up-email" class="input" placeholder="Email" />
+            </div>
+            <div class="field">
+              <input type="password" name="user[password]" id="up-pass" class="input" placeholder="Password" />
+            </div>
+            <div class="field">
+              <input type="password" name="user[password_confirmation]" id="up-pass" class="input" placeholder="Confirm Password" />
+            </div>
+            <div class="row">
+              <button type="submit" class="btn" id="btn-signup">Create account</button>
+            </div>
+          <% end %>
+        </div>
+
+        <!-- Verify email -->
+        <div class="body hidden" id="view-verify">
+          <div class="ok" id="msg-verify">We sent a 6‑digit code to <span id="ver-email"></span>. Enter it below to verify your account.</div>
+          <input id="ver-code" class="input otp" maxlength="6" pattern="[0-9]{6}" placeholder="000000" />
+          <div class="hint" id="ver-hint"></div>
+          <div class="row">
+            <button class="btn" id="btn-verify">Verify</button>
+            <button class="btn secondary" id="btn-resend">Resend</button>
+          </div>
+          <div class="sep"></div>
+          <div class="hint">After verification, you'll be redirected to the app.</div>
+        </div>
+
+        <!-- Reset password -->
+        <div class="body hidden" id="view-reset">
+          <div class="field">
+            <label class="label" for="rp-email">Email</label>
+            <input id="rp-email" class="input" type="email" placeholder="you@org.com" />
+          </div>
+          <div class="row">
+            <button class="btn" id="btn-reset">Send reset link</button>
+            <button class="btn secondary" id="btn-cancel-reset">Back</button>
+          </div>
+          <div class="hint" id="rp-hint"></div>
+        </div>
+      </div>
+     </div>
+  </body>
+</html>

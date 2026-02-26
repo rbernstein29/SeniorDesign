@@ -1,11 +1,11 @@
 # config/routes.rb
 Rails.application.routes.draw do
-  resource :session
+  resource :session, only: [:new, :create, :destroy]
   resources :passwords, param: :token
 
   # Pages
   root "pages#home"
-  get "/app",      to: "pages#app"
+  get "/login",    to: "pages#login"
   get "/home",     to: "pages#home"
   get "/scanner",  to: "pages#scanner"
   get "/scans",    to: "pages#scans",    as: :scans
@@ -23,17 +23,9 @@ Rails.application.routes.draw do
   end
   post 'agents/:agent_id/heartbeat', to: 'agents#heartbeat', as: :agent_heartbeat
 
-  namespace :api do
-    resources :users, only: [:index, :show, :create] do
-      collection do
-        post :signin
-        post :signout
-      end
-    end
-    resources :organizations, only: [:index, :show, :create]
-    resources :accounts, only: [:create]
-    resources :reports, only: [:index, :show, :create]
-  end
+  # Accounts
+  resources :accounts, only: [:create]
+  resources :reports, only: [:index, :show, :create]
 
   get "up" => "rails/health#show", as: :rails_health_check
 end

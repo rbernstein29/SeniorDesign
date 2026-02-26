@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Settings — VulnScan</title>
+    <% content_for :title, "Aegis - Settings" %>
     <%= csrf_meta_tags %>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;600;700&family=Sora:wght@300;400;600;700&display=swap" rel="stylesheet">
@@ -347,7 +347,9 @@
                     </div>
                 </div>
                 <div class="card-footer">
-                    <%= link_to "Sign Out", session_path, data: { turbo_method: :delete }, class: "btn btn-danger btn-sm" %>
+                  <%= form_with url: session_path, method: :delete do |f| %>
+                    <%= f.submit "Sign Out", class: "btn btn-danger btn-sm" %>
+                  <% end %>
                 </div>
             </div>
 

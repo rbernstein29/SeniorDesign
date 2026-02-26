@@ -26,12 +26,21 @@ module Authentication
     end
 
     def find_session_by_cookie
-      Session.find_by(id: cookies.signed[:session_id]) if cookies.signed[:session_id]
+      if cookies.signed[:session_id]
+        session = Session.find_by(id: cookies.signed[:session_id])
+        if session&.expired?
+          session.destroy
+          cookies.delete(:session_id)
+          return nil
+        end
+        session&.touch(:last_active_at)
+        session
+      end
     end
 
     def request_authentication
       session[:return_to_after_authenticating] = request.url
-      redirect_to new_session_path
+      redirect_to login_path
     end
 
     def after_authentication_url

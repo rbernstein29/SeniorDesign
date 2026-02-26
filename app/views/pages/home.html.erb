@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>VulnScan — Dashboard</title>
+  <% content_for :title, "Aegis - Dashboard" %>
   <%= csrf_meta_tags %>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;600;700&family=Sora:wght@300;400;600;700&display=swap" rel="stylesheet">
@@ -566,7 +566,7 @@
       <div class="topbar-brand">
         <div class="brand-logo">🔍</div>
         <div>
-          <div class="brand-name">VulnScan</div>
+          <div class="brand-name">Aegis</div>
           <div class="brand-version">SECURITY PLATFORM v1.0</div>
         </div>
       </div>
@@ -581,7 +581,7 @@
 
     <!-- Hero -->
     <div class="hero">
-      <div class="hero-greeting">// Welcome back, <%= Current.session&.email&.split('@')&.first&.capitalize || 'Analyst' %></div>
+      <div class="hero-greeting">// Welcome back, <%= Current.session&.user&.name&.split(' ')&.first&.capitalize || 'Analyst' %></div>
       <h1 class="hero-title">Security<br>Operations Center</h1>
       <p class="hero-sub">Monitor vulnerabilities, manage assets, and coordinate scanning agents from a single command center.</p>
     </div>
@@ -736,12 +736,6 @@
             <span class="quick-btn-arrow">→</span>
           </a>
 
-          <a href="<%= destroy_user_session_path rescue '#' %>" class="quick-btn" style="margin-top: 12px; border-color: rgba(239,68,68,0.2);"
-            data-method="delete">
-            <div class="quick-btn-icon" style="background: rgba(239,68,68,0.1);">🔓</div>
-            <span class="quick-btn-label" style="color: #f87171;">Sign Out</span>
-            <span class="quick-btn-arrow">→</span>
-          </a>
         </div>
       </div>
     </div>

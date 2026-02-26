@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Scan Configuration</title>
+    <% content_for :title, "Aegis - Asset Configuration" %>
     <%= csrf_meta_tags %>
     <style>
         :root {
@@ -231,7 +231,7 @@
     <div class="card">
         <%= link_to "← Back to Assets", assets_path, class: "back-link" %>
         
-        <h1>Scan Configuration</h1>
+        <h1>Asset Configuration</h1>
         
         <%= form_with url: assets_path, method: :post, local: true, html: { id: 'scanForm' } do |f| %>
             <div class="form-grid">

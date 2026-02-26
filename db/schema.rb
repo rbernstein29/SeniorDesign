@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.0].define(version: 2026_02_10_220523) do
+ActiveRecord::Schema[8.0].define(version: 2026_02_26_230700) do
   create_schema "vuln_scanner"
 
   # These are extensions that must be enabled in order to support this database
@@ -199,6 +199,7 @@ ActiveRecord::Schema[8.0].define(version: 2026_02_10_220523) do
     t.string "user_agent"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
+    t.datetime "last_active_at"
     t.index ["user_id"], name: "index_sessions_on_user_id"
   end
 

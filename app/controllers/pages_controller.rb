@@ -1,8 +1,8 @@
 # app/controllers/pages_controller.rb
 class PagesController < ApplicationController
-  allow_unauthenticated_access only: [:app]
+  allow_unauthenticated_access only: [:login]
 
-  def app
+  def login
     # login page
   end
 

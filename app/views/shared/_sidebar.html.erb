@@ -296,7 +296,7 @@
     <a href="<%= root_path %>" class="sidebar-brand">
       <div class="sidebar-brand-icon">🔍</div>
       <div>
-        <div class="sidebar-brand-text">VulnScan</div>
+        <div class="sidebar-brand-text">Aegis</div>
         <div class="sidebar-brand-sub">Security Platform</div>
       </div>
     </a>
@@ -344,11 +344,11 @@
     <div class="sidebar-user">
       <div class="sidebar-user-avatar">👤</div>
       <div>
-        <div class="sidebar-user-name"><%= Current.session&.email || 'Admin User' %></div>
+        <div class="sidebar-user-name"><%= Current.session&.user&.email_address || 'Admin User' %></div>
         <div class="sidebar-user-role">Security Analyst</div>
       </div>
-      <%= link_to (destroy_user_session_path rescue '#'), class: 'sidebar-logout', title: 'Logout' do %>
-        ⎋
+      <%= form_with url: session_path, method: :delete do |f| %>
+        <%= f.submit "⎋", class: "btn btn-danger btn-sm" %>
       <% end %>
     </div>
   </div>
