@@ -3,9 +3,9 @@ class Agent < ApplicationRecord
   # No key deployment needed — SSH queries keys directly from the database
   # via AuthorizedKeysCommand on the server (see /usr/local/bin/ssh_authorized_keys)
 
-  # Check if connected (last heartbeat within 2 minutes)
+  # Check if connected (last heartbeat within 75 seconds)
   def connected?
-    last_seen.present? && last_seen > 2.minutes.ago
+    last_seen.present? && last_seen > 75.seconds.ago
   end
   
   # Update heartbeat
