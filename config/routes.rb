@@ -5,9 +5,12 @@ Rails.application.routes.draw do
 
   # Pages
   root "pages#home"
-  get "/app",     to: "pages#app"
-  get "/home",    to: "pages#home"
-  get "/scanner", to: "pages#scanner"
+  get "/app",      to: "pages#app"
+  get "/home",     to: "pages#home"
+  get "/scanner",  to: "pages#scanner"
+  get "/scans",    to: "pages#scans",    as: :scans
+  get "/reports",  to: "pages#reports",  as: :reports
+  get "/settings", to: "pages#settings", as: :settings
 
   # Assets
   resources :assets, only: [:index, :new, :create, :show], path: 'scan-assets'

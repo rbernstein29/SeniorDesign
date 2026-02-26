@@ -13,4 +13,13 @@ class PagesController < ApplicationController
   def scanner
     # renders app/views/pages/scanner.html.erb (to be built)
   end
+
+  def scans
+  end
+
+  def reports
+  end
+
+  def settings
+  end
 end

@@ -1,0 +1,55 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Reports — VulnScan</title>
+  <%= csrf_meta_tags %>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;600;700&family=Sora:wght@300;400;600;700&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --bg:       #080c14;
+      --surface:  #0d1525;
+      --surface2: #111b30;
+      --border:   rgba(59,130,246,0.15);
+      --blue:     #3b82f6;
+      --blue-dim: rgba(59,130,246,0.12);
+      --text:     #e2e8f0;
+      --muted:    #64748b;
+      --mono:     'JetBrains Mono', monospace;
+      --sans:     'Sora', sans-serif;
+    }
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    body { background: var(--bg); color: var(--text); font-family: var(--sans); display: flex; min-height: 100vh; }
+    .layout { flex: 1; padding: 40px; margin-left: 260px; }
+    .page-header { margin-bottom: 32px; }
+    .page-title { font-size: 24px; font-weight: 700; color: var(--text); margin-bottom: 4px; }
+    .page-sub { font-family: var(--mono); font-size: 12px; color: var(--muted); }
+    .placeholder-card {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      padding: 80px 40px;
+      text-align: center;
+    }
+    .placeholder-icon { font-size: 48px; margin-bottom: 16px; }
+    .placeholder-title { font-size: 18px; font-weight: 600; color: var(--text); margin-bottom: 8px; }
+    .placeholder-sub { font-size: 14px; color: var(--muted); }
+  </style>
+</head>
+<body>
+  <%= render 'shared/sidebar', current_page: 'reports' %>
+  <div class="layout">
+    <div class="page-header">
+      <div class="page-title">Reports</div>
+      <div class="page-sub">// view and export vulnerability reports</div>
+    </div>
+    <div class="placeholder-card">
+      <div class="placeholder-icon">📋</div>
+      <div class="placeholder-title">Reports Coming Soon</div>
+      <div class="placeholder-sub">Completed scans will generate reports here.</div>
+    </div>
+  </div>
+</body>
+</html>
