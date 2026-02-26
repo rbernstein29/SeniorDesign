@@ -1,0 +1,280 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Reports — VulnScan</title>
+    <%= csrf_meta_tags %>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;600;700&family=Sora:wght@300;400;600;700&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --bg:        #080c14;
+            --surface:   #0d1525;
+            --surface2:  #111b30;
+            --border:    rgba(59,130,246,0.15);
+            --blue:      #3b82f6;
+            --blue-dim:  rgba(59,130,246,0.12);
+            --blue-glow: rgba(59,130,246,0.35);
+            --cyan:      #22d3ee;
+            --green:     #10b981;
+            --orange:    #f59e0b;
+            --red:       #ef4444;
+            --purple:    #8b5cf6;
+            --text:      #e2e8f0;
+            --muted:     #64748b;
+            --mono:      'JetBrains Mono', monospace;
+            --sans:      'Sora', sans-serif;
+        }
+
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+
+        body {
+            font-family: var(--sans);
+            background: var(--bg);
+            color: var(--text);
+            min-height: 100vh;
+        }
+
+        body::before {
+            content: '';
+            position: fixed;
+            inset: 0;
+            background-image:
+                linear-gradient(rgba(59,130,246,0.03) 1px, transparent 1px),
+                linear-gradient(90deg, rgba(59,130,246,0.03) 1px, transparent 1px);
+            background-size: 40px 40px;
+            pointer-events: none;
+            z-index: 0;
+        }
+
+        .layout {
+            position: relative;
+            z-index: 1;
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 30px 30px 40px 84px;
+        }
+
+        .page-header {
+            background: var(--surface);
+            border: 1px solid var(--border);
+            padding: 28px 36px;
+            border-radius: 16px;
+            margin-bottom: 28px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .page-title { font-size: 26px; font-weight: 700; color: #f1f5f9; }
+        .page-sub { color: var(--muted); margin-top: 4px; font-size: 13px; font-family: var(--mono); }
+
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 16px;
+            margin-bottom: 28px;
+        }
+
+        @media (max-width: 900px) { .stats-grid { grid-template-columns: repeat(2, 1fr); } }
+
+        .stat-card {
+            background: var(--surface);
+            border: 1px solid var(--border);
+            padding: 22px 24px;
+            border-radius: 12px;
+            position: relative;
+            overflow: hidden;
+            transition: border-color 0.3s;
+        }
+
+        .stat-card::after {
+            content: '';
+            position: absolute;
+            top: 0; left: 0; right: 0;
+            height: 2px;
+            background: var(--accent, var(--blue));
+        }
+
+        .stat-card.green  { --accent: var(--green); }
+        .stat-card.orange { --accent: var(--orange); }
+        .stat-card.red    { --accent: var(--red); }
+        .stat-card.purple { --accent: var(--purple); }
+        .stat-card:hover  { border-color: rgba(59,130,246,0.35); }
+
+        .stat-label {
+            font-family: var(--mono);
+            font-size: 10px;
+            letter-spacing: 1.5px;
+            text-transform: uppercase;
+            color: var(--muted);
+            margin-bottom: 10px;
+        }
+
+        .stat-number { font-family: var(--mono); font-size: 36px; font-weight: 700; color: #f1f5f9; }
+
+        .main-card {
+            background: var(--surface);
+            border: 1px solid var(--border);
+            border-radius: 16px;
+            overflow: hidden;
+            margin-bottom: 24px;
+        }
+
+        .card-header {
+            padding: 20px 28px;
+            border-bottom: 1px solid rgba(255,255,255,0.06);
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+
+        .card-title { font-size: 15px; font-weight: 600; color: #f1f5f9; }
+        .card-subtitle { font-family: var(--mono); font-size: 10px; color: var(--muted); letter-spacing: 1px; }
+
+        table { width: 100%; border-collapse: collapse; }
+        thead { background: rgba(255,255,255,0.03); }
+
+        th {
+            padding: 14px 20px;
+            text-align: left;
+            font-family: var(--mono);
+            font-weight: 600;
+            font-size: 10px;
+            color: var(--muted);
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        td {
+            padding: 18px 20px;
+            border-top: 1px solid rgba(255,255,255,0.04);
+            font-size: 13px;
+            color: #cbd5e1;
+        }
+
+        tbody tr { transition: background 0.15s; }
+        tbody tr:hover { background: rgba(59,130,246,0.04); }
+
+        .severity-badge {
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            padding: 4px 12px;
+            border-radius: 20px;
+            font-family: var(--mono);
+            font-size: 11px;
+            font-weight: 700;
+            letter-spacing: 0.5px;
+        }
+
+        .sev-critical { background: rgba(239,68,68,0.15);   border: 1px solid rgba(239,68,68,0.3);   color: #f87171; }
+        .sev-high     { background: rgba(245,158,11,0.15);  border: 1px solid rgba(245,158,11,0.3);  color: #fbbf24; }
+        .sev-medium   { background: rgba(59,130,246,0.12);  border: 1px solid rgba(59,130,246,0.25); color: #60a5fa; }
+        .sev-low      { background: rgba(16,185,129,0.12);  border: 1px solid rgba(16,185,129,0.25); color: #34d399; }
+        .sev-info     { background: rgba(100,116,139,0.12); border: 1px solid rgba(100,116,139,0.2); color: var(--muted); }
+
+        .state-box { padding: 80px 40px; text-align: center; }
+        .state-icon { font-size: 48px; margin-bottom: 16px; display: block; opacity: 0.6; }
+        .state-title { font-size: 18px; font-weight: 600; color: #94a3b8; margin-bottom: 8px; }
+        .state-sub { font-size: 13px; color: var(--muted); }
+
+        .two-col {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 24px;
+        }
+
+        @media (max-width: 800px) { .two-col { grid-template-columns: 1fr; } }
+
+        @keyframes fadeUp {
+            from { opacity: 0; transform: translateY(16px); }
+            to   { opacity: 1; transform: translateY(0); }
+        }
+
+        .page-header { animation: fadeUp 0.4s ease both; }
+        .stats-grid  { animation: fadeUp 0.4s 0.08s ease both; }
+        .main-card   { animation: fadeUp 0.4s 0.12s ease both; }
+        .two-col     { animation: fadeUp 0.4s 0.18s ease both; }
+    </style>
+</head>
+<body>
+
+    <%= render 'shared/sidebar', current_page: 'reports' %>
+
+    <div class="layout">
+
+        <div class="page-header">
+            <div>
+                <div class="page-title">Reports</div>
+                <div class="page-sub">// vulnerability findings and scan results</div>
+            </div>
+        </div>
+
+        <div class="stats-grid">
+            <div class="stat-card">
+                <div class="stat-label">Total Reports</div>
+                <div class="stat-number">0</div>
+            </div>
+            <div class="stat-card red">
+                <div class="stat-label">Critical</div>
+                <div class="stat-number">—</div>
+            </div>
+            <div class="stat-card orange">
+                <div class="stat-label">High</div>
+                <div class="stat-number">—</div>
+            </div>
+            <div class="stat-card purple">
+                <div class="stat-label">Medium / Low</div>
+                <div class="stat-number">—</div>
+            </div>
+        </div>
+
+        <div class="main-card">
+            <div class="card-header">
+                <div class="card-title">Scan Reports</div>
+                <div class="card-subtitle">ALL TIME</div>
+            </div>
+            <div class="state-box">
+                <span class="state-icon">📋</span>
+                <div class="state-title">No Reports Yet</div>
+                <div class="state-sub">Reports are generated automatically after scans complete.</div>
+            </div>
+        </div>
+
+        <div class="two-col">
+            <div class="main-card">
+                <div class="card-header">
+                    <div class="card-title">Severity Breakdown</div>
+                    <div class="card-subtitle">ALL SCANS</div>
+                </div>
+                <div style="padding: 28px;">
+                    <div style="display: flex; flex-direction: column; gap: 14px;">
+                        <% [['Critical', 'sev-critical', 0], ['High', 'sev-high', 0], ['Medium', 'sev-medium', 0], ['Low', 'sev-low', 0], ['Informational', 'sev-info', 0]].each do |label, cls, count| %>
+                        <div style="display: flex; align-items: center; justify-content: space-between;">
+                            <span class="severity-badge <%= cls %>"><%= label %></span>
+                            <span style="font-family: var(--mono); font-size: 20px; color: #f1f5f9;"><%= count %></span>
+                        </div>
+                        <% end %>
+                    </div>
+                </div>
+            </div>
+
+            <div class="main-card">
+                <div class="card-header">
+                    <div class="card-title">Recent Findings</div>
+                    <div class="card-subtitle">LAST 10</div>
+                </div>
+                <div class="state-box" style="padding: 40px;">
+                    <span class="state-icon" style="font-size: 32px;">🔎</span>
+                    <div class="state-title" style="font-size: 14px;">No findings yet</div>
+                    <div class="state-sub">Run a scan to populate this list.</div>
+                </div>
+            </div>
+        </div>
+
+    </div>
+
+</body>
+</html>

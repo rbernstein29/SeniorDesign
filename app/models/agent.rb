@@ -1,9 +1,11 @@
 class Agent < ApplicationRecord
   before_create :generate_credentials
-  
-  # Check if connected (last heartbeat within 2 minutes)
+  # No key deployment needed — SSH queries keys directly from the database
+  # via AuthorizedKeysCommand on the server (see /usr/local/bin/ssh_authorized_keys)
+
+  # Check if connected (last heartbeat within 75 seconds)
   def connected?
-    last_seen.present? && last_seen > 2.minutes.ago
+    last_seen.present? && last_seen > 75.seconds.ago
   end
   
   # Update heartbeat
@@ -22,7 +24,7 @@ class Agent < ApplicationRecord
   end
   
   private
-  
+
   def generate_credentials
     # Generate UUID
     self.agent_id = SecureRandom.uuid

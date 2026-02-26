@@ -21,8 +21,8 @@ default: &default
   database: vulnerability_scanner
   username: aegis
   password: goodyear
-  host: 127.0.0.1
-  port: 5433
+  host: 100.69.88.107
+  port: 5432
   schema_search_path: "vuln_scanner"
 
 
