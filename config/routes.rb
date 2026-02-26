@@ -18,6 +18,7 @@ Rails.application.routes.draw do
       get :download
     end
   end
+  post 'agents/:agent_id/heartbeat', to: 'agents#heartbeat', as: :agent_heartbeat
 
   namespace :api do
     resources :users, only: [:index, :show, :create] do
