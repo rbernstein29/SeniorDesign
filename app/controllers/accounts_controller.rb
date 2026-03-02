@@ -14,6 +14,11 @@ class AccountsController < ApplicationController
     redirect_to login_path, alert: e.message
   end
 
+  def generate_api_key
+    Current.user.update(api_key: SecureRandom.urlsafe_base64(32))
+    redirect_back_or_to root_path
+  end
+
   private
 
   def user_params

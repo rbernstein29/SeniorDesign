@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.0].define(version: 2026_02_26_230700) do
+ActiveRecord::Schema[8.0].define(version: 2026_03_02_163529) do
   create_schema "vuln_scanner"
 
   # These are extensions that must be enabled in order to support this database
@@ -143,8 +143,10 @@ ActiveRecord::Schema[8.0].define(version: 2026_02_26_230700) do
     t.jsonb "report_data"
     t.string "file_path", limit: 500
     t.datetime "generated_at", precision: nil, default: -> { "CURRENT_TIMESTAMP" }
+    t.bigint "user_id", null: false
     t.index ["org_id"], name: "idx_report_org"
     t.index ["scan_id"], name: "idx_report_scan"
+    t.index ["user_id"], name: "index_reports_on_user_id"
   end
 
   create_table "scan_exploits", id: :serial, force: :cascade do |t|
@@ -221,6 +223,8 @@ ActiveRecord::Schema[8.0].define(version: 2026_02_26_230700) do
     t.boolean "is_active", default: true
     t.datetime "created_at", precision: nil, default: -> { "CURRENT_TIMESTAMP" }
     t.datetime "updated_at", precision: nil, default: -> { "CURRENT_TIMESTAMP" }
+    t.string "api_key"
+    t.index ["api_key"], name: "index_users_on_api_key", unique: true
     t.index ["email_address"], name: "idx_user_email"
     t.index ["org_id"], name: "idx_user_org"
     t.check_constraint "access_level::text = ANY (ARRAY['admin'::character varying::text, 'read_only'::character varying::text])", name: "users_access_level_check"
@@ -241,6 +245,7 @@ ActiveRecord::Schema[8.0].define(version: 2026_02_26_230700) do
   add_foreign_key "findings", "users", column: "remediated_by", name: "findings_remediated_by_fkey", on_delete: :nullify
   add_foreign_key "reports", "organizations", column: "org_id", name: "reports_org_id_fkey", on_delete: :cascade
   add_foreign_key "reports", "scans", name: "reports_scan_id_fkey", on_delete: :cascade
+  add_foreign_key "reports", "users"
   add_foreign_key "reports", "users", column: "generated_by", name: "reports_generated_by_fkey", on_delete: :nullify
   add_foreign_key "scan_exploits", "assets", name: "scan_exploits_asset_id_fkey", on_delete: :cascade
   add_foreign_key "scan_exploits", "exploits", name: "scan_exploits_exploit_id_fkey", on_delete: :cascade

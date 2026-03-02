@@ -27,5 +27,13 @@ Rails.application.routes.draw do
   resources :accounts, only: [:create]
   resources :reports, only: [:index, :show, :create]
 
+  # Api
+  namespace :api do
+    scope ':api_key' do
+      resources :reports_api, only: [:index, :show]
+    end
+  end
+  patch '/accounts/generate_api_key', to: 'accounts#generate_api_key', as: :generate_api_key
+
   get "up" => "rails/health#show", as: :rails_health_check
 end

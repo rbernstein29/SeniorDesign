@@ -345,11 +345,19 @@
                         <input class="field-input" type="password" placeholder="••••••••" disabled>
                         <div class="field-hint">Password changes coming soon</div>
                     </div>
-                </div>
-                <div class="card-footer">
-                  <%= form_with url: session_path, method: :delete do |f| %>
-                    <%= f.submit "Sign Out", class: "btn btn-danger btn-sm" %>
-                  <% end %>
+                    <%= form_with url: session_path, method: :delete do |f| %>
+                      <%= f.submit "Sign Out", class: "btn btn-danger btn-sm" %>
+                    <% end %>
+                   <br/> 
+                    <div class="field-group">
+                      <% if Current.user&.api_key.present? %>
+                        <div class="field-label">Your API Key: <code><%= Current.user&.api_key %></code></div>
+                        <%= button_to "Regenerate Key", generate_api_key_path, method: :patch, class: "btn btn-secondary btn-sm" %>
+                      <% else %>
+                        <div class="field-label">You don't have an API key yet.</div>
+                        <%= button_to "Generate API Key", generate_api_key_path, method: :patch, class: "btn btn-secondary btn-sm" %>
+                      <% end %>
+                    </div>
                 </div>
             </div>
 
