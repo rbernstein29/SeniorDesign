@@ -215,7 +215,7 @@
         <div class="stats-grid">
             <div class="stat-card">
                 <div class="stat-label">Total Reports</div>
-                <div class="stat-number">0</div>
+                <div class="stat-number"><%= @reports.count %></div>
             </div>
             <div class="stat-card red">
                 <div class="stat-label">Critical</div>
@@ -236,11 +236,42 @@
                 <div class="card-title">Scan Reports</div>
                 <div class="card-subtitle">ALL TIME</div>
             </div>
-            <div class="state-box">
-                <span class="state-icon">📋</span>
-                <div class="state-title">No Reports Yet</div>
-                <div class="state-sub">Reports are generated automatically after scans complete.</div>
-            </div>
+            <% if @reports.any? %>
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Report Name</th>
+                            <th>Type</th>
+                            <th>Format</th>
+                            <th>Generated</th>
+                            <th>Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <% @reports.each do |report| %>
+                            <tr>
+                                <td style="font-family: var(--mono); font-size: 12px; color: #93c5fd;"><%= report.report_name %></td>
+                                <td><%= report.report_type&.capitalize || '—' %></td>
+                                <td><%= report.report_format&.upcase || '—' %></td>
+                                <td style="font-family: var(--mono); font-size: 12px; color: var(--muted);">
+                                    <%= report.generated_at ? time_ago_in_words(report.generated_at) + ' ago' : '—' %>
+                                </td>
+                                <td>
+                                    <%= button_to "✕ Delete", report_path(report), method: :delete,
+                                        data: { confirm: "Delete this report? This cannot be undone." },
+                                        style: "background: rgba(239,68,68,0.12); border: 1px solid rgba(239,68,68,0.25); color: #f87171; padding: 5px 12px; border-radius: 6px; font-family: var(--mono); font-size: 11px; cursor: pointer;" %>
+                                </td>
+                            </tr>
+                        <% end %>
+                    </tbody>
+                </table>
+            <% else %>
+                <div class="state-box">
+                    <span class="state-icon">📋</span>
+                    <div class="state-title">No Reports Yet</div>
+                    <div class="state-sub">Reports are generated automatically after scans complete.</div>
+                </div>
+            <% end %>
         </div>
 
         <div class="two-col">

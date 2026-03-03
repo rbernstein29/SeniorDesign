@@ -18,6 +18,7 @@ class PagesController < ApplicationController
   end
 
   def reports
+    @reports = Report.all.order(generated_at: :desc)
   end
 
   def settings

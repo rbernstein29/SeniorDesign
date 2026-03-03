@@ -431,14 +431,14 @@
                         <div class="detail-row">
                             <div class="detail-label">Network</div>
                             <div class="detail-value">
-                                <span class="network-code"><%= @asset[:network] || @asset['network'] %></span>
+                                <span class="network-code"><%= @asset.ip_address %></span>
                             </div>
                         </div>
 
                         <div class="detail-row">
                             <div class="detail-label">Scan Mode</div>
                             <div class="detail-value">
-                                <% scan_mode = @asset[:scanMode] || @asset['scanMode'] %>
+                                <% scan_mode = @asset.scan_config&.dig('scanMode') %>
                                 <span class="badge badge-<%= scan_mode %>">
                                     <%= scan_mode&.upcase %>
                                 </span>
@@ -448,28 +448,28 @@
                         <div class="detail-row">
                             <div class="detail-label">Asset Type</div>
                             <div class="detail-value">
-                                <%= (@asset[:asset] || @asset['asset'])&.humanize %>
+                                <%= @asset.scan_config&.dig('asset')&.humanize %>
                             </div>
                         </div>
 
                         <div class="detail-row">
                             <div class="detail-label">Operating System</div>
                             <div class="detail-value">
-                                <span class="os-tag"><%= (@asset[:os] || @asset['os'])&.upcase %></span>
+                                <span class="os-tag"><%= @asset.scan_config&.dig('os')&.upcase %></span>
                             </div>
                         </div>
 
                         <div class="detail-row">
                             <div class="detail-label">Scan Type</div>
                             <div class="detail-value">
-                                <%= (@asset[:scanType] || @asset['scanType'])&.capitalize %>
+                                <%= @asset.scan_config&.dig('scanType')&.capitalize %>
                             </div>
                         </div>
 
                         <div class="detail-row">
                             <div class="detail-label">Ports</div>
                             <div class="detail-value">
-                                <% ports = (@asset[:port] || @asset['port']).to_s.split(',') %>
+                                <% ports = @asset.scan_config&.dig('port').to_s.split(',') %>
                                 <% ports.each do |port| %>
                                     <span class="port-tag"><%= port.strip %></span>
                                 <% end %>
@@ -534,11 +534,12 @@
                             <span>Edit Configuration</span>
                         </a>
 
-                        <%# Delete — wire up destroy action when ready %>
-                        <a href="#" class="quick-action danger">
+                        <%= button_to asset_path(@asset), method: :delete,
+                            data: { confirm: "Delete this asset? This cannot be undone." },
+                            class: "quick-action danger", style: "width: 100%; background: none; border: none; text-align: left; cursor: pointer;" do %>
                             <div class="qa-icon danger-icon">🗑️</div>
                             <span>Delete Asset</span>
-                        </a>
+                        <% end %>
 
                     </div>
                 </div>

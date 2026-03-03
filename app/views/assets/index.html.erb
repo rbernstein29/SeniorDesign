@@ -355,15 +355,15 @@
             </div>
             <div class="stat-card green">
                 <div class="stat-label">Safe Mode</div>
-                <div class="stat-number"><%= @assets.select { |a| (a[:scanMode] || a['scanMode']) == 'safe' }.count %></div>
+                <div class="stat-number"><%= @assets.count { |a| a.scan_config&.dig('scanMode') == 'safe' } %></div>
             </div>
             <div class="stat-card orange">
                 <div class="stat-label">Exploit Mode</div>
-                <div class="stat-number"><%= @assets.select { |a| (a[:scanMode] || a['scanMode']) == 'exploits' }.count %></div>
+                <div class="stat-number"><%= @assets.count { |a| a.scan_config&.dig('scanMode') == 'exploits' } %></div>
             </div>
             <div class="stat-card cyan">
                 <div class="stat-label">Servers</div>
-                <div class="stat-number"><%= @assets.select { |a| (a[:asset] || a['asset']) == 'server' }.count %></div>
+                <div class="stat-number"><%= @assets.count { |a| a.scan_config&.dig('asset') == 'server' } %></div>
             </div>
         </div>
 
@@ -394,17 +394,20 @@
                         <% @assets.each_with_index do |asset, index| %>
                             <tr>
                                 <td><span class="id-cell">#<%= index + 1 %></span></td>
-                                <td><span class="network-code"><%= asset[:network] || asset['network'] %></span></td>
+                                <td><span class="network-code"><%= asset.ip_address %></span></td>
                                 <td>
-                                    <% scan_mode = asset[:scanMode] || asset['scanMode'] %>
+                                    <% scan_mode = asset.scan_config&.dig('scanMode') %>
                                     <span class="badge badge-<%= scan_mode %>"><%= scan_mode&.upcase %></span>
                                 </td>
-                                <td><%= (asset[:asset] || asset['asset'])&.humanize %></td>
-                                <td><span style="font-family: var(--mono); font-size: 12px;"><%= (asset[:os] || asset['os'])&.upcase %></span></td>
-                                <td><%= (asset[:scanType] || asset['scanType'])&.capitalize %></td>
-                                <td><span class="port-code"><%= asset[:port] || asset['port'] %></span></td>
-                                <td>
-                                    <%= link_to "View →", asset_path(index + 1), class: "view-link" %>
+                                <td><%= asset.scan_config&.dig('asset')&.humanize %></td>
+                                <td><span style="font-family: var(--mono); font-size: 12px;"><%= asset.scan_config&.dig('os')&.upcase %></span></td>
+                                <td><%= asset.scan_config&.dig('scanType')&.capitalize %></td>
+                                <td><span class="port-code"><%= asset.scan_config&.dig('port') %></span></td>
+                                <td style="display: flex; gap: 8px; align-items: center;">
+                                    <%= link_to "View →", asset_path(asset), class: "view-link" %>
+                                    <%= button_to "✕", asset_path(asset), method: :delete,
+                                        data: { confirm: "Delete this asset?" },
+                                        class: "view-link", style: "background: none; border: 1px solid rgba(239,68,68,0.3); color: #f87171; cursor: pointer; padding: 4px 10px; border-radius: 6px; font-family: var(--mono); font-size: 12px;" %>
                                 </td>
                             </tr>
                         <% end %>

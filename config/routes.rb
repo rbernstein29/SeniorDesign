@@ -13,7 +13,7 @@ Rails.application.routes.draw do
   get "/settings", to: "pages#settings", as: :settings
 
   # Assets
-  resources :assets, only: [:index, :new, :create, :show], path: 'scan-assets'
+  resources :assets, only: [:index, :new, :create, :show, :destroy], path: 'scan-assets'
 
   # Agents
   resources :agents, only: [:index, :create, :destroy] do
@@ -25,7 +25,7 @@ Rails.application.routes.draw do
 
   # Accounts
   resources :accounts, only: [:create]
-  resources :reports, only: [:index, :show, :create]
+  resources :reports, only: [:destroy]
 
   # Api
   namespace :api do
