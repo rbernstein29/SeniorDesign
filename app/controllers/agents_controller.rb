@@ -8,7 +8,7 @@ class AgentsController < ApplicationController
 
   # POST /agents
   def create
-    agent = Agent.create!
+    agent = Agent.create!(network_range: params.dig(:agent, :network_range).presence)
     redirect_to download_agent_path(agent)
   rescue => e
     redirect_to agents_path, alert: "Failed to create agent: #{e.message}"
