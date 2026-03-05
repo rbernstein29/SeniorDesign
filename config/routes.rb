@@ -12,6 +12,9 @@ Rails.application.routes.draw do
   get "/reports",  to: "pages#reports",  as: :reports
   get "/settings", to: "pages#settings", as: :settings
 
+  # Sites
+  resources :sites, only: [:index, :create, :destroy]
+
   # Assets
   resources :assets, only: [:index, :new, :create, :show, :destroy], path: 'scan-assets'
 

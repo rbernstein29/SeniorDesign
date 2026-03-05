@@ -1,17 +1,19 @@
 class AssetsController < ApplicationController
 
   def index
-    @assets = Asset.where(organization_id: Current.user&.organization_id).order(created_at: :desc)
+    @assets = Asset.where(organization_id: current_org_id).order(created_at: :desc)
   end
 
   def new
+    @sites = Site.where(organization_id: current_org_id)
   end
 
   def create
     scan_config = params.permit(:scanMode, :scope, :exclude, :port, :os, :asset, :scanType, :credential, :schedule, :cve, format: []).to_h
     asset = Asset.new(
       ip_address: params[:network],
-      organization_id: Current.user&.organization_id,
+      organization_id: current_org_id,
+      site_id: params[:site_id].presence,
       scan_config: scan_config
     )
 
@@ -19,7 +21,7 @@ class AssetsController < ApplicationController
       redirect_to new_asset_path, alert: "Invalid IP address: '#{params[:network]}'"
       return
     end
-    
+
     asset.save!
     redirect_to assets_path, notice: 'Asset added successfully!'
   rescue => e

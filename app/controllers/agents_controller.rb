@@ -4,11 +4,15 @@ class AgentsController < ApplicationController
   # GET /agents
   def index
     @agents = Agent.all.order(created_at: :desc)
+    @sites = Site.all.order(name: :asc)
   end
 
   # POST /agents
   def create
-    agent = Agent.create!(network_range: params.dig(:agent, :network_range).presence)
+    agent = Agent.create!(
+      site_id: params.dig(:agent, :site_id).presence,
+      network_range: params.dig(:agent, :network_range).presence
+    )
     redirect_to download_agent_path(agent)
   rescue => e
     redirect_to agents_path, alert: "Failed to create agent: #{e.message}"
