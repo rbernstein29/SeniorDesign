@@ -12,6 +12,8 @@ class AccountsController < ApplicationController
     end
   rescue ActiveRecord::RecordInvalid => e
     redirect_to login_path, alert: e.message
+  rescue ActiveRecord::RecordNotUnique
+    redirect_to login_path, alert: "That organization name or email is already registered."
   end
 
   def generate_api_key
