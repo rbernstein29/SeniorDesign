@@ -4,6 +4,16 @@ class Agent < ApplicationRecord
   # No key deployment needed — SSH queries keys directly from the database
   # via AuthorizedKeysCommand on the server (see /usr/local/bin/ssh_authorized_keys)
 
+  # Given an org and a target IP, return the connected agent whose network_range covers it
+  def self.find_for_target(org_id, target_ip)
+    where(org_id: org_id).find do |agent|
+      next unless agent.connected? && agent.network_range.present?
+      IPAddr.new(agent.network_range).include?(IPAddr.new(target_ip))
+    end
+  rescue IPAddr::InvalidAddressError
+    nil
+  end
+
   # Check if connected (last heartbeat within 75 seconds)
   def connected?
     last_seen.present? && last_seen > 75.seconds.ago
