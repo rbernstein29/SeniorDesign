@@ -3,14 +3,20 @@ class Agent < ApplicationRecord
   # No key deployment needed — SSH queries keys directly from the database
   # via AuthorizedKeysCommand on the server (see /usr/local/bin/ssh_authorized_keys)
 
-  # Given an org and a target IP, return the connected agent whose network_range covers it
+  belongs_to :site, optional: true
+
+  # Given an org and a target IP, return the connected agent whose site owns that asset.
   def self.find_for_target(org_id, target_ip)
     where(organization_id: org_id).find do |agent|
-      next unless agent.connected? && agent.network_range.present?
-      IPAddr.new(agent.network_range).include?(IPAddr.new(target_ip))
+      agent.connected? && agent.site&.assets&.exists?(ip_address: target_ip)
     end
-  rescue IPAddr::InvalidAddressError
-    nil
+  end
+
+  # Returns the IPs of all assets assigned to this agent's site.
+  # If no site assigned or site has no assets, returns [] — scan loop does nothing.
+  def scan_targets
+    return [] unless site
+    site.assets.pluck(:ip_address).map(&:to_s)
   end
 
   # Check if connected (last heartbeat within 75 seconds)

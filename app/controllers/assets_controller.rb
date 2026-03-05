@@ -5,6 +5,7 @@ class AssetsController < ApplicationController
   end
 
   def new
+    @sites = Site.where(org_id: 1)
   end
 
   def create
@@ -12,6 +13,7 @@ class AssetsController < ApplicationController
     asset = Asset.create!(
       ip_address: params[:network],
       org_id: 1,
+      site_id: params[:site_id].presence,
       scan_config: scan_config
     )
     redirect_to assets_path, notice: 'Asset added successfully!'

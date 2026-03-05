@@ -266,6 +266,13 @@
                     </div>
 
                     <div class="form-group">
+                        <%= label_tag :site_id, "Site (Agent Network)", class: "required" %>
+                        <%= select_tag :site_id,
+                            options_for_select(@sites.map { |s| ["#{s.name}#{s.network_range.present? ? " (#{s.network_range})" : ""}", s.id] }),
+                            prompt: "Select a site...", required: true %>
+                    </div>
+
+                    <div class="form-group">
                         <%= label_tag :network, "Network / Network Range", class: "required" %>
                         <%= text_field_tag :network, nil, placeholder: "e.g. 192.168.1.1/24", required: true %>
                     </div>

@@ -442,14 +442,18 @@
                 <div class="page-sub">// deploy and manage distributed scanning agents</div>
             </div>
             <%= form_with url: agents_path, method: :post, style: "display:flex;gap:10px;align-items:center;" do |f| %>
-                <%= f.text_field :agent_name_placeholder,
-                    name: "agent[network_range]",
-                    placeholder: "192.168.1.0/24",
-                    style: "background:#0d1525;border:1px solid rgba(59,130,246,0.3);color:#e2e8f0;padding:10px 14px;border-radius:8px;font-family:'JetBrains Mono',monospace;font-size:13px;width:180px;outline:none;",
-                    required: true,
-                    title: "Enter the network range this agent will cover (CIDR notation)" %>
+                <% if @sites.any? %>
+                    <%= select_tag "agent[site_id]",
+                        options_for_select(@sites.map { |s| ["#{s.name}#{s.network_range.present? ? " — #{s.network_range}" : ""}", s.id] }),
+                        prompt: "Select site...",
+                        style: "background:#0d1525;border:1px solid rgba(59,130,246,0.3);color:#e2e8f0;padding:10px 14px;border-radius:8px;font-family:'JetBrains Mono',monospace;font-size:13px;width:240px;outline:none;",
+                        required: true %>
+                <% else %>
+                    <span style="font-family:var(--mono);font-size:12px;color:var(--muted);">No sites yet —&nbsp;</span>
+                    <%= link_to "create one first", sites_path, style: "font-family:var(--mono);font-size:12px;color:#60a5fa;" %>
+                <% end %>
                 <button type="submit"
-                    onclick="return confirm('Create a new agent for this network range? This will generate SSH keys and a download package.')"
+                    onclick="return confirm('Deploy a new agent for this site? This will generate SSH keys and a download package.')"
                     class="btn btn-primary">➕ Deploy Agent</button>
             <% end %>
         </div>
@@ -502,7 +506,7 @@
                             <tr>
                                 <th>Agent ID</th>
                                 <th>Status</th>
-                                <th>Network Range</th>
+                                <th>Site</th>
                                 <th>Platform</th>
                                 <th>Hostname</th>
                                 <th>Last Seen</th>
@@ -527,7 +531,11 @@
                                     </td>
                                     <td>
                                         <span style="font-family:var(--mono);font-size:12px;color:#67e8f9;">
-                                            <%= agent.network_range || '—' %>
+                                            <% if agent.site %>
+                                                <%= agent.site.name %><% if agent.site.network_range.present? %> <span style="color:var(--muted);">(<%= agent.site.network_range %>)</span><% end %>
+                                            <% else %>
+                                                —
+                                            <% end %>
                                         </span>
                                     </td>
                                     <td>
@@ -563,16 +571,7 @@
                         <span class="state-icon">🤖</span>
                         <div class="state-title">No Agents Deployed</div>
                         <div class="state-sub">Deploy your first agent to start scanning private networks</div>
-                        <%= form_with url: agents_path, method: :post, style: "display:flex;gap:10px;align-items:center;justify-content:center;" do |f| %>
-                            <%= f.text_field :agent_name_placeholder,
-                                name: "agent[network_range]",
-                                placeholder: "192.168.1.0/24",
-                                style: "background:#0d1525;border:1px solid rgba(59,130,246,0.3);color:#e2e8f0;padding:10px 14px;border-radius:8px;font-family:'JetBrains Mono',monospace;font-size:13px;width:200px;outline:none;",
-                                required: true %>
-                            <button type="submit"
-                                onclick="return confirm('Create a new agent for this network range?')"
-                                class="btn btn-primary">➕ Deploy Your First Agent</button>
-                        <% end %>
+                        <%= link_to "➕ Create a Site First, Then Deploy an Agent", sites_path, class: "btn btn-primary" %>
                     </div>
                 <% end %>
             </div>
