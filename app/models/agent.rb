@@ -5,7 +5,7 @@ class Agent < ApplicationRecord
 
   # Given an org and a target IP, return the connected agent whose network_range covers it
   def self.find_for_target(org_id, target_ip)
-    where(org_id: org_id).find do |agent|
+    where(organization_id: org_id).find do |agent|
       next unless agent.connected? && agent.network_range.present?
       IPAddr.new(agent.network_range).include?(IPAddr.new(target_ip))
     end
