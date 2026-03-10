@@ -1,13 +1,13 @@
 class SitesController < ApplicationController
   def index
-    @sites = Site.where(org_id: current_org_id).order(created_at: :desc)
+    @sites = Site.where(organization_id: current_org_id).order(created_at: :desc)
   end
 
   def create
     Site.create!(
       name: params[:site][:name],
       network_range: params[:site][:network_range].presence,
-      org_id: current_org_id
+      organization_id: current_org_id
     )
     redirect_to sites_path, notice: "Site created."
   rescue ActiveRecord::RecordInvalid => e

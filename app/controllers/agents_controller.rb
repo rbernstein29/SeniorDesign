@@ -5,7 +5,7 @@ class AgentsController < ApplicationController
   # GET /agents
   def index
     @agents = Agent.where(organization_id: current_org_id).order(created_at: :desc)
-    @sites = Site.where(org_id: current_org_id).order(name: :asc).select { |s| s.agents.empty? }
+    @sites = Site.where(organization_id: current_org_id).order(name: :asc).select { |s| s.agents.empty? }
   end
 
   # POST /agents

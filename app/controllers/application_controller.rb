@@ -7,7 +7,7 @@ class ApplicationController < ActionController::Base
   private
 
   def current_org_id
-    Current.user&.org_id
+    Current.user&.organization_id
   end
   helper_method :current_org_id
 

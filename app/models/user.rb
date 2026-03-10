@@ -8,6 +8,6 @@ class User < ApplicationRecord
 
   self.table_name = "vuln_scanner.users"
 
-  # Explicitly declare org_id — AR column introspection can miss it on schema-prefixed tables
-  attribute :org_id, :integer
+  # Explicitly declare organization_id — AR column introspection can miss it on schema-prefixed tables
+  attribute :organization_id, :integer
 end
