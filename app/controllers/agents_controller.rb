@@ -35,8 +35,9 @@ class AgentsController < ApplicationController
     FileUtils.mkdir_p(temp_dir)
 
     # Write agent script
-    server_ip = "100.69.88.107"
-    script = generate_agent_script(agent, server_ip)
+    server_ip   = "100.69.88.107"
+    server_port = request.port
+    script = generate_agent_script(agent, server_ip, server_port)
     File.write("#{temp_dir}/scanner_agent.py", script)
     File.chmod(0755, "#{temp_dir}/scanner_agent.py")
 
@@ -118,7 +119,7 @@ class AgentsController < ApplicationController
 
   private
 
-  def generate_agent_script(agent, server_ip)
+  def generate_agent_script(agent, server_ip, server_port = 3000)
     <<~PYTHON
 #!/usr/bin/env python3
 import subprocess
@@ -132,7 +133,7 @@ import struct
 
 AGENT_ID        = "#{agent.agent_id}"
 TUNNEL_SERVER   = "#{server_ip}"       # SSH tunnel destination
-RAILS_SERVER    = "#{server_ip}:3000"  # Rails app for heartbeats
+RAILS_SERVER    = "#{server_ip}:#{server_port}"  # Rails app for heartbeats
 TUNNEL_PORT     = #{agent.tunnel_port}
 SSH_KEY_FILE    = "./agent_key"
 SOCKS_PORT      = 1080
