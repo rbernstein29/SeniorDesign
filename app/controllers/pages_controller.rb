@@ -7,7 +7,7 @@ class PagesController < ApplicationController
   end
 
   def home
-    @assets = Asset.all rescue []
+    @assets = Asset.where(organization_id: current_org_id).order(created_at: :desc) rescue []
   end
 
   def scanner
@@ -18,14 +18,11 @@ class PagesController < ApplicationController
   end
 
   def reports
-    @reports = Report.where(org_id: Current.session.user.org_id)
-                     .order(generated_at: :desc)
-  rescue
-    @reports = []
+    @reports = Report.where(user_id: User.where(organization_id: current_org_id).select(:id)).order(generated_at: :desc)
   end
 
   def settings
-    @org = Organization.find_by(id: Current.session.user.org_id)
+    @org = Organization.find_by(id: Current.session.user.organization_id)
   rescue
     @org = nil
   end

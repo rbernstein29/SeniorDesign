@@ -4,13 +4,14 @@ class AgentsController < ApplicationController
 
   # GET /agents
   def index
-    @agents = Agent.all.order(created_at: :desc)
-    @sites = Site.all.order(name: :asc).select { |s| s.agents.empty? }
+    @agents = Agent.where(organization_id: current_org_id).order(created_at: :desc)
+    @sites = Site.where(org_id: current_org_id).order(name: :asc).select { |s| s.agents.empty? }
   end
 
   # POST /agents
   def create
     agent = Agent.create!(
+      organization_id: current_org_id,
       site_id: params.dig(:agent, :site_id).presence,
       network_range: params.dig(:agent, :network_range).presence
     )
