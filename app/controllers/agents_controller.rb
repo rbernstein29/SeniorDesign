@@ -1,4 +1,5 @@
 class AgentsController < ApplicationController
+  include ActionView::Helpers::DateHelper
   skip_before_action :verify_authenticity_token
   allow_unauthenticated_access only: [:heartbeat]
 
@@ -117,7 +118,7 @@ class AgentsController < ApplicationController
         {
           id:        a.agent_id,
           connected: a.connected?,
-          last_seen: a.last_seen ? "#{helpers.time_ago_in_words(a.last_seen)} ago" : "Never",
+          last_seen: a.last_seen ? "#{time_ago_in_words(a.last_seen)} ago" : "Never",
           platform:  a.platform,
           hostname:  a.hostname
         }
