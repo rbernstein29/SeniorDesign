@@ -580,8 +580,8 @@
     </div>
 
     <script>
-        const POLL_INTERVAL = 30000;
-        let countdown = 30;
+        const POLL_INTERVAL = 10000;
+        let countdown = 10;
         const subtitle = document.querySelector('.card-subtitle');
 
         function updateStats(stats) {
@@ -633,11 +633,11 @@
         // Countdown ticker
         setInterval(() => {
             countdown--;
-            if (countdown <= 0) countdown = 30;
+            if (countdown <= 0) countdown = 10;
             if (subtitle) subtitle.textContent = `AUTO-REFRESH: ${countdown}s`;
         }, 1000);
 
-        // Poll every 30 seconds
+        // Poll every 10 seconds
         setInterval(poll, POLL_INTERVAL);
     </script>
 </body>
