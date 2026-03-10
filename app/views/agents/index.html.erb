@@ -501,7 +501,17 @@
 
             <div id="agents-container">
                 <% if @agents.any? %>
-                    <table>
+                    <table style="table-layout:fixed;width:100%;">
+                        <colgroup>
+                            <col style="width:120px;">
+                            <col style="width:130px;">
+                            <col style="width:auto;">
+                            <col style="width:110px;">
+                            <col style="width:150px;">
+                            <col style="width:150px;">
+                            <col style="width:110px;">
+                            <col style="width:160px;">
+                        </colgroup>
                         <thead>
                             <tr>
                                 <th>Agent ID</th>
