@@ -283,6 +283,7 @@
             letter-spacing: 1px;
             white-space: nowrap;
             overflow: hidden;
+            position: relative;
         }
 
         td {
@@ -296,6 +297,18 @@
 
         tbody tr { transition: background 0.15s; }
         tbody tr:hover { background: rgba(59,130,246,0.04); }
+
+        .resize-handle {
+            position: absolute;
+            right: 0; top: 0; bottom: 0;
+            width: 5px;
+            cursor: col-resize;
+            user-select: none;
+            z-index: 1;
+        }
+        .resize-handle:hover, .resize-handle.active {
+            background: rgba(59,130,246,0.5);
+        }
 
         .agent-id-cell {
             font-family: var(--mono);
@@ -505,16 +518,17 @@
 
             <div id="agents-container">
                 <% if @agents.any? %>
-                    <table style="table-layout:fixed;width:100%;">
+                    <div style="overflow:auto;max-height:520px;">
+                    <table style="table-layout:fixed;min-width:100%;">
                         <colgroup>
-                            <col style="width:10%;">
-                            <col style="width:11%;">
-                            <col style="width:18%;">
-                            <col style="width:7%;">
-                            <col style="width:14%;">
-                            <col style="width:15%;">
-                            <col style="width:8%;">
-                            <col style="width:17%;">
+                            <col style="width:130px;">
+                            <col style="width:120px;">
+                            <col style="width:200px;">
+                            <col style="width:90px;">
+                            <col style="width:180px;">
+                            <col style="width:160px;">
+                            <col style="width:110px;">
+                            <col style="width:160px;">
                         </colgroup>
                         <thead>
                             <tr>
@@ -580,6 +594,7 @@
                             <% end %>
                         </tbody>
                     </table>
+                    </div>
                 <% else %>
                     <div class="state-box">
                         <span class="state-icon">🤖</span>
@@ -651,8 +666,37 @@
             if (subtitle) subtitle.textContent = `AUTO-REFRESH: ${countdown}s`;
         }, 1000);
 
-        // Poll every 10 seconds
+        // Poll every 30 seconds
         setInterval(poll, POLL_INTERVAL);
+
+        // Resizable columns
+        function initResizableColumns() {
+            const table = document.querySelector('table');
+            if (!table) return;
+            table.querySelectorAll('th').forEach(th => {
+                const handle = document.createElement('div');
+                handle.className = 'resize-handle';
+                th.appendChild(handle);
+                let startX, startW;
+                handle.addEventListener('mousedown', e => {
+                    startX = e.clientX;
+                    startW = th.offsetWidth;
+                    handle.classList.add('active');
+                    const onMove = e => {
+                        th.style.width = Math.max(60, startW + e.clientX - startX) + 'px';
+                    };
+                    const onUp = () => {
+                        handle.classList.remove('active');
+                        document.removeEventListener('mousemove', onMove);
+                        document.removeEventListener('mouseup', onUp);
+                    };
+                    document.addEventListener('mousemove', onMove);
+                    document.addEventListener('mouseup', onUp);
+                    e.preventDefault();
+                });
+            });
+        }
+        initResizableColumns();
     </script>
 </body>
 </html>
