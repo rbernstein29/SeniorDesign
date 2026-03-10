@@ -232,6 +232,18 @@
         <%= link_to "← Back to Assets", assets_path, class: "back-link" %>
         
         <h1>Asset Configuration</h1>
+
+        <% if flash[:alert] %>
+            <div>
+                <%= flash[:alert] %>
+            </div>
+        <% end %>
+
+        <% if flash[:notice] %>
+            <div>
+                <%= flash[:notice] %>
+            </div>
+        <% end %>
         
         <%= form_with url: assets_path, method: :post, local: true, html: { id: 'scanForm' } do |f| %>
             <div class="form-grid">

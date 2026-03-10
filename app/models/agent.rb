@@ -1,5 +1,6 @@
 class Agent < ApplicationRecord
   before_create :generate_credentials
+  belongs_to :organization
   # No key deployment needed — SSH queries keys directly from the database
   # via AuthorizedKeysCommand on the server (see /usr/local/bin/ssh_authorized_keys)
 

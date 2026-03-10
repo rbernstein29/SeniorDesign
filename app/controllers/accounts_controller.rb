@@ -5,7 +5,7 @@ class AccountsController < ApplicationController
   def create
     ActiveRecord::Base.transaction do 
       @organization = Organization.create!(organization_params)
-      @user = User.create!(user_params.merge(org_id: @organization.id, access_level: "admin"))
+      @user = User.create!(user_params.merge(organization_id: @organization.id, access_level: "admin"))
 
       start_new_session_for @user
       redirect_to root_path
@@ -22,7 +22,7 @@ class AccountsController < ApplicationController
   private
 
   def user_params
-    params.require(:user).permit(:name, :email_address, :password, :password_confirmation, :org_id, :access_level)
+    params.require(:user).permit(:name, :email_address, :password, :password_confirmation, :organization_id, :access_level)
   end
 
   def organization_params
