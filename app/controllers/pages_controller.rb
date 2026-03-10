@@ -25,5 +25,8 @@ class PagesController < ApplicationController
   end
 
   def settings
+    @org = Organization.find_by(id: Current.session.user.org_id)
+  rescue
+    @org = nil
   end
 end

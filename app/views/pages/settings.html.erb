@@ -361,6 +361,35 @@
                 </div>
             </div>
 
+            <!-- Organization -->
+            <div class="settings-card">
+                <div class="card-header">
+                    <div class="card-header-icon">&#x1F3E2;</div>
+                    <div>
+                        <div class="card-title">Organization</div>
+                        <div class="card-subtitle">ORG PROFILE</div>
+                    </div>
+                </div>
+                <div class="settings-body">
+                    <div class="field-group">
+                        <div class="field-label">Organization Name</div>
+                        <input class="field-input" type="text" value="<%= @org&.org_name || '—' %>" disabled>
+                    </div>
+                    <div class="field-group">
+                        <div class="field-label">Domain</div>
+                        <input class="field-input mono" type="text" value="<%= @org&.org_domain || '—' %>" disabled>
+                    </div>
+                    <div class="field-group">
+                        <div class="field-label">Org ID</div>
+                        <input class="field-input mono" type="text" value="<%= Current.session.user.org_id %>" disabled>
+                    </div>
+                    <div class="field-group">
+                        <div class="field-label">Access Level</div>
+                        <input class="field-input mono" type="text" value="<%= Current.session.user.access_level %>" disabled>
+                    </div>
+                </div>
+            </div>
+
             <!-- Scanner Defaults -->
             <div class="settings-card">
                 <div class="card-header">
