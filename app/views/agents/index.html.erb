@@ -580,16 +580,16 @@
     </div>
 
     <script>
-        // Auto-refresh the page every 30 seconds to poll agent status
-        setTimeout(() => location.reload(), 30000);
+        // Auto-refresh the page every 15 seconds to poll agent status
+        setTimeout(() => location.reload(), 15000);
 
         // Live countdown display in the subtitle
-        let countdown = 30;
+        let countdown = 15;
         const subtitle = document.querySelector('.card-subtitle');
         setInterval(() => {
             countdown--;
             if (subtitle) subtitle.textContent = `AUTO-REFRESH: ${countdown}s`;
-            if (countdown <= 0) countdown = 30;
+            if (countdown <= 0) countdown = 15;
         }, 1000);
     </script>
 </body>
