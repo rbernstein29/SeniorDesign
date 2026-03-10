@@ -7,4 +7,7 @@ class User < ApplicationRecord
   validates :email_address, uniqueness: { scope: :organization_id, case_sensitive: false, message: "is already registered in this organization" }
 
   self.table_name = "vuln_scanner.users"
+
+  # Explicitly declare org_id — AR column introspection can miss it on schema-prefixed tables
+  attribute :org_id, :integer
 end
