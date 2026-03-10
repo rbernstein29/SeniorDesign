@@ -1,5 +1,6 @@
 class AgentsController < ApplicationController
   skip_before_action :verify_authenticity_token
+  allow_unauthenticated_access only: [:heartbeat]
 
   # GET /agents
   def index
