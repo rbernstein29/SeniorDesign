@@ -103,6 +103,28 @@ class AgentsController < ApplicationController
               disposition: 'attachment'
   end
 
+  # GET /agents/status.json
+  def status
+    agents = Agent.where(organization_id: current_org_id)
+    render json: {
+      stats: {
+        total:        agents.count,
+        connected:    agents.count(&:connected?),
+        offline:      agents.count { |a| !a.connected? },
+        tunnel_ports: agents.count
+      },
+      agents: agents.map do |a|
+        {
+          id:        a.agent_id,
+          connected: a.connected?,
+          last_seen: a.last_seen ? "#{helpers.time_ago_in_words(a.last_seen)} ago" : "Never",
+          platform:  a.platform,
+          hostname:  a.hostname
+        }
+      end
+    }
+  end
+
   # POST /agents/:agent_id/heartbeat
   def heartbeat
     agent = Agent.find_by!(agent_id: params[:agent_id])

@@ -23,6 +23,9 @@ Rails.application.routes.draw do
     member do
       get :download
     end
+    collection do
+      get :status
+    end
   end
   post 'agents/:agent_id/heartbeat', to: 'agents#heartbeat', as: :agent_heartbeat
 

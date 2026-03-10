@@ -462,19 +462,19 @@
         <div class="stats-grid">
             <div class="stat-card">
                 <div class="stat-label">Total Agents</div>
-                <div class="stat-number"><%= @agents.count %></div>
+                <div class="stat-number" data-stat="total"><%= @agents.count %></div>
             </div>
             <div class="stat-card green">
                 <div class="stat-label">Connected</div>
-                <div class="stat-number"><%= @agents.count(&:connected?) %></div>
+                <div class="stat-number" data-stat="connected"><%= @agents.count(&:connected?) %></div>
             </div>
             <div class="stat-card orange">
                 <div class="stat-label">Offline</div>
-                <div class="stat-number"><%= @agents.count { |a| !a.connected? } %></div>
+                <div class="stat-number" data-stat="offline"><%= @agents.count { |a| !a.connected? } %></div>
             </div>
             <div class="stat-card purple">
                 <div class="stat-label">Tunnel Ports</div>
-                <div class="stat-number"><%= @agents.count %></div>
+                <div class="stat-number" data-stat="tunnel_ports"><%= @agents.count %></div>
             </div>
         </div>
 
@@ -517,13 +517,13 @@
                         <tbody>
                             <% @agents.each do |agent| %>
                                 <% connected = agent.connected? %>
-                                <tr>
+                                <tr data-agent-id="<%= agent.agent_id %>">
                                     <td>
                                         <span class="agent-id-cell">
                                             <%= agent.agent_id&.first(8) %>...
                                         </span>
                                     </td>
-                                    <td>
+                                    <td data-field="status">
                                         <span class="status-badge <%= connected ? 'status-connected' : 'status-disconnected' %>">
                                             <span class="status-dot <%= connected ? 'dot-green' : 'dot-gray' %>"></span>
                                             <%= connected ? 'Connected' : 'Offline' %>
@@ -538,13 +538,13 @@
                                             <% end %>
                                         </span>
                                     </td>
-                                    <td>
+                                    <td data-field="platform">
                                         <span class="platform-tag">
                                             <%= agent.platform || '—' %>
                                         </span>
                                     </td>
-                                    <td><%= agent.hostname || '—' %></td>
-                                    <td>
+                                    <td data-field="hostname"><%= agent.hostname || '—' %></td>
+                                    <td data-field="last_seen">
                                         <span style="font-family: var(--mono); font-size: 12px; color: var(--muted);">
                                             <%= agent.last_seen ? time_ago_in_words(agent.last_seen) + ' ago' : 'Never' %>
                                         </span>
@@ -580,17 +580,65 @@
     </div>
 
     <script>
-        // Auto-refresh the page every 15 seconds to poll agent status
-        setTimeout(() => location.reload(), 15000);
-
-        // Live countdown display in the subtitle
-        let countdown = 15;
+        const POLL_INTERVAL = 5000;
+        let countdown = 5;
         const subtitle = document.querySelector('.card-subtitle');
+
+        function updateStats(stats) {
+            ['total', 'connected', 'offline', 'tunnel_ports'].forEach(key => {
+                const el = document.querySelector(`[data-stat="${key}"]`);
+                if (el && stats[key] !== undefined) el.textContent = stats[key];
+            });
+        }
+
+        function updateAgentRow(agent) {
+            const row = document.querySelector(`tr[data-agent-id="${agent.id}"]`);
+            if (!row) return;
+
+            const statusCell = row.querySelector('[data-field="status"]');
+            if (statusCell) {
+                statusCell.innerHTML = `
+                    <span class="status-badge ${agent.connected ? 'status-connected' : 'status-disconnected'}">
+                        <span class="status-dot ${agent.connected ? 'dot-green' : 'dot-gray'}"></span>
+                        ${agent.connected ? 'Connected' : 'Offline'}
+                    </span>`;
+            }
+
+            const lastSeenCell = row.querySelector('[data-field="last_seen"]');
+            if (lastSeenCell) {
+                lastSeenCell.innerHTML = `<span style="font-family:var(--mono);font-size:12px;color:var(--muted);">${agent.last_seen}</span>`;
+            }
+
+            const platformCell = row.querySelector('[data-field="platform"]');
+            if (platformCell && agent.platform) {
+                platformCell.innerHTML = `<span class="platform-tag">${agent.platform}</span>`;
+            }
+
+            const hostnameCell = row.querySelector('[data-field="hostname"]');
+            if (hostnameCell && agent.hostname) {
+                hostnameCell.textContent = agent.hostname;
+            }
+        }
+
+        function poll() {
+            fetch('/agents/status.json', { headers: { 'Accept': 'application/json' } })
+                .then(r => r.json())
+                .then(data => {
+                    updateStats(data.stats);
+                    data.agents.forEach(updateAgentRow);
+                })
+                .catch(() => {}); // silent fail — stale data is fine
+        }
+
+        // Countdown ticker
         setInterval(() => {
             countdown--;
             if (subtitle) subtitle.textContent = `AUTO-REFRESH: ${countdown}s`;
-            if (countdown <= 0) countdown = 15;
+            if (countdown <= 0) countdown = 5;
         }, 1000);
+
+        // Poll every 5 seconds
+        setInterval(poll, POLL_INTERVAL);
     </script>
 </body>
 </html>
