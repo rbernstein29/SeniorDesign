@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.0].define(version: 2026_03_02_163529) do
+ActiveRecord::Schema[8.0].define(version: 2026_03_10_171929) do
   create_schema "vuln_scanner"
 
   # These are extensions that must be enabled in order to support this database
@@ -29,6 +29,8 @@ ActiveRecord::Schema[8.0].define(version: 2026_03_02_163529) do
     t.datetime "last_seen"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
+    t.string "network_range"
+    t.integer "site_id"
     t.index ["agent_id"], name: "index_agents_on_agent_id", unique: true
   end
 
@@ -44,7 +46,7 @@ ActiveRecord::Schema[8.0].define(version: 2026_03_02_163529) do
   end
 
   create_table "assets", id: :serial, force: :cascade do |t|
-    t.integer "org_id", null: false
+    t.integer "organization_id", null: false
     t.inet "ip_address", null: false
     t.string "hostname", limit: 255
     t.string "domain", limit: 255
@@ -54,11 +56,13 @@ ActiveRecord::Schema[8.0].define(version: 2026_03_02_163529) do
     t.datetime "last_seen", precision: nil
     t.datetime "created_at", precision: nil, default: -> { "CURRENT_TIMESTAMP" }
     t.datetime "updated_at", precision: nil, default: -> { "CURRENT_TIMESTAMP" }
+    t.jsonb "scan_config", default: {}
+    t.integer "site_id"
     t.index ["ip_address"], name: "idx_asset_ip"
     t.index ["is_active"], name: "idx_asset_active", where: "(is_active = true)"
-    t.index ["org_id"], name: "idx_asset_org"
+    t.index ["organization_id"], name: "idx_asset_org"
     t.index ["os_id"], name: "idx_asset_os"
-    t.unique_constraint ["org_id", "ip_address"], name: "assets_org_id_ip_address_key"
+    t.unique_constraint ["organization_id", "ip_address"], name: "assets_org_id_ip_address_key"
   end
 
   create_table "exploit_os_compatibility", id: :serial, force: :cascade do |t|
@@ -129,14 +133,14 @@ ActiveRecord::Schema[8.0].define(version: 2026_03_02_163529) do
     t.string "org_domain", limit: 255
     t.datetime "created_at", precision: nil, default: -> { "CURRENT_TIMESTAMP" }
     t.datetime "updated_at", precision: nil, default: -> { "CURRENT_TIMESTAMP" }
-
+    t.index "lower((org_name)::text)", name: "index_organizations_on_lower_org_name", unique: true
     t.unique_constraint ["org_name"], name: "organizations_org_name_key"
   end
 
   create_table "reports", id: :serial, force: :cascade do |t|
     t.string "report_name", limit: 255, null: false
     t.integer "scan_id"
-    t.integer "org_id", null: false
+    t.integer "organization_id", null: false
     t.integer "generated_by"
     t.string "report_type", limit: 50
     t.string "report_format", limit: 20
@@ -144,7 +148,7 @@ ActiveRecord::Schema[8.0].define(version: 2026_03_02_163529) do
     t.string "file_path", limit: 500
     t.datetime "generated_at", precision: nil, default: -> { "CURRENT_TIMESTAMP" }
     t.bigint "user_id", null: false
-    t.index ["org_id"], name: "idx_report_org"
+    t.index ["organization_id"], name: "idx_report_org"
     t.index ["scan_id"], name: "idx_report_scan"
     t.index ["user_id"], name: "index_reports_on_user_id"
   end
@@ -205,6 +209,14 @@ ActiveRecord::Schema[8.0].define(version: 2026_03_02_163529) do
     t.index ["user_id"], name: "index_sessions_on_user_id"
   end
 
+  create_table "sites", force: :cascade do |t|
+    t.integer "org_id", null: false
+    t.string "name", null: false
+    t.string "network_range"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+  end
+
   create_table "use_cases", id: :serial, force: :cascade do |t|
     t.string "use_case_name", limit: 100, null: false
     t.text "description"
@@ -218,15 +230,16 @@ ActiveRecord::Schema[8.0].define(version: 2026_03_02_163529) do
     t.string "name", limit: 200, null: false
     t.string "email_address", limit: 100, null: false
     t.string "password_digest", limit: 255, null: false
-    t.integer "org_id", null: false
+    t.integer "organization_id", null: false
     t.string "access_level", limit: 20, null: false
     t.boolean "is_active", default: true
     t.datetime "created_at", precision: nil, default: -> { "CURRENT_TIMESTAMP" }
     t.datetime "updated_at", precision: nil, default: -> { "CURRENT_TIMESTAMP" }
     t.string "api_key"
+    t.index "lower((email_address)::text), organization_id", name: "index_users_on_email_and_org", unique: true
     t.index ["api_key"], name: "index_users_on_api_key", unique: true
     t.index ["email_address"], name: "idx_user_email"
-    t.index ["org_id"], name: "idx_user_org"
+    t.index ["organization_id"], name: "idx_user_org"
     t.check_constraint "access_level::text = ANY (ARRAY['admin'::character varying::text, 'read_only'::character varying::text])", name: "users_access_level_check"
     t.unique_constraint ["email_address"], name: "users_email_key"
   end
@@ -234,7 +247,7 @@ ActiveRecord::Schema[8.0].define(version: 2026_03_02_163529) do
   add_foreign_key "asset_use_cases", "assets", name: "asset_use_cases_asset_id_fkey", on_delete: :cascade
   add_foreign_key "asset_use_cases", "use_cases", name: "asset_use_cases_use_case_id_fkey", on_delete: :cascade
   add_foreign_key "assets", "operating_systems", column: "os_id", name: "assets_os_id_fkey", on_delete: :nullify
-  add_foreign_key "assets", "organizations", column: "org_id", name: "assets_org_id_fkey", on_delete: :cascade
+  add_foreign_key "assets", "organizations", name: "assets_org_id_fkey", on_delete: :cascade
   add_foreign_key "exploit_os_compatibility", "exploits", name: "exploit_os_compatibility_exploit_id_fkey", on_delete: :cascade
   add_foreign_key "exploit_os_compatibility", "operating_systems", column: "os_id", name: "exploit_os_compatibility_os_id_fkey", on_delete: :cascade
   add_foreign_key "exploit_use_case_relevance", "exploits", name: "exploit_use_case_relevance_exploit_id_fkey", on_delete: :cascade
@@ -243,7 +256,7 @@ ActiveRecord::Schema[8.0].define(version: 2026_03_02_163529) do
   add_foreign_key "findings", "exploits", name: "findings_exploit_id_fkey", on_delete: :cascade
   add_foreign_key "findings", "scans", name: "findings_scan_id_fkey", on_delete: :cascade
   add_foreign_key "findings", "users", column: "remediated_by", name: "findings_remediated_by_fkey", on_delete: :nullify
-  add_foreign_key "reports", "organizations", column: "org_id", name: "reports_org_id_fkey", on_delete: :cascade
+  add_foreign_key "reports", "organizations", name: "reports_org_id_fkey", on_delete: :cascade
   add_foreign_key "reports", "scans", name: "reports_scan_id_fkey", on_delete: :cascade
   add_foreign_key "reports", "users"
   add_foreign_key "reports", "users", column: "generated_by", name: "reports_generated_by_fkey", on_delete: :nullify
@@ -255,5 +268,5 @@ ActiveRecord::Schema[8.0].define(version: 2026_03_02_163529) do
   add_foreign_key "scans", "organizations", column: "org_id", name: "scans_org_id_fkey", on_delete: :cascade
   add_foreign_key "scans", "users", column: "initiated_by", name: "scans_initiated_by_fkey", on_delete: :nullify
   add_foreign_key "sessions", "users"
-  add_foreign_key "users", "organizations", column: "org_id", name: "users_org_id_fkey", on_delete: :cascade
+  add_foreign_key "users", "organizations", name: "users_org_id_fkey", on_delete: :cascade
 end
