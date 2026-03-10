@@ -17,6 +17,8 @@ bootsnap/
 # Database (SQLite)
 /db/*.sqlite3
 /db/*.sqlite3-journal
+# db migrations
+/db/migrate/*.rb
 
 # Rails environment configuration (Sensitive)
 /config/master.key
