@@ -163,7 +163,7 @@ RAILS_SERVER    = "#{server_ip}:#{server_port}"  # Rails app for heartbeats
 TUNNEL_PORT     = #{agent.tunnel_port}
 SSH_KEY_FILE    = "./agent_key"
 SOCKS_PORT      = 1080
-HEARTBEAT_INTERVAL = 15
+HEARTBEAT_INTERVAL = 30
 
 class SimpleSocks5Server:
     """Minimal SOCKS5 proxy server for network scanning"""

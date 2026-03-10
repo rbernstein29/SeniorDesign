@@ -580,8 +580,8 @@
     </div>
 
     <script>
-        const POLL_INTERVAL = 5000;
-        let countdown = 5;
+        const POLL_INTERVAL = 30000;
+        let countdown = 30;
         const subtitle = document.querySelector('.card-subtitle');
 
         function updateStats(stats) {
@@ -627,7 +627,7 @@
                     updateStats(data.stats);
                     data.agents.forEach(updateAgentRow);
                 })
-                .catch(() => {}); // silent fail — stale data is fine
+                .catch(err => console.error('Agent status poll failed:', err));
         }
 
         // Countdown ticker
