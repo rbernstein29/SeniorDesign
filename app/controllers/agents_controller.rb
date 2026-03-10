@@ -87,6 +87,7 @@ class AgentsController < ApplicationController
     # Create ZIP
     require 'zip'
     zip_path = "/tmp/scanner-agent-#{agent.agent_id}.zip"
+    FileUtils.rm_f(zip_path)
 
     Zip::File.open(zip_path, create: true) do |zipfile|
       Dir["#{temp_dir}/*"].each do |file|
