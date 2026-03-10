@@ -633,11 +633,11 @@
         // Countdown ticker
         setInterval(() => {
             countdown--;
+            if (countdown <= 0) countdown = 30;
             if (subtitle) subtitle.textContent = `AUTO-REFRESH: ${countdown}s`;
-            if (countdown <= 0) countdown = 5;
         }, 1000);
 
-        // Poll every 5 seconds
+        // Poll every 30 seconds
         setInterval(poll, POLL_INTERVAL);
     </script>
 </body>

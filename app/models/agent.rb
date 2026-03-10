@@ -19,9 +19,9 @@ class Agent < ApplicationRecord
     site.assets.pluck(:ip_address).map(&:to_s)
   end
 
-  # Check if connected (last heartbeat within 75 seconds — gives 30s heartbeat a safe buffer)
+  # Check if connected (last heartbeat within 40 seconds — one missed 30s heartbeat = offline)
   def connected?
-    last_seen.present? && last_seen > 75.seconds.ago
+    last_seen.present? && last_seen > 40.seconds.ago
   end
   
   # Update heartbeat
