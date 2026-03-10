@@ -18,7 +18,10 @@ class PagesController < ApplicationController
   end
 
   def reports
-    @reports = Report.all.order(generated_at: :desc)
+    @reports = Report.where(org_id: Current.session.user.org_id)
+                     .order(generated_at: :desc)
+  rescue
+    @reports = []
   end
 
   def settings
