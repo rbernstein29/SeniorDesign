@@ -281,6 +281,8 @@
             color: var(--muted);
             text-transform: uppercase;
             letter-spacing: 1px;
+            white-space: nowrap;
+            overflow: hidden;
         }
 
         td {
@@ -288,6 +290,9 @@
             border-top: 1px solid rgba(255,255,255,0.04);
             font-size: 13px;
             color: #cbd5e1;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
         }
 
         tbody tr { transition: background 0.15s; }
