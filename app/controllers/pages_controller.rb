@@ -1,4 +1,4 @@
-# app/controllers/pages_controller.rb
+﻿# app/controllers/pages_controller.rb
 class PagesController < ApplicationController
   allow_unauthenticated_access only: [:login]
 
@@ -18,6 +18,10 @@ class PagesController < ApplicationController
   end
 
   def reports
+    @reports = Report.where(org_id: Current.session.user.org_id)
+                     .order(generated_at: :desc)
+  rescue
+    @reports = []
   end
 
   def settings
