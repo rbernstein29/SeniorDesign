@@ -8,6 +8,7 @@ Rails.application.routes.draw do
   get "/login",    to: "pages#login"
   get "/home",     to: "pages#home"
   get "/scanner",  to: "pages#scanner"
+  post "/scanner/trigger", to: "pages#trigger_scan", as: :trigger_scan
   get "/scans",    to: "pages#scans",    as: :scans
   get "/reports",  to: "pages#reports",  as: :reports
   get "/settings", to: "pages#settings", as: :settings

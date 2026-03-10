@@ -11,7 +11,31 @@ class PagesController < ApplicationController
   end
 
   def scanner
-    # renders app/views/pages/scanner.html.erb (to be built)
+  end
+
+  def trigger_scan
+    unless Current.user.access_level == "admin"
+      redirect_to scanner_path, alert: "You do not have permission to perform scans."
+      return
+    end
+
+    org_id = Current.user.organization_id
+    exploit_ids_str = params[:exploit_ids].presence || '1-5'
+    exploit_range = []
+
+    exploit_ids_str.split(',').each do |part|
+      if part.include?('-')
+        start_id, end_id = part.split('-').map(&:to_i)
+        exploit_range.concat((start_id..end_id).to_a)
+      else
+        exploit_range << part.to_i
+      end
+    end
+    exploit_range.uniq!
+    exploit_range.sort!
+
+    ScanJob.perform_later(org_id, exploit_range, Current.user.id)
+    redirect_to scanner_path, notice: "Scan queued. Results will appear in Reports when complete."
   end
 
   def scans
