@@ -326,6 +326,11 @@
       <span class="nav-label">Agents</span>
     </a>
 
+    <a href="<%= (sites_path rescue '#') %>" class="sidebar-nav-item <%= current_page == 'sites' ? 'active' : '' %>">
+      <span class="nav-icon">🏢</span>
+      <span class="nav-label">Sites</span>
+    </a>
+
     <div class="sidebar-section-label" style="margin-top:8px;">Reports & Config</div>
 
     <a href="<%= (reports_path rescue '#') %>" class="sidebar-nav-item <%= current_page == 'reports' ? 'active' : '' %>">
