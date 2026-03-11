@@ -186,9 +186,17 @@
     /* ── Stats Row ── */
     .stats-row {
       display: grid;
-      grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+      grid-template-columns: repeat(5, 1fr);
       gap: 16px;
       margin-bottom: 40px;
+    }
+
+    @media (max-width: 1000px) {
+      .stats-row { grid-template-columns: repeat(3, 1fr); }
+    }
+
+    @media (max-width: 640px) {
+      .stats-row { grid-template-columns: repeat(2, 1fr); }
     }
 
     .stat-card {
@@ -220,6 +228,7 @@
     .stat-card.cyan   { --accent: var(--cyan); }
     .stat-card.blue   { --accent: var(--blue); }
     .stat-card.violet { --accent: #a78bfa; }
+    .stat-card.teal   { --accent: #2dd4bf; }
 
     .stat-label {
       font-family: var(--mono);
@@ -585,32 +594,60 @@
     </div>
 
     <!-- Stats -->
+    <% connected = @agents&.count(&:connected?) || 0 %>
     <div class="stats-row">
+      <!-- Row 1 -->
       <div class="stat-card green">
         <div class="stat-label">Total Assets</div>
         <div class="stat-value"><%= @assets&.count || 0 %></div>
         <div class="stat-delta up">Configured targets</div>
+      </div>
+      <div class="stat-card orange">
+        <div class="stat-label">Scan-Ready Assets</div>
+        <% scan_ready = @assets&.count { |a| a.scan_config.present? } || 0 %>
+        <div class="stat-value"><%= scan_ready %></div>
+        <div class="stat-delta">With scan config</div>
+      </div>
+      <div class="stat-card cyan">
+        <div class="stat-label">Total Sites</div>
+        <div class="stat-value"><%= @sites&.count || 0 %></div>
+        <div class="stat-delta">Network sites</div>
       </div>
       <div class="stat-card blue">
         <div class="stat-label">Total Agents</div>
         <div class="stat-value"><%= @agents&.count || 0 %></div>
         <div class="stat-delta">Registered agents</div>
       </div>
-      <div class="stat-card cyan">
+      <div class="stat-card green">
         <div class="stat-label">Connected Agents</div>
-        <% connected = @agents&.count(&:connected?) || 0 %>
         <div class="stat-value"><%= connected %></div>
         <div class="stat-delta <%= connected > 0 ? 'up' : '' %>"><%= connected > 0 ? 'Online now' : 'None online' %></div>
       </div>
-      <div class="stat-card orange">
-        <div class="stat-label">Total Sites</div>
-        <div class="stat-value"><%= @sites&.count || 0 %></div>
-        <div class="stat-delta">Network sites</div>
+      <!-- Row 2 -->
+      <div class="stat-card red">
+        <div class="stat-label">Offline Agents</div>
+        <% offline = (@agents&.count || 0) - connected %>
+        <div class="stat-value"><%= offline %></div>
+        <div class="stat-delta <%= offline > 0 ? 'bad' : '' %>"><%= offline > 0 ? 'Not reachable' : 'All online' %></div>
       </div>
       <div class="stat-card violet">
         <div class="stat-label">Total Reports</div>
         <div class="stat-value"><%= @reports&.count || 0 %></div>
         <div class="stat-delta">Scan reports</div>
+      </div>
+      <div class="stat-card blue">
+        <div class="stat-label">Last Scan</div>
+        <% if @last_scan %>
+          <div class="stat-value" style="font-size:18px;line-height:1.3;margin-top:4px;"><%= time_ago_in_words(@last_scan) %> ago</div>
+        <% else %>
+          <div class="stat-value" style="font-size:22px;">Never</div>
+        <% end %>
+        <div class="stat-delta">Most recent scan</div>
+      </div>
+      <div class="stat-card teal">
+        <div class="stat-label">Org Users</div>
+        <div class="stat-value"><%= @users_count || 0 %></div>
+        <div class="stat-delta">Team members</div>
       </div>
       <div class="stat-card red">
         <div class="stat-label">Active Scans</div>

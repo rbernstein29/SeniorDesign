@@ -7,11 +7,14 @@ class PagesController < ApplicationController
   end
 
   def home
-    org_id   = current_org_id
-    @assets  = Asset.where(organization_id: org_id).order(created_at: :desc) rescue []
-    @agents  = Agent.where(organization_id: org_id) rescue []
-    @sites   = Site.where(organization_id: org_id) rescue []
-    @reports = Report.where(user_id: User.where(organization_id: org_id).select(:id)) rescue []
+    org_id       = current_org_id
+    @assets      = Asset.where(organization_id: org_id).order(created_at: :desc) rescue []
+    @agents      = Agent.where(organization_id: org_id) rescue []
+    @sites       = Site.where(organization_id: org_id) rescue []
+    org_user_ids = User.where(organization_id: org_id).select(:id)
+    @reports     = Report.where(user_id: org_user_ids) rescue []
+    @users_count = User.where(organization_id: org_id).count rescue 0
+    @last_scan   = Report.where(user_id: org_user_ids).maximum(:generated_at) rescue nil
   end
 
   def scanner
