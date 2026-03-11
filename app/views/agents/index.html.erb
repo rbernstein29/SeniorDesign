@@ -520,17 +520,17 @@
             <div id="agents-container">
                 <% if @agents.any? %>
                     <div style="overflow:auto;max-height:520px;">
-                    <table style="table-layout:fixed;">
+                    <table style="width:100%;">
                         <thead>
                             <tr>
-                                <th style="width:130px;">Agent ID</th>
-                                <th style="width:120px;">Status</th>
-                                <th style="width:200px;">Site</th>
-                                <th style="width:90px;">Platform</th>
-                                <th style="width:180px;">Hostname</th>
-                                <th style="width:160px;">Last Seen</th>
-                                <th style="width:110px;">Tunnel Port</th>
-                                <th style="width:160px;">Actions</th>
+                                <th>Agent ID</th>
+                                <th>Status</th>
+                                <th>Site</th>
+                                <th>Platform</th>
+                                <th>Hostname</th>
+                                <th>Last Seen</th>
+                                <th>Tunnel Port</th>
+                                <th>Actions</th>
                             </tr>
                         </thead>
                         <tbody>
@@ -665,10 +665,10 @@
             const table = document.querySelector('table');
             if (!table) return;
 
-            // Lock every column at its current rendered pixel width
+            // Snapshot auto-computed widths, then switch to fixed layout
             const ths = Array.from(table.querySelectorAll('th'));
             ths.forEach(th => { th.style.width = th.offsetWidth + 'px'; });
-            // Lock table width at max(current width, sum of columns)
+            table.style.tableLayout = 'fixed';
             table.style.width = Math.max(
                 table.offsetWidth,
                 ths.reduce((sum, th) => sum + th.offsetWidth, 0)

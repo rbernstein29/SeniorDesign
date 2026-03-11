@@ -358,17 +358,17 @@
 
             <% if @assets.any? %>
                 <div style="overflow:auto;max-height:520px;">
-                <table style="table-layout:fixed;">
+                <table style="width:100%;">
                     <thead>
                         <tr>
-                            <th style="width:60px;">#</th>
-                            <th style="width:160px;">Network</th>
-                            <th style="width:130px;">Scan Mode</th>
-                            <th style="width:140px;">Asset Type</th>
-                            <th style="width:100px;">OS</th>
-                            <th style="width:130px;">Scan Type</th>
-                            <th style="width:100px;">Ports</th>
-                            <th style="width:140px;">Actions</th>
+                            <th>#</th>
+                            <th>Network</th>
+                            <th>Scan Mode</th>
+                            <th>Asset Type</th>
+                            <th>OS</th>
+                            <th>Scan Type</th>
+                            <th>Ports</th>
+                            <th>Actions</th>
                         </tr>
                     </thead>
                     <tbody>
@@ -411,6 +411,7 @@
             if (!table) return;
             const ths = Array.from(table.querySelectorAll('th'));
             ths.forEach(th => { th.style.width = th.offsetWidth + 'px'; });
+            table.style.tableLayout = 'fixed';
             table.style.width = Math.max(table.offsetWidth, ths.reduce((s, th) => s + th.offsetWidth, 0)) + 'px';
             ths.forEach(th => {
                 const handle = document.createElement('div');
