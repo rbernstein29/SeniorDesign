@@ -283,6 +283,7 @@
             letter-spacing: 1px;
             white-space: nowrap;
             position: relative;
+            box-sizing: border-box;
         }
 
         td {
@@ -292,6 +293,7 @@
             color: #cbd5e1;
             white-space: nowrap;
             overflow: hidden;
+            box-sizing: border-box;
         }
 
         tbody tr { transition: background 0.15s; }
@@ -518,7 +520,7 @@
             <div id="agents-container">
                 <% if @agents.any? %>
                     <div style="overflow:auto;max-height:520px;">
-                    <table style="table-layout:fixed;width:auto;min-width:100%;">
+                    <table style="table-layout:fixed;">
                         <thead>
                             <tr>
                                 <th style="width:130px;">Agent ID</th>
@@ -658,21 +660,37 @@
         // Poll every 30 seconds
         setInterval(poll, POLL_INTERVAL);
 
-        // Resizable columns
+        // Resizable columns — Excel-style: only dragged column changes, table grows/shrinks
         function initResizableColumns() {
             const table = document.querySelector('table');
             if (!table) return;
-            table.querySelectorAll('th').forEach(th => {
+
+            // Lock every column at its current rendered pixel width
+            const ths = Array.from(table.querySelectorAll('th'));
+            ths.forEach(th => { th.style.width = th.offsetWidth + 'px'; });
+            // Lock table width at max(current width, sum of columns)
+            table.style.width = Math.max(
+                table.offsetWidth,
+                ths.reduce((sum, th) => sum + th.offsetWidth, 0)
+            ) + 'px';
+
+            ths.forEach(th => {
                 const handle = document.createElement('div');
                 handle.className = 'resize-handle';
                 th.appendChild(handle);
-                let startX, startW;
+
+                let startX, startW, startTableW;
                 handle.addEventListener('mousedown', e => {
-                    startX = e.clientX;
-                    startW = th.offsetWidth;
+                    startX      = e.clientX;
+                    startW      = th.offsetWidth;
+                    startTableW = parseInt(table.style.width, 10);
                     handle.classList.add('active');
+
                     const onMove = e => {
-                        th.style.width = Math.max(60, startW + e.clientX - startX) + 'px';
+                        const newW  = Math.max(40, startW + (e.clientX - startX));
+                        const delta = newW - startW;
+                        th.style.width    = newW + 'px';
+                        table.style.width = (startTableW + delta) + 'px';
                     };
                     const onUp = () => {
                         handle.classList.remove('active');
