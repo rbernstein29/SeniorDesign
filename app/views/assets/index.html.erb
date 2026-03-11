@@ -189,32 +189,12 @@
             letter-spacing: 1px;
         }
 
-        table {
-            width: 100%;
-            border-collapse: collapse;
-        }
-
-        thead {
-            background: rgba(255,255,255,0.03);
-        }
-
-        th {
-            padding: 14px 20px;
-            text-align: left;
-            font-family: var(--mono);
-            font-weight: 600;
-            font-size: 10px;
-            color: var(--muted);
-            text-transform: uppercase;
-            letter-spacing: 1px;
-        }
-
-        td {
-            padding: 16px 20px;
-            border-top: 1px solid rgba(255,255,255,0.04);
-            font-size: 13px;
-            color: #cbd5e1;
-        }
+        table { border-collapse: collapse; }
+        thead { background: rgba(255,255,255,0.03); }
+        th { padding: 14px 20px; text-align: left; font-family: var(--mono); font-weight: 600; font-size: 10px; color: var(--muted); text-transform: uppercase; letter-spacing: 1px; white-space: nowrap; position: relative; box-sizing: border-box; }
+        td { padding: 16px 20px; border-top: 1px solid rgba(255,255,255,0.04); font-size: 13px; color: #cbd5e1; white-space: nowrap; overflow: hidden; box-sizing: border-box; }
+        .resize-handle { position: absolute; right: 0; top: 0; bottom: 0; width: 5px; cursor: col-resize; user-select: none; z-index: 1; }
+        .resize-handle:hover, .resize-handle.active { background: rgba(59,130,246,0.5); }
 
         tbody tr {
             transition: background 0.15s;
@@ -377,17 +357,18 @@
             </div>
 
             <% if @assets.any? %>
-                <table>
+                <div style="overflow:auto;max-height:520px;">
+                <table style="table-layout:fixed;">
                     <thead>
                         <tr>
-                            <th>#</th>
-                            <th>Network</th>
-                            <th>Scan Mode</th>
-                            <th>Asset Type</th>
-                            <th>OS</th>
-                            <th>Scan Type</th>
-                            <th>Ports</th>
-                            <th>Actions</th>
+                            <th style="width:60px;">#</th>
+                            <th style="width:160px;">Network</th>
+                            <th style="width:130px;">Scan Mode</th>
+                            <th style="width:140px;">Asset Type</th>
+                            <th style="width:100px;">OS</th>
+                            <th style="width:130px;">Scan Type</th>
+                            <th style="width:100px;">Ports</th>
+                            <th style="width:140px;">Actions</th>
                         </tr>
                     </thead>
                     <tbody>
@@ -413,6 +394,7 @@
                         <% end %>
                     </tbody>
                 </table>
+                </div>
             <% else %>
                 <div class="empty-state">
                     <div class="empty-state-icon">🖥️</div>
@@ -423,5 +405,35 @@
             <% end %>
         </div>
     </div>
+    <script>
+        function initResizableColumns() {
+            const table = document.querySelector('table');
+            if (!table) return;
+            const ths = Array.from(table.querySelectorAll('th'));
+            ths.forEach(th => { th.style.width = th.offsetWidth + 'px'; });
+            table.style.width = Math.max(table.offsetWidth, ths.reduce((s, th) => s + th.offsetWidth, 0)) + 'px';
+            ths.forEach(th => {
+                const handle = document.createElement('div');
+                handle.className = 'resize-handle';
+                th.appendChild(handle);
+                let startX, startW, startTableW;
+                handle.addEventListener('mousedown', e => {
+                    startX = e.clientX; startW = th.offsetWidth;
+                    startTableW = parseInt(table.style.width, 10);
+                    handle.classList.add('active');
+                    const onMove = e => {
+                        const newW = Math.max(40, startW + (e.clientX - startX));
+                        th.style.width = newW + 'px';
+                        table.style.width = (startTableW + (newW - startW)) + 'px';
+                    };
+                    const onUp = () => { handle.classList.remove('active'); document.removeEventListener('mousemove', onMove); document.removeEventListener('mouseup', onUp); };
+                    document.addEventListener('mousemove', onMove);
+                    document.addEventListener('mouseup', onUp);
+                    e.preventDefault();
+                });
+            });
+        }
+        initResizableColumns();
+    </script>
 </body>
 </html>
