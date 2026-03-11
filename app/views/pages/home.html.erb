@@ -186,13 +186,9 @@
     /* ── Stats Row ── */
     .stats-row {
       display: grid;
-      grid-template-columns: repeat(4, 1fr);
+      grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
       gap: 16px;
       margin-bottom: 40px;
-    }
-
-    @media (max-width: 900px) {
-      .stats-row { grid-template-columns: repeat(2, 1fr); }
     }
 
     .stat-card {
@@ -218,10 +214,12 @@
       background: var(--accent, var(--blue));
     }
 
-    .stat-card.green { --accent: var(--green); }
+    .stat-card.green  { --accent: var(--green); }
     .stat-card.orange { --accent: var(--orange); }
-    .stat-card.red { --accent: var(--red); }
-    .stat-card.cyan { --accent: var(--cyan); }
+    .stat-card.red    { --accent: var(--red); }
+    .stat-card.cyan   { --accent: var(--cyan); }
+    .stat-card.blue   { --accent: var(--blue); }
+    .stat-card.violet { --accent: #a78bfa; }
 
     .stat-label {
       font-family: var(--mono);
@@ -591,22 +589,33 @@
       <div class="stat-card green">
         <div class="stat-label">Total Assets</div>
         <div class="stat-value"><%= @assets&.count || 0 %></div>
-        <div class="stat-delta up">▲ Configured targets</div>
+        <div class="stat-delta up">Configured targets</div>
+      </div>
+      <div class="stat-card blue">
+        <div class="stat-label">Total Agents</div>
+        <div class="stat-value"><%= @agents&.count || 0 %></div>
+        <div class="stat-delta">Registered agents</div>
       </div>
       <div class="stat-card cyan">
+        <div class="stat-label">Connected Agents</div>
+        <% connected = @agents&.count(&:connected?) || 0 %>
+        <div class="stat-value"><%= connected %></div>
+        <div class="stat-delta <%= connected > 0 ? 'up' : '' %>"><%= connected > 0 ? 'Online now' : 'None online' %></div>
+      </div>
+      <div class="stat-card orange">
+        <div class="stat-label">Total Sites</div>
+        <div class="stat-value"><%= @sites&.count || 0 %></div>
+        <div class="stat-delta">Network sites</div>
+      </div>
+      <div class="stat-card violet">
+        <div class="stat-label">Total Reports</div>
+        <div class="stat-value"><%= @reports&.count || 0 %></div>
+        <div class="stat-delta">Scan reports</div>
+      </div>
+      <div class="stat-card red">
         <div class="stat-label">Active Scans</div>
         <div class="stat-value">0</div>
         <div class="stat-delta">No scans running</div>
-      </div>
-      <div class="stat-card orange">
-        <div class="stat-label">Open Findings</div>
-        <div class="stat-value">—</div>
-        <div class="stat-delta warn">Pending first scan</div>
-      </div>
-      <div class="stat-card red">
-        <div class="stat-label">Critical Vulns</div>
-        <div class="stat-value">—</div>
-        <div class="stat-delta bad">Run a scan to detect</div>
       </div>
     </div>
 

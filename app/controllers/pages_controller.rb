@@ -7,7 +7,11 @@ class PagesController < ApplicationController
   end
 
   def home
-    @assets = Asset.where(organization_id: current_org_id).order(created_at: :desc) rescue []
+    org_id   = current_org_id
+    @assets  = Asset.where(organization_id: org_id).order(created_at: :desc) rescue []
+    @agents  = Agent.where(organization_id: org_id) rescue []
+    @sites   = Site.where(organization_id: org_id) rescue []
+    @reports = Report.where(user_id: User.where(organization_id: org_id).select(:id)) rescue []
   end
 
   def scanner
