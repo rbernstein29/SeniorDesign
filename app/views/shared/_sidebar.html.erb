@@ -243,6 +243,34 @@
     color: #ef4444;
   }
 
+  /* Sign out button — self-contained so it looks consistent on every page */
+  .btn {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 6px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.2s;
+    text-decoration: none;
+    border: 1px solid transparent;
+    background: none;
+    font-family: 'Courier New', monospace;
+  }
+  .btn-danger {
+    background: rgba(239,68,68,0.12);
+    border-color: rgba(239,68,68,0.25);
+    color: #f87171;
+  }
+  .btn-danger:hover {
+    background: rgba(239,68,68,0.22);
+    border-color: rgba(239,68,68,0.45);
+  }
+  .btn-sm {
+    padding: 5px 12px;
+    font-size: 12px;
+  }
+
   /* ── Hamburger Toggle Button ── */
   .sidebar-toggle {
     position: fixed;
