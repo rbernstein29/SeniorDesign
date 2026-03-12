@@ -10,7 +10,7 @@ class ScanJob < ApplicationJob
     # Create a Scan record immediately so the Scans page reflects the running scan
     scan = Scan.create!(
       scan_name: "Scan #{Time.current.strftime('%Y-%m-%d %H:%M')}",
-      org_id: org_id,
+      organization_id: org_id,
       initiated_by: user_id,
       status: 'running',
       start_time: Time.current,
