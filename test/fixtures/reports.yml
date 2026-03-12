@@ -1,0 +1,13 @@
+report_one:
+  report_name: "Test Scan Report"
+  organization_id: <%= ActiveRecord::FixtureSet.identify(:acme) %>
+  user_id: <%= ActiveRecord::FixtureSet.identify(:admin_user) %>
+  report_type: "full"
+  generated_at: <%= 1.hour.ago %>
+
+report_two:
+  report_name: "Second Report"
+  organization_id: <%= ActiveRecord::FixtureSet.identify(:acme) %>
+  user_id: <%= ActiveRecord::FixtureSet.identify(:admin_user) %>
+  report_type: "summary"
+  generated_at: <%= 2.hours.ago %>

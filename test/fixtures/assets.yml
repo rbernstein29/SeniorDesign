@@ -1,0 +1,10 @@
+asset_one:
+  ip_address: 192.168.1.10
+  organization_id: <%= ActiveRecord::FixtureSet.identify(:acme) %>
+  site_id: <%= ActiveRecord::FixtureSet.identify(:main_site) %>
+  scan_config: {}
+
+asset_two:
+  ip_address: 192.168.1.20
+  organization_id: <%= ActiveRecord::FixtureSet.identify(:acme) %>
+  scan_config: '{"scanMode": "safe"}'

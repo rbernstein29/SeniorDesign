@@ -1,9 +1,23 @@
 <% password_digest = BCrypt::Password.create("password") %>
 
-one:
-  email_address: one@example.com
+admin_user:
+  name: Admin User
+  email_address: admin@example.com
   password_digest: <%= password_digest %>
+  organization_id: <%= ActiveRecord::FixtureSet.identify(:acme) %>
+  access_level: admin
+  api_key: test_api_key_admin_abc123xyz
 
-two:
-  email_address: two@example.com
+readonly_user:
+  name: Read Only User
+  email_address: readonly@example.com
   password_digest: <%= password_digest %>
+  organization_id: <%= ActiveRecord::FixtureSet.identify(:acme) %>
+  access_level: read_only
+
+other_org_user:
+  name: Other Org Admin
+  email_address: other@example.com
+  password_digest: <%= password_digest %>
+  organization_id: <%= ActiveRecord::FixtureSet.identify(:other_org) %>
+  access_level: admin
