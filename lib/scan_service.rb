@@ -200,17 +200,12 @@ class ScanService
   end
 
   def get_targets(org_id)
-    result = ActiveRecord::Base.connection.select_all("SELECT ip_address, ports FROM vuln_scanner.assets WHERE organization_id = #{org_id.to_i} AND is_active = true")
+    result = ActiveRecord::Base.connection.select_all("SELECT ip_address FROM vuln_scanner.assets WHERE organization_id = #{org_id.to_i} AND is_active = true")
 
     targets = []
     result.each do |row|
-      ports_raw = row['ports']
-      ports = if ports_raw && ports_raw.start_with?('{')
-                ports_raw.tr('{}', '').split(',').map(&:to_i)
-              else
-                [80]
-              end
-      targets << { 'ip' => row['ip_address'], 'ports' => ports }
+      # Default to port 80 — port targeting can be extended via scan_config later
+      targets << { 'ip' => row['ip_address'], 'ports' => [80] }
     end
     return targets
   rescue => e
