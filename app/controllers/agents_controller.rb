@@ -4,6 +4,7 @@ class AgentsController < ApplicationController
   allow_unauthenticated_access only: [:heartbeat]
 
   before_action :require_admin
+  skip_before_action :require_admin, only: [:heartbeat]
 
   # GET /agents
   def index

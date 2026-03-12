@@ -12,10 +12,10 @@ class AgentsControllerTest < ActionDispatch::IntegrationTest
     assert_response :success
   end
 
-  test "GET /agents returns 200 for non-admin" do
+  test "GET /agents redirects non-admin to root" do
     sign_in_as(users(:readonly_user))
     get agents_path
-    assert_response :success
+    assert_redirected_to root_path
   end
 
   test "POST /agents creates an agent" do

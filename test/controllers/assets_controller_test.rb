@@ -12,10 +12,10 @@ class AssetsControllerTest < ActionDispatch::IntegrationTest
     assert_response :success
   end
 
-  test "GET /scan-assets returns 200 for non-admin" do
+  test "GET /scan-assets redirects non-admin to root" do
     sign_in_as(users(:readonly_user))
     get assets_path
-    assert_response :success
+    assert_redirected_to root_path
   end
 
   test "POST /scan-assets creates an asset" do
