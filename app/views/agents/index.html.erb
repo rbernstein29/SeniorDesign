@@ -272,6 +272,7 @@
 
         thead { background: rgba(255,255,255,0.03); }
 
+        thead { border-bottom: 2px solid rgba(255,255,255,0.12); }
         th {
             padding: 14px 20px;
             text-align: left;
@@ -284,17 +285,21 @@
             white-space: nowrap;
             position: relative;
             box-sizing: border-box;
+            border-right: 1px solid rgba(255,255,255,0.1);
         }
+        th:last-child { border-right: none; }
 
         td {
             padding: 18px 20px;
-            border-top: 1px solid rgba(255,255,255,0.18);
+            border-top: 1px solid rgba(255,255,255,0.1);
+            border-right: 1px solid rgba(255,255,255,0.1);
             font-size: 13px;
             color: #cbd5e1;
             white-space: nowrap;
             overflow: hidden;
             box-sizing: border-box;
         }
+        td:last-child { border-right: none; }
 
         tbody tr { transition: background 0.15s; }
         tbody tr:hover { background: rgba(59,130,246,0.04); }
