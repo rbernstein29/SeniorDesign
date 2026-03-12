@@ -189,15 +189,15 @@
             </div>
             <div class="stat-card red">
                 <div class="stat-label">Critical</div>
-                <div class="stat-number">&mdash;</div>
+                <div class="stat-number"><%= @critical_findings || 0 %></div>
             </div>
             <div class="stat-card orange">
                 <div class="stat-label">High</div>
-                <div class="stat-number">&mdash;</div>
+                <div class="stat-number"><%= @high_findings || 0 %></div>
             </div>
             <div class="stat-card purple">
                 <div class="stat-label">Medium / Low</div>
-                <div class="stat-number">&mdash;</div>
+                <div class="stat-number"><%= @medium_low_findings || 0 %></div>
             </div>
         </div>
 
@@ -250,8 +250,11 @@
                                     </button>
                                     <button class="btn btn-download"
                                             onclick="downloadReport(<%= report.id %>, '<%= j report.report_name %>')">
-                                        &#x2B73; Download
+                                        &#x2B73; JSON
                                     </button>
+                                    <%= link_to download_pdf_report_path(report), class: "btn btn-download" do %>
+                                        &#x1F4C4; PDF
+                                    <% end %>
                                     <%= button_to report_path(report), method: :delete,
                                         data: { turbo_confirm: "Delete this report? This cannot be undone." },
                                         class: "btn btn-delete" do %>

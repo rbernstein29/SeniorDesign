@@ -37,7 +37,11 @@ Rails.application.routes.draw do
   # Accounts
   resources :accounts, only: [:create]
   resources :read_only_accounts, only: [:create]
-  resources :reports, only: [:destroy]
+  resources :reports, only: [:destroy] do
+    member do
+      get :download_pdf
+    end
+  end
 
   # Api
   namespace :api do

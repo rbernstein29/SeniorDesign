@@ -64,6 +64,11 @@ class PagesController < ApplicationController
 
   def reports
     @reports = Report.where(user_id: User.where(organization_id: current_org_id).select(:id)).order(generated_at: :desc)
+    scan_ids = @reports.map(&:scan_id).compact
+    scans = Scan.where(id: scan_ids)
+    @critical_findings   = scans.sum(:critical_findings)
+    @high_findings       = scans.sum(:high_findings)
+    @medium_low_findings = scans.sum(:medium_findings) + scans.sum(:low_findings)
   end
 
   def settings
