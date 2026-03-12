@@ -31,7 +31,7 @@ class ScanService
                 exploit = get_exploit(id)
                 next unless exploit
 
-                outcome = attack(exploit, target_ip, port)
+                outcome = attack(exploit, target_ip, port, target['proxy'])
                 mutex.synchronize do
                   results << {
                     target: target_ip,
@@ -103,8 +103,8 @@ class ScanService
     return 1
   end
 
-  def attack(exploit, target_ip, port)
-    puts "Attacking #{target_ip}:#{port} with exploit: #{exploit['name']}..."
+  def attack(exploit, target_ip, port, proxy = nil)
+    puts "Attacking #{target_ip}:#{port} with exploit: #{exploit['name']}#{proxy ? " via #{proxy}" : " (direct)"}..."
 
     begin
       Timeout.timeout(60) do
@@ -116,10 +116,10 @@ class ScanService
           pass: ENV.fetch('MSF_PASS', 'password')
         )
 
-        res = rpc.call('module.execute', 'exploit', exploit['metasploit_module'], {
-          'RHOSTS' => target_ip,
-          'RPORT' => port.to_s
-        })
+        options = { 'RHOSTS' => target_ip, 'RPORT' => port.to_s }
+        options['Proxies'] = proxy if proxy
+
+        res = rpc.call('module.execute', 'exploit', exploit['metasploit_module'], options)
 
         puts "Exploit launched (Job ID: #{res['job_id']}). Waiting for session..."
         sleep(5)
@@ -207,7 +207,11 @@ class ScanService
     result.each do |row|
       config = JSON.parse(row['scan_config'] || '{}') rescue {}
       port = parse_port(config['port'])
-      targets << { 'ip' => row['ip_address'], 'ports' => [port] }
+      ip = row['ip_address'].to_s
+      agent = Agent.find_for_target(org_id, ip)
+      proxy = agent ? "socks5:127.0.0.1:#{agent.tunnel_port}" : nil
+      puts "WARNING: No connected agent for #{ip} — attempting direct scan" unless proxy
+      targets << { 'ip' => ip, 'ports' => [port], 'proxy' => proxy }
     end
     targets
   rescue => e
