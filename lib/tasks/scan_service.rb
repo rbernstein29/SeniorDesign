@@ -60,7 +60,7 @@ class ScanService
     report_json = result_to_json(results)
     
     Report.create!(
-      org_id: @org_id,
+      organization_id: @org_id,
       user_id: @user_id,
       results: results,
       generated_at: Time.current
