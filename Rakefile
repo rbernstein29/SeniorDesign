@@ -4,3 +4,11 @@
 require_relative "config/application"
 
 Rails.application.load_tasks
+
+# Skip JS build steps when running tests without npm/node installed
+if Rails.env.test?
+  %w[javascript:install javascript:build].each do |task|
+    Rake::Task[task].clear if Rake::Task.task_defined?(task)
+    task(task) {}
+  end
+end
