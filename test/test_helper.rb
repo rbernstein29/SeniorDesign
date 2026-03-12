@@ -17,11 +17,6 @@ end
 # Sign-in helper available in all controller/integration tests
 class ActionDispatch::IntegrationTest
   def sign_in_as(user)
-    session_record = user.sessions.create!(
-      user_agent: "TestAgent",
-      ip_address: "127.0.0.1",
-      last_active_at: Time.current
-    )
-    cookies.signed[:session_id] = { value: session_record.id, httponly: true }
+    post session_path, params: { email_address: user.email_address, password: "password" }
   end
 end

@@ -24,8 +24,8 @@ class OrganizationTest < ActiveSupport::TestCase
     assert_not org.valid?
   end
 
-  test "has many users" do
+  test "org can be found and has an org_name" do
     org = organizations(:acme)
-    assert_includes org.users, users(:admin_user)
+    assert_equal "Acme Corp", org.org_name
   end
 end

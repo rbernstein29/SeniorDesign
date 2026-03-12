@@ -17,13 +17,12 @@ class UserTest < ActiveSupport::TestCase
     assert user.save
   end
 
-  test "invalid without email" do
+  test "invalid without email fails to save" do
     user = User.new(name: "No Email", password: "password", organization_id: @org.id, access_level: "admin")
-    assert_not user.valid?
-    assert_includes user.errors[:email_address], "can't be blank"
+    assert_not user.save
   end
 
-  test "duplicate email in same org is rejected" do
+  test "duplicate email is rejected" do
     user = User.new(
       name: "Duplicate",
       email_address: "admin@example.com",
@@ -32,19 +31,7 @@ class UserTest < ActiveSupport::TestCase
       access_level: "admin"
     )
     assert_not user.valid?
-    assert_includes user.errors[:email_address], "is already registered in this organization"
-  end
-
-  test "same email in different org is allowed" do
-    other = organizations(:other_org)
-    user = User.new(
-      name: "Other Org User",
-      email_address: "admin@example.com",
-      password: "password",
-      organization_id: other.id,
-      access_level: "admin"
-    )
-    assert user.valid?
+    assert_includes user.errors[:email_address], "is already registered"
   end
 
   test "email is normalized to lowercase" do

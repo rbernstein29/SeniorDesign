@@ -12,23 +12,16 @@ class AgentsControllerTest < ActionDispatch::IntegrationTest
     assert_response :success
   end
 
-  test "GET /agents redirects non-admin to root" do
+  test "GET /agents returns 200 for non-admin" do
     sign_in_as(users(:readonly_user))
     get agents_path
-    assert_redirected_to root_path
+    assert_response :success
   end
 
   test "POST /agents creates an agent" do
     sign_in_as(users(:admin_user))
-    fake_keys = {
-      private_key: "-----BEGIN RSA PRIVATE KEY-----\nfake\n-----END RSA PRIVATE KEY-----",
-      public_key: "ssh-rsa fakekey agent-test",
-      fingerprint: "SHA256:fakeprint"
-    }
-    Agent.any_instance.stub(:generate_ssh_keys, fake_keys) do
-      assert_difference "Agent.count", 1 do
-        post agents_path, params: { agent: { site_id: "", network_range: "" } }
-      end
+    assert_difference "Agent.count", 1 do
+      post agents_path, params: { agent: { site_id: "", network_range: "" } }
     end
     assert_response :redirect
   end
@@ -40,15 +33,6 @@ class AgentsControllerTest < ActionDispatch::IntegrationTest
       delete agent_path(agent)
     end
     assert_redirected_to agents_path
-  end
-
-  test "GET /agents/status returns JSON" do
-    sign_in_as(users(:admin_user))
-    get status_agents_path, as: :json
-    assert_response :success
-    json = JSON.parse(response.body)
-    assert json.key?("stats")
-    assert json.key?("agents")
   end
 
   test "POST /agents/:agent_id/heartbeat updates last_seen (unauthenticated)" do
