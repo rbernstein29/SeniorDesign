@@ -19,7 +19,7 @@ class UserTest < ActiveSupport::TestCase
 
   test "invalid without email fails to save" do
     user = User.new(name: "No Email", password: "password", organization_id: @org.id, access_level: "admin")
-    assert_not user.save
+    assert_raises(ActiveRecord::StatementInvalid) { user.save! }
   end
 
   test "duplicate email is rejected" do
