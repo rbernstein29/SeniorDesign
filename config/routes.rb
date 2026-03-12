@@ -12,6 +12,9 @@ Rails.application.routes.draw do
   get "/scans",    to: "pages#scans",    as: :scans
   get "/reports",  to: "pages#reports",  as: :reports
   get "/settings", to: "pages#settings", as: :settings
+  get "/read_only_accounts", to: "pages#read_only_accounts", as: :read_only_accounts
+  get "/create_ro_account", to: "pages#create_ro_account", as: :create_ro_account
+  delete "/read_only_accounts/:id", to: "read_only_accounts#destroy", as: :delete_read_only_account
 
   # Sites
   resources :sites, only: [:index, :create, :destroy]
@@ -32,12 +35,14 @@ Rails.application.routes.draw do
 
   # Accounts
   resources :accounts, only: [:create]
+  resources :read_only_accounts, only: [:create]
   resources :reports, only: [:destroy]
 
   # Api
   namespace :api do
     scope ':api_key' do
-      resources :reports_api, only: [:index, :show]
+      # Reports endpoint: /api/{key}/reports
+      resources :reports_api, only: [:index, :show], path: 'reports'
     end
   end
   patch '/accounts/generate_api_key', to: 'accounts#generate_api_key', as: :generate_api_key

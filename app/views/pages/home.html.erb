@@ -422,6 +422,13 @@
       --card-glow: rgba(16,185,129,0.08);
     }
 
+    .card-accounts-config {
+      --icon-bg: rgba(239,68,68,0.12);
+      --icon-border: rgba(239,68,68,0.2);
+      --icon-glow: rgba(239,68,68,0.35);
+      --card-glow: rgba(239,68,68,0.08);
+    }
+
     .card-settings {
       --icon-bg: rgba(245,158,11,0.12);
       --icon-border: rgba(245,158,11,0.2);
@@ -660,35 +667,37 @@
     <div class="section-header">Navigate</div>
     <div class="nav-grid">
 
-      <a href="<%= scans_path rescue '#' %>" class="nav-card card-scan">
-        <div class="card-arrow">→</div>
-        <div class="card-icon-wrap">🔬</div>
-        <div>
-          <div class="card-title">Run a Scan</div>
-          <div class="card-desc">Configure and launch vulnerability scans against your targets.</div>
-        </div>
-        <div class="card-tag">SCANNER</div>
-      </a>
+      <% if admin? %>
+        <a href="<%= scans_path rescue '#' %>" class="nav-card card-scan">
+          <div class="card-arrow">→</div>
+          <div class="card-icon-wrap">🔬</div>
+          <div>
+            <div class="card-title">Run a Scan</div>
+            <div class="card-desc">Configure and launch vulnerability scans against your targets.</div>
+          </div>
+          <div class="card-tag">SCANNER</div>
+        </a>
 
-      <a href="<%= assets_path %>" class="nav-card card-assets">
-        <div class="card-arrow">→</div>
-        <div class="card-icon-wrap">🖥️</div>
-        <div>
-          <div class="card-title">Asset Management</div>
-          <div class="card-desc">Add, edit, and organize your network targets and scan configurations.</div>
-        </div>
-        <div class="card-tag">ASSETS</div>
-      </a>
+        <a href="<%= assets_path %>" class="nav-card card-assets">
+          <div class="card-arrow">→</div>
+          <div class="card-icon-wrap">🖥️</div>
+          <div>
+            <div class="card-title">Asset Management</div>
+            <div class="card-desc">Add, edit, and organize your network targets and scan configurations.</div>
+          </div>
+          <div class="card-tag">ASSETS</div>
+        </a>
 
-      <a href="<%= agents_path rescue '#' %>" class="nav-card card-agents">
-        <div class="card-arrow">→</div>
-        <div class="card-icon-wrap">🤖</div>
-        <div>
-          <div class="card-title">Agents</div>
-          <div class="card-desc">Manage distributed scanning agents deployed across your network.</div>
-        </div>
-        <div class="card-tag">AGENTS</div>
-      </a>
+        <a href="<%= agents_path rescue '#' %>" class="nav-card card-agents">
+          <div class="card-arrow">→</div>
+          <div class="card-icon-wrap">🤖</div>
+          <div>
+            <div class="card-title">Agents</div>
+            <div class="card-desc">Manage distributed scanning agents deployed across your network.</div>
+          </div>
+          <div class="card-tag">AGENTS</div>
+        </a>
+      <% end %>
 
       <a href="<%= reports_path rescue '#' %>" class="nav-card card-reports">
         <div class="card-arrow">→</div>
@@ -699,6 +708,18 @@
         </div>
         <div class="card-tag">REPORTS</div>
       </a>
+
+      <% if admin? %>
+        <a href="<%= read_only_accounts_path rescue '#' %>" class="nav-card card-accounts-config">
+          <div class="card-arrow">→</div>
+          <div class="card-icon-wrap">👤</div>
+          <div>
+            <div class="card-title">Configure Accounts</div>
+            <div class="card-desc">Create and delete read-only accounts.</div>
+          </div>
+          <div class="card-tag">CONFIG</div>
+        </a>
+      <% end %>
 
       <a href="<%= settings_path rescue '#' %>" class="nav-card card-settings">
         <div class="card-arrow">→</div>
@@ -758,24 +779,25 @@
         </div>
 
         <div style="padding: 8px 0;">
-          <a href="<%= new_asset_path %>" class="quick-btn">
-            <div class="quick-btn-icon">➕</div>
-            <span class="quick-btn-label">Add New Asset</span>
-            <span class="quick-btn-arrow">→</span>
-          </a>
+          <% if admin? %>
+            <a href="<%= new_asset_path %>" class="quick-btn">
+              <div class="quick-btn-icon">➕</div>
+              <span class="quick-btn-label">Add New Asset</span>
+              <span class="quick-btn-arrow">→</span>
+            </a>
 
-          <a href="<%= scans_path rescue '#' %>" class="quick-btn">
-            <div class="quick-btn-icon">▶️</div>
-            <span class="quick-btn-label">Start New Scan</span>
-            <span class="quick-btn-arrow">→</span>
-          </a>
+            <a href="<%= scans_path rescue '#' %>" class="quick-btn">
+              <div class="quick-btn-icon">▶️</div>
+              <span class="quick-btn-label">Start New Scan</span>
+              <span class="quick-btn-arrow">→</span>
+            </a>
 
-          <a href="<%= agents_path rescue '#' %>" class="quick-btn">
-            <div class="quick-btn-icon">🤖</div>
-            <span class="quick-btn-label">View Agents Status</span>
-            <span class="quick-btn-arrow">→</span>
-          </a>
-
+            <a href="<%= agents_path rescue '#' %>" class="quick-btn">
+              <div class="quick-btn-icon">🤖</div>
+              <span class="quick-btn-label">View Agents Status</span>
+              <span class="quick-btn-arrow">→</span>
+            </a>
+          <% end %>
           <a href="<%= reports_path rescue '#' %>" class="quick-btn">
             <div class="quick-btn-icon">📊</div>
             <span class="quick-btn-label">Latest Report</span>

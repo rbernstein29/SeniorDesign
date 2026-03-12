@@ -2,6 +2,8 @@
 class PagesController < ApplicationController
   allow_unauthenticated_access only: [:login]
 
+  before_action :require_admin, only: [:scanner, :trigger_scan, :scans]
+
   def login
     # login page
   end
@@ -56,5 +58,12 @@ class PagesController < ApplicationController
     @org = Organization.find_by(id: Current.session.user.organization_id)
   rescue
     @org = nil
+  end
+
+  def read_only_accounts
+    @read_only_users = User.where(
+      organization_id: Current.user.organization_id,
+      access_level: "read_only"
+    )
   end
 end

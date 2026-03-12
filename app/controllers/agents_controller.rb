@@ -3,6 +3,8 @@ class AgentsController < ApplicationController
   skip_before_action :verify_authenticity_token
   allow_unauthenticated_access only: [:heartbeat]
 
+  before_action :require_admin
+
   # GET /agents
   def index
     @agents = Agent.where(organization_id: current_org_id).order(created_at: :desc)

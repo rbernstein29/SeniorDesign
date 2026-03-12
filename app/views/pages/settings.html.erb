@@ -234,6 +234,16 @@
 
         .btn-sm { padding: 7px 16px; font-size: 12px; font-family: var(--mono); }
 
+        /* Alerts */
+        .error {
+            background: rgba(255, 91, 110, .12);
+            border: 1px solid rgba(255, 91, 110, .4);
+            color: #ffc3ca;
+            padding: 10px;
+            border-radius: 12px;
+            font-size: 13px;
+        }
+
         .card-footer {
             padding: 16px 28px;
             border-top: 1px solid rgba(255,255,255,0.06);
@@ -290,41 +300,49 @@
             <div>
                 <div class="page-title">Settings</div>
                 <div class="page-sub">// platform configuration and preferences</div>
+
+                <% if flash[:alert] %>
+                    <div style="error">
+                        <%= flash[:alert] %>
+                    </div>
+                <% end %>
             </div>
         </div>
 
         <div class="settings-grid">
 
             <!-- Server Configuration -->
-            <div class="settings-card">
-                <div class="card-header">
-                    <div class="card-header-icon">🖥</div>
-                    <div>
-                        <div class="card-title">Server Configuration</div>
-                        <div class="card-subtitle">INFRASTRUCTURE</div>
+            <% if admin? %>
+                <div class="settings-card">
+                    <div class="card-header">
+                        <div class="card-header-icon">🖥</div>
+                        <div>
+                            <div class="card-title">Server Configuration</div>
+                            <div class="card-subtitle">INFRASTRUCTURE</div>
+                        </div>
+                    </div>
+                    <div class="settings-body">
+                        <div class="status-row">
+                            <div class="status-dot-sm dot-green-sm"></div>
+                            <span class="status-text">Database connected — PostgreSQL @ 100.69.88.107</span>
+                        </div>
+                        <div class="field-group">
+                            <div class="field-label">Scanner Server IP</div>
+                            <input class="field-input mono" type="text" value="100.69.88.107" disabled>
+                            <div class="field-hint">Tailscale IP of the Linux scanning server</div>
+                        </div>
+                        <div class="field-group">
+                            <div class="field-label">Rails Port</div>
+                            <input class="field-input mono" type="text" value="3000" disabled>
+                        </div>
+                        <div class="field-group">
+                            <div class="field-label">Agent Tunnel Port Range</div>
+                            <input class="field-input mono" type="text" value="9000 – 9999" disabled>
+                            <div class="field-hint">Ports allocated to SSH reverse tunnels from agents</div>
+                        </div>
                     </div>
                 </div>
-                <div class="settings-body">
-                    <div class="status-row">
-                        <div class="status-dot-sm dot-green-sm"></div>
-                        <span class="status-text">Database connected — PostgreSQL @ 100.69.88.107</span>
-                    </div>
-                    <div class="field-group">
-                        <div class="field-label">Scanner Server IP</div>
-                        <input class="field-input mono" type="text" value="100.69.88.107" disabled>
-                        <div class="field-hint">Tailscale IP of the Linux scanning server</div>
-                    </div>
-                    <div class="field-group">
-                        <div class="field-label">Rails Port</div>
-                        <input class="field-input mono" type="text" value="3000" disabled>
-                    </div>
-                    <div class="field-group">
-                        <div class="field-label">Agent Tunnel Port Range</div>
-                        <input class="field-input mono" type="text" value="9000 – 9999" disabled>
-                        <div class="field-hint">Ports allocated to SSH reverse tunnels from agents</div>
-                    </div>
-                </div>
-            </div>
+            <% end %>
 
             <!-- Account -->
             <div class="settings-card">
@@ -389,117 +407,119 @@
                     </div>
                 </div>
             </div>
+            
+            <% if admin? %>
+                <!-- Scanner Defaults -->
+                <div class="settings-card">
+                    <div class="card-header">
+                        <div class="card-header-icon">🔬</div>
+                        <div>
+                            <div class="card-title">Scanner Defaults</div>
+                            <div class="card-subtitle">SCAN BEHAVIOR</div>
+                        </div>
+                    </div>
+                    <div class="settings-body">
+                        <div class="toggle-row">
+                            <div>
+                                <div class="toggle-label">Auto-generate reports after scan</div>
+                                <div class="toggle-hint">Create a report automatically when a scan completes</div>
+                            </div>
+                            <label class="toggle">
+                                <input type="checkbox" checked disabled>
+                                <span class="toggle-slider"></span>
+                            </label>
+                        </div>
+                        <div class="toggle-row">
+                            <div>
+                                <div class="toggle-label">Route scans through agent tunnel</div>
+                                <div class="toggle-hint">Use SOCKS5 proxy from connected agents</div>
+                            </div>
+                            <label class="toggle">
+                                <input type="checkbox" checked disabled>
+                                <span class="toggle-slider"></span>
+                            </label>
+                        </div>
+                        <div class="toggle-row">
+                            <div>
+                                <div class="toggle-label">Enable aggressive scan mode</div>
+                                <div class="toggle-hint">Faster but more detectable — use with caution</div>
+                            </div>
+                            <label class="toggle">
+                                <input type="checkbox" disabled>
+                                <span class="toggle-slider"></span>
+                            </label>
+                        </div>
+                        <div class="field-hint" style="margin-top: 4px;">Editable settings coming in a future release</div>
+                    </div>
+                </div>
 
-            <!-- Scanner Defaults -->
-            <div class="settings-card">
-                <div class="card-header">
-                    <div class="card-header-icon">🔬</div>
-                    <div>
-                        <div class="card-title">Scanner Defaults</div>
-                        <div class="card-subtitle">SCAN BEHAVIOR</div>
+                <!-- Notifications -->
+                <div class="settings-card">
+                    <div class="card-header">
+                        <div class="card-header-icon">🔔</div>
+                        <div>
+                            <div class="card-title">Notifications</div>
+                            <div class="card-subtitle">ALERTS</div>
+                        </div>
+                    </div>
+                    <div class="settings-body">
+                        <div class="toggle-row">
+                            <div>
+                                <div class="toggle-label">Agent goes offline</div>
+                                <div class="toggle-hint">Alert when a connected agent stops heartbeating</div>
+                            </div>
+                            <label class="toggle">
+                                <input type="checkbox" disabled>
+                                <span class="toggle-slider"></span>
+                            </label>
+                        </div>
+                        <div class="toggle-row">
+                            <div>
+                                <div class="toggle-label">Critical vulnerability found</div>
+                                <div class="toggle-hint">Alert on CVSS 9.0+ findings</div>
+                            </div>
+                            <label class="toggle">
+                                <input type="checkbox" disabled>
+                                <span class="toggle-slider"></span>
+                            </label>
+                        </div>
+                        <div class="toggle-row">
+                            <div>
+                                <div class="toggle-label">Scan completed</div>
+                                <div class="toggle-hint">Alert when any scan finishes</div>
+                            </div>
+                            <label class="toggle">
+                                <input type="checkbox" disabled>
+                                <span class="toggle-slider"></span>
+                            </label>
+                        </div>
+                        <div class="field-hint" style="margin-top: 4px;">Notification delivery coming in a future release</div>
                     </div>
                 </div>
-                <div class="settings-body">
-                    <div class="toggle-row">
-                        <div>
-                            <div class="toggle-label">Auto-generate reports after scan</div>
-                            <div class="toggle-hint">Create a report automatically when a scan completes</div>
-                        </div>
-                        <label class="toggle">
-                            <input type="checkbox" checked disabled>
-                            <span class="toggle-slider"></span>
-                        </label>
-                    </div>
-                    <div class="toggle-row">
-                        <div>
-                            <div class="toggle-label">Route scans through agent tunnel</div>
-                            <div class="toggle-hint">Use SOCKS5 proxy from connected agents</div>
-                        </div>
-                        <label class="toggle">
-                            <input type="checkbox" checked disabled>
-                            <span class="toggle-slider"></span>
-                        </label>
-                    </div>
-                    <div class="toggle-row">
-                        <div>
-                            <div class="toggle-label">Enable aggressive scan mode</div>
-                            <div class="toggle-hint">Faster but more detectable — use with caution</div>
-                        </div>
-                        <label class="toggle">
-                            <input type="checkbox" disabled>
-                            <span class="toggle-slider"></span>
-                        </label>
-                    </div>
-                    <div class="field-hint" style="margin-top: 4px;">Editable settings coming in a future release</div>
-                </div>
-            </div>
 
-            <!-- Notifications -->
-            <div class="settings-card">
-                <div class="card-header">
-                    <div class="card-header-icon">🔔</div>
-                    <div>
-                        <div class="card-title">Notifications</div>
-                        <div class="card-subtitle">ALERTS</div>
-                    </div>
-                </div>
-                <div class="settings-body">
-                    <div class="toggle-row">
+                <!-- Danger Zone -->
+                <div class="settings-card danger-zone full-width">
+                    <div class="card-header">
+                        <div class="card-header-icon">⚠</div>
                         <div>
-                            <div class="toggle-label">Agent goes offline</div>
-                            <div class="toggle-hint">Alert when a connected agent stops heartbeating</div>
+                            <div class="card-title">Danger Zone</div>
+                            <div class="card-subtitle">DESTRUCTIVE ACTIONS</div>
                         </div>
-                        <label class="toggle">
-                            <input type="checkbox" disabled>
-                            <span class="toggle-slider"></span>
-                        </label>
                     </div>
-                    <div class="toggle-row">
+                    <div class="settings-body" style="flex-direction: row; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 16px;">
                         <div>
-                            <div class="toggle-label">Critical vulnerability found</div>
-                            <div class="toggle-hint">Alert on CVSS 9.0+ findings</div>
+                            <div style="font-size: 13px; font-weight: 600; color: #f1f5f9; margin-bottom: 4px;">Delete All Agents</div>
+                            <div style="font-size: 12px; color: var(--muted);">Permanently remove all deployed agents and their SSH keys</div>
                         </div>
-                        <label class="toggle">
-                            <input type="checkbox" disabled>
-                            <span class="toggle-slider"></span>
-                        </label>
-                    </div>
-                    <div class="toggle-row">
-                        <div>
-                            <div class="toggle-label">Scan completed</div>
-                            <div class="toggle-hint">Alert when any scan finishes</div>
-                        </div>
-                        <label class="toggle">
-                            <input type="checkbox" disabled>
-                            <span class="toggle-slider"></span>
-                        </label>
-                    </div>
-                    <div class="field-hint" style="margin-top: 4px;">Notification delivery coming in a future release</div>
-                </div>
-            </div>
-
-            <!-- Danger Zone -->
-            <div class="settings-card danger-zone full-width">
-                <div class="card-header">
-                    <div class="card-header-icon">⚠</div>
-                    <div>
-                        <div class="card-title">Danger Zone</div>
-                        <div class="card-subtitle">DESTRUCTIVE ACTIONS</div>
+                        <%= button_to "Delete All Agents", agents_path,
+                            method: :delete,
+                            data: { confirm: "This will delete ALL agents. This cannot be undone." },
+                            class: "btn btn-danger btn-sm",
+                            disabled: true,
+                            style: "opacity: 0.5; cursor: not-allowed;" %>
                     </div>
                 </div>
-                <div class="settings-body" style="flex-direction: row; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 16px;">
-                    <div>
-                        <div style="font-size: 13px; font-weight: 600; color: #f1f5f9; margin-bottom: 4px;">Delete All Agents</div>
-                        <div style="font-size: 12px; color: var(--muted);">Permanently remove all deployed agents and their SSH keys</div>
-                    </div>
-                    <%= button_to "Delete All Agents", agents_path,
-                        method: :delete,
-                        data: { confirm: "This will delete ALL agents. This cannot be undone." },
-                        class: "btn btn-danger btn-sm",
-                        disabled: true,
-                        style: "opacity: 0.5; cursor: not-allowed;" %>
-                </div>
-            </div>
+            <% end %>
 
         </div>
     </div>

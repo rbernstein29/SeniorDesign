@@ -1,4 +1,5 @@
 class ReportsController < ApplicationController
+
   def destroy
     report = Report.find(params[:id])
     report.destroy
@@ -6,4 +7,5 @@ class ReportsController < ApplicationController
   rescue ActiveRecord::RecordNotFound
     redirect_to reports_path, alert: 'Report not found'
   end
+  
 end

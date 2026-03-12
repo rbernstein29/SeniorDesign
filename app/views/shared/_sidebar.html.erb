@@ -311,34 +311,42 @@
       <span class="nav-label">Dashboard</span>
     </a>
 
-    <a href="<%= (scans_path rescue '#') %>" class="sidebar-nav-item <%= current_page == 'scans' ? 'active' : '' %>">
-      <span class="nav-icon">🔬</span>
-      <span class="nav-label">Scans</span>
-    </a>
+    <% if admin? %> 
+      <a href="<%= (scans_path rescue '#') %>" class="sidebar-nav-item <%= current_page == 'scans' ? 'active' : '' %>">
+        <span class="nav-icon">🔬</span>
+        <span class="nav-label">Scans</span>
+      </a>
 
-    <a href="<%= assets_path %>" class="sidebar-nav-item <%= current_page == 'assets' ? 'active' : '' %>">
-      <span class="nav-icon">🖥️</span>
-      <span class="nav-label">Asset Management</span>
-    </a>
+      <a href="<%= assets_path %>" class="sidebar-nav-item <%= current_page == 'assets' ? 'active' : '' %>">
+        <span class="nav-icon">🖥️</span>
+        <span class="nav-label">Asset Management</span>
+      </a>
 
-    <a href="<%= (agents_path rescue '#') %>" class="sidebar-nav-item <%= current_page == 'agents' ? 'active' : '' %>">
-      <span class="nav-icon">🤖</span>
-      <span class="nav-label">Agents</span>
-    </a>
+      <a href="<%= (agents_path rescue '#') %>" class="sidebar-nav-item <%= current_page == 'agents' ? 'active' : '' %>">
+        <span class="nav-icon">🤖</span>
+        <span class="nav-label">Agents</span>
+      </a>
 
-    <a href="<%= (sites_path rescue '#') %>" class="sidebar-nav-item <%= current_page == 'sites' ? 'active' : '' %>">
-      <span class="nav-icon">🏢</span>
-      <span class="nav-label">Sites</span>
-    </a>
+      <a href="<%= (sites_path rescue '#') %>" class="sidebar-nav-item <%= current_page == 'sites' ? 'active' : '' %>">
+        <span class="nav-icon">🏢</span>
+        <span class="nav-label">Sites</span>
+      </a>
+    <% end %>
 
     <div class="sidebar-section-label" style="margin-top:8px;">Reports & Config</div>
 
     <a href="<%= (reports_path rescue '#') %>" class="sidebar-nav-item <%= current_page == 'reports' ? 'active' : '' %>">
       <span class="nav-icon">📊</span>
       <span class="nav-label">View Reports</span>
-      <span class="nav-badge">NEW</span>
     </a>
 
+    <% if admin? %>
+      <a href="<%= (read_only_accounts_path rescue '#') %>" class="sidebar-nav-item <%= current_page == 'read_only_accounts' ? 'active' : '' %>">
+        <span class="nav-icon">👤</span>
+        <span class="nav-label">Configure Accounts</span>
+      </a>
+    <% end %>
+    
     <a href="<%= (settings_path rescue '#') %>" class="sidebar-nav-item <%= current_page == 'settings' ? 'active' : '' %>">
       <span class="nav-icon">⚙️</span>
       <span class="nav-label">Settings</span>
