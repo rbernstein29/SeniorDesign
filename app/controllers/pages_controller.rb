@@ -2,7 +2,7 @@
 class PagesController < ApplicationController
   allow_unauthenticated_access only: [:login]
 
-  before_action :require_admin, only: [:scanner, :trigger_scan, :scans]
+  before_action :require_admin, only: [:scanner, :trigger_scan, :scans, :stop_scan]
 
   def login
     # login page
@@ -48,6 +48,18 @@ class PagesController < ApplicationController
   end
 
   def scans
+    org_id = current_org_id
+    @scans = Scan.for_org(org_id).order(created_at: :desc)
+    @total_scans = @scans.count
+    @running_scans = @scans.running.count
+    @completed_scans = @scans.completed.count
+    @failed_scans = @scans.failed.count
+  end
+
+  def stop_scan
+    scan = Scan.for_org(current_org_id).running.find_by(id: params[:scan_id])
+    scan&.update!(status: 'cancelled', end_time: Time.current)
+    redirect_to scans_path, notice: "Scan stopped."
   end
 
   def reports

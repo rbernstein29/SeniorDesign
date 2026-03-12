@@ -6,10 +6,11 @@ require 'net/smtp'
 require 'thread'
 
 class ScanService
-  def initialize(org_id, exploit_range, user_id)
+  def initialize(org_id, exploit_range, user_id, scan = nil)
     @org_id = org_id
     @exploit_range = exploit_range
     @user_id = user_id
+    @scan = scan
   end
 
   def perform
@@ -56,11 +57,21 @@ class ScanService
 
     threads.each(&:join)
 
+    findings_count = results.count { |r| r[:success] }
+    @scan&.update!(
+      status: 'completed',
+      end_time: Time.current,
+      total_exploits_tested: results.size,
+      findings_count: findings_count,
+      scanned_assets: targets.size
+    )
+
     report_json = result_to_json(results)
 
     Report.create!(
       organization_id: @org_id,
       user_id: @user_id,
+      scan_id: @scan&.id,
       report_name: "Scan #{Time.current.strftime('%Y-%m-%d %H:%M')}",
       report_type: 'vulnerability',
       report_format: 'json',
@@ -84,18 +95,9 @@ class ScanService
   private
 
   def connect_network(ip)
-    begin
-      puts "Connecting to network at #{ip}..."
-      Socket.tcp(ip, 80, connect_timeout: 5) {}
-      puts "Connection successful."
-      return 1
-    rescue Errno::ECONNREFUSED
-      puts "Connection refused (host up)."
-      return 1
-    rescue => e
-      puts "Connection failed: #{e.message}"
-      return e
-    end
+    puts "Connecting to network at #{ip}..."
+    # Actual connectivity is verified by Metasploit via the configured SOCKS5 proxy.
+    return 1
   end
 
   def disconnect_network

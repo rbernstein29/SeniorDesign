@@ -10,6 +10,7 @@ Rails.application.routes.draw do
   get "/scanner",  to: "pages#scanner"
   post "/scanner/trigger", to: "pages#trigger_scan", as: :trigger_scan
   get "/scans",    to: "pages#scans",    as: :scans
+  post "/scans/stop", to: "pages#stop_scan", as: :stop_scan
   get "/reports",  to: "pages#reports",  as: :reports
   get "/settings", to: "pages#settings", as: :settings
   get "/read_only_accounts", to: "pages#read_only_accounts", as: :read_only_accounts

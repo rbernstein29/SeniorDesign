@@ -118,6 +118,8 @@
             opacity: 0.6;
         }
 
+        .action-buttons { display: flex; gap: 8px; align-items: center; }
+
         .stats-grid {
             display: grid;
             grid-template-columns: repeat(4, 1fr);
@@ -319,19 +321,19 @@
         <div class="stats-grid">
             <div class="stat-card">
                 <div class="stat-label">Total Scans</div>
-                <div class="stat-number">0</div>
+                <div class="stat-number"><%= @total_scans %></div>
             </div>
             <div class="stat-card cyan">
                 <div class="stat-label">Running</div>
-                <div class="stat-number">0</div>
+                <div class="stat-number"><%= @running_scans %></div>
             </div>
             <div class="stat-card green">
                 <div class="stat-label">Completed</div>
-                <div class="stat-number">0</div>
+                <div class="stat-number"><%= @completed_scans %></div>
             </div>
             <div class="stat-card red">
-                <div class="stat-label">Failed</div>
-                <div class="stat-number">0</div>
+                <div class="stat-label">Failed / Cancelled</div>
+                <div class="stat-number"><%= @failed_scans %></div>
             </div>
         </div>
 
@@ -353,11 +355,91 @@
                 <div class="card-title">Scan History</div>
                 <div class="card-subtitle">ALL TIME</div>
             </div>
-            <div class="state-box">
-                <span class="state-icon">🔬</span>
-                <div class="state-title">No Scans Yet</div>
-                <div class="state-sub">Deploy an agent and add assets to run your first scan.</div>
-            </div>
+
+            <% if @scans.nil? || @scans.empty? %>
+                <div class="state-box">
+                    <span class="state-icon">🔬</span>
+                    <div class="state-title">No Scans Yet</div>
+                    <div class="state-sub">Deploy an agent and add assets to run your first scan.</div>
+                    <%= link_to "Run Your First Scan", scanner_path, class: "btn btn-primary",
+                        style: "display: inline-flex;" %>
+                </div>
+            <% else %>
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Scan Name</th>
+                            <th>Status</th>
+                            <th>Started</th>
+                            <th>Assets</th>
+                            <th>Exploits Tested</th>
+                            <th>Findings</th>
+                            <th>Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <% @scans.each do |scan| %>
+                        <tr>
+                            <td style="font-family: var(--mono); font-size: 12px; color: #f1f5f9;">
+                                <%= scan.scan_name %>
+                            </td>
+                            <td>
+                                <% case scan.status
+                                   when 'running' %>
+                                    <span class="status-badge status-running">
+                                        <span class="status-dot dot-cyan"></span>Running
+                                    </span>
+                                <% when 'completed' %>
+                                    <span class="status-badge status-complete">
+                                        <span class="status-dot dot-green"></span>Complete
+                                    </span>
+                                <% when 'failed', 'cancelled' %>
+                                    <span class="status-badge status-failed">
+                                        <span class="status-dot dot-red"></span><%= scan.status.capitalize %>
+                                    </span>
+                                <% else %>
+                                    <span class="status-badge status-queued">
+                                        <span class="status-dot dot-gray"></span><%= scan.status.capitalize %>
+                                    </span>
+                                <% end %>
+                            </td>
+                            <td style="font-family: var(--mono); font-size: 12px;">
+                                <%= scan.start_time&.strftime("%b %d, %Y  %H:%M") || raw('&mdash;') %>
+                            </td>
+                            <td style="font-family: var(--mono);">
+                                <%= scan.scanned_assets %> / <%= scan.total_assets %>
+                            </td>
+                            <td style="font-family: var(--mono);">
+                                <%= scan.total_exploits_tested %>
+                            </td>
+                            <td>
+                                <% if scan.findings_count > 0 %>
+                                    <span class="severity-tag" style="color: var(--red); border-color: rgba(239,68,68,0.25); background: rgba(239,68,68,0.08);">
+                                        <%= scan.findings_count %>
+                                    </span>
+                                <% else %>
+                                    <span style="font-family: var(--mono); color: var(--muted);">0</span>
+                                <% end %>
+                            </td>
+                            <td>
+                                <div class="action-buttons">
+                                    <% if scan.status == 'running' %>
+                                        <%= button_to "Stop", stop_scan_path, method: :post,
+                                            params: { scan_id: scan.id },
+                                            class: "btn btn-danger btn-sm",
+                                            data: { turbo_confirm: "Stop this scan?" } %>
+                                    <% end %>
+                                    <% if scan.reports.any? %>
+                                        <%= link_to "Report", reports_path,
+                                            class: "btn btn-secondary btn-sm" %>
+                                    <% end %>
+                                </div>
+                            </td>
+                        </tr>
+                        <% end %>
+                    </tbody>
+                </table>
+            <% end %>
         </div>
 
     </div>
