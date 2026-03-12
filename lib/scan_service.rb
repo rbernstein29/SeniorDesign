@@ -200,17 +200,37 @@ class ScanService
   end
 
   def get_targets(org_id)
-    result = ActiveRecord::Base.connection.select_all("SELECT ip_address FROM vuln_scanner.assets WHERE organization_id = #{org_id.to_i} AND is_active = true")
-
+    result = ActiveRecord::Base.connection.select_all(
+      "SELECT ip_address, scan_config FROM vuln_scanner.assets WHERE organization_id = #{org_id.to_i} AND is_active = true"
+    )
     targets = []
     result.each do |row|
-      # Default to port 80 — port targeting can be extended via scan_config later
-      targets << { 'ip' => row['ip_address'], 'ports' => [80] }
+      config = JSON.parse(row['scan_config'] || '{}') rescue {}
+      port = parse_port(config['port'])
+      targets << { 'ip' => row['ip_address'], 'ports' => [port] }
     end
-    return targets
+    targets
   rescue => e
     puts "Error fetching targets: #{e.message}"
-    return []
+    []
+  end
+
+  def parse_port(port_str)
+    return rand(1..1024) if port_str.blank?
+
+    str = port_str.to_s.strip
+
+    # Range: "8000-8080"
+    if str =~ /\A(\d+)-(\d+)\z/
+      lo, hi = $1.to_i, $2.to_i
+      return rand(lo..hi) if lo >= 1 && hi <= 65535 && lo <= hi
+    end
+
+    # Comma-separated or single: "80, 443" — use first valid
+    ports = str.split(',').map { |p| p.strip.to_i }.select { |p| p >= 1 && p <= 65535 }
+    return ports.first unless ports.empty?
+
+    rand(1..1024)
   end
 
   def send_email(to_email, subject, body)
