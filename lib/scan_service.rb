@@ -6,11 +6,12 @@ require 'net/smtp'
 require 'thread'
 
 class ScanService
-  def initialize(org_id, exploit_range, user_id, scan = nil)
+  def initialize(org_id, exploit_range, user_id, scan = nil, asset_id = nil)
     @org_id = org_id
     @exploit_range = exploit_range
     @user_id = user_id
     @scan = scan
+    @asset_id = asset_id
   end
 
   def perform
@@ -280,8 +281,9 @@ class ScanService
   end
 
   def get_targets(org_id)
+    condition = @asset_id ? "AND id = #{@asset_id.to_i}" : ""
     result = ActiveRecord::Base.connection.select_all(
-      "SELECT id, ip_address, scan_config FROM vuln_scanner.assets WHERE organization_id = #{org_id.to_i} AND is_active = true"
+      "SELECT id, ip_address, scan_config FROM vuln_scanner.assets WHERE organization_id = #{org_id.to_i} AND is_active = true #{condition}"
     )
     targets = []
     result.each do |row|

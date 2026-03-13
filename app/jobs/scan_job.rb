@@ -1,19 +1,20 @@
 class ScanJob < ApplicationJob
   queue_as :default
 
-  def perform(org_id, exploit_ids, user_id)
+  def perform(org_id, exploit_ids, user_id, asset_id = nil)
     user = User.find_by(id: user_id)
     return unless user
 
     broadcast_progress(user_id, 0, "Initializing scan...")
 
+    total = asset_id ? 1 : Asset.where(organization_id: org_id, is_active: true).count
     scan = Scan.create!(
-      scan_name:    "Scan #{Time.current.strftime('%Y-%m-%d %H:%M')}",
-      org_id:       org_id,
+      scan_name:       "Scan #{Time.current.strftime('%Y-%m-%d %H:%M')}",
+      organization_id: org_id,
       initiated_by: user_id,
       status:       'running',
       start_time:   Time.current,
-      total_assets: Asset.where(organization_id: org_id, is_active: true).count
+      total_assets: total
     )
 
     agents = Agent.where(organization_id: org_id).select(&:connected?)
@@ -25,7 +26,7 @@ class ScanJob < ApplicationJob
 
     broadcast_progress(user_id, 10, "Starting scan via #{agents.count} agent(s)...")
 
-    ScanService.new(org_id, exploit_ids, user_id, scan).perform
+    ScanService.new(org_id, exploit_ids, user_id, scan, asset_id).perform
 
     broadcast_complete(user_id)
   rescue => e

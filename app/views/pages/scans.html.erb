@@ -118,6 +118,26 @@
             opacity: 0.6;
         }
 
+        .alert {
+            padding: 14px 18px;
+            border-radius: 10px;
+            font-size: 13px;
+            margin-bottom: 20px;
+            font-family: var(--mono);
+        }
+
+        .alert-success {
+            background: rgba(16,185,129,0.1);
+            border: 1px solid rgba(16,185,129,0.3);
+            color: #6ee7b7;
+        }
+
+        .alert-error {
+            background: rgba(239,68,68,0.1);
+            border: 1px solid rgba(239,68,68,0.3);
+            color: #fca5a5;
+        }
+
         .action-buttons { display: flex; gap: 8px; align-items: center; }
 
         .stats-grid {
@@ -315,8 +335,15 @@
                 <div class="page-title">Scans</div>
                 <div class="page-sub">// run and manage vulnerability scans</div>
             </div>
-            <span class="btn btn-disabled">+ New Scan — Coming Soon</span>
+            <%= link_to "+ New Scan", "/scanner", class: "btn btn-primary" %>
         </div>
+
+        <% if flash[:notice] %>
+            <div class="alert alert-success"><%= flash[:notice] %></div>
+        <% end %>
+        <% if flash[:alert] %>
+            <div class="alert alert-error"><%= flash[:alert] %></div>
+        <% end %>
 
         <div class="stats-grid">
             <div class="stat-card">

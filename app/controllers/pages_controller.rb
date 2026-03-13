@@ -20,6 +20,8 @@ class PagesController < ApplicationController
   end
 
   def scanner
+    org_id   = Current.user.organization_id
+    @assets  = Asset.where(organization_id: org_id).order(:ip_address)
   end
 
   def trigger_scan
@@ -43,8 +45,9 @@ class PagesController < ApplicationController
     exploit_range.uniq!
     exploit_range.sort!
 
-    ScanJob.perform_later(org_id, exploit_range, Current.user.id)
-    redirect_to scanner_path, notice: "Scan queued. Results will appear in Reports when complete."
+    asset_id = params[:asset_id].presence&.to_i
+    ScanJob.perform_later(org_id, exploit_range, Current.user.id, asset_id)
+    redirect_to scans_path, notice: "Scan queued."
   end
 
   def scans

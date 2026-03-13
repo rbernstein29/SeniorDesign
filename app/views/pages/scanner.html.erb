@@ -239,11 +239,24 @@
                 </div>
             </div>
             <div class="card-body">
-                <p style="font-size: 13px; color: var(--muted); margin-bottom: 24px;">
-                    Select exploit IDs to run against your organization's active assets. The scan runs as a background job — results appear in Reports when complete.
-                </p>
 
                 <%= form_with url: trigger_scan_path, method: :post, local: true do |form| %>
+                    <div class="field-group">
+                        <label class="field-label">Asset</label>
+                        <% if @assets.any? %>
+                            <%= select_tag "asset_id",
+                                options_for_select(@assets.map { |a| [a.ip_address, a.id] }),
+                                prompt: "Select asset...",
+                                style: "background:#0d1525;border:1px solid rgba(59,130,246,0.3);color:#e2e8f0;padding:10px 14px;border-radius:8px;font-family:'JetBrains Mono',monospace;font-size:13px;width:240px;outline:none;",
+                                required: true %>
+                        <% else %>
+                            <span style="font-family:'JetBrains Mono',monospace;font-size:12px;color:#94a3b8;background:rgba(255,255,255,0.04);border:1px solid rgba(255,255,255,0.1);padding:8px 14px;border-radius:8px;display:inline-block;">
+                                No assets found — <%= link_to "add one first", new_asset_path, style: "color:#3b82f6;" %>
+                            </span>
+                        <% end %>
+                        <div class="field-hint">The target IP address to scan.</div>
+                    </div>
+
                     <div class="field-group">
                         <%= form.label :exploit_ids, "Exploit IDs", class: "field-label" %>
                         <%= form.text_field :exploit_ids, value: "1-5",
@@ -252,7 +265,7 @@
                         <div class="field-hint">Comma-separated IDs or ranges (e.g. <span style="font-family: var(--mono);">1-5,8</span>). IDs map to rows in <span style="font-family: var(--mono);">vuln_scanner.exploits</span>.</div>
                     </div>
 
-                    <%= form.submit "&#x25B6; Run Scan", class: "btn-scan" %>
+                    <%= form.submit "Run Scan", class: "btn-scan" %>
                 <% end %>
             </div>
         </div>
