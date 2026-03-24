@@ -1,0 +1,71 @@
+<% content_for :title, "Aegis - Configure Accounts" %>
+
+<%= render 'shared/sidebar', current_page: 'read_only_accounts' %>
+
+<div class="layout">
+
+  <div class="page-header">
+    <div>
+      <div class="page-title">Configure Read-Only Users</div>
+      <div class="page-sub">Manage read-only accounts in your organization</div>
+    </div>
+    <%= link_to "➕ Add User", create_ro_account_path, class: "btn btn-primary" %>
+  </div>
+
+  <% if flash[:alert] %>
+    <div class="alert-error"><%= flash[:alert] %></div>
+  <% end %>
+
+  <div class="info-box">
+    <ul class="info-box-list">
+      <li>Read-only accounts are able to view and download scan reports</li>
+      <li>They are not able to create assets or run scans</li>
+    </ul>
+  </div>
+
+  <div class="main-card">
+    <div class="card-header">
+      <div>
+        <div class="card-title">Read-Only Users</div>
+        <div class="card-subtitle"><%= @read_only_users.count %> USERS</div>
+      </div>
+    </div>
+
+    <% if @read_only_users.any? %>
+      <div style="overflow:auto;">
+        <table>
+          <thead>
+            <tr>
+              <th>Name</th>
+              <th>Email</th>
+              <th>Created</th>
+              <th>Actions</th>
+            </tr>
+          </thead>
+          <tbody>
+            <% @read_only_users.each do |user| %>
+              <tr>
+                <td><%= user.name %></td>
+                <td class="id-cell"><%= user.email_address %></td>
+                <td class="id-cell"><%= user.created_at.strftime("%b %d, %Y") %></td>
+                <td>
+                  <%= button_to "🗑 Delete", delete_read_only_account_path(user), method: :delete,
+                      class: "btn btn-danger btn-sm",
+                      data: { confirm: "Delete #{user.name}? This cannot be undone." } %>
+                </td>
+              </tr>
+            <% end %>
+          </tbody>
+        </table>
+      </div>
+    <% else %>
+      <div class="state-box">
+        <span class="state-icon">👥</span>
+        <div class="state-title">No Read-Only Users</div>
+        <div class="state-sub">Add a read-only user to give limited access to your organization</div>
+        <%= link_to "➕ Add Read-Only User", create_ro_account_path, class: "btn btn-primary" %>
+      </div>
+    <% end %>
+  </div>
+
+</div>

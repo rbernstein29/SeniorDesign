@@ -1,0 +1,101 @@
+<% content_for :title, "Aegis - Sign In" %>
+
+<div class="login-wrap">
+  <div class="login-card">
+    <div class="login-head">
+      <div class="login-brand">
+        <%= image_tag 'logo_dark_mode.png',  alt: 'Aegis', class: 'login-logo logo-dark' %>
+        <%= image_tag 'logo_light_mode.png', alt: 'Aegis', class: 'login-logo logo-light' %>
+        <h1>Aegis</h1>
+      </div>
+
+      <% active_signin = params[:tab] != "signup" %>
+      <% active_signup = params[:tab] == "signup" %>
+
+      <div class="login-tabs">
+        <%= link_to "Sign In",        login_path(tab: "signin"), class: "login-tab #{active_signin ? 'active' : ''}" %>
+        <%= link_to "Create Account", login_path(tab: "signup"), class: "login-tab #{active_signup ? 'active' : ''}" %>
+      </div>
+    </div>
+
+    <!-- Sign in -->
+    <div class="login-body <%= active_signin ? '' : 'hidden' %>" id="view-signin">
+      <% if flash[:alert] %>
+        <div class="alert-error" id="err-signin"><%= flash[:alert] %></div>
+      <% else %>
+        <div class="alert-error hidden" id="err-signin"></div>
+      <% end %>
+
+      <%= form_with url: session_path, method: :post, id: "form-signin" do |f| %>
+        <div class="field">
+          <%= f.email_field :email_address, id: "in-email", placeholder: "Email",
+              required: true, autofocus: true, autocomplete: "username" %>
+        </div>
+        <div class="field">
+          <%= f.password_field :password, id: "in-pass", placeholder: "Password",
+              required: true, autocomplete: "current-password", maxlength: 72 %>
+        </div>
+        <div class="login-row">
+          <label class="login-check-row">
+            <input type="checkbox" id="in-remember" />
+            <span class="login-hint">Remember me on this device</span>
+          </label>
+          <a class="login-hint login-hint-right" href="#" id="lnk-forgot">Forgot password?</a>
+        </div>
+        <div class="login-row">
+          <%= f.submit "Sign In", class: "btn btn-primary", id: "btn-signin" %>
+        </div>
+      <% end %>
+    </div>
+
+    <!-- Sign up -->
+    <div class="login-body <%= active_signup ? '' : 'hidden' %>" id="view-signup">
+      <%= form_with url: accounts_path, method: :post, id: "form-signup" do %>
+        <div class="field">
+          <input type="text"     name="user[name]"                  id="up-name" placeholder="Full Name" />
+        </div>
+        <div class="field">
+          <input type="text"     name="organization[org_name]"       id="up-org"  placeholder="Organization" />
+        </div>
+        <div class="field">
+          <input type="email"    name="user[email_address]"          id="up-email" placeholder="Email" />
+        </div>
+        <div class="field">
+          <input type="password" name="user[password]"               id="up-pass"  placeholder="Password" />
+        </div>
+        <div class="field">
+          <input type="password" name="user[password_confirmation]"  id="up-pass2" placeholder="Confirm Password" />
+        </div>
+        <div class="login-row">
+          <button type="submit" class="btn btn-primary" id="btn-signup">Create account</button>
+        </div>
+      <% end %>
+    </div>
+
+    <!-- Verify email -->
+    <div class="login-body hidden" id="view-verify">
+      <div class="alert-success" id="msg-verify">We sent a 6‑digit code to <span id="ver-email"></span>. Enter it below to verify your account.</div>
+      <input id="ver-code" class="otp-input" maxlength="6" pattern="[0-9]{6}" placeholder="000000" />
+      <div class="login-hint" id="ver-hint"></div>
+      <div class="login-row">
+        <button class="btn btn-primary"   id="btn-verify">Verify</button>
+        <button class="btn btn-secondary" id="btn-resend">Resend</button>
+      </div>
+      <div class="login-sep"></div>
+      <div class="login-hint">After verification, you'll be redirected to the app.</div>
+    </div>
+
+    <!-- Reset password -->
+    <div class="login-body hidden" id="view-reset">
+      <div class="field">
+        <label class="form-label" for="rp-email">Email</label>
+        <input id="rp-email" type="email" placeholder="you@org.com" />
+      </div>
+      <div class="login-row">
+        <button class="btn btn-primary"   id="btn-reset">Send reset link</button>
+        <button class="btn btn-secondary" id="btn-cancel-reset">Back</button>
+      </div>
+      <div class="login-hint" id="rp-hint"></div>
+    </div>
+  </div>
+</div>

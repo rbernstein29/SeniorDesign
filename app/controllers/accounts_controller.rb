@@ -1,0 +1,34 @@
+class AccountsController < ApplicationController
+  skip_before_action :verify_authenticity_token, only: [:create]
+  allow_unauthenticated_access only: [:create]
+  
+  def create
+    ActiveRecord::Base.transaction do 
+      @organization = Organization.create!(organization_params)
+      @user = User.create!(user_params.merge(organization_id: @organization.id, access_level: "admin"))
+
+      start_new_session_for @user
+      redirect_to root_path
+    end
+  rescue ActiveRecord::RecordInvalid => e
+    redirect_to login_path, alert: e.message
+  rescue ActiveRecord::RecordNotUnique
+    redirect_to login_path, alert: "That organization name or email is already registered."
+  end
+
+  def generate_api_key
+    Current.user.update(api_key: SecureRandom.urlsafe_base64(32))
+    redirect_back_or_to root_path
+  end
+
+  private
+
+  def user_params
+    params.require(:user).permit(:name, :email_address, :password, :password_confirmation, :organization_id, :access_level)
+  end
+
+  def organization_params
+    params.require(:organization).permit(:org_name)
+  end
+
+end

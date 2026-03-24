@@ -1,0 +1,14 @@
+report_one:
+  report_name: "Test Scan Report"
+  organization_id: <%= ActiveRecord::FixtureSet.identify(:acme) %>
+  user_id: <%= ActiveRecord::FixtureSet.identify(:admin_user) %>
+  report_type: "full"
+  generated_at: <%= 1.hour.ago %>
+  report_data: '[{"target":"192.168.1.1","port":22,"exploit":"ssh_login","success":true,"timestamp":"2026-01-01T10:00:00Z"},{"target":"192.168.1.2","port":80,"exploit":"http_enum","success":false,"timestamp":"2026-01-01T10:01:00Z"}]'
+
+report_two:
+  report_name: "Second Report"
+  organization_id: <%= ActiveRecord::FixtureSet.identify(:acme) %>
+  user_id: <%= ActiveRecord::FixtureSet.identify(:admin_user) %>
+  report_type: "summary"
+  generated_at: <%= 2.hours.ago %>

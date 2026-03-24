@@ -1,0 +1,124 @@
+<% content_for :title, "Aegis - Asset Management" %>
+
+<%= render 'shared/sidebar', current_page: 'assets' %>
+
+<div class="layout">
+    <!-- Page Header -->
+    <div class="page-header">
+        <div>
+            <div class="page-title"><%= image_tag 'SDimagesWhite/AssetMangerWhite.png', alt: '', class: 'page-title-img icon-white' %><%= image_tag 'SDimagesBlack/AssetMangerBLack.png', alt: '', class: 'page-title-img icon-black' %>Asset Management</div>
+            <div class="page-sub">Manage network scan targets and configurations</div>
+        </div>
+        <%= link_to new_asset_path, class: "btn btn-primary" do %>
+            <span>➕</span> Add New Asset
+        <% end %>
+    </div>
+
+    <!-- Stats -->
+    <div class="stats-grid">
+        <div class="stat-card">
+            <div class="stat-label">Total Assets</div>
+            <div class="stat-number"><%= @assets.count %></div>
+        </div>
+        <div class="stat-card green">
+            <div class="stat-label">Safe Mode</div>
+            <div class="stat-number"><%= @assets.count { |a| a.scan_config&.dig('scanMode') == 'safe' } %></div>
+        </div>
+        <div class="stat-card orange">
+            <div class="stat-label">Exploit Mode</div>
+            <div class="stat-number"><%= @assets.count { |a| a.scan_config&.dig('scanMode') == 'exploits' } %></div>
+        </div>
+        <div class="stat-card cyan">
+            <div class="stat-label">Servers</div>
+            <div class="stat-number"><%= @assets.count { |a| a.scan_config&.dig('asset') == 'server' } %></div>
+        </div>
+    </div>
+
+    <!-- Table -->
+    <div class="table-container">
+        <div class="table-header">
+            <div class="table-title">All Assets</div>
+            <div class="table-subtitle">TOTAL: <%= @assets.count %> RECORDS</div>
+        </div>
+
+        <% if @assets.any? %>
+            <div style="overflow:auto;max-height:520px;">
+            <table style="width:100%;">
+                <thead>
+                    <tr>
+                        <th>#</th>
+                        <th>Network</th>
+                        <th>Scan Mode</th>
+                        <th>Asset Type</th>
+                        <th>OS</th>
+                        <th>Scan Type</th>
+                        <th>Ports</th>
+                        <th>Actions</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <% @assets.each_with_index do |asset, index| %>
+                        <tr>
+                            <td><span class="id-cell">#<%= index + 1 %></span></td>
+                            <td><span class="network-code"><%= asset.ip_address %></span></td>
+                            <td>
+                                <% scan_mode = asset.scan_config&.dig('scanMode') %>
+                                <span class="badge badge-<%= scan_mode %>"><%= scan_mode&.upcase %></span>
+                            </td>
+                            <td><%= asset.scan_config&.dig('asset')&.humanize %></td>
+                            <td><span style="font-family: var(--mono); font-size: 12px;"><%= asset.scan_config&.dig('os')&.upcase %></span></td>
+                            <td><%= asset.scan_config&.dig('scanType')&.capitalize %></td>
+                            <td><span class="port-code"><%= asset.scan_config&.dig('port') %></span></td>
+                            <td style="display: flex; gap: 8px; align-items: center;">
+                                <%= link_to "View →", asset_path(asset), class: "view-link" %>
+                                <%= button_to "✕", asset_path(asset), method: :delete,
+                                    data: { confirm: "Delete this asset?" },
+                                    class: "view-link", style: "background: none; border: 1px solid rgba(239,68,68,0.3); color: var(--red); cursor: pointer; padding: 4px 10px; border-radius: 6px; font-family: var(--mono); font-size: 12px;" %>
+                            </td>
+                        </tr>
+                    <% end %>
+                </tbody>
+            </table>
+            </div>
+        <% else %>
+            <div class="empty-state">
+                <div class="empty-state-icon"><%= image_tag 'SDimagesWhite/AssetMangerWhite.png', alt: '', class: 'empty-icon-img icon-white' %><%= image_tag 'SDimagesBlack/AssetMangerBLack.png', alt: '', class: 'empty-icon-img icon-black' %></div>
+                <h3>No Assets Configured</h3>
+                <p>Add your first scan target to get started</p>
+                <%= link_to "Add Your First Asset", new_asset_path, class: "btn btn-primary" %>
+            </div>
+        <% end %>
+    </div>
+</div>
+
+<script>
+    function initResizableColumns() {
+        const table = document.querySelector('table');
+        if (!table) return;
+        const ths = Array.from(table.querySelectorAll('th'));
+        ths.forEach(th => { th.style.width = th.offsetWidth + 'px'; });
+        table.style.tableLayout = 'fixed';
+        table.style.width = Math.max(table.offsetWidth, ths.reduce((s, th) => s + th.offsetWidth, 0)) + 'px';
+        ths.forEach(th => {
+            const handle = document.createElement('div');
+            handle.className = 'resize-handle';
+            th.appendChild(handle);
+            let startX, startW, startTableW;
+            handle.addEventListener('mousedown', e => {
+                startX = e.clientX; startW = th.offsetWidth;
+                startTableW = parseInt(table.style.width, 10);
+                handle.classList.add('active');
+                const onMove = e => {
+                    const newW = Math.max(40, startW + (e.clientX - startX));
+                    th.style.width = newW + 'px';
+                    table.style.width = (startTableW + (newW - startW)) + 'px';
+                };
+                const onUp = () => { handle.classList.remove('active'); document.removeEventListener('mousemove', onMove); document.removeEventListener('mouseup', onUp); };
+                document.addEventListener('mousemove', onMove);
+                document.addEventListener('mouseup', onUp);
+                e.preventDefault();
+            });
+        });
+    }
+    initResizableColumns();
+</script>

@@ -1,0 +1,122 @@
+<% content_for :title, "Aegis - Sites" %>
+
+<%= render 'shared/sidebar', current_page: 'sites' %>
+
+<div class="layout">
+    <div class="page-header">
+        <div>
+            <div class="page-title"><%= image_tag 'SDimagesWhite/SitesWhite.png', alt: '', class: 'page-title-img icon-white' %><%= image_tag 'SDimagesBlack/SitesBlack.png', alt: '', class: 'page-title-img icon-black' %> Sites</div>
+            <div class="page-sub">Manage network sites — one agent per site</div>
+        </div>
+    </div>
+
+    <!-- Sites Table -->
+    <div class="main-card">
+        <div class="card-header">
+            <div class="card-title">Registered Sites</div>
+        </div>
+        <% if @sites.any? %>
+            <div style="overflow:auto;max-height:520px;">
+            <table style="width:100%;">
+                <thead>
+                    <tr>
+                        <th>Site Name</th>
+                        <th>Network Range</th>
+                        <th>Agent</th>
+                        <th>Assets</th>
+                        <th>Actions</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <% @sites.each do |site| %>
+                        <tr>
+                            <td style="font-weight:600;color:var(--text);"><%= site.name %></td>
+                            <td>
+                                <span style="font-family:var(--mono);font-size:12px;color:var(--cyan);">
+                                    <%= site.network_range.presence || '—' %>
+                                </span>
+                            </td>
+                            <td>
+                                <% agent = site.agents.first %>
+                                <% if agent %>
+                                    <span style="font-family:var(--mono);font-size:11px;color:<%= agent.connected? ? 'var(--green)' : 'var(--muted)' %>;">
+                                        <%= agent.connected? ? '● Connected' : '○ Offline' %>
+                                    </span>
+                                <% else %>
+                                    <span style="color:var(--muted);font-size:12px;">No agent</span>
+                                <% end %>
+                            </td>
+                            <td>
+                                <span style="font-family:var(--mono);font-size:13px;">
+                                    <%= site.assets.count %>
+                                </span>
+                            </td>
+                            <td>
+                                <%= button_to "✕ Delete", site_path(site), method: :delete,
+                                    data: { confirm: "Delete site '#{site.name}'? This will unlink its agents and assets." },
+                                    class: "btn btn-danger btn-sm" %>
+                            </td>
+                        </tr>
+                    <% end %>
+                </tbody>
+            </table>
+            </div>
+        <% else %>
+            <div class="state-box">
+                <span class="state-icon"><%= image_tag 'SDimagesWhite/SitesWhite.png', alt: '', class: 'state-icon-img icon-white' %><%= image_tag 'SDimagesBlack/SitesBlack.png', alt: '', class: 'state-icon-img icon-black' %></span>
+                <div class="state-title">No Sites Yet</div>
+                <div class="state-sub">Create a site to represent each network an agent will be deployed on</div>
+            </div>
+        <% end %>
+    </div>
+
+    <!-- Create Site Form -->
+    <div class="create-form">
+        <h3>Create New Site</h3>
+        <%= form_with url: sites_path, method: :post do |f| %>
+            <div class="form-row">
+                <div class="field-group">
+                    <label>Site Name *</label>
+                    <%= f.text_field :name, name: "site[name]", placeholder: "e.g. New York Office", required: true %>
+                </div>
+                <div class="field-group">
+                    <label>Network Range (optional)</label>
+                    <%= f.text_field :network_range, name: "site[network_range]", placeholder: "e.g. 10.0.0.0/24" %>
+                </div>
+                <button type="submit" class="btn btn-primary">➕ Create Site</button>
+            </div>
+        <% end %>
+    </div>
+</div>
+
+<script>
+    function initResizableColumns() {
+        const table = document.querySelector('table');
+        if (!table) return;
+        const ths = Array.from(table.querySelectorAll('th'));
+        ths.forEach(th => { th.style.width = th.offsetWidth + 'px'; });
+        table.style.tableLayout = 'fixed';
+        table.style.width = Math.max(table.offsetWidth, ths.reduce((s, th) => s + th.offsetWidth, 0)) + 'px';
+        ths.forEach(th => {
+            const handle = document.createElement('div');
+            handle.className = 'resize-handle';
+            th.appendChild(handle);
+            let startX, startW, startTableW;
+            handle.addEventListener('mousedown', e => {
+                startX = e.clientX; startW = th.offsetWidth;
+                startTableW = parseInt(table.style.width, 10);
+                handle.classList.add('active');
+                const onMove = e => {
+                    const newW = Math.max(40, startW + (e.clientX - startX));
+                    th.style.width = newW + 'px';
+                    table.style.width = (startTableW + (newW - startW)) + 'px';
+                };
+                const onUp = () => { handle.classList.remove('active'); document.removeEventListener('mousemove', onMove); document.removeEventListener('mouseup', onUp); };
+                document.addEventListener('mousemove', onMove);
+                document.addEventListener('mouseup', onUp);
+                e.preventDefault();
+            });
+        });
+    }
+    initResizableColumns();
+</script>

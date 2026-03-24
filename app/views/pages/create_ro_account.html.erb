@@ -1,0 +1,50 @@
+<% content_for :title, "Aegis - Create Read-Only User" %>
+
+<%= render 'shared/sidebar', current_page: 'read_only_accounts' %>
+
+<div class="layout">
+
+    <div class="page-header">
+        <div>
+            <div class="page-title">Read-Only Accounts</div>
+            <div class="page-sub">Create a new read-only user</div>
+        </div>
+        <%= link_to "← Back", read_only_accounts_path, class: "btn btn-secondary" %>
+    </div>
+
+    <% if flash[:alert] %>
+        <div class="alert alert-error"><%= flash[:alert] %></div>
+    <% end %>
+
+    <div class="main-card" style="max-width:520px;">
+        <div class="card-header">
+            <div class="card-title">New Account</div>
+            <div class="card-subtitle">READ-ONLY ACCESS</div>
+        </div>
+
+        <%= form_with url: read_only_accounts_path, method: :post do %>
+            <div class="card-body">
+                <div class="form-group">
+                    <label class="form-label">Full Name</label>
+                    <input type="text" name="user[name]" placeholder="Jane Smith" />
+                </div>
+                <div class="form-group">
+                    <label class="form-label">Email</label>
+                    <input type="email" name="user[email_address]" placeholder="jane@org.com" />
+                </div>
+                <div class="form-group">
+                    <label class="form-label">Password</label>
+                    <input type="password" name="user[password]" placeholder="••••••••" />
+                </div>
+                <div class="form-group">
+                    <label class="form-label">Confirm Password</label>
+                    <input type="password" name="user[password_confirmation]" placeholder="••••••••" />
+                </div>
+            </div>
+            <div class="card-footer">
+                <button type="submit" class="btn btn-primary">Create Account</button>
+            </div>
+        <% end %>
+    </div>
+
+</div>

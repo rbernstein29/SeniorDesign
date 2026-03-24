@@ -1,0 +1,38 @@
+<% content_for :title, "Aegis - Sign In" %>
+
+<div class="login-wrap">
+  <div class="login-card">
+    <div class="login-head">
+      <div class="login-brand">
+        <%= image_tag 'logo_dark_mode.png',  alt: 'Aegis', class: 'login-logo logo-dark' %>
+        <%= image_tag 'logo_light_mode.png', alt: 'Aegis', class: 'login-logo logo-light' %>
+        <h1>Aegis</h1>
+      </div>
+      <div class="login-sub">Sign in to your account</div>
+    </div>
+
+    <div class="login-body">
+      <% if flash[:alert] %>
+        <div class="alert-error"><%= flash[:alert] %></div>
+      <% end %>
+
+      <%= form_with url: session_path, method: :post do |form| %>
+        <div class="field">
+          <%= form.email_field :email_address, class: "input", placeholder: "Email",
+              required: true, autofocus: true, autocomplete: "username",
+              value: params[:email_address] %>
+        </div>
+        <div class="field">
+          <%= form.password_field :password, class: "input", placeholder: "Password",
+              required: true, autocomplete: "current-password", maxlength: 72 %>
+        </div>
+        <div class="login-row">
+          <span class="login-hint login-hint-right"><%= link_to "Forgot password?", new_password_path %></span>
+        </div>
+        <div class="login-row">
+          <%= form.submit "Sign In", class: "btn btn-primary" %>
+        </div>
+      <% end %>
+    </div>
+  </div>
+</div>

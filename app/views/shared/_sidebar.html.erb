@@ -1,0 +1,161 @@
+<%# app/views/shared/_sidebar.html.erb %>
+<%# Usage: render 'shared/sidebar', current_page: 'assets' %>
+
+<!-- Hamburger Toggle Button -->
+<button class="sidebar-toggle" onclick="openSidebar()" title="Open Navigation">
+  <span class="hamburger-line"></span>
+  <span class="hamburger-line"></span>
+  <span class="hamburger-line"></span>
+</button>
+
+<!-- Overlay -->
+<div class="sidebar-overlay" id="sidebarOverlay" onclick="closeSidebar()"></div>
+
+<!-- Sidebar -->
+<nav class="sidebar" id="sidebar">
+  <div class="sidebar-header">
+    <a href="<%= root_path %>" class="sidebar-brand">
+      <%= image_tag 'logo_dark_mode.png',  alt: 'Aegis', class: 'sidebar-brand-icon logo-dark' %>
+      <%= image_tag 'logo_light_mode.png', alt: 'Aegis', class: 'sidebar-brand-icon logo-light' %>
+      <div>
+        <div class="sidebar-brand-text">Aegis</div>
+        <div class="sidebar-brand-sub">Security Platform</div>
+      </div>
+    </a>
+    <button class="sidebar-close" onclick="closeSidebar()">✕</button>
+  </div>
+
+  <div class="sidebar-nav">
+    <div class="sidebar-section-label">Main</div>
+
+    <a href="<%= root_path %>" class="sidebar-nav-item nav-green <%= current_page == 'home' ? 'active' : '' %>">
+      <span class="nav-icon">
+        <%= image_tag 'SDimagesWhite/DashboardWhite.png', alt: '', class: 'nav-icon-img icon-white' %>
+        <%= image_tag 'SDimagesBlack/DashboardBlack.png', alt: '', class: 'nav-icon-img icon-black' %>
+      </span>
+      <span class="nav-dot green"></span>
+      <span class="nav-label">Dashboard</span>
+    </a>
+
+    <% if admin? %>
+      <a href="<%= (scans_path rescue '#') %>" class="sidebar-nav-item nav-orange <%= current_page == 'scans' ? 'active' : '' %>">
+        <span class="nav-icon">
+          <%= image_tag 'SDimagesWhite/snanerWhite.png', alt: '', class: 'nav-icon-img icon-white' %>
+          <%= image_tag 'SDimagesBlack/ScansBlack.png', alt: '', class: 'nav-icon-img icon-black' %>
+        </span>
+        <span class="nav-dot orange"></span>
+        <span class="nav-label">Scans</span>
+      </a>
+
+      <a href="<%= assets_path %>" class="sidebar-nav-item nav-green <%= current_page == 'assets' ? 'active' : '' %>">
+        <span class="nav-icon">
+          <%= image_tag 'SDimagesWhite/AssetMangerWhite.png', alt: '', class: 'nav-icon-img icon-white' %>
+          <%= image_tag 'SDimagesBlack/AssetMangerBLack.png', alt: '', class: 'nav-icon-img icon-black' %>
+        </span>
+        <span class="nav-dot green"></span>
+        <span class="nav-label">Asset Management</span>
+      </a>
+
+      <a href="<%= (agents_path rescue '#') %>" class="sidebar-nav-item nav-magenta <%= current_page == 'agents' ? 'active' : '' %>">
+        <span class="nav-icon">
+          <%= image_tag 'SDimagesWhite/Agent.png', alt: '', class: 'nav-icon-img icon-white' %>
+          <%= image_tag 'SDimagesBlack/AgentsBlack.png', alt: '', class: 'nav-icon-img icon-black' %>
+        </span>
+        <span class="nav-dot magenta"></span>
+        <span class="nav-label">Agents</span>
+      </a>
+
+      <a href="<%= (sites_path rescue '#') %>" class="sidebar-nav-item nav-cyan <%= current_page == 'sites' ? 'active' : '' %>">
+        <span class="nav-icon">
+          <%= image_tag 'SDimagesWhite/SitesWhite.png', alt: '', class: 'nav-icon-img icon-white' %>
+          <%= image_tag 'SDimagesBlack/SitesBlack.png', alt: '', class: 'nav-icon-img icon-black' %>
+        </span>
+        <span class="nav-dot cyan"></span>
+        <span class="nav-label">Sites</span>
+      </a>
+    <% end %>
+
+    <div class="sidebar-section-label" style="margin-top:6px;">Reports & Config</div>
+
+    <a href="<%= (reports_path rescue '#') %>" class="sidebar-nav-item nav-violet <%= current_page == 'reports' ? 'active' : '' %>">
+      <span class="nav-icon">
+        <%= image_tag 'SDimagesWhite/VIewReportsWhite.png', alt: '', class: 'nav-icon-img icon-white' %>
+        <%= image_tag 'SDimagesBlack/ViewReportBlack.png', alt: '', class: 'nav-icon-img icon-black' %>
+      </span>
+      <span class="nav-dot violet"></span>
+      <span class="nav-label">View Reports</span>
+    </a>
+
+    <% if admin? %>
+      <a href="<%= (read_only_accounts_path rescue '#') %>" class="sidebar-nav-item nav-teal <%= current_page == 'read_only_accounts' ? 'active' : '' %>">
+        <span class="nav-icon">
+          <%= image_tag 'SDimagesWhite/ConfigureAccountWhite.png', alt: '', class: 'nav-icon-img icon-white' %>
+          <%= image_tag 'SDimagesBlack/ConfigureAccounts.png', alt: '', class: 'nav-icon-img icon-black' %>
+        </span>
+        <span class="nav-dot teal"></span>
+        <span class="nav-label">Configure Accounts</span>
+      </a>
+    <% end %>
+
+    <a href="<%= (settings_path rescue '#') %>" class="sidebar-nav-item nav-blue <%= current_page == 'settings' ? 'active' : '' %>">
+      <span class="nav-icon">
+        <%= image_tag 'SDimagesWhite/SettingsWhite.png', alt: '', class: 'nav-icon-img icon-white' %>
+        <%= image_tag 'SDimagesBlack/SettingsBlack.png', alt: '', class: 'nav-icon-img icon-black' %>
+      </span>
+      <span class="nav-dot blue"></span>
+      <span class="nav-label">Settings</span>
+    </a>
+  </div>
+
+  <div class="sidebar-footer">
+    <div class="sidebar-user">
+      <div class="sidebar-user-avatar">
+        <%= image_tag 'SDimagesWhite/ConfigureAccountWhite.png', alt: '', class: 'nav-icon-img icon-white' %>
+        <%= image_tag 'SDimagesBlack/ConfigureAccounts.png', alt: '', class: 'nav-icon-img icon-black' %>
+      </div>
+      <div>
+        <div class="sidebar-user-name"><%= Current.session&.user&.email_address || 'Admin User' %></div>
+        <div class="sidebar-user-role"><%= Current.user&.access_level&.titleize || 'User' %></div>
+      </div>
+      <%= form_with url: session_path, method: :delete do |f| %>
+        <%= f.submit "⎋", class: "btn btn-danger btn-sm" %>
+      <% end %>
+    </div>
+
+    <button class="theme-toggle" id="theme-btn" onclick="toggleTheme()">☀ Light mode</button>
+  </div>
+</nav>
+
+<script>
+  function openSidebar() {
+    document.getElementById('sidebar').classList.add('open');
+    document.getElementById('sidebarOverlay').classList.add('open');
+    document.body.style.overflow = 'hidden';
+  }
+
+  function closeSidebar() {
+    document.getElementById('sidebar').classList.remove('open');
+    document.getElementById('sidebarOverlay').classList.remove('open');
+    document.body.style.overflow = '';
+  }
+
+  function toggleTheme() {
+    var current = document.documentElement.getAttribute('data-theme');
+    var next = current === 'light' ? 'dark' : 'light';
+    document.documentElement.setAttribute('data-theme', next);
+    localStorage.setItem('aegis-theme', next);
+    updateThemeBtn(next);
+  }
+
+  function updateThemeBtn(t) {
+    var btn = document.getElementById('theme-btn');
+    if (btn) btn.textContent = t === 'light' ? '🌙 Dark mode' : '☀ Light mode';
+  }
+
+  // Set correct label on page load
+  updateThemeBtn(localStorage.getItem('aegis-theme') || 'dark');
+
+  document.addEventListener('keydown', function(e) {
+    if (e.key === 'Escape') closeSidebar();
+  });
+</script>

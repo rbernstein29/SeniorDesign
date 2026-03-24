@@ -1,0 +1,20 @@
+agent_connected:
+  agent_id: "aaaaaaaa-0000-0000-0000-000000000001"
+  organization_id: <%= ActiveRecord::FixtureSet.identify(:acme) %>
+  tunnel_port: 9001
+  ssh_private_key: "fake_private_key"
+  ssh_public_key: "fake_public_key"
+  ssh_key_fingerprint: "SHA256:fakeprint1"
+  site_id: <%= ActiveRecord::FixtureSet.identify(:main_site) %>
+  last_seen: <%= 10.seconds.ago %>
+  status: connected
+
+agent_offline:
+  agent_id: "bbbbbbbb-0000-0000-0000-000000000002"
+  organization_id: <%= ActiveRecord::FixtureSet.identify(:acme) %>
+  tunnel_port: 9002
+  ssh_private_key: "fake_private_key_2"
+  ssh_public_key: "fake_public_key_2"
+  ssh_key_fingerprint: "SHA256:fakeprint2"
+  last_seen: <%= 2.minutes.ago %>
+  status: created

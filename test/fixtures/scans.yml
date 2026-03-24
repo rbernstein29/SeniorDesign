@@ -1,0 +1,46 @@
+running_scan:
+  scan_name: "Test Running Scan"
+  organization_id: <%= ActiveRecord::FixtureSet.identify(:acme) %>
+  initiated_by: <%= ActiveRecord::FixtureSet.identify(:admin_user) %>
+  status: running
+  start_time: <%= 5.minutes.ago %>
+  scanned_assets: 0
+  total_assets: 1
+  total_exploits_tested: 0
+  findings_count: 0
+  critical_findings: 0
+  high_findings: 0
+  medium_findings: 0
+  low_findings: 0
+
+completed_scan:
+  scan_name: "Test Completed Scan"
+  organization_id: <%= ActiveRecord::FixtureSet.identify(:acme) %>
+  initiated_by: <%= ActiveRecord::FixtureSet.identify(:admin_user) %>
+  status: completed
+  start_time: <%= 1.hour.ago %>
+  end_time: <%= 30.minutes.ago %>
+  scanned_assets: 5
+  total_assets: 5
+  total_exploits_tested: 10
+  findings_count: 2
+  critical_findings: 1
+  high_findings: 1
+  medium_findings: 0
+  low_findings: 0
+
+failed_scan:
+  scan_name: "Test Failed Scan"
+  organization_id: <%= ActiveRecord::FixtureSet.identify(:acme) %>
+  initiated_by: <%= ActiveRecord::FixtureSet.identify(:admin_user) %>
+  status: failed
+  start_time: <%= 2.hours.ago %>
+  end_time: <%= 90.minutes.ago %>
+  scanned_assets: 0
+  total_assets: 3
+  total_exploits_tested: 0
+  findings_count: 0
+  critical_findings: 0
+  high_findings: 0
+  medium_findings: 0
+  low_findings: 0

@@ -1,0 +1,73 @@
+<% content_for :title, "Aegis - Scanner" %>
+
+<%= render 'shared/sidebar', current_page: 'scanner' %>
+
+<div class="layout">
+
+    <div class="page-header">
+        <div>
+            <div class="page-title">Scanner</div>
+            <div class="page-sub">Metasploit-powered vulnerability assessment</div>
+        </div>
+    </div>
+
+    <% if flash[:notice] %>
+        <div class="alert alert-success"><%= flash[:notice] %></div>
+    <% end %>
+    <% if flash[:alert] %>
+        <div class="alert alert-error"><%= flash[:alert] %></div>
+    <% end %>
+
+    <div class="card">
+        <div class="card-header">
+            <div class="card-header-icon"><%= image_tag 'SDimagesWhite/SearchWhite.png', alt: '', class: 'hdr-icon-img icon-white' %><%= image_tag 'SDimagesBlack/SearchBlack.png', alt: '', class: 'hdr-icon-img icon-black' %></div>
+            <div>
+                <div class="card-title">Launch Scan</div>
+                <div class="card-subtitle">VULNERABILITY ASSESSMENT</div>
+            </div>
+        </div>
+        <div class="card-body">
+
+            <%= form_with url: trigger_scan_path, method: :post, local: true do |form| %>
+                <div class="field-group">
+                    <label class="field-label">Asset</label>
+                    <% if @assets.any? %>
+                        <%= select_tag "asset_id",
+                            options_for_select(@assets.map { |a| [a.ip_address, a.id] }),
+                            prompt: "Select asset...",
+                            style: "max-width:300px;",
+                            required: true %>
+                    <% else %>
+                        <span style="font-family:var(--mono);font-size:12px;color:var(--muted);background:var(--surface2);border:1px solid var(--border);padding:8px 14px;border-radius:8px;display:inline-block;">
+                            No assets found — <%= link_to "add one first", new_asset_path, style: "color:var(--accent);" %>
+                        </span>
+                    <% end %>
+                    <div class="field-hint">The target IP address to scan.</div>
+                </div>
+
+                <div class="field-group">
+                    <%= form.label :exploit_ids, "Exploits", class: "field-label" %>
+                    <% if @exploits.any? %>
+                        <div style="max-height:220px;overflow-y:auto;border:1px solid var(--border);border-radius:8px;padding:8px 12px;background:var(--surface2);">
+                            <% @exploits.each do |exploit| %>
+                                <label class="radio-option">
+                                    <%= check_box_tag "trigger_scan[exploit_ids][]", exploit.id, true, id: "exploit_#{exploit.id}" %>
+                                    <span style="font-family:var(--mono);color:var(--accent)"><%= exploit.exploit_id %></span>
+                                    <% if exploit.respond_to?(:use_case_name) && exploit.use_case_name.present? %>
+                                        <span style="color:var(--muted)">— <%= exploit.use_case_name %></span>
+                                    <% end %>
+                                </label>
+                            <% end %>
+                        </div>
+                        <div class="field-hint">Select which exploits to run against the target.</div>
+                    <% else %>
+                        <div class="field-hint">No exploits loaded in the database.</div>
+                    <% end %>
+                </div>
+
+                <%= form.submit "Run Scan", class: "btn-scan" %>
+            <% end %>
+        </div>
+    </div>
+
+</div>

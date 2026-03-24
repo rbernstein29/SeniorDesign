@@ -1,0 +1,5 @@
+acme:
+  org_name: Acme Corp
+
+other_org:
+  org_name: Other Org

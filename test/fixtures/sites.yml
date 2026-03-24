@@ -1,0 +1,8 @@
+main_site:
+  name: Main Office
+  network_range: 192.168.1.0/24
+  organization_id: <%= ActiveRecord::FixtureSet.identify(:acme) %>
+
+open_site:
+  name: Open Site
+  organization_id: <%= ActiveRecord::FixtureSet.identify(:acme) %>

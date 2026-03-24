@@ -1,0 +1,181 @@
+<% content_for :title, "Aegis - Settings" %>
+
+<%= render 'shared/sidebar', current_page: 'settings' %>
+
+<div class="layout">
+
+    <div class="page-header">
+        <div>
+            <div class="page-title">Settings</div>
+            <div class="page-sub">Platform configuration and preferences</div>
+            <% if flash[:alert] %>
+                <div class="alert alert-error" style="margin-top:10px;margin-bottom:0;"><%= flash[:alert] %></div>
+            <% end %>
+        </div>
+    </div>
+
+    <div class="settings-grid">
+
+        <!-- Server Configuration -->
+        <% if admin? %>
+            <div class="settings-card">
+                <div class="card-header">
+                    <div class="card-header-icon">🖥</div>
+                    <div>
+                        <div class="card-title">Server Configuration</div>
+                        <div class="card-subtitle">INFRASTRUCTURE</div>
+                    </div>
+                </div>
+                <div class="settings-body">
+                    <div class="status-row">
+                        <div class="status-dot-sm dot-green-sm"></div>
+                        <span class="status-text">Database connected — PostgreSQL @ <%= ENV.fetch('DB_HOST', 'configured') %></span>
+                    </div>
+                    <div class="field-group">
+                        <div class="field-label">Scanner Server IP</div>
+                        <input class="field-input mono" type="text" value="<%= ENV.fetch('DB_HOST', 'configured') %>" disabled>
+                        <div class="field-hint">Tailscale IP of the Linux scanning server</div>
+                    </div>
+                    <div class="field-group">
+                        <div class="field-label">Rails Port</div>
+                        <input class="field-input mono" type="text" value="3000" disabled>
+                    </div>
+                    <div class="field-group">
+                        <div class="field-label">Agent Tunnel Port Range</div>
+                        <input class="field-input mono" type="text" value="9000 – 9999" disabled>
+                        <div class="field-hint">Ports allocated to SSH reverse tunnels from agents</div>
+                    </div>
+                </div>
+            </div>
+        <% end %>
+
+        <!-- Account -->
+        <div class="settings-card">
+            <div class="card-header">
+                <div class="card-header-icon"><%= image_tag 'SDimagesWhite/ConfigureAccountWhite.png', alt: '', class: 'hdr-icon-img icon-white' %><%= image_tag 'SDimagesBlack/ConfigureAccounts.png', alt: '', class: 'hdr-icon-img icon-black' %></div>
+                <div>
+                    <div class="card-title">Account</div>
+                    <div class="card-subtitle">USER PROFILE</div>
+                </div>
+            </div>
+            <div class="settings-body">
+                <div class="field-group">
+                    <div class="field-label">Email</div>
+                    <input class="field-input" type="email" value="<%= Current.user&.email_address || '' %>" disabled>
+                </div>
+                <%= form_with url: session_path, method: :delete do |f| %>
+                  <%= f.submit "Sign Out", class: "btn btn-danger btn-sm" %>
+                <% end %>
+                <br/>
+                <div class="field-group">
+                  <% if Current.user&.api_key.present? %>
+                    <div class="field-label">Your API Key: <code style="font-family:var(--mono);font-size:11px;"><%= Current.user&.api_key %></code></div>
+                    <%= button_to "Regenerate Key", generate_api_key_path, method: :patch, class: "btn btn-secondary btn-sm" %>
+                  <% else %>
+                    <div class="field-label">You don't have an API key yet.</div>
+                    <%= button_to "Generate API Key", generate_api_key_path, method: :patch, class: "btn btn-secondary btn-sm" %>
+                  <% end %>
+                </div>
+            </div>
+        </div>
+
+        <!-- Organization -->
+        <div class="settings-card">
+            <div class="card-header">
+                <div class="card-header-icon"><%= image_tag 'SDimagesWhite/SitesWhite.png', alt: '', class: 'hdr-icon-img icon-white' %><%= image_tag 'SDimagesBlack/SitesBlack.png', alt: '', class: 'hdr-icon-img icon-black' %></div>
+                <div>
+                    <div class="card-title">Organization</div>
+                    <div class="card-subtitle">ORG PROFILE</div>
+                </div>
+            </div>
+            <div class="settings-body">
+                <div class="field-group">
+                    <div class="field-label">Organization Name</div>
+                    <input class="field-input" type="text" value="<%= @org&.org_name || '—' %>" disabled>
+                </div>
+                <div class="field-group">
+                    <div class="field-label">Domain</div>
+                    <input class="field-input mono" type="text" value="<%= @org&.org_domain || '—' %>" disabled>
+                </div>
+                <div class="field-group">
+                    <div class="field-label">Org ID</div>
+                    <input class="field-input mono" type="text" value="<%= Current.session.user.organization_id %>" disabled>
+                </div>
+                <div class="field-group">
+                    <div class="field-label">Access Level</div>
+                    <input class="field-input mono" type="text" value="<%= Current.session.user.access_level %>" disabled>
+                </div>
+            </div>
+        </div>
+
+        <% if admin? %>
+            <!-- Scanner Defaults -->
+            <div class="settings-card">
+                <div class="card-header">
+                    <div class="card-header-icon"><%= image_tag 'SDimagesWhite/snanerWhite.png', alt: '', class: 'hdr-icon-img icon-white' %><%= image_tag 'SDimagesBlack/ScansBlack.png', alt: '', class: 'hdr-icon-img icon-black' %></div>
+                    <div>
+                        <div class="card-title">Scanner Defaults</div>
+                        <div class="card-subtitle">SCAN BEHAVIOR</div>
+                    </div>
+                </div>
+                <div class="settings-body">
+                    <div class="toggle-row">
+                        <div>
+                            <div class="toggle-label">Auto-generate reports after scan</div>
+                            <div class="toggle-hint">Create a report automatically when a scan completes</div>
+                        </div>
+                        <label class="toggle">
+                            <input type="checkbox" checked disabled>
+                            <span class="toggle-slider"></span>
+                        </label>
+                    </div>
+                    <div class="toggle-row">
+                        <div>
+                            <div class="toggle-label">Route scans through agent tunnel</div>
+                            <div class="toggle-hint">Use SOCKS5 proxy from connected agents</div>
+                        </div>
+                        <label class="toggle">
+                            <input type="checkbox" checked disabled>
+                            <span class="toggle-slider"></span>
+                        </label>
+                    </div>
+                    <div class="toggle-row">
+                        <div>
+                            <div class="toggle-label">Enable aggressive scan mode</div>
+                            <div class="toggle-hint">Faster but more detectable — use with caution</div>
+                        </div>
+                        <label class="toggle">
+                            <input type="checkbox" disabled>
+                            <span class="toggle-slider"></span>
+                        </label>
+                    </div>
+                    <div class="field-hint">Editable settings coming in a future release</div>
+                </div>
+            </div>
+
+            <!-- Danger Zone -->
+            <div class="settings-card danger-zone full-width">
+                <div class="card-header">
+                    <div class="card-header-icon">⚠</div>
+                    <div>
+                        <div class="card-title">Danger Zone</div>
+                        <div class="card-subtitle">DESTRUCTIVE ACTIONS</div>
+                    </div>
+                </div>
+                <div class="settings-body" style="flex-direction:row;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:16px;">
+                    <div>
+                        <div style="font-size:13px;font-weight:600;color:var(--text);margin-bottom:4px;">Delete All Agents</div>
+                        <div style="font-size:12px;color:var(--muted);">Permanently remove all deployed agents and their SSH keys</div>
+                    </div>
+                    <%= button_to "Delete All Agents", agents_path,
+                        method: :delete,
+                        data: { confirm: "This will delete ALL agents. This cannot be undone." },
+                        class: "btn btn-danger btn-sm",
+                        disabled: true,
+                        style: "opacity:0.5;cursor:not-allowed;" %>
+                </div>
+            </div>
+        <% end %>
+
+    </div>
+</div>
