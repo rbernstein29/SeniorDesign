@@ -40,6 +40,8 @@ Rails.application.routes.draw do
   resources :reports, only: [:destroy] do
     member do
       get :download_pdf
+      get :download_xlsx
+      get :download_csv
     end
   end
 

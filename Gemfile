@@ -43,6 +43,8 @@ gem "bcrypt", "~> 3.1.7"
 # PDF report generation
 gem "prawn"
 gem "prawn-table"
+gem "caxlsx"
+gem "csv"
 
 # Metasploit RPC client for vulnerability scanning
 gem "msfrpc-client"

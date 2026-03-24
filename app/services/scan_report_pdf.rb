@@ -37,7 +37,9 @@ class ScanReportPdf < Prawn::Document
     text "Vulnerability Summary", size: 18, style: :bold
     move_down 15
 
-    results = (@report.report_data || []).map(&:with_indifferent_access)
+    raw = @report.report_data || []
+    raw = JSON.parse(raw) if raw.is_a?(String)
+    results = raw.map(&:with_indifferent_access)
     total = results.count
     return if total.zero?
 
@@ -74,7 +76,9 @@ class ScanReportPdf < Prawn::Document
     text "Scan Results", size: 18, style: :bold
     move_down 10
 
-    results = (@report.report_data || [])
+    raw = @report.report_data || []
+    raw = JSON.parse(raw) if raw.is_a?(String)
+    results = raw
     if results.empty?
       text "No results found.", style: :italic
       return

@@ -1,6 +1,9 @@
 require "test_helper"
 
 class ReportsControllerTest < ActionDispatch::IntegrationTest
+
+  # ── DELETE /reports/:id ──────────────────────────────────────────────────────
+
   test "DELETE /reports/:id redirects unauthenticated to login" do
     delete report_path(reports(:report_one))
     assert_redirected_to login_path
@@ -17,6 +20,79 @@ class ReportsControllerTest < ActionDispatch::IntegrationTest
   test "DELETE /reports/:id with non-existent id redirects with alert" do
     sign_in_as(users(:admin_user))
     delete report_path(id: 0)
+    assert_redirected_to reports_path
+    assert_not_nil flash[:alert]
+  end
+
+  # ── GET download_pdf ─────────────────────────────────────────────────────────
+
+  test "GET download_pdf redirects unauthenticated to login" do
+    get download_pdf_report_path(reports(:report_one))
+    assert_redirected_to login_path
+  end
+
+  test "GET download_pdf returns PDF attachment" do
+    sign_in_as(users(:admin_user))
+    get download_pdf_report_path(reports(:report_one))
+    assert_response :success
+    assert_includes response.content_type, "pdf"
+    assert_equal "attachment", response.headers["Content-Disposition"].split(";").first
+  end
+
+  test "GET download_pdf with non-existent id redirects with alert" do
+    sign_in_as(users(:admin_user))
+    get download_pdf_report_path(id: 0)
+    assert_redirected_to reports_path
+    assert_not_nil flash[:alert]
+  end
+
+  test "GET download_pdf for another org report redirects with alert" do
+    sign_in_as(users(:other_org_user))
+    get download_pdf_report_path(reports(:report_one))
+    assert_redirected_to reports_path
+    assert_not_nil flash[:alert]
+  end
+
+  # ── GET download_xlsx ────────────────────────────────────────────────────────
+
+  test "GET download_xlsx redirects unauthenticated to login" do
+    get download_xlsx_report_path(reports(:report_one))
+    assert_redirected_to login_path
+  end
+
+  test "GET download_xlsx returns xlsx attachment" do
+    sign_in_as(users(:admin_user))
+    get download_xlsx_report_path(reports(:report_one))
+    assert_response :success
+    assert_includes response.content_type, "spreadsheetml"
+    assert_equal "attachment", response.headers["Content-Disposition"].split(";").first
+  end
+
+  test "GET download_xlsx with non-existent id redirects with alert" do
+    sign_in_as(users(:admin_user))
+    get download_xlsx_report_path(id: 0)
+    assert_redirected_to reports_path
+    assert_not_nil flash[:alert]
+  end
+
+  # ── GET download_csv ─────────────────────────────────────────────────────────
+
+  test "GET download_csv redirects unauthenticated to login" do
+    get download_csv_report_path(reports(:report_one))
+    assert_redirected_to login_path
+  end
+
+  test "GET download_csv returns csv attachment" do
+    sign_in_as(users(:admin_user))
+    get download_csv_report_path(reports(:report_one))
+    assert_response :success
+    assert_includes response.content_type, "text/csv"
+    assert_equal "attachment", response.headers["Content-Disposition"].split(";").first
+  end
+
+  test "GET download_csv with non-existent id redirects with alert" do
+    sign_in_as(users(:admin_user))
+    get download_csv_report_path(id: 0)
     assert_redirected_to reports_path
     assert_not_nil flash[:alert]
   end

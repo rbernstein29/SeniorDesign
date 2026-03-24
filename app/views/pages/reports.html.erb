@@ -255,6 +255,12 @@
                                     <%= link_to download_pdf_report_path(report), class: "btn btn-download" do %>
                                         &#x1F4C4; PDF
                                     <% end %>
+                                    <%= link_to download_xlsx_report_path(report), class: "btn btn-download" do %>
+                                        &#x1F4CA; XLSX
+                                    <% end %>
+                                    <%= link_to download_csv_report_path(report), class: "btn btn-download" do %>
+                                        &#x1F4CB; CSV
+                                    <% end %>
                                     <%= button_to report_path(report), method: :delete,
                                         data: { turbo_confirm: "Delete this report? This cannot be undone." },
                                         class: "btn btn-delete" do %>

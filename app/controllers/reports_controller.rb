@@ -19,6 +19,28 @@ class ReportsController < ApplicationController
     redirect_to reports_path, alert: 'Report not found'
   end
 
+  def download_xlsx
+    report = org_reports.find(params[:id])
+    xlsx = ScanReportXlsx.new(report)
+    send_data xlsx.render,
+      filename:    "#{report.report_name.parameterize}.xlsx",
+      type:        'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
+      disposition: 'attachment'
+  rescue ActiveRecord::RecordNotFound
+    redirect_to reports_path, alert: 'Report not found'
+  end
+
+  def download_csv
+    report = org_reports.find(params[:id])
+    csv = ScanReportCsv.new(report)
+    send_data csv.render,
+      filename:    "#{report.report_name.parameterize}.csv",
+      type:        'text/csv',
+      disposition: 'attachment'
+  rescue ActiveRecord::RecordNotFound
+    redirect_to reports_path, alert: 'Report not found'
+  end
+
   private
 
   def org_reports
