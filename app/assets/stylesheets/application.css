@@ -100,8 +100,8 @@ body {
 .topbar-brand { display: flex; align-items: center; gap: 14px; }
 
 .brand-logo {
-  width: 40px;
-  height: 40px;
+  width: 48px;
+  height: 48px;
   border-radius: 10px;
   object-fit: contain;
   flex-shrink: 0;
@@ -1043,7 +1043,7 @@ tbody tr:hover { background: var(--surface2); }
 }
 
 .sidebar-brand-icon {
-  width: 34px; height: 34px;
+  width: 40px; height: 40px;
   border-radius: 8px;
   object-fit: contain;
   flex-shrink: 0;

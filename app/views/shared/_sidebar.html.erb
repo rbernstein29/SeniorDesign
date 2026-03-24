@@ -15,7 +15,7 @@
 <nav class="sidebar" id="sidebar">
   <div class="sidebar-header">
     <a href="<%= root_path %>" class="sidebar-brand">
-      <img src="<%= asset_path('logo.png') %>" alt="Aegis" class="sidebar-brand-icon">
+      <%= image_tag 'logo.png', alt: 'Aegis', class: 'sidebar-brand-icon' %>
       <div>
         <div class="sidebar-brand-text">Aegis</div>
         <div class="sidebar-brand-sub">Security Platform</div>
