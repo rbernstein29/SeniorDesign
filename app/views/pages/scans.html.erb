@@ -59,7 +59,7 @@
 
         <% if @scans.nil? || @scans.empty? %>
             <div class="state-box">
-                <span class="state-icon">🔬</span>
+                <span class="state-icon"><%= image_tag 'SDimagesWhite/snanerWhite.png', alt: '', class: 'state-icon-img icon-white' %><%= image_tag 'SDimagesBlack/ScansBlack.png', alt: '', class: 'state-icon-img icon-black' %></span>
                 <div class="state-title">No Scans Yet</div>
                 <div class="state-sub">Deploy an agent and add assets to run your first scan.</div>
                 <%= link_to "Run Your First Scan", scanner_path, class: "btn btn-primary",

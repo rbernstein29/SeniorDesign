@@ -5,7 +5,7 @@
 <div class="layout">
     <div class="page-header">
         <div>
-            <div class="page-title">🏢 Sites</div>
+            <div class="page-title"><%= image_tag 'SDimagesWhite/SitesWhite.png', alt: '', class: 'page-title-img icon-white' %><%= image_tag 'SDimagesBlack/SitesBlack.png', alt: '', class: 'page-title-img icon-black' %> Sites</div>
             <div class="page-sub">Manage network sites — one agent per site</div>
         </div>
     </div>
@@ -63,7 +63,7 @@
             </div>
         <% else %>
             <div class="state-box">
-                <span class="state-icon">🏢</span>
+                <span class="state-icon"><%= image_tag 'SDimagesWhite/SitesWhite.png', alt: '', class: 'state-icon-img icon-white' %><%= image_tag 'SDimagesBlack/SitesBlack.png', alt: '', class: 'state-icon-img icon-black' %></span>
                 <div class="state-title">No Sites Yet</div>
                 <div class="state-sub">Create a site to represent each network an agent will be deployed on</div>
             </div>
