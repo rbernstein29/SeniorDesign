@@ -102,12 +102,8 @@ body {
 .brand-logo {
   width: 40px;
   height: 40px;
-  background: var(--accent);
   border-radius: 10px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  font-size: 18px;
+  object-fit: contain;
   flex-shrink: 0;
 }
 
@@ -1047,11 +1043,9 @@ tbody tr:hover { background: var(--surface2); }
 }
 
 .sidebar-brand-icon {
-  width: 30px; height: 30px;
-  background: var(--accent);
-  border-radius: 7px;
-  display: flex; align-items: center; justify-content: center;
-  font-size: 13px;
+  width: 34px; height: 34px;
+  border-radius: 8px;
+  object-fit: contain;
   flex-shrink: 0;
 }
 
