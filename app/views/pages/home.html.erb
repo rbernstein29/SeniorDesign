@@ -48,7 +48,7 @@
       <div class="stat-value"><%= @sites&.count || 0 %></div>
       <div class="stat-delta">Network sites</div>
     </div>
-    <div class="stat-card blue">
+    <div class="stat-card magenta">
       <div class="stat-label">Total Agents</div>
       <div class="stat-value"><%= @agents&.count || 0 %></div>
       <div class="stat-delta">Registered agents</div>
@@ -69,7 +69,7 @@
       <div class="stat-value"><%= @reports&.count || 0 %></div>
       <div class="stat-delta">Scan reports</div>
     </div>
-    <div class="stat-card blue">
+    <div class="stat-card orange">
       <div class="stat-label">Last Scan</div>
       <% if @last_scan %>
         <div class="stat-value" style="font-size:16px;line-height:1.3;margin-top:4px;"><%= time_ago_in_words(@last_scan) %> ago</div>
@@ -95,9 +95,12 @@
   <div class="nav-grid">
 
     <% if admin? %>
-      <a href="<%= scans_path rescue '#' %>" class="nav-card">
+      <a href="<%= scans_path rescue '#' %>" class="nav-card nav-orange">
         <div class="card-arrow">→</div>
-        <div class="card-icon-wrap">🔬</div>
+        <div class="card-icon-wrap">
+          <%= image_tag 'SDimagesWhite/Radar-sweep_-_Lorc_-_game-icons.svg.png', alt: '', class: 'card-icon-img icon-white' %>
+          <%= image_tag 'SDimagesBlack/Radar-sweep_-_Lorc_-_game-icons.svg.png', alt: '', class: 'card-icon-img icon-black' %>
+        </div>
         <div>
           <div class="card-title">Run a Scan</div>
           <div class="card-desc">Configure and launch vulnerability scans against your targets.</div>
@@ -105,9 +108,12 @@
         <div class="card-tag">SCANNER</div>
       </a>
 
-      <a href="<%= assets_path %>" class="nav-card">
+      <a href="<%= assets_path %>" class="nav-card nav-green">
         <div class="card-arrow">→</div>
-        <div class="card-icon-wrap">🖥️</div>
+        <div class="card-icon-wrap">
+          <%= image_tag 'SDimagesWhite/Noun_project_list_icon_1380018_cc.svg.png', alt: '', class: 'card-icon-img icon-white' %>
+          <%= image_tag 'SDimagesBlack/Noun_project_list_icon_1380018_cc.svg.png', alt: '', class: 'card-icon-img icon-black' %>
+        </div>
         <div>
           <div class="card-title">Asset Management</div>
           <div class="card-desc">Add, edit, and organize your network targets and scan configurations.</div>
@@ -115,9 +121,12 @@
         <div class="card-tag">ASSETS</div>
       </a>
 
-      <a href="<%= agents_path rescue '#' %>" class="nav-card">
+      <a href="<%= agents_path rescue '#' %>" class="nav-card nav-magenta">
         <div class="card-arrow">→</div>
-        <div class="card-icon-wrap">🤖</div>
+        <div class="card-icon-wrap">
+          <%= image_tag 'SDimagesWhite/Robot_(699)_-_The_Noun_Project.svg.png', alt: '', class: 'card-icon-img icon-white' %>
+          <%= image_tag 'SDimagesBlack/Robot_(699)_-_The_Noun_Project.svg.png', alt: '', class: 'card-icon-img icon-black' %>
+        </div>
         <div>
           <div class="card-title">Agents</div>
           <div class="card-desc">Manage distributed scanning agents deployed across your network.</div>
@@ -125,9 +134,12 @@
         <div class="card-tag">AGENTS</div>
       </a>
 
-      <a href="<%= sites_path rescue '#' %>" class="nav-card">
+      <a href="<%= sites_path rescue '#' %>" class="nav-card nav-cyan">
         <div class="card-arrow">→</div>
-        <div class="card-icon-wrap">🏢</div>
+        <div class="card-icon-wrap">
+          <%= image_tag 'SDimagesWhite/Lowrise_building_Pinhead_icon.svg.png', alt: '', class: 'card-icon-img icon-white' %>
+          <%= image_tag 'SDimagesBlack/Lowrise_building_Pinhead_icon.svg.png', alt: '', class: 'card-icon-img icon-black' %>
+        </div>
         <div>
           <div class="card-title">Network Sites</div>
           <div class="card-desc">Organize assets by physical or logical network location.</div>
@@ -135,9 +147,12 @@
         <div class="card-tag">NETWORK</div>
       </a>
 
-      <a href="<%= scanner_path rescue '#' %>" class="nav-card">
+      <a href="<%= scanner_path rescue '#' %>" class="nav-card nav-orange">
         <div class="card-arrow">→</div>
-        <div class="card-icon-wrap">🔍</div>
+        <div class="card-icon-wrap">
+          <%= image_tag 'SDimagesWhite/Radar-sweep_-_Lorc_-_game-icons.svg.png', alt: '', class: 'card-icon-img icon-white' %>
+          <%= image_tag 'SDimagesBlack/Radar-sweep_-_Lorc_-_game-icons.svg.png', alt: '', class: 'card-icon-img icon-black' %>
+        </div>
         <div>
           <div class="card-title">Scanner</div>
           <div class="card-desc">Configure scan parameters and review live scanner status.</div>
@@ -146,9 +161,12 @@
       </a>
     <% end %>
 
-    <a href="<%= reports_path rescue '#' %>" class="nav-card">
+    <a href="<%= reports_path rescue '#' %>" class="nav-card nav-violet">
       <div class="card-arrow">→</div>
-      <div class="card-icon-wrap">📊</div>
+      <div class="card-icon-wrap">
+        <%= image_tag 'SDimagesWhite/Toicon-icon-blueprint-chart.svg.png', alt: '', class: 'card-icon-img icon-white' %>
+        <%= image_tag 'SDimagesBlack/Toicon-icon-blueprint-chart.svg.png', alt: '', class: 'card-icon-img icon-black' %>
+      </div>
       <div>
         <div class="card-title">View Reports</div>
         <div class="card-desc">Review scan results, vulnerability findings, and remediation data.</div>
@@ -157,9 +175,12 @@
     </a>
 
     <% if admin? %>
-      <a href="<%= read_only_accounts_path rescue '#' %>" class="nav-card">
+      <a href="<%= read_only_accounts_path rescue '#' %>" class="nav-card nav-teal">
         <div class="card-arrow">→</div>
-        <div class="card-icon-wrap">👤</div>
+        <div class="card-icon-wrap">
+          <%= image_tag 'SDimagesWhite/OOjs_UI_icon_userAvatar.svg.png', alt: '', class: 'card-icon-img icon-white' %>
+          <%= image_tag 'SDimagesBlack/OOjs_UI_icon_userAvatar.svg.png', alt: '', class: 'card-icon-img icon-black' %>
+        </div>
         <div>
           <div class="card-title">Configure Accounts</div>
           <div class="card-desc">Create and delete read-only accounts.</div>
@@ -168,9 +189,12 @@
       </a>
     <% end %>
 
-    <a href="<%= settings_path rescue '#' %>" class="nav-card">
+    <a href="<%= settings_path rescue '#' %>" class="nav-card nav-blue">
       <div class="card-arrow">→</div>
-      <div class="card-icon-wrap">⚙️</div>
+      <div class="card-icon-wrap">
+        <%= image_tag 'SDimagesWhite/Codex_icon_settings.svg.png', alt: '', class: 'card-icon-img icon-white' %>
+        <%= image_tag 'SDimagesBlack/Codex_icon_settings.svg.png', alt: '', class: 'card-icon-img icon-black' %>
+      </div>
       <div>
         <div class="card-title">Settings</div>
         <div class="card-desc">Configure scanner options, API keys, notification preferences, and more.</div>
@@ -240,13 +264,19 @@
           </a>
 
           <a href="<%= agents_path rescue '#' %>" class="quick-btn">
-            <div class="quick-btn-icon">🤖</div>
+            <div class="quick-btn-icon">
+              <%= image_tag 'SDimagesWhite/Robot_(699)_-_The_Noun_Project.svg.png', alt: '', class: 'quick-icon-img icon-white' %>
+              <%= image_tag 'SDimagesBlack/Robot_(699)_-_The_Noun_Project.svg.png', alt: '', class: 'quick-icon-img icon-black' %>
+            </div>
             <span class="quick-btn-label">View Agents Status</span>
             <span class="quick-btn-arrow">→</span>
           </a>
         <% end %>
         <a href="<%= reports_path rescue '#' %>" class="quick-btn">
-          <div class="quick-btn-icon">📊</div>
+          <div class="quick-btn-icon">
+            <%= image_tag 'SDimagesWhite/Toicon-icon-blueprint-chart.svg.png', alt: '', class: 'quick-icon-img icon-white' %>
+            <%= image_tag 'SDimagesBlack/Toicon-icon-blueprint-chart.svg.png', alt: '', class: 'quick-icon-img icon-black' %>
+          </div>
           <span class="quick-btn-label">Latest Report</span>
           <span class="quick-btn-arrow">→</span>
         </a>
