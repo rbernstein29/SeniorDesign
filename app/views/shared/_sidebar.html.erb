@@ -118,7 +118,7 @@
         <div class="sidebar-user-role"><%= Current.user&.access_level&.titleize || 'User' %></div>
       </div>
       <%= form_with url: session_path, method: :delete do |f| %>
-        <%= f.submit "⎋", class: "btn btn-danger btn-sm" %>
+        <%= f.submit "Sign out", class: "btn btn-danger btn-sm sidebar-logout-btn" %>
       <% end %>
     </div>
 
