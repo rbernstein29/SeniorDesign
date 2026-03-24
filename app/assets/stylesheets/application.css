@@ -1478,18 +1478,20 @@ tbody tr:hover { background: var(--surface2); }
   display: grid;
   place-items: center;
   padding: 24px;
-  background: var(--bg);
+  background-color: var(--bg);
+  background-image: radial-gradient(circle, rgba(79,134,247,0.18) 1px, transparent 1px);
+  background-size: 28px 28px;
 }
 
 .login-card {
   width: 100%;
-  max-width: 440px;
+  max-width: 460px;
   background: var(--surface);
   border: 1px solid var(--border);
   border-radius: 14px;
 }
 
-.login-head { padding: 24px 24px 0; }
+.login-head { padding: 28px 28px 0; }
 .login-brand { display: flex; gap: 12px; align-items: center; }
 .login-brand h1 { margin: 0; font-size: 18px; font-weight: 700; color: var(--text); }
 
@@ -1501,8 +1503,8 @@ tbody tr:hover { background: var(--surface2); }
   flex-shrink: 0;
 }
 
-.login-sub  { padding: 10px 24px 0; color: var(--muted); font-size: 13px; }
-.login-body { padding: 20px 24px 24px; display: grid; gap: 12px; }
+.login-sub  { padding: 10px 28px 0; color: var(--muted); font-size: 13px; }
+.login-body { padding: 24px 28px 28px; display: grid; gap: 16px; }
 .login-row  { display: flex; gap: 10px; align-items: center; }
 .login-hint { color: var(--muted); font-size: 12px; }
 .login-hint-right { margin-left: auto; }
