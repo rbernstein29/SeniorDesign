@@ -63,6 +63,7 @@ class PagesController < ApplicationController
     @critical_findings   = scans.sum(:critical_findings)
     @high_findings       = scans.sum(:high_findings)
     @medium_low_findings = scans.sum(:medium_findings) + scans.sum(:low_findings)
+    @findings = Finding.where(scan_id: scan_ids).order(discovered_at: :desc).limit(200) rescue []
   end
 
   def settings
