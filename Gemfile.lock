@@ -409,6 +409,7 @@ DEPENDENCIES
   jbuilder
   jsbundling-rails
   kamal
+  minitest (~> 5.1)
   msfrpc-client
   pg (~> 1.1)
   prawn

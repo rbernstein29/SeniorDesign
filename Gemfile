@@ -37,6 +37,9 @@ gem "thruster", require: false
 # jsbundler
 gem "jsbundling-rails"
 
+# Pin minitest to 5.x — minitest 6 breaks Rails 8 test_unit line_filtering
+gem "minitest", "~> 5.1"
+
 # password hashing
 gem "bcrypt", "~> 3.1.7"
 
