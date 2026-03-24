@@ -404,7 +404,7 @@
                     <%= link_to "Asset Management", assets_path %> / <span>Asset #<%= @asset[:id] || params[:id] %></span>
                 </div>
                 <div class="page-title">
-                    🖥️ <%= (@asset[:network] || @asset['network']) %>
+                    <%= image_tag 'SDimagesWhite/AssetMangerWhite.png', alt: '', class: 'page-title-img icon-white' %><%= image_tag 'SDimagesBlack/AssetMangerBLack.png', alt: '', class: 'page-title-img icon-black' %> <%= (@asset[:network] || @asset['network']) %>
                 </div>
                 <div class="page-sub">// asset configuration details</div>
             </div>
@@ -422,7 +422,7 @@
                 <!-- Configuration Details -->
                 <div class="card">
                     <div class="card-header">
-                        <span class="card-header-icon">⚙️</span>
+                        <span class="card-header-icon"><%= image_tag 'SDimagesWhite/SettingsWhite.png', alt: '', class: 'hdr-icon-img icon-white' %><%= image_tag 'SDimagesBlack/SettingsBlack.png', alt: '', class: 'hdr-icon-img icon-black' %></span>
                         <span class="card-title">Configuration</span>
                         <span class="card-tag">ASSET CONFIG</span>
                     </div>
@@ -482,7 +482,7 @@
                 <!-- Scan History Placeholder -->
                 <div class="card">
                     <div class="card-header">
-                        <span class="card-header-icon">📋</span>
+                        <span class="card-header-icon"><%= image_tag 'SDimagesWhite/VIewReportsWhite.png', alt: '', class: 'hdr-icon-img icon-white' %><%= image_tag 'SDimagesBlack/ViewReportBlack.png', alt: '', class: 'hdr-icon-img icon-black' %></span>
                         <span class="card-title">Scan History</span>
                         <span class="card-tag">COMING SOON</span>
                     </div>
@@ -508,7 +508,7 @@
                             <div class="status-value">Never</div>
                         </div>
                         <div class="status-panel">
-                            <div class="status-icon">🔍</div>
+                            <div class="status-icon"><%= image_tag 'SDimagesWhite/snanerWhite.png', alt: '', class: 'hdr-icon-img icon-white' %><%= image_tag 'SDimagesBlack/ScansBlack.png', alt: '', class: 'hdr-icon-img icon-black' %></div>
                             <div class="status-label">Findings</div>
                             <div class="status-value">—</div>
                         </div>
