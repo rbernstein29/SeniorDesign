@@ -1,4 +1,5 @@
 class ReadOnlyAccountsController < ApplicationController
+  before_action :require_admin
   skip_before_action :verify_authenticity_token, only: [:create]
   
   def create

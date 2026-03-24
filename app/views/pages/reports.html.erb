@@ -30,6 +30,52 @@
         </div>
     </div>
 
+    <% if @findings&.any? %>
+    <div class="main-card">
+        <div class="card-header">
+            <div class="card-title">Findings</div>
+            <div class="card-subtitle">VULNERABILITIES DISCOVERED ACROSS ALL SCANS</div>
+        </div>
+        <div style="overflow:auto;max-height:420px;">
+        <table style="width:100%;">
+            <thead>
+                <tr>
+                    <th>Severity</th>
+                    <th>Target</th>
+                    <th>Exploit</th>
+                    <th>Evidence</th>
+                    <th>Discovered</th>
+                </tr>
+            </thead>
+            <tbody>
+                <% @findings.each do |finding| %>
+                <tr>
+                    <td>
+                        <span class="type-badge <%= finding.severity_badge_class %>">
+                            <%= finding.severity&.upcase || '—' %>
+                        </span>
+                    </td>
+                    <td style="font-family: var(--mono); font-size: 12px;">
+                        <%= Asset.find_by(id: finding.asset_id)&.ip_address || finding.asset_id %>
+                    </td>
+                    <td>
+                        <%= Exploit.find_by(id: finding.exploit_id)&.name || finding.exploit_id || '—' %>
+                    </td>
+                    <td style="max-width:320px; overflow:hidden; text-overflow:ellipsis; white-space:nowrap;"
+                        title="<%= h finding.evidence %>">
+                        <%= finding.evidence.presence || '—' %>
+                    </td>
+                    <td style="font-family: var(--mono); font-size: 12px;">
+                        <%= finding.discovered_at&.strftime("%b %d, %Y  %H:%M") || '—' %>
+                    </td>
+                </tr>
+                <% end %>
+            </tbody>
+        </table>
+        </div>
+    </div>
+    <% end %>
+
     <div class="main-card">
         <div class="card-header">
             <div class="card-title">JSON Reports</div>
