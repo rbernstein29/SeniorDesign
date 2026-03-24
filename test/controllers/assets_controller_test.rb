@@ -40,4 +40,20 @@ class AssetsControllerTest < ActionDispatch::IntegrationTest
     end
     assert_redirected_to assets_path
   end
+
+  test "GET /scan-assets/:id for another org's asset redirects with alert" do
+    sign_in_as(users(:other_org_user))
+    get asset_path(assets(:asset_one))
+    assert_redirected_to assets_path
+    assert_not_nil flash[:alert]
+  end
+
+  test "DELETE /scan-assets/:id for another org's asset does not destroy it" do
+    sign_in_as(users(:other_org_user))
+    assert_no_difference "Asset.count" do
+      delete asset_path(assets(:asset_one))
+    end
+    assert_redirected_to assets_path
+    assert_not_nil flash[:alert]
+  end
 end

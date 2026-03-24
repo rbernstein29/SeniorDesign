@@ -26,7 +26,7 @@ class AgentsController < ApplicationController
 
   # DELETE /agents/:id
   def destroy
-    agent = Agent.find(params[:id])
+    agent = Agent.where(organization_id: current_org_id).find(params[:id])
     agent.destroy
     redirect_to agents_path
   rescue => e

@@ -52,4 +52,20 @@ class AgentsControllerTest < ActionDispatch::IntegrationTest
     post agent_heartbeat_path(agent_id: "nonexistent-uuid"), as: :json
     assert_response :not_found
   end
+
+  test "GET /agents/status returns JSON with stats key" do
+    sign_in_as(users(:admin_user))
+    get status_agents_path, as: :json
+    assert_response :success
+    assert_includes response.content_type, "json"
+    body = JSON.parse(response.body)
+    assert body.key?("stats")
+  end
+
+  test "DELETE /agents/:id for another org's agent does not destroy it" do
+    sign_in_as(users(:other_org_user))
+    assert_no_difference "Agent.count" do
+      delete agent_path(agents(:agent_offline))
+    end
+  end
 end

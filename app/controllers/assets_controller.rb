@@ -31,13 +31,13 @@ class AssetsController < ApplicationController
   end
 
   def show
-    @asset = Asset.find(params[:id])
+    @asset = Asset.where(organization_id: current_org_id).find(params[:id])
   rescue ActiveRecord::RecordNotFound
     redirect_to assets_path, alert: 'Asset not found'
   end
 
   def destroy
-    asset = Asset.find(params[:id])
+    asset = Asset.where(organization_id: current_org_id).find(params[:id])
     asset.destroy
     redirect_to assets_path, notice: 'Asset deleted.'
   rescue ActiveRecord::RecordNotFound
