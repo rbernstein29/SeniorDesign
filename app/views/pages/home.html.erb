@@ -658,8 +658,8 @@
       </div>
       <div class="stat-card red">
         <div class="stat-label">Active Scans</div>
-        <div class="stat-value">0</div>
-        <div class="stat-delta">No scans running</div>
+        <div class="stat-value"><%= @active_scans %></div>
+        <div class="stat-delta"><%= @active_scans.to_i > 0 ? 'Currently running' : 'No scans running' %></div>
       </div>
     </div>
 

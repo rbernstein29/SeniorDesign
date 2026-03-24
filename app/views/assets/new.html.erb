@@ -331,18 +331,8 @@
                     </div>
 
                     <div class="form-group">
-                        <%= label_tag :credential, "Credential", class: "required" %>
-                        <%= text_field_tag :credential, nil, placeholder: "Enter credential ID or Path", required: true %>
-                    </div>
-
-                    <div class="form-group">
                         <%= label_tag :schedule, "Schedule" %>
                         <%= datetime_local_field_tag :schedule, nil %>
-                    </div>
-
-                    <div class="form-group">
-                        <%= label_tag :cve, "CVE ID" %>
-                        <%= text_field_tag :cve, nil, placeholder: "e.g. CVE-2024-XXXX" %>
                     </div>
 
                     <div class="form-group">

@@ -232,7 +232,7 @@
                                     <div class="file-icon-glyph">{ }</div>
                                     <div>
                                         <div class="file-name"><%= report.report_name %>.json</div>
-                                        <div class="file-meta">scan_id: <%= report.scan_id || '&mdash;' %></div>
+                                        <div class="file-meta"><%= report.scan&.scan_name || '—' %></div>
                                     </div>
                                 </div>
                             </td>

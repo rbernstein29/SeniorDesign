@@ -324,11 +324,11 @@
                     <div class="settings-body">
                         <div class="status-row">
                             <div class="status-dot-sm dot-green-sm"></div>
-                            <span class="status-text">Database connected — PostgreSQL @ 100.69.88.107</span>
+                            <span class="status-text">Database connected — PostgreSQL @ <%= ENV.fetch('DB_HOST', 'configured') %></span>
                         </div>
                         <div class="field-group">
                             <div class="field-label">Scanner Server IP</div>
-                            <input class="field-input mono" type="text" value="100.69.88.107" disabled>
+                            <input class="field-input mono" type="text" value="<%= ENV.fetch('DB_HOST', 'configured') %>" disabled>
                             <div class="field-hint">Tailscale IP of the Linux scanning server</div>
                         </div>
                         <div class="field-group">
@@ -357,11 +357,6 @@
                     <div class="field-group">
                         <div class="field-label">Email</div>
                         <input class="field-input" type="email" value="<%= Current.user&.email_address || '' %>" disabled>
-                    </div>
-                    <div class="field-group">
-                        <div class="field-label">New Password</div>
-                        <input class="field-input" type="password" placeholder="••••••••" disabled>
-                        <div class="field-hint">Password changes coming soon</div>
                     </div>
                     <%= form_with url: session_path, method: :delete do |f| %>
                       <%= f.submit "Sign Out", class: "btn btn-danger btn-sm" %>
@@ -450,50 +445,6 @@
                             </label>
                         </div>
                         <div class="field-hint" style="margin-top: 4px;">Editable settings coming in a future release</div>
-                    </div>
-                </div>
-
-                <!-- Notifications -->
-                <div class="settings-card">
-                    <div class="card-header">
-                        <div class="card-header-icon">🔔</div>
-                        <div>
-                            <div class="card-title">Notifications</div>
-                            <div class="card-subtitle">ALERTS</div>
-                        </div>
-                    </div>
-                    <div class="settings-body">
-                        <div class="toggle-row">
-                            <div>
-                                <div class="toggle-label">Agent goes offline</div>
-                                <div class="toggle-hint">Alert when a connected agent stops heartbeating</div>
-                            </div>
-                            <label class="toggle">
-                                <input type="checkbox" disabled>
-                                <span class="toggle-slider"></span>
-                            </label>
-                        </div>
-                        <div class="toggle-row">
-                            <div>
-                                <div class="toggle-label">Critical vulnerability found</div>
-                                <div class="toggle-hint">Alert on CVSS 9.0+ findings</div>
-                            </div>
-                            <label class="toggle">
-                                <input type="checkbox" disabled>
-                                <span class="toggle-slider"></span>
-                            </label>
-                        </div>
-                        <div class="toggle-row">
-                            <div>
-                                <div class="toggle-label">Scan completed</div>
-                                <div class="toggle-hint">Alert when any scan finishes</div>
-                            </div>
-                            <label class="toggle">
-                                <input type="checkbox" disabled>
-                                <span class="toggle-slider"></span>
-                            </label>
-                        </div>
-                        <div class="field-hint" style="margin-top: 4px;">Notification delivery coming in a future release</div>
                     </div>
                 </div>
 

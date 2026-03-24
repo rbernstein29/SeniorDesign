@@ -17,11 +17,13 @@ class PagesController < ApplicationController
     @reports     = Report.where(user_id: org_user_ids) rescue []
     @users_count = User.where(organization_id: org_id).count rescue 0
     @last_scan   = Report.where(user_id: org_user_ids).maximum(:generated_at) rescue nil
+    @active_scans = Scan.for_org(current_org_id).running.count rescue 0
   end
 
   def scanner
     org_id   = Current.user.organization_id
     @assets  = Asset.where(organization_id: org_id).order(:ip_address)
+    @exploits = Exploit.order(:id)
   end
 
   def trigger_scan
@@ -31,19 +33,8 @@ class PagesController < ApplicationController
     end
 
     org_id = Current.user.organization_id
-    exploit_ids_str = params[:exploit_ids].presence || '1-5'
-    exploit_range = []
-
-    exploit_ids_str.split(',').each do |part|
-      if part.include?('-')
-        start_id, end_id = part.split('-').map(&:to_i)
-        exploit_range.concat((start_id..end_id).to_a)
-      else
-        exploit_range << part.to_i
-      end
-    end
-    exploit_range.uniq!
-    exploit_range.sort!
+    exploit_ids_param = params.dig(:trigger_scan, :exploit_ids) || []
+    exploit_range = Array(exploit_ids_param).map(&:to_i).select { |id| id > 0 }
 
     asset_id = params[:asset_id].presence&.to_i
     ScanJob.perform_later(org_id, exploit_range, Current.user.id, asset_id)

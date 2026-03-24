@@ -215,21 +215,6 @@
             <div class="alert alert-error"><%= flash[:alert] %></div>
         <% end %>
 
-        <div class="info-grid">
-            <div class="info-card">
-                <div class="info-label">MSF Host</div>
-                <div class="info-value"><%= ENV.fetch('MSF_HOST', '127.0.0.1') %></div>
-            </div>
-            <div class="info-card">
-                <div class="info-label">MSF Port</div>
-                <div class="info-value"><%= ENV.fetch('MSF_PORT', '55553') %></div>
-            </div>
-            <div class="info-card">
-                <div class="info-label">Queue</div>
-                <div class="info-value">solid_queue / default</div>
-            </div>
-        </div>
-
         <div class="card">
             <div class="card-header">
                 <div class="card-header-icon">&#x1F50D;</div>
@@ -258,11 +243,23 @@
                     </div>
 
                     <div class="field-group">
-                        <%= form.label :exploit_ids, "Exploit IDs", class: "field-label" %>
-                        <%= form.text_field :exploit_ids, value: "1-5",
-                            class: "field-input",
-                            placeholder: "e.g. 1-5,8,12" %>
-                        <div class="field-hint">Comma-separated IDs or ranges (e.g. <span style="font-family: var(--mono);">1-5,8</span>). IDs map to rows in <span style="font-family: var(--mono);">vuln_scanner.exploits</span>.</div>
+                        <%= form.label :exploit_ids, "Exploits", class: "field-label" %>
+<% if @exploits.any? %>
+  <div class="exploit-checklist" style="max-height: 220px; overflow-y: auto; border: 1px solid var(--border); border-radius: 6px; padding: 8px; background: var(--bg-secondary);">
+    <% @exploits.each do |exploit| %>
+      <label style="display: flex; align-items: center; gap: 8px; padding: 4px 0; cursor: pointer; font-size: 13px;">
+        <%= check_box_tag "trigger_scan[exploit_ids][]", exploit.id, true, id: "exploit_#{exploit.id}" %>
+        <span style="font-family: var(--mono); color: var(--accent)"><%= exploit.exploit_id %></span>
+        <% if exploit.respond_to?(:use_case_name) && exploit.use_case_name.present? %>
+          <span style="color: var(--text-secondary)">— <%= exploit.use_case_name %></span>
+        <% end %>
+      </label>
+    <% end %>
+  </div>
+  <div class="field-hint">Select which exploits to run against the target.</div>
+<% else %>
+  <div class="field-hint" style="color: var(--text-secondary); font-style: italic;">No exploits loaded in the database.</div>
+<% end %>
                     </div>
 
                     <%= form.submit "Run Scan", class: "btn-scan" %>
