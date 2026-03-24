@@ -1,7 +1,7 @@
 class ReportsController < ApplicationController
 
   def destroy
-    report = Report.find(params[:id])
+    report = org_reports.find(params[:id])
     report.destroy
     redirect_to reports_path, notice: 'Report deleted.'
   rescue ActiveRecord::RecordNotFound
@@ -9,7 +9,7 @@ class ReportsController < ApplicationController
   end
 
   def download_pdf
-    report = Report.find(params[:id])
+    report = org_reports.find(params[:id])
     pdf = ScanReportPdf.new(report)
     send_data pdf.render,
       filename:    "#{report.report_name.parameterize}.pdf",
@@ -17,6 +17,12 @@ class ReportsController < ApplicationController
       disposition: 'attachment'
   rescue ActiveRecord::RecordNotFound
     redirect_to reports_path, alert: 'Report not found'
+  end
+
+  private
+
+  def org_reports
+    Report.where(user_id: User.where(organization_id: current_org_id).select(:id))
   end
 
 end
