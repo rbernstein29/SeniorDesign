@@ -1479,8 +1479,11 @@ tbody tr:hover { background: var(--surface2); }
   place-items: center;
   padding: 24px;
   background-color: var(--bg);
-  background-image: radial-gradient(circle, rgba(79,134,247,0.18) 1px, transparent 1px);
-  background-size: 28px 28px;
+  background-image:
+    radial-gradient(ellipse 700px 500px at 10% 5%,  rgba(79,134,247,0.13), transparent),
+    radial-gradient(ellipse 600px 400px at 90% 95%, rgba(79,134,247,0.09), transparent),
+    radial-gradient(circle, rgba(79,134,247,0.22) 1.5px, transparent 1.5px);
+  background-size: 100% 100%, 100% 100%, 30px 30px;
 }
 
 .login-card {
@@ -1489,6 +1492,7 @@ tbody tr:hover { background: var(--surface2); }
   background: var(--surface);
   border: 1px solid var(--border);
   border-radius: 14px;
+  box-shadow: 0 24px 64px rgba(0,0,0,0.55);
 }
 
 .login-head { padding: 28px 28px 0; }
@@ -1505,6 +1509,7 @@ tbody tr:hover { background: var(--surface2); }
 
 .login-sub  { padding: 10px 28px 0; color: var(--muted); font-size: 13px; }
 .login-body { padding: 24px 28px 28px; display: grid; gap: 16px; }
+.login-body form { display: grid; gap: 16px; }
 .login-row  { display: flex; gap: 10px; align-items: center; }
 .login-hint { color: var(--muted); font-size: 12px; }
 .login-hint-right { margin-left: auto; }
