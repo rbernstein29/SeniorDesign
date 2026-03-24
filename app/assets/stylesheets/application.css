@@ -1240,6 +1240,8 @@ tbody tr:hover { background: var(--surface2); }
   border-radius: 8px;
   background: var(--surface2);
   border: 1px solid var(--border);
+  overflow: hidden;
+  min-width: 0;
 }
 
 .sidebar-user-avatar {
@@ -1258,10 +1260,12 @@ tbody tr:hover { background: var(--surface2); }
 [data-theme="light"] .sidebar-user-avatar .icon-white { display: block; }
 [data-theme="light"] .sidebar-user-avatar .icon-black { display: none; }
 
-.sidebar-user-name { font-size: 12px; font-weight: 600; color: var(--text); }
+.sidebar-user-name { font-size: 12px; font-weight: 600; color: var(--text); overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
 .sidebar-user-role { font-size: 10px; color: var(--muted); }
+.sidebar-user > div:nth-child(2) { min-width: 0; flex: 1; overflow: hidden; }
 .sidebar-logout    { margin-left: auto; color: var(--muted); font-size: 13px; text-decoration: none; transition: color 0.15s; }
 .sidebar-logout:hover { color: var(--red); }
+.sidebar-logout-btn { margin-left: auto; font-size: 11px; padding: 4px 10px; white-space: nowrap; flex-shrink: 0; height: 28px; line-height: 1; }
 
 /* ── Theme Toggle ── */
 .theme-toggle {
