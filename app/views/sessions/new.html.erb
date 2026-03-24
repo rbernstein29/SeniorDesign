@@ -1,11 +1,151 @@
-<%= tag.div(flash[:alert], style: "color:red") if flash[:alert] %>
-<%= tag.div(flash[:notice], style: "color:green") if flash[:notice] %>
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <% content_for :title, "Aegis - Sign In" %>
+    <%= csrf_meta_tags %>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;600;700&family=Sora:wght@300;400;600;700&display=swap" rel="stylesheet">
+    <style>
+      :root {
+        --bg:     #0b0d12;
+        --panel:  #11151b;
+        --muted:  #1a2029;
+        --text:   #e7eaee;
+        --sub:    #93a0b4;
+        --brand:  #5b8cff;
+        --border: #222937;
+      }
 
-<%= form_with url: session_path do |form| %>
-  <%= form.email_field :email_address, required: true, autofocus: true, autocomplete: "username", placeholder: "Enter your email address", value: params[:email_address] %><br>
-  <%= form.password_field :password, required: true, autocomplete: "current-password", placeholder: "Enter your password", maxlength: 72 %><br>
-  <%= form.submit "Sign in" %>
-<% end %>
-<br>
+      * { box-sizing: border-box; }
 
-<%= link_to "Forgot password?", new_password_path %>
+      body {
+        margin: 0;
+        background:
+          radial-gradient(1200px 800px at 10% -10%, rgba(91, 140, 255, .18), transparent),
+          radial-gradient(1000px 700px at 100% 0, rgba(106, 247, 255, .08), transparent),
+          var(--bg);
+        color: var(--text);
+        font: 14px/1.5 'Sora', system-ui, sans-serif;
+      }
+
+      a { color: #9db7ff; text-decoration: none; }
+      a:hover { text-decoration: underline; }
+
+      .wrap {
+        min-height: 100vh;
+        display: grid;
+        place-items: center;
+        padding: 24px;
+      }
+
+      .card {
+        width: 100%;
+        max-width: 460px;
+        background: var(--panel);
+        border: 1px solid var(--border);
+        border-radius: 18px;
+        box-shadow: 0 10px 40px rgba(0, 0, 0, .35);
+      }
+
+      .head { padding: 20px 20px 0 20px; }
+
+      .brand { display: flex; gap: 12px; align-items: center; }
+      .brand h1 { margin: 0; font-size: 18px; }
+
+      .logo {
+        width: 36px;
+        height: 36px;
+        border-radius: 10px;
+        background: linear-gradient(135deg, var(--brand), #8a6bff);
+      }
+
+      .body { padding: 20px; display: grid; gap: 12px; }
+
+      .field { display: grid; gap: 6px; padding: 5px; }
+
+      .input {
+        background: #0f1420;
+        border: 1px solid var(--border);
+        border-radius: 12px;
+        color: var(--text);
+        padding: 10px;
+        font-family: 'JetBrains Mono', monospace;
+        font-size: 13px;
+        width: 100%;
+      }
+
+      .input:focus {
+        outline: none;
+        border-color: var(--brand);
+      }
+
+      .row { display: flex; gap: 10px; padding: 5px; align-items: center; }
+
+      .btn {
+        border: 1px solid var(--border);
+        background: var(--brand);
+        color: #fff;
+        padding: 10px 18px;
+        border-radius: 12px;
+        cursor: pointer;
+        font-family: 'Sora', sans-serif;
+        font-size: 14px;
+        font-weight: 600;
+      }
+
+      .hint { color: var(--sub); font-size: 12px; }
+      .right { margin-left: auto; }
+
+      .error {
+        background: rgba(255, 91, 110, .12);
+        border: 1px solid rgba(255, 91, 110, .4);
+        color: #ffc3ca;
+        padding: 10px;
+        border-radius: 12px;
+        font-size: 13px;
+      }
+
+      .page-sub {
+        padding: 14px 20px 0;
+        color: var(--sub);
+        font-size: 13px;
+      }
+    </style>
+  </head>
+  <body>
+    <div class="wrap">
+      <div class="card">
+        <div class="head">
+          <div class="brand">
+            <div class="logo"></div>
+            <div><h1>Aegis</h1></div>
+          </div>
+          <div class="page-sub">Sign in to your account</div>
+        </div>
+
+        <div class="body">
+          <% if flash[:alert] %>
+            <div class="error"><%= flash[:alert] %></div>
+          <% end %>
+
+          <%= form_with url: session_path, method: :post do |form| %>
+            <div class="field">
+              <%= form.email_field :email_address, class: "input", placeholder: "Email", required: true, autofocus: true, autocomplete: "username", value: params[:email_address] %>
+            </div>
+            <div class="field">
+              <%= form.password_field :password, class: "input", placeholder: "Password", required: true, autocomplete: "current-password", maxlength: 72 %>
+            </div>
+            <div class="row">
+              <span class="hint right"><%= link_to "Forgot password?", new_password_path %></span>
+            </div>
+            <div class="row">
+              <%= form.submit "Sign In", class: "btn" %>
+            </div>
+          <% end %>
+        </div>
+      </div>
+    </div>
+  </body>
+</html>

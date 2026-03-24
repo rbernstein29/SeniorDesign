@@ -1,6 +1,6 @@
-<!doctype html>
-<html lan="en">
-  <head>
+<!DOCTYPE html>
+<html lang="en">
+<head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <% content_for :title, "Aegis - Create Read-Only User" %>
@@ -8,257 +8,219 @@
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;600;700&family=Sora:wght@300;400;600;700&display=swap" rel="stylesheet">
     <style>
-      :root {
-        --bg:     #0b0d12;
-        --panel:  #11151b;
-        --muted:  #1a2029;
-        --text:   #e7eaee;
-        --sub:    #93a0b4;
-        --brand:  #5b8cff;
-        --good:   #2ecc71;
-        --border: #222937;
-      }
+        :root {
+            --bg:        #080c14;
+            --surface:   #0d1525;
+            --surface2:  #111b30;
+            --border:    rgba(59,130,246,0.15);
+            --blue:      #3b82f6;
+            --blue-dim:  rgba(59,130,246,0.12);
+            --blue-glow: rgba(59,130,246,0.35);
+            --text:      #e2e8f0;
+            --muted:     #64748b;
+            --mono:      'JetBrains Mono', monospace;
+            --sans:      'Sora', sans-serif;
+        }
 
-      * {
-        box-sizing: border-box;
-      }
+        * { margin: 0; padding: 0; box-sizing: border-box; }
 
-      body {
-        margin: 0;
-        background:
-          radial-gradient(1200px 800px at 10% -10%, rgba(91, 140, 255, .18), transparent),
-          radial-gradient(1000px 700px at 100% 0, rgba(106, 247, 255, .08), transparent),
-          var(--bg);
-        color: var(--text);
-        font: 14px/1.5 system-ui, -apple-system, Segoe UI, Roboto, Helvetica, Arial;
-      }
+        body {
+            font-family: var(--sans);
+            background: var(--bg);
+            color: var(--text);
+            min-height: 100vh;
+        }
 
-      a {
-        color: #9db7ff;
-        text-decoration: none;
-      }
+        body::before {
+            content: '';
+            position: fixed;
+            inset: 0;
+            background-image:
+                linear-gradient(rgba(59,130,246,0.03) 1px, transparent 1px),
+                linear-gradient(90deg, rgba(59,130,246,0.03) 1px, transparent 1px);
+            background-size: 40px 40px;
+            pointer-events: none;
+            z-index: 0;
+        }
 
-      a:hover {
-        text-decoration: underline;
-      }
+        .layout {
+            position: relative;
+            z-index: 1;
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 30px 30px 40px 84px;
+        }
 
-      /* Layout */
+        .page-header {
+            background: var(--surface);
+            border: 1px solid var(--border);
+            padding: 28px 36px;
+            border-radius: 16px;
+            margin-bottom: 28px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
 
-      .wrap {
-        min-height: 100vh;
-        display: grid;
-        place-items: center;
-        padding: 24px;
-      }
+        .page-title { font-size: 26px; font-weight: 700; color: #f1f5f9; }
+        .page-sub   { color: var(--muted); margin-top: 4px; font-size: 13px; font-family: var(--mono); }
 
-      .card {
-        width: 100%;
-        max-width: 460px;
-        background: var(--panel);
-        border: 1px solid var(--border);
-        border-radius: 18px;
-        box-shadow: 0 10px 40px rgba(0, 0, 0, .35);
-      }
+        .btn {
+            padding: 11px 22px;
+            border-radius: 8px;
+            font-weight: 600;
+            font-size: 13px;
+            cursor: pointer;
+            text-decoration: none;
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            transition: all 0.2s;
+            border: none;
+            font-family: var(--sans);
+        }
 
-      /* Header */
+        .btn-primary {
+            background: linear-gradient(135deg, var(--blue), #1d4ed8);
+            color: white;
+            box-shadow: 0 4px 16px var(--blue-glow);
+        }
 
-      .head {
-        padding: 20px 20px 0 20px;
-      }
+        .btn-primary:hover { transform: translateY(-2px); box-shadow: 0 8px 24px var(--blue-glow); }
 
-      .brand {
-        display: flex;
-        gap: 12px;
-        align-items: center;
-      }
+        .btn-secondary {
+            background: transparent;
+            border: 1px solid rgba(255,255,255,0.1);
+            color: #94a3b8;
+        }
 
-      .brand h1 {
-        margin: 0;
-        font-size: 18px;
-      }
+        .btn-secondary:hover { border-color: var(--blue); color: #60a5fa; background: var(--blue-dim); }
 
-      .logo {
-        width: 36px;
-        height: 36px;
-        border-radius: 10px;
-        background: linear-gradient(135deg, var(--brand), #8a6bff);
-      }
+        .alert {
+            padding: 14px 18px;
+            border-radius: 10px;
+            font-size: 13px;
+            margin-bottom: 20px;
+            font-family: var(--mono);
+        }
 
-      /* Body */
+        .alert-error { background: rgba(239,68,68,0.1); border: 1px solid rgba(239,68,68,0.3); color: #fca5a5; }
 
-      .body {
-        padding: 20px;
-        display: grid;
-        gap: 12px;
-      }
+        .main-card {
+            background: var(--surface);
+            border: 1px solid var(--border);
+            border-radius: 16px;
+            overflow: hidden;
+            max-width: 520px;
+        }
 
-      .field {
-        display: grid;
-        gap: 6px;
-        padding: 5px;
-      }
+        .card-header {
+            padding: 20px 28px;
+            border-bottom: 1px solid rgba(255,255,255,0.06);
+        }
 
-      .label {
-        text-transform: uppercase;
-        letter-spacing: .08em;
-        font-size: 11px;
-        color: var(--sub);
-      }
+        .card-title    { font-size: 15px; font-weight: 600; color: #f1f5f9; }
+        .card-subtitle { font-family: var(--mono); font-size: 10px; color: var(--muted); letter-spacing: 1px; margin-top: 4px; }
 
-      .input {
-        background: #0f1420;
-        border: 1px solid var(--border);
-        border-radius: 12px;
-        color: var(--text);
-        padding: 10px;
-      }
+        .form-body {
+            padding: 24px 28px;
+            display: flex;
+            flex-direction: column;
+            gap: 16px;
+        }
 
-      .row {
-        display: flex;
-        gap: 10px;
-        padding: 5px;
-        align-items: center;
-      }
+        .form-group { display: flex; flex-direction: column; gap: 6px; }
 
-      /* Buttons */
+        .form-label {
+            font-family: var(--mono);
+            font-size: 10px;
+            letter-spacing: 1.5px;
+            text-transform: uppercase;
+            color: var(--muted);
+        }
 
-      .btn {
-        border: 1px solid var(--border);
-        background: var(--brand);
-        color: #fff;
-        padding: 10px 12px;
-        border-radius: 12px;
-        cursor: pointer;
-        margin: 5px;
-      }
+        input[type="text"],
+        input[type="email"],
+        input[type="password"] {
+            background: var(--surface2);
+            border: 1px solid var(--border);
+            border-radius: 8px;
+            color: var(--text);
+            padding: 10px 14px;
+            font-size: 13px;
+            font-family: var(--mono);
+            width: 100%;
+            transition: border-color 0.2s;
+        }
 
-      .btn.secondary {
-        background: var(--muted);
-        color: var(--text);
-      }
+        input:focus {
+            outline: none;
+            border-color: var(--blue);
+            box-shadow: 0 0 0 3px var(--blue-dim);
+        }
 
-      /* Title */
+        .form-actions {
+            padding: 16px 28px 24px;
+            border-top: 1px solid rgba(255,255,255,0.06);
+        }
 
-      .page-title {
-        padding: 12px;
-        text-align: center;
-        color: var(--sub);
-      }
+        @keyframes fadeUp {
+            from { opacity: 0; transform: translateY(16px); }
+            to   { opacity: 1; transform: translateY(0); }
+        }
 
-      /* Alerts */
-
-      .error {
-        background: rgba(255, 91, 110, .12);
-        border: 1px solid rgba(255, 91, 110, .4);
-        color: #ffc3ca;
-        padding: 10px;
-        border-radius: 12px;
-        font-size: 13px;
-      }
-
-      /* Verification & Reset */
-
-      .ok {
-        background: rgba(46, 204, 113, .12);
-        border: 1px solid rgba(46, 204, 113, .4);
-        color: #baf3cd;
-        padding: 10px;
-        border-radius: 12px;
-        font-size: 13px;
-      }
-
-      .otp {
-        letter-spacing: .3em;
-        text-align: center;
-        font: 20px/1.2 ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas,
-          "Liberation Mono", "Courier New", monospace;
-      }
-
-      .sep {
-        height: 1px;
-        background: var(--border);
-        margin: 6px 0;
-      }
-
-      /* Misc */
-
-      .hint {
-        color: var(--sub);
-        font-size: 12px;
-      }
-
-      .hidden {
-        display: none;
-      }
-
-      .right {
-        margin-left: auto;
-      }
-
+        .page-header { animation: fadeUp 0.4s ease both; }
+        .main-card   { animation: fadeUp 0.4s 0.08s ease both; }
     </style>
-  </head>
-  <body>
+</head>
+<body>
     <%= render 'shared/sidebar', current_page: 'read_only_accounts' %>
-    
-    <div class="wrap">
-      <div class="card">
-        <div class="head">
-          <div class="brand"><div class="logo"></div><div><h1>Aegis</h1></div></div>
 
-          <div class="page-title">Create Read-Only Account</div>
+    <div class="layout">
 
-          <% if flash[:alert] %>
-            <div class="error">
-              <%= flash[:alert] %>
+        <div class="page-header">
+            <div>
+                <div class="page-title">Read-Only Accounts</div>
+                <div class="page-sub">// create a new read-only user</div>
             </div>
-          <% end %>
+            <%= link_to "← Back", read_only_accounts_path, class: "btn btn-secondary" %>
         </div>
 
-        <%= form_with url: read_only_accounts_path, method: :post, id: "form-signup" do %>
-          <div class="field">
-            <input type="text" name="user[name]" id="up-name" class="input" placeholder="Full Name" />
-          </div>
-          <div class="field">
-            <input type="email" name="user[email_address]" id="up-email" class="input" placeholder="Email" />
-          </div>
-          <div class="field">
-            <input type="password" name="user[password]" id="up-pass" class="input" placeholder="Password" />
-          </div>
-          <div class="field">
-            <input type="password" name="user[password_confirmation]" id="up-pass" class="input" placeholder="Confirm Password" />
-          </div>
-          <div class="row">
-            <button type="submit" class="btn" id="btn-signup">Create account</button>
-          </div>
+        <% if flash[:alert] %>
+            <div class="alert alert-error"><%= flash[:alert] %></div>
         <% end %>
 
+        <div class="main-card">
+            <div class="card-header">
+                <div class="card-title">New Account</div>
+                <div class="card-subtitle">READ-ONLY ACCESS</div>
+            </div>
 
-        <!-- Verify email -->
-        <div class="body hidden" id="view-verify">
-          <div class="ok" id="msg-verify">We sent a 6‑digit code to <span id="ver-email"></span>. Enter it below to verify your account.</div>
-          <input id="ver-code" class="input otp" maxlength="6" pattern="[0-9]{6}" placeholder="000000" />
-          <div class="hint" id="ver-hint"></div>
-          <div class="row">
-            <button class="btn" id="btn-verify">Verify</button>
-            <button class="btn secondary" id="btn-resend">Resend</button>
-          </div>
-          <div class="sep"></div>
-          <div class="hint">After verification, you'll be redirected to the app.</div>
+            <%= form_with url: read_only_accounts_path, method: :post do %>
+                <div class="form-body">
+                    <div class="form-group">
+                        <label class="form-label">Full Name</label>
+                        <input type="text" name="user[name]" placeholder="Jane Smith" />
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">Email</label>
+                        <input type="email" name="user[email_address]" placeholder="jane@org.com" />
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">Password</label>
+                        <input type="password" name="user[password]" placeholder="••••••••" />
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">Confirm Password</label>
+                        <input type="password" name="user[password_confirmation]" placeholder="••••••••" />
+                    </div>
+                </div>
+                <div class="form-actions">
+                    <button type="submit" class="btn btn-primary">Create Account</button>
+                </div>
+            <% end %>
         </div>
 
-        <!-- Reset password -->
-        <div class="body hidden" id="view-reset">
-          <div class="field">
-            <label class="label" for="rp-email">Email</label>
-            <input id="rp-email" class="input" type="email" placeholder="you@org.com" />
-          </div>
-          <div class="row">
-            <button class="btn" id="btn-reset">Send reset link</button>
-            <button class="btn secondary" id="btn-cancel-reset">Back</button>
-          </div>
-          <div class="hint" id="rp-hint"></div>
-        </div>
-      </div>
-     </div>
-  </body>
+    </div>
+</body>
 </html>
