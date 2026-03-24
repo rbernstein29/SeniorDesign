@@ -124,6 +124,26 @@
         </div>
         <div class="card-tag">AGENTS</div>
       </a>
+
+      <a href="<%= sites_path rescue '#' %>" class="nav-card">
+        <div class="card-arrow">→</div>
+        <div class="card-icon-wrap">🏢</div>
+        <div>
+          <div class="card-title">Network Sites</div>
+          <div class="card-desc">Organize assets by physical or logical network location.</div>
+        </div>
+        <div class="card-tag">NETWORK</div>
+      </a>
+
+      <a href="<%= scanner_path rescue '#' %>" class="nav-card">
+        <div class="card-arrow">→</div>
+        <div class="card-icon-wrap">🔍</div>
+        <div>
+          <div class="card-title">Scanner</div>
+          <div class="card-desc">Configure scan parameters and review live scanner status.</div>
+        </div>
+        <div class="card-tag">SCANNER</div>
+      </a>
     <% end %>
 
     <a href="<%= reports_path rescue '#' %>" class="nav-card">

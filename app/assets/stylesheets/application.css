@@ -597,6 +597,26 @@ body {
   gap: 8px;
 }
 
+/* ── Info Box ── */
+.info-box {
+  background: var(--accent-dim);
+  border: 1px solid rgba(79,134,247,0.2);
+  border-radius: 10px;
+  padding: 14px 18px;
+  margin-bottom: 18px;
+  font-size: 13px;
+  color: var(--muted);
+}
+.info-box-list { list-style: none; display: flex; flex-direction: column; gap: 6px; }
+.info-box-list li { font-size: 13px; color: var(--muted); display: flex; gap: 8px; }
+.info-box-list li::before { content: '//'; font-family: var(--mono); font-size: 11px; color: var(--accent); flex-shrink: 0; }
+
+/* ── Empty State ── */
+.state-box   { padding: 60px 40px; text-align: center; }
+.state-icon  { font-size: 40px; display: block; margin-bottom: 12px; opacity: 0.5; }
+.state-title { font-size: 16px; font-weight: 600; color: var(--muted); margin-bottom: 6px; }
+.state-sub   { font-size: 13px; color: var(--muted); margin-bottom: 20px; opacity: 0.8; }
+
 /* ── Settings layout ── */
 .settings-grid {
   display: grid;
