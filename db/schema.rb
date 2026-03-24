@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.0].define(version: 2026_03_24_205311) do
+ActiveRecord::Schema[8.0].define(version: 2026_03_24_220000) do
   create_schema "vuln_scanner"
 
   # These are extensions that must be enabled in order to support this database
@@ -94,6 +94,7 @@ ActiveRecord::Schema[8.0].define(version: 2026_03_24_205311) do
     t.string "cve_id", limit: 50
     t.string "metasploit_module", limit: 255
     t.datetime "created_at", precision: nil, default: -> { "CURRENT_TIMESTAMP" }
+    t.string "default_payload", limit: 255
     t.index ["cve_id"], name: "idx_exploit_cve", where: "(cve_id IS NOT NULL)"
     t.index ["severity"], name: "idx_exploit_severity"
     t.unique_constraint ["exploit_id"], name: "exploits_exploit_id_key"
