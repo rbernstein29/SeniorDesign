@@ -114,7 +114,7 @@
         <%= image_tag 'SDimagesBlack/ConfigureAccounts.png', alt: '', class: 'nav-icon-img icon-black' %>
       </div>
       <div>
-        <div class="sidebar-user-name"><%= Current.session&.user&.email_address || 'Admin User' %></div>
+        <div class="sidebar-user-name"><%= Current.session&.user&.name || Current.session&.user&.email_address || 'Admin User' %></div>
         <div class="sidebar-user-role"><%= Current.user&.access_level&.titleize || 'User' %></div>
       </div>
       <%= form_with url: session_path, method: :delete do |f| %>
