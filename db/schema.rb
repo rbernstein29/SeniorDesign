@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.0].define(version: 2026_03_10_171929) do
+ActiveRecord::Schema[8.0].define(version: 2026_03_13_000002) do
   create_schema "vuln_scanner"
 
   # These are extensions that must be enabled in order to support this database
@@ -180,7 +180,7 @@ ActiveRecord::Schema[8.0].define(version: 2026_03_10_171929) do
 
   create_table "scans", id: :serial, force: :cascade do |t|
     t.string "scan_name", limit: 255, null: false
-    t.integer "org_id", null: false
+    t.integer "organization_id", null: false
     t.integer "initiated_by"
     t.string "status", limit: 50, null: false
     t.datetime "start_time", precision: nil
@@ -194,7 +194,7 @@ ActiveRecord::Schema[8.0].define(version: 2026_03_10_171929) do
     t.integer "medium_findings", default: 0
     t.integer "low_findings", default: 0
     t.datetime "created_at", precision: nil, default: -> { "CURRENT_TIMESTAMP" }
-    t.index ["org_id"], name: "idx_scan_org"
+    t.index ["organization_id"], name: "idx_scan_org"
     t.index ["start_time", "end_time"], name: "idx_scan_times"
     t.index ["status"], name: "idx_scan_status"
   end
@@ -210,7 +210,7 @@ ActiveRecord::Schema[8.0].define(version: 2026_03_10_171929) do
   end
 
   create_table "sites", force: :cascade do |t|
-    t.integer "org_id", null: false
+    t.integer "organization_id", null: false
     t.string "name", null: false
     t.string "network_range"
     t.datetime "created_at", null: false
@@ -265,7 +265,7 @@ ActiveRecord::Schema[8.0].define(version: 2026_03_10_171929) do
   add_foreign_key "scan_exploits", "scans", name: "scan_exploits_scan_id_fkey", on_delete: :cascade
   add_foreign_key "scan_targets", "assets", name: "scan_targets_asset_id_fkey", on_delete: :cascade
   add_foreign_key "scan_targets", "scans", name: "scan_targets_scan_id_fkey", on_delete: :cascade
-  add_foreign_key "scans", "organizations", column: "org_id", name: "scans_org_id_fkey", on_delete: :cascade
+  add_foreign_key "scans", "organizations", name: "scans_org_id_fkey", on_delete: :cascade
   add_foreign_key "scans", "users", column: "initiated_by", name: "scans_initiated_by_fkey", on_delete: :nullify
   add_foreign_key "sessions", "users"
   add_foreign_key "users", "organizations", name: "users_org_id_fkey", on_delete: :cascade
