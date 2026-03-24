@@ -30,8 +30,8 @@
 
     <a href="<%= root_path %>" class="sidebar-nav-item nav-green <%= current_page == 'home' ? 'active' : '' %>">
       <span class="nav-icon">
-        <%= image_tag 'SDimagesWhite/Home_free_icon.svg.png', alt: '', class: 'nav-icon-img icon-white' %>
-        <%= image_tag 'SDimagesBlack/Home_free_icon.svg.png', alt: '', class: 'nav-icon-img icon-black' %>
+        <%= image_tag 'SDimagesWhite/DashboardWhite.png', alt: '', class: 'nav-icon-img icon-white' %>
+        <%= image_tag 'SDimagesBlack/DashboardBlack.png', alt: '', class: 'nav-icon-img icon-black' %>
       </span>
       <span class="nav-dot green"></span>
       <span class="nav-label">Dashboard</span>
@@ -40,8 +40,8 @@
     <% if admin? %>
       <a href="<%= (scans_path rescue '#') %>" class="sidebar-nav-item nav-orange <%= current_page == 'scans' ? 'active' : '' %>">
         <span class="nav-icon">
-          <%= image_tag 'SDimagesWhite/Radar-sweep_-_Lorc_-_game-icons.svg.png', alt: '', class: 'nav-icon-img icon-white' %>
-          <%= image_tag 'SDimagesBlack/Radar-sweep_-_Lorc_-_game-icons.svg.png', alt: '', class: 'nav-icon-img icon-black' %>
+          <%= image_tag 'SDimagesWhite/snanerWhite.png', alt: '', class: 'nav-icon-img icon-white' %>
+          <%= image_tag 'SDimagesBlack/ScansBlack.png', alt: '', class: 'nav-icon-img icon-black' %>
         </span>
         <span class="nav-dot orange"></span>
         <span class="nav-label">Scans</span>
@@ -49,8 +49,8 @@
 
       <a href="<%= assets_path %>" class="sidebar-nav-item nav-green <%= current_page == 'assets' ? 'active' : '' %>">
         <span class="nav-icon">
-          <%= image_tag 'SDimagesWhite/Noun_project_list_icon_1380018_cc.svg.png', alt: '', class: 'nav-icon-img icon-white' %>
-          <%= image_tag 'SDimagesBlack/Noun_project_list_icon_1380018_cc.svg.png', alt: '', class: 'nav-icon-img icon-black' %>
+          <%= image_tag 'SDimagesWhite/AssetMangerWhite.png', alt: '', class: 'nav-icon-img icon-white' %>
+          <%= image_tag 'SDimagesBlack/AssetMangerBLack.png', alt: '', class: 'nav-icon-img icon-black' %>
         </span>
         <span class="nav-dot green"></span>
         <span class="nav-label">Asset Management</span>
@@ -58,8 +58,8 @@
 
       <a href="<%= (agents_path rescue '#') %>" class="sidebar-nav-item nav-magenta <%= current_page == 'agents' ? 'active' : '' %>">
         <span class="nav-icon">
-          <%= image_tag 'SDimagesWhite/Robot_(699)_-_The_Noun_Project.svg.png', alt: '', class: 'nav-icon-img icon-white' %>
-          <%= image_tag 'SDimagesBlack/Robot_(699)_-_The_Noun_Project.svg.png', alt: '', class: 'nav-icon-img icon-black' %>
+          <%= image_tag 'SDimagesWhite/Agent.png', alt: '', class: 'nav-icon-img icon-white' %>
+          <%= image_tag 'SDimagesBlack/AgentsBlack.png', alt: '', class: 'nav-icon-img icon-black' %>
         </span>
         <span class="nav-dot magenta"></span>
         <span class="nav-label">Agents</span>
@@ -67,8 +67,8 @@
 
       <a href="<%= (sites_path rescue '#') %>" class="sidebar-nav-item nav-cyan <%= current_page == 'sites' ? 'active' : '' %>">
         <span class="nav-icon">
-          <%= image_tag 'SDimagesWhite/Lowrise_building_Pinhead_icon.svg.png', alt: '', class: 'nav-icon-img icon-white' %>
-          <%= image_tag 'SDimagesBlack/Lowrise_building_Pinhead_icon.svg.png', alt: '', class: 'nav-icon-img icon-black' %>
+          <%= image_tag 'SDimagesWhite/SitesWhite.png', alt: '', class: 'nav-icon-img icon-white' %>
+          <%= image_tag 'SDimagesBlack/SitesBlack.png', alt: '', class: 'nav-icon-img icon-black' %>
         </span>
         <span class="nav-dot cyan"></span>
         <span class="nav-label">Sites</span>
@@ -79,8 +79,8 @@
 
     <a href="<%= (reports_path rescue '#') %>" class="sidebar-nav-item nav-violet <%= current_page == 'reports' ? 'active' : '' %>">
       <span class="nav-icon">
-        <%= image_tag 'SDimagesWhite/Toicon-icon-blueprint-chart.svg.png', alt: '', class: 'nav-icon-img icon-white' %>
-        <%= image_tag 'SDimagesBlack/Toicon-icon-blueprint-chart.svg.png', alt: '', class: 'nav-icon-img icon-black' %>
+        <%= image_tag 'SDimagesWhite/VIewReportsWhite.png', alt: '', class: 'nav-icon-img icon-white' %>
+        <%= image_tag 'SDimagesBlack/ViewReportBlack.png', alt: '', class: 'nav-icon-img icon-black' %>
       </span>
       <span class="nav-dot violet"></span>
       <span class="nav-label">View Reports</span>
@@ -89,8 +89,8 @@
     <% if admin? %>
       <a href="<%= (read_only_accounts_path rescue '#') %>" class="sidebar-nav-item nav-teal <%= current_page == 'read_only_accounts' ? 'active' : '' %>">
         <span class="nav-icon">
-          <%= image_tag 'SDimagesWhite/OOjs_UI_icon_userAvatar.svg.png', alt: '', class: 'nav-icon-img icon-white' %>
-          <%= image_tag 'SDimagesBlack/OOjs_UI_icon_userAvatar.svg.png', alt: '', class: 'nav-icon-img icon-black' %>
+          <%= image_tag 'SDimagesWhite/ConfigureAccountWhite.png', alt: '', class: 'nav-icon-img icon-white' %>
+          <%= image_tag 'SDimagesBlack/ConfigureAccounts.png', alt: '', class: 'nav-icon-img icon-black' %>
         </span>
         <span class="nav-dot teal"></span>
         <span class="nav-label">Configure Accounts</span>
@@ -99,8 +99,8 @@
 
     <a href="<%= (settings_path rescue '#') %>" class="sidebar-nav-item nav-blue <%= current_page == 'settings' ? 'active' : '' %>">
       <span class="nav-icon">
-        <%= image_tag 'SDimagesWhite/Codex_icon_settings.svg.png', alt: '', class: 'nav-icon-img icon-white' %>
-        <%= image_tag 'SDimagesBlack/Codex_icon_settings.svg.png', alt: '', class: 'nav-icon-img icon-black' %>
+        <%= image_tag 'SDimagesWhite/SettingsWhite.png', alt: '', class: 'nav-icon-img icon-white' %>
+        <%= image_tag 'SDimagesBlack/SettingsBlack.png', alt: '', class: 'nav-icon-img icon-black' %>
       </span>
       <span class="nav-dot blue"></span>
       <span class="nav-label">Settings</span>
