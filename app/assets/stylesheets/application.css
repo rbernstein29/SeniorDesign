@@ -1553,6 +1553,25 @@ tbody tr:hover { background: var(--surface2); }
   width: 100%;
 }
 
+/* ── Login accent overrides (no blue) ── */
+.login-wrap .btn-primary {
+  background: rgba(255,255,255,0.12);
+  border-color: rgba(255,255,255,0.25);
+  color: #fff;
+}
+.login-wrap .btn-primary:hover {
+  background: rgba(255,255,255,0.18);
+  border-color: rgba(255,255,255,0.35);
+}
+.login-wrap .login-tab.active {
+  border-bottom-color: rgba(255,255,255,0.7);
+}
+.login-wrap input[type="text"]:focus,
+.login-wrap input[type="email"]:focus,
+.login-wrap input[type="password"]:focus {
+  border-color: rgba(255,255,255,0.4);
+}
+
 /* ── Alert Success ── */
 .alert-success {
   background: rgba(34,197,94,0.10);
