@@ -10,8 +10,9 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.0].define(version: 2026_03_13_000002) do
-  create_schema "vuln_scanner"
+ActiveRecord::Schema[8.0].define(version: 2026_03_24_205311) do
+  execute "CREATE SCHEMA IF NOT EXISTS vuln_scanner"
+  execute "CREATE SCHEMA IF NOT EXISTS vuln_scanner_test"
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "pg_catalog.plpgsql"
@@ -241,7 +242,6 @@ ActiveRecord::Schema[8.0].define(version: 2026_03_13_000002) do
     t.index ["email_address"], name: "idx_user_email"
     t.index ["organization_id"], name: "idx_user_org"
     t.check_constraint "access_level::text = ANY (ARRAY['admin'::character varying::text, 'read_only'::character varying::text])", name: "users_access_level_check"
-    t.unique_constraint ["email_address"], name: "users_email_key"
   end
 
   add_foreign_key "asset_use_cases", "assets", name: "asset_use_cases_asset_id_fkey", on_delete: :cascade
