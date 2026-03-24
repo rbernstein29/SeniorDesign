@@ -58,6 +58,11 @@
         flex-shrink: 0;
       }
 
+      .logo-light { display: none; }
+      .logo-dark  { display: inline-block; }
+      [data-theme="light"] .logo-light { display: inline-block; }
+      [data-theme="light"] .logo-dark  { display: none; }
+
       .body { padding: 20px 24px 24px; display: grid; gap: 12px; }
 
       .field { display: grid; gap: 6px; }
@@ -120,7 +125,8 @@
       <div class="card">
         <div class="head">
           <div class="brand">
-            <%= image_tag 'logo.png', alt: 'Aegis', class: 'logo' %>
+            <%= image_tag 'logo_dark_mode.png',  alt: 'Aegis', class: 'logo logo-dark' %>
+            <%= image_tag 'logo_light_mode.png', alt: 'Aegis', class: 'logo logo-light' %>
             <div><h1>Aegis</h1></div>
           </div>
           <div class="page-sub">Sign in to your account</div>

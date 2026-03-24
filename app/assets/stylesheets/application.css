@@ -107,6 +107,13 @@ body {
   flex-shrink: 0;
 }
 
+/* Theme-aware logo switching */
+.logo-light { display: none; }
+.logo-dark  { display: inline-block; }
+
+[data-theme="light"] .logo-light { display: inline-block; }
+[data-theme="light"] .logo-dark  { display: none; }
+
 .brand-name {
   font-size: 18px;
   font-weight: 700;
@@ -787,6 +794,7 @@ td:last-child { border-right: none; }
   right: 0; top: 0; bottom: 0;
   width: 4px;
   cursor: col-resize;
+  -webkit-user-select: none;
   user-select: none;
   z-index: 1;
 }
@@ -931,6 +939,7 @@ tbody tr:hover { background: var(--surface2); }
   position: fixed;
   inset: 0;
   background: rgba(0,0,0,0.65);
+  -webkit-backdrop-filter: blur(4px);
   backdrop-filter: blur(4px);
   z-index: 1000;
   align-items: center;
@@ -1001,6 +1010,7 @@ tbody tr:hover { background: var(--surface2); }
   position: fixed;
   inset: 0;
   background: rgba(0,0,0,0.45);
+  -webkit-backdrop-filter: blur(3px);
   backdrop-filter: blur(3px);
   z-index: 998;
   opacity: 0;
