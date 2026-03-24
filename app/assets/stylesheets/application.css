@@ -1507,6 +1507,55 @@ tbody tr:hover { background: var(--surface2); }
 .login-hint { color: var(--muted); font-size: 12px; }
 .login-hint-right { margin-left: auto; }
 
+/* ── Login Tabs ── */
+.login-tabs {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  border-bottom: 1px solid var(--border);
+  margin-top: 14px;
+}
+
+.login-tab {
+  padding: 12px;
+  text-align: center;
+  cursor: pointer;
+  color: var(--muted);
+  text-decoration: none;
+  font-size: 14px;
+  font-weight: 500;
+  transition: color 0.15s;
+}
+
+.login-tab:hover { color: var(--text); text-decoration: none; }
+
+.login-tab.active {
+  color: var(--text);
+  border-bottom: 2px solid var(--accent);
+}
+
+/* ── Login Misc ── */
+.login-sep { height: 1px; background: var(--border); margin: 6px 0; }
+.login-check-row { display: flex; gap: 8px; align-items: center; font-size: 13px; color: var(--muted); }
+.hidden { display: none; }
+
+.otp-input {
+  letter-spacing: .3em;
+  text-align: center;
+  font-family: var(--mono);
+  font-size: 20px;
+  width: 100%;
+}
+
+/* ── Alert Success ── */
+.alert-success {
+  background: rgba(34,197,94,0.10);
+  border: 1px solid rgba(34,197,94,0.3);
+  color: #86efac;
+  padding: 10px 14px;
+  border-radius: 8px;
+  font-size: 13px;
+}
+
 /* ── Animations ── */
 @keyframes fadeUp {
   from { opacity: 0; transform: translateY(10px); }
