@@ -7,7 +7,7 @@
     <!-- Page Header -->
     <div class="page-header">
         <div>
-            <div class="page-title">🤖 Network Agents</div>
+            <div class="page-title"><%= image_tag 'SDimagesWhite/Agent.png', alt: '', class: 'page-title-img icon-white' %><%= image_tag 'SDimagesBlack/AgentsBlack.png', alt: '', class: 'page-title-img icon-black' %> Network Agents</div>
             <div class="page-sub">Deploy and manage distributed scanning agents</div>
         </div>
         <%= form_with url: agents_path, method: :post, style: "display:flex;gap:10px;align-items:center;" do |f| %>
@@ -21,7 +21,7 @@
                     onclick="return confirm('Deploy a new agent for this site? This will generate SSH keys and a download package.')"
                     class="btn btn-primary">➕ Deploy Agent</button>
             <% else %>
-                <%= link_to sites_path, style: "font-family:var(--mono);font-size:12px;color:var(--muted);background:var(--surface2);border:1px solid var(--border);padding:8px 14px;border-radius:8px;text-decoration:none;white-space:nowrap;" do %>🏢 No Available Sites — Create One First<% end %>
+                <%= link_to sites_path, style: "font-family:var(--mono);font-size:12px;color:var(--muted);background:var(--surface2);border:1px solid var(--border);padding:8px 14px;border-radius:8px;text-decoration:none;white-space:nowrap;display:inline-flex;align-items:center;gap:6px;" do %><%= image_tag 'SDimagesWhite/SitesWhite.png', alt: '', class: 'nav-icon-img icon-white' %><%= image_tag 'SDimagesBlack/SitesBlack.png', alt: '', class: 'nav-icon-img icon-black' %> No Available Sites — Create One First<% end %>
                 <button type="button" disabled style="opacity:0.35;cursor:not-allowed;" class="btn btn-primary">➕ Deploy Agent</button>
             <% end %>
         <% end %>
@@ -139,7 +139,7 @@
                 </div>
             <% else %>
                 <div class="state-box">
-                    <span class="state-icon">🤖</span>
+                    <span class="state-icon"><%= image_tag 'SDimagesWhite/Agent.png', alt: '', class: 'state-icon-img icon-white' %><%= image_tag 'SDimagesBlack/AgentsBlack.png', alt: '', class: 'state-icon-img icon-black' %></span>
                     <div class="state-title">No Agents Deployed</div>
                     <div class="state-sub">Deploy your first agent to start scanning private networks</div>
                     <%= link_to "➕ Create a Site First, Then Deploy an Agent", sites_path, class: "btn btn-primary" %>
