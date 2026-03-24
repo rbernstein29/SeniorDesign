@@ -1,158 +1,38 @@
-<!doctype html>
-<html lang="en">
-  <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <% content_for :title, "Aegis - Sign In" %>
-    <%= csrf_meta_tags %>
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;600;700&display=swap" rel="stylesheet">
-    <style>
-      :root {
-        --bg:     #0c0c0c;
-        --panel:  #161616;
-        --text:   #f0f0f0;
-        --sub:    #888;
-        --brand:  #4f86f7;
-        --border: rgba(255,255,255,0.09);
-      }
+<% content_for :title, "Aegis - Sign In" %>
 
-      * { box-sizing: border-box; }
-
-      body {
-        margin: 0;
-        background: var(--bg);
-        color: var(--text);
-        font: 14px/1.5 'Inter', system-ui, sans-serif;
-        -webkit-font-smoothing: antialiased;
-      }
-
-      a { color: var(--brand); text-decoration: none; }
-      a:hover { text-decoration: underline; }
-
-      .wrap {
-        min-height: 100vh;
-        display: grid;
-        place-items: center;
-        padding: 24px;
-      }
-
-      .card {
-        width: 100%;
-        max-width: 440px;
-        background: var(--panel);
-        border: 1px solid var(--border);
-        border-radius: 14px;
-      }
-
-      .head { padding: 24px 24px 0; }
-
-      .brand { display: flex; gap: 12px; align-items: center; }
-      .brand h1 { margin: 0; font-size: 18px; font-weight: 700; }
-
-      .logo {
-        width: 40px;
-        height: 40px;
-        border-radius: 9px;
-        object-fit: contain;
-        flex-shrink: 0;
-      }
-
-      .logo-light { display: none; }
-      .logo-dark  { display: inline-block; }
-      [data-theme="light"] .logo-light { display: inline-block; }
-      [data-theme="light"] .logo-dark  { display: none; }
-
-      .body { padding: 20px 24px 24px; display: grid; gap: 12px; }
-
-      .field { display: grid; gap: 6px; }
-
-      .input {
-        background: #0f0f0f;
-        border: 1px solid var(--border);
-        border-radius: 8px;
-        color: var(--text);
-        padding: 10px 12px;
-        font-family: 'JetBrains Mono', monospace;
-        font-size: 13px;
-        width: 100%;
-        transition: border-color 0.15s;
-      }
-
-      .input:focus {
-        outline: none;
-        border-color: var(--brand);
-      }
-
-      .row { display: flex; gap: 10px; align-items: center; }
-
-      .btn {
-        border: none;
-        background: var(--brand);
-        color: #fff;
-        padding: 10px 20px;
-        border-radius: 8px;
-        cursor: pointer;
-        font-family: 'Inter', sans-serif;
-        font-size: 14px;
-        font-weight: 600;
-        transition: opacity 0.15s;
-      }
-
-      .btn:hover { opacity: 0.88; }
-
-      .hint { color: var(--sub); font-size: 12px; }
-      .right { margin-left: auto; }
-
-      .error {
-        background: rgba(239,68,68,0.1);
-        border: 1px solid rgba(239,68,68,0.3);
-        color: #fca5a5;
-        padding: 10px 12px;
-        border-radius: 8px;
-        font-size: 13px;
-      }
-
-      .page-sub {
-        padding: 10px 24px 0;
-        color: var(--sub);
-        font-size: 13px;
-      }
-    </style>
-  </head>
-  <body>
-    <div class="wrap">
-      <div class="card">
-        <div class="head">
-          <div class="brand">
-            <%= image_tag 'logo_dark_mode.png',  alt: 'Aegis', class: 'logo logo-dark' %>
-            <%= image_tag 'logo_light_mode.png', alt: 'Aegis', class: 'logo logo-light' %>
-            <div><h1>Aegis</h1></div>
-          </div>
-          <div class="page-sub">Sign in to your account</div>
-        </div>
-
-        <div class="body">
-          <% if flash[:alert] %>
-            <div class="error"><%= flash[:alert] %></div>
-          <% end %>
-
-          <%= form_with url: session_path, method: :post do |form| %>
-            <div class="field">
-              <%= form.email_field :email_address, class: "input", placeholder: "Email", required: true, autofocus: true, autocomplete: "username", value: params[:email_address] %>
-            </div>
-            <div class="field">
-              <%= form.password_field :password, class: "input", placeholder: "Password", required: true, autocomplete: "current-password", maxlength: 72 %>
-            </div>
-            <div class="row">
-              <span class="hint right"><%= link_to "Forgot password?", new_password_path %></span>
-            </div>
-            <div class="row">
-              <%= form.submit "Sign In", class: "btn" %>
-            </div>
-          <% end %>
-        </div>
+<div class="login-wrap">
+  <div class="login-card">
+    <div class="login-head">
+      <div class="login-brand">
+        <%= image_tag 'logo_dark_mode.png',  alt: 'Aegis', class: 'login-logo logo-dark' %>
+        <%= image_tag 'logo_light_mode.png', alt: 'Aegis', class: 'login-logo logo-light' %>
+        <h1>Aegis</h1>
       </div>
+      <div class="login-sub">Sign in to your account</div>
     </div>
-  </body>
-</html>
+
+    <div class="login-body">
+      <% if flash[:alert] %>
+        <div class="alert-error"><%= flash[:alert] %></div>
+      <% end %>
+
+      <%= form_with url: session_path, method: :post do |form| %>
+        <div class="field">
+          <%= form.email_field :email_address, class: "input", placeholder: "Email",
+              required: true, autofocus: true, autocomplete: "username",
+              value: params[:email_address] %>
+        </div>
+        <div class="field">
+          <%= form.password_field :password, class: "input", placeholder: "Password",
+              required: true, autocomplete: "current-password", maxlength: 72 %>
+        </div>
+        <div class="login-row">
+          <span class="login-hint login-hint-right"><%= link_to "Forgot password?", new_password_path %></span>
+        </div>
+        <div class="login-row">
+          <%= form.submit "Sign In", class: "btn btn-primary" %>
+        </div>
+      <% end %>
+    </div>
+  </div>
+</div>

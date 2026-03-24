@@ -1472,6 +1472,41 @@ tbody tr:hover { background: var(--surface2); }
   background: var(--accent-dim);
 }
 
+/* ── Login Page ── */
+.login-wrap {
+  min-height: 100vh;
+  display: grid;
+  place-items: center;
+  padding: 24px;
+  background: var(--bg);
+}
+
+.login-card {
+  width: 100%;
+  max-width: 440px;
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 14px;
+}
+
+.login-head { padding: 24px 24px 0; }
+.login-brand { display: flex; gap: 12px; align-items: center; }
+.login-brand h1 { margin: 0; font-size: 18px; font-weight: 700; color: var(--text); }
+
+.login-logo {
+  width: 40px;
+  height: 40px;
+  border-radius: 9px;
+  object-fit: contain;
+  flex-shrink: 0;
+}
+
+.login-sub  { padding: 10px 24px 0; color: var(--muted); font-size: 13px; }
+.login-body { padding: 20px 24px 24px; display: grid; gap: 12px; }
+.login-row  { display: flex; gap: 10px; align-items: center; }
+.login-hint { color: var(--muted); font-size: 12px; }
+.login-hint-right { margin-left: auto; }
+
 /* ── Animations ── */
 @keyframes fadeUp {
   from { opacity: 0; transform: translateY(10px); }
