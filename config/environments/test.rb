@@ -9,6 +9,9 @@ Rails.application.configure do
   # While tests run files are not watched, reloading is not necessary.
   config.enable_reloading = false
 
+  # db:migrate runs before tests in railsRestart; skip the automatic schema check.
+  config.active_record.maintain_test_schema = false
+
   # Eager loading loads your entire application. When running a single test locally,
   # this is usually not necessary, and can slow down your test suite. However, it's
   # recommended that you enable it in continuous integration systems to ensure eager
