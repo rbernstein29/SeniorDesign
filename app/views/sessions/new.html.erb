@@ -6,31 +6,28 @@
     <% content_for :title, "Aegis - Sign In" %>
     <%= csrf_meta_tags %>
     <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;600;700&family=Sora:wght@300;400;600;700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;600;700&display=swap" rel="stylesheet">
     <style>
       :root {
-        --bg:     #0b0d12;
-        --panel:  #11151b;
-        --muted:  #1a2029;
-        --text:   #e7eaee;
-        --sub:    #93a0b4;
-        --brand:  #5b8cff;
-        --border: #222937;
+        --bg:     #0c0c0c;
+        --panel:  #161616;
+        --text:   #f0f0f0;
+        --sub:    #888;
+        --brand:  #4f86f7;
+        --border: rgba(255,255,255,0.09);
       }
 
       * { box-sizing: border-box; }
 
       body {
         margin: 0;
-        background:
-          radial-gradient(1200px 800px at 10% -10%, rgba(91, 140, 255, .18), transparent),
-          radial-gradient(1000px 700px at 100% 0, rgba(106, 247, 255, .08), transparent),
-          var(--bg);
+        background: var(--bg);
         color: var(--text);
-        font: 14px/1.5 'Sora', system-ui, sans-serif;
+        font: 14px/1.5 'Inter', system-ui, sans-serif;
+        -webkit-font-smoothing: antialiased;
       }
 
-      a { color: #9db7ff; text-decoration: none; }
+      a { color: var(--brand); text-decoration: none; }
       a:hover { text-decoration: underline; }
 
       .wrap {
@@ -42,38 +39,42 @@
 
       .card {
         width: 100%;
-        max-width: 460px;
+        max-width: 440px;
         background: var(--panel);
         border: 1px solid var(--border);
-        border-radius: 18px;
-        box-shadow: 0 10px 40px rgba(0, 0, 0, .35);
+        border-radius: 14px;
       }
 
-      .head { padding: 20px 20px 0 20px; }
+      .head { padding: 24px 24px 0; }
 
       .brand { display: flex; gap: 12px; align-items: center; }
-      .brand h1 { margin: 0; font-size: 18px; }
+      .brand h1 { margin: 0; font-size: 18px; font-weight: 700; }
 
       .logo {
-        width: 36px;
-        height: 36px;
-        border-radius: 10px;
-        background: linear-gradient(135deg, var(--brand), #8a6bff);
+        width: 34px;
+        height: 34px;
+        border-radius: 9px;
+        background: var(--brand);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 18px;
       }
 
-      .body { padding: 20px; display: grid; gap: 12px; }
+      .body { padding: 20px 24px 24px; display: grid; gap: 12px; }
 
-      .field { display: grid; gap: 6px; padding: 5px; }
+      .field { display: grid; gap: 6px; }
 
       .input {
-        background: #0f1420;
+        background: #0f0f0f;
         border: 1px solid var(--border);
-        border-radius: 12px;
+        border-radius: 8px;
         color: var(--text);
-        padding: 10px;
+        padding: 10px 12px;
         font-family: 'JetBrains Mono', monospace;
         font-size: 13px;
         width: 100%;
+        transition: border-color 0.15s;
       }
 
       .input:focus {
@@ -81,34 +82,37 @@
         border-color: var(--brand);
       }
 
-      .row { display: flex; gap: 10px; padding: 5px; align-items: center; }
+      .row { display: flex; gap: 10px; align-items: center; }
 
       .btn {
-        border: 1px solid var(--border);
+        border: none;
         background: var(--brand);
         color: #fff;
-        padding: 10px 18px;
-        border-radius: 12px;
+        padding: 10px 20px;
+        border-radius: 8px;
         cursor: pointer;
-        font-family: 'Sora', sans-serif;
+        font-family: 'Inter', sans-serif;
         font-size: 14px;
         font-weight: 600;
+        transition: opacity 0.15s;
       }
+
+      .btn:hover { opacity: 0.88; }
 
       .hint { color: var(--sub); font-size: 12px; }
       .right { margin-left: auto; }
 
       .error {
-        background: rgba(255, 91, 110, .12);
-        border: 1px solid rgba(255, 91, 110, .4);
-        color: #ffc3ca;
-        padding: 10px;
-        border-radius: 12px;
+        background: rgba(239,68,68,0.1);
+        border: 1px solid rgba(239,68,68,0.3);
+        color: #fca5a5;
+        padding: 10px 12px;
+        border-radius: 8px;
         font-size: 13px;
       }
 
       .page-sub {
-        padding: 14px 20px 0;
+        padding: 10px 24px 0;
         color: var(--sub);
         font-size: 13px;
       }
@@ -119,7 +123,7 @@
       <div class="card">
         <div class="head">
           <div class="brand">
-            <div class="logo"></div>
+            <div class="logo">⚔</div>
             <div><h1>Aegis</h1></div>
           </div>
           <div class="page-sub">Sign in to your account</div>

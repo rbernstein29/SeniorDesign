@@ -1,226 +1,50 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <% content_for :title, "Aegis - Create Read-Only User" %>
-    <%= csrf_meta_tags %>
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;600;700&family=Sora:wght@300;400;600;700&display=swap" rel="stylesheet">
-    <style>
-        :root {
-            --bg:        #080c14;
-            --surface:   #0d1525;
-            --surface2:  #111b30;
-            --border:    rgba(59,130,246,0.15);
-            --blue:      #3b82f6;
-            --blue-dim:  rgba(59,130,246,0.12);
-            --blue-glow: rgba(59,130,246,0.35);
-            --text:      #e2e8f0;
-            --muted:     #64748b;
-            --mono:      'JetBrains Mono', monospace;
-            --sans:      'Sora', sans-serif;
-        }
+<% content_for :title, "Aegis - Create Read-Only User" %>
 
-        * { margin: 0; padding: 0; box-sizing: border-box; }
+<%= render 'shared/sidebar', current_page: 'read_only_accounts' %>
 
-        body {
-            font-family: var(--sans);
-            background: var(--bg);
-            color: var(--text);
-            min-height: 100vh;
-        }
+<div class="layout">
 
-        body::before {
-            content: '';
-            position: fixed;
-            inset: 0;
-            background-image:
-                linear-gradient(rgba(59,130,246,0.03) 1px, transparent 1px),
-                linear-gradient(90deg, rgba(59,130,246,0.03) 1px, transparent 1px);
-            background-size: 40px 40px;
-            pointer-events: none;
-            z-index: 0;
-        }
-
-        .layout {
-            position: relative;
-            z-index: 1;
-            max-width: 1400px;
-            margin: 0 auto;
-            padding: 30px 30px 40px 84px;
-        }
-
-        .page-header {
-            background: var(--surface);
-            border: 1px solid var(--border);
-            padding: 28px 36px;
-            border-radius: 16px;
-            margin-bottom: 28px;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-        }
-
-        .page-title { font-size: 26px; font-weight: 700; color: #f1f5f9; }
-        .page-sub   { color: var(--muted); margin-top: 4px; font-size: 13px; font-family: var(--mono); }
-
-        .btn {
-            padding: 11px 22px;
-            border-radius: 8px;
-            font-weight: 600;
-            font-size: 13px;
-            cursor: pointer;
-            text-decoration: none;
-            display: inline-flex;
-            align-items: center;
-            gap: 8px;
-            transition: all 0.2s;
-            border: none;
-            font-family: var(--sans);
-        }
-
-        .btn-primary {
-            background: linear-gradient(135deg, var(--blue), #1d4ed8);
-            color: white;
-            box-shadow: 0 4px 16px var(--blue-glow);
-        }
-
-        .btn-primary:hover { transform: translateY(-2px); box-shadow: 0 8px 24px var(--blue-glow); }
-
-        .btn-secondary {
-            background: transparent;
-            border: 1px solid rgba(255,255,255,0.1);
-            color: #94a3b8;
-        }
-
-        .btn-secondary:hover { border-color: var(--blue); color: #60a5fa; background: var(--blue-dim); }
-
-        .alert {
-            padding: 14px 18px;
-            border-radius: 10px;
-            font-size: 13px;
-            margin-bottom: 20px;
-            font-family: var(--mono);
-        }
-
-        .alert-error { background: rgba(239,68,68,0.1); border: 1px solid rgba(239,68,68,0.3); color: #fca5a5; }
-
-        .main-card {
-            background: var(--surface);
-            border: 1px solid var(--border);
-            border-radius: 16px;
-            overflow: hidden;
-            max-width: 520px;
-        }
-
-        .card-header {
-            padding: 20px 28px;
-            border-bottom: 1px solid rgba(255,255,255,0.06);
-        }
-
-        .card-title    { font-size: 15px; font-weight: 600; color: #f1f5f9; }
-        .card-subtitle { font-family: var(--mono); font-size: 10px; color: var(--muted); letter-spacing: 1px; margin-top: 4px; }
-
-        .form-body {
-            padding: 24px 28px;
-            display: flex;
-            flex-direction: column;
-            gap: 16px;
-        }
-
-        .form-group { display: flex; flex-direction: column; gap: 6px; }
-
-        .form-label {
-            font-family: var(--mono);
-            font-size: 10px;
-            letter-spacing: 1.5px;
-            text-transform: uppercase;
-            color: var(--muted);
-        }
-
-        input[type="text"],
-        input[type="email"],
-        input[type="password"] {
-            background: var(--surface2);
-            border: 1px solid var(--border);
-            border-radius: 8px;
-            color: var(--text);
-            padding: 10px 14px;
-            font-size: 13px;
-            font-family: var(--mono);
-            width: 100%;
-            transition: border-color 0.2s;
-        }
-
-        input:focus {
-            outline: none;
-            border-color: var(--blue);
-            box-shadow: 0 0 0 3px var(--blue-dim);
-        }
-
-        .form-actions {
-            padding: 16px 28px 24px;
-            border-top: 1px solid rgba(255,255,255,0.06);
-        }
-
-        @keyframes fadeUp {
-            from { opacity: 0; transform: translateY(16px); }
-            to   { opacity: 1; transform: translateY(0); }
-        }
-
-        .page-header { animation: fadeUp 0.4s ease both; }
-        .main-card   { animation: fadeUp 0.4s 0.08s ease both; }
-    </style>
-</head>
-<body>
-    <%= render 'shared/sidebar', current_page: 'read_only_accounts' %>
-
-    <div class="layout">
-
-        <div class="page-header">
-            <div>
-                <div class="page-title">Read-Only Accounts</div>
-                <div class="page-sub">// create a new read-only user</div>
-            </div>
-            <%= link_to "← Back", read_only_accounts_path, class: "btn btn-secondary" %>
+    <div class="page-header">
+        <div>
+            <div class="page-title">Read-Only Accounts</div>
+            <div class="page-sub">Create a new read-only user</div>
         </div>
-
-        <% if flash[:alert] %>
-            <div class="alert alert-error"><%= flash[:alert] %></div>
-        <% end %>
-
-        <div class="main-card">
-            <div class="card-header">
-                <div class="card-title">New Account</div>
-                <div class="card-subtitle">READ-ONLY ACCESS</div>
-            </div>
-
-            <%= form_with url: read_only_accounts_path, method: :post do %>
-                <div class="form-body">
-                    <div class="form-group">
-                        <label class="form-label">Full Name</label>
-                        <input type="text" name="user[name]" placeholder="Jane Smith" />
-                    </div>
-                    <div class="form-group">
-                        <label class="form-label">Email</label>
-                        <input type="email" name="user[email_address]" placeholder="jane@org.com" />
-                    </div>
-                    <div class="form-group">
-                        <label class="form-label">Password</label>
-                        <input type="password" name="user[password]" placeholder="••••••••" />
-                    </div>
-                    <div class="form-group">
-                        <label class="form-label">Confirm Password</label>
-                        <input type="password" name="user[password_confirmation]" placeholder="••••••••" />
-                    </div>
-                </div>
-                <div class="form-actions">
-                    <button type="submit" class="btn btn-primary">Create Account</button>
-                </div>
-            <% end %>
-        </div>
-
+        <%= link_to "← Back", read_only_accounts_path, class: "btn btn-secondary" %>
     </div>
-</body>
-</html>
+
+    <% if flash[:alert] %>
+        <div class="alert alert-error"><%= flash[:alert] %></div>
+    <% end %>
+
+    <div class="main-card" style="max-width:520px;">
+        <div class="card-header">
+            <div class="card-title">New Account</div>
+            <div class="card-subtitle">READ-ONLY ACCESS</div>
+        </div>
+
+        <%= form_with url: read_only_accounts_path, method: :post do %>
+            <div class="card-body">
+                <div class="form-group">
+                    <label class="form-label">Full Name</label>
+                    <input type="text" name="user[name]" placeholder="Jane Smith" />
+                </div>
+                <div class="form-group">
+                    <label class="form-label">Email</label>
+                    <input type="email" name="user[email_address]" placeholder="jane@org.com" />
+                </div>
+                <div class="form-group">
+                    <label class="form-label">Password</label>
+                    <input type="password" name="user[password]" placeholder="••••••••" />
+                </div>
+                <div class="form-group">
+                    <label class="form-label">Confirm Password</label>
+                    <input type="password" name="user[password_confirmation]" placeholder="••••••••" />
+                </div>
+            </div>
+            <div class="card-footer">
+                <button type="submit" class="btn btn-primary">Create Account</button>
+            </div>
+        <% end %>
+    </div>
+
+</div>

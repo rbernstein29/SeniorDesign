@@ -1,273 +1,73 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <% content_for :title, "Aegis - Scanner" %>
-    <%= csrf_meta_tags %>
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;600;700&family=Sora:wght@300;400;600;700&display=swap" rel="stylesheet">
-    <style>
-        :root {
-            --bg:        #080c14;
-            --surface:   #0d1525;
-            --surface2:  #111b30;
-            --border:    rgba(59,130,246,0.15);
-            --blue:      #3b82f6;
-            --blue-dim:  rgba(59,130,246,0.12);
-            --blue-glow: rgba(59,130,246,0.35);
-            --green:     #10b981;
-            --orange:    #f59e0b;
-            --red:       #ef4444;
-            --text:      #e2e8f0;
-            --muted:     #64748b;
-            --mono:      'JetBrains Mono', monospace;
-            --sans:      'Sora', sans-serif;
-        }
+<% content_for :title, "Aegis - Scanner" %>
 
-        * { margin: 0; padding: 0; box-sizing: border-box; }
+<%= render 'shared/sidebar', current_page: 'scanner' %>
 
-        body {
-            font-family: var(--sans);
-            background: var(--bg);
-            color: var(--text);
-            min-height: 100vh;
-        }
+<div class="layout">
 
-        body::before {
-            content: '';
-            position: fixed;
-            inset: 0;
-            background-image:
-                linear-gradient(rgba(59,130,246,0.03) 1px, transparent 1px),
-                linear-gradient(90deg, rgba(59,130,246,0.03) 1px, transparent 1px);
-            background-size: 40px 40px;
-            pointer-events: none;
-            z-index: 0;
-        }
-
-        .layout {
-            position: relative;
-            z-index: 1;
-            max-width: 1400px;
-            margin: 0 auto;
-            padding: 30px 30px 40px 84px;
-        }
-
-        .page-header {
-            background: var(--surface);
-            border: 1px solid var(--border);
-            padding: 28px 36px;
-            border-radius: 16px;
-            margin-bottom: 28px;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            animation: fadeUp 0.4s ease both;
-        }
-
-        .page-title { font-size: 26px; font-weight: 700; color: #f1f5f9; }
-        .page-sub { color: var(--muted); margin-top: 4px; font-size: 13px; font-family: var(--mono); }
-
-        .card {
-            background: var(--surface);
-            border: 1px solid var(--border);
-            border-radius: 16px;
-            overflow: hidden;
-            margin-bottom: 24px;
-            animation: fadeUp 0.4s 0.08s ease both;
-        }
-
-        .card-header {
-            padding: 20px 28px;
-            border-bottom: 1px solid rgba(255,255,255,0.06);
-            display: flex;
-            align-items: center;
-            gap: 12px;
-        }
-
-        .card-header-icon {
-            width: 36px;
-            height: 36px;
-            border-radius: 8px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-size: 16px;
-            background: var(--blue-dim);
-            border: 1px solid rgba(59,130,246,0.2);
-            flex-shrink: 0;
-        }
-
-        .card-title { font-size: 15px; font-weight: 600; color: #f1f5f9; }
-        .card-subtitle { font-family: var(--mono); font-size: 10px; color: var(--muted); letter-spacing: 1px; margin-top: 2px; }
-
-        .card-body { padding: 28px; }
-
-        .field-group { display: flex; flex-direction: column; gap: 8px; margin-bottom: 24px; }
-
-        .field-label {
-            font-family: var(--mono);
-            font-size: 11px;
-            font-weight: 600;
-            color: var(--muted);
-            letter-spacing: 1px;
-            text-transform: uppercase;
-        }
-
-        .field-hint { font-size: 12px; color: var(--muted); }
-
-        .field-input {
-            background: var(--surface2);
-            border: 1px solid rgba(255,255,255,0.08);
-            border-radius: 8px;
-            padding: 11px 16px;
-            color: #cbd5e1;
-            font-size: 13px;
-            font-family: var(--mono);
-            width: 100%;
-            max-width: 420px;
-            transition: border-color 0.2s;
-            outline: none;
-        }
-
-        .field-input:focus { border-color: var(--blue); box-shadow: 0 0 0 3px rgba(59,130,246,0.1); }
-
-        .btn-scan {
-            background: linear-gradient(135deg, var(--blue), #1d4ed8);
-            color: white;
-            border: none;
-            border-radius: 8px;
-            padding: 12px 28px;
-            font-size: 13px;
-            font-weight: 600;
-            font-family: var(--sans);
-            cursor: pointer;
-            display: inline-flex;
-            align-items: center;
-            gap: 8px;
-            box-shadow: 0 4px 16px var(--blue-glow);
-            transition: all 0.2s;
-        }
-
-        .btn-scan:hover { transform: translateY(-2px); box-shadow: 0 8px 24px var(--blue-glow); }
-
-        .alert {
-            padding: 14px 18px;
-            border-radius: 10px;
-            font-size: 13px;
-            margin-bottom: 20px;
-            font-family: var(--mono);
-        }
-
-        .alert-success {
-            background: rgba(16,185,129,0.1);
-            border: 1px solid rgba(16,185,129,0.3);
-            color: #6ee7b7;
-        }
-
-        .alert-error {
-            background: rgba(239,68,68,0.1);
-            border: 1px solid rgba(239,68,68,0.3);
-            color: #fca5a5;
-        }
-
-        .info-grid {
-            display: grid;
-            grid-template-columns: repeat(3, 1fr);
-            gap: 16px;
-            margin-bottom: 28px;
-        }
-
-        .info-card {
-            background: var(--surface2);
-            border: 1px solid rgba(255,255,255,0.06);
-            border-radius: 10px;
-            padding: 16px 20px;
-        }
-
-        .info-label { font-family: var(--mono); font-size: 10px; color: var(--muted); letter-spacing: 1px; text-transform: uppercase; margin-bottom: 6px; }
-        .info-value { font-family: var(--mono); font-size: 13px; color: #94a3b8; }
-
-        @keyframes fadeUp {
-            from { opacity: 0; transform: translateY(16px); }
-            to   { opacity: 1; transform: translateY(0); }
-        }
-    </style>
-</head>
-<body>
-
-    <%= render 'shared/sidebar', current_page: 'scanner' %>
-
-    <div class="layout">
-
-        <div class="page-header">
-            <div>
-                <div class="page-title">Scanner</div>
-                <div class="page-sub">// metasploit-powered vulnerability assessment</div>
-            </div>
+    <div class="page-header">
+        <div>
+            <div class="page-title">Scanner</div>
+            <div class="page-sub">Metasploit-powered vulnerability assessment</div>
         </div>
-
-        <% if flash[:notice] %>
-            <div class="alert alert-success"><%= flash[:notice] %></div>
-        <% end %>
-        <% if flash[:alert] %>
-            <div class="alert alert-error"><%= flash[:alert] %></div>
-        <% end %>
-
-        <div class="card">
-            <div class="card-header">
-                <div class="card-header-icon">&#x1F50D;</div>
-                <div>
-                    <div class="card-title">Launch Scan</div>
-                    <div class="card-subtitle">VULNERABILITY ASSESSMENT</div>
-                </div>
-            </div>
-            <div class="card-body">
-
-                <%= form_with url: trigger_scan_path, method: :post, local: true do |form| %>
-                    <div class="field-group">
-                        <label class="field-label">Asset</label>
-                        <% if @assets.any? %>
-                            <%= select_tag "asset_id",
-                                options_for_select(@assets.map { |a| [a.ip_address, a.id] }),
-                                prompt: "Select asset...",
-                                style: "background:#0d1525;border:1px solid rgba(59,130,246,0.3);color:#e2e8f0;padding:10px 14px;border-radius:8px;font-family:'JetBrains Mono',monospace;font-size:13px;width:240px;outline:none;",
-                                required: true %>
-                        <% else %>
-                            <span style="font-family:'JetBrains Mono',monospace;font-size:12px;color:#94a3b8;background:rgba(255,255,255,0.04);border:1px solid rgba(255,255,255,0.1);padding:8px 14px;border-radius:8px;display:inline-block;">
-                                No assets found — <%= link_to "add one first", new_asset_path, style: "color:#3b82f6;" %>
-                            </span>
-                        <% end %>
-                        <div class="field-hint">The target IP address to scan.</div>
-                    </div>
-
-                    <div class="field-group">
-                        <%= form.label :exploit_ids, "Exploits", class: "field-label" %>
-<% if @exploits.any? %>
-  <div class="exploit-checklist" style="max-height: 220px; overflow-y: auto; border: 1px solid var(--border); border-radius: 6px; padding: 8px; background: var(--bg-secondary);">
-    <% @exploits.each do |exploit| %>
-      <label style="display: flex; align-items: center; gap: 8px; padding: 4px 0; cursor: pointer; font-size: 13px;">
-        <%= check_box_tag "trigger_scan[exploit_ids][]", exploit.id, true, id: "exploit_#{exploit.id}" %>
-        <span style="font-family: var(--mono); color: var(--accent)"><%= exploit.exploit_id %></span>
-        <% if exploit.respond_to?(:use_case_name) && exploit.use_case_name.present? %>
-          <span style="color: var(--text-secondary)">— <%= exploit.use_case_name %></span>
-        <% end %>
-      </label>
-    <% end %>
-  </div>
-  <div class="field-hint">Select which exploits to run against the target.</div>
-<% else %>
-  <div class="field-hint" style="color: var(--text-secondary); font-style: italic;">No exploits loaded in the database.</div>
-<% end %>
-                    </div>
-
-                    <%= form.submit "Run Scan", class: "btn-scan" %>
-                <% end %>
-            </div>
-        </div>
-
     </div>
 
-</body>
-</html>
+    <% if flash[:notice] %>
+        <div class="alert alert-success"><%= flash[:notice] %></div>
+    <% end %>
+    <% if flash[:alert] %>
+        <div class="alert alert-error"><%= flash[:alert] %></div>
+    <% end %>
+
+    <div class="card">
+        <div class="card-header">
+            <div class="card-header-icon">&#x1F50D;</div>
+            <div>
+                <div class="card-title">Launch Scan</div>
+                <div class="card-subtitle">VULNERABILITY ASSESSMENT</div>
+            </div>
+        </div>
+        <div class="card-body">
+
+            <%= form_with url: trigger_scan_path, method: :post, local: true do |form| %>
+                <div class="field-group">
+                    <label class="field-label">Asset</label>
+                    <% if @assets.any? %>
+                        <%= select_tag "asset_id",
+                            options_for_select(@assets.map { |a| [a.ip_address, a.id] }),
+                            prompt: "Select asset...",
+                            style: "max-width:300px;",
+                            required: true %>
+                    <% else %>
+                        <span style="font-family:var(--mono);font-size:12px;color:var(--muted);background:var(--surface2);border:1px solid var(--border);padding:8px 14px;border-radius:8px;display:inline-block;">
+                            No assets found — <%= link_to "add one first", new_asset_path, style: "color:var(--accent);" %>
+                        </span>
+                    <% end %>
+                    <div class="field-hint">The target IP address to scan.</div>
+                </div>
+
+                <div class="field-group">
+                    <%= form.label :exploit_ids, "Exploits", class: "field-label" %>
+                    <% if @exploits.any? %>
+                        <div style="max-height:220px;overflow-y:auto;border:1px solid var(--border);border-radius:8px;padding:8px 12px;background:var(--surface2);">
+                            <% @exploits.each do |exploit| %>
+                                <label class="radio-option">
+                                    <%= check_box_tag "trigger_scan[exploit_ids][]", exploit.id, true, id: "exploit_#{exploit.id}" %>
+                                    <span style="font-family:var(--mono);color:var(--accent)"><%= exploit.exploit_id %></span>
+                                    <% if exploit.respond_to?(:use_case_name) && exploit.use_case_name.present? %>
+                                        <span style="color:var(--muted)">— <%= exploit.use_case_name %></span>
+                                    <% end %>
+                                </label>
+                            <% end %>
+                        </div>
+                        <div class="field-hint">Select which exploits to run against the target.</div>
+                    <% else %>
+                        <div class="field-hint">No exploits loaded in the database.</div>
+                    <% end %>
+                </div>
+
+                <%= form.submit "Run Scan", class: "btn-scan" %>
+            <% end %>
+        </div>
+    </div>
+
+</div>

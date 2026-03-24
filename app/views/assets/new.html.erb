@@ -1,420 +1,167 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <% content_for :title, "Aegis - Asset Configuration" %>
-    <%= csrf_meta_tags %>
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;600;700&family=Sora:wght@300;400;600;700&display=swap" rel="stylesheet">
-    <style>
-        :root {
-            --bg:        #080c14;
-            --surface:   #0d1525;
-            --surface2:  #111b30;
-            --border:    rgba(59,130,246,0.15);
-            --blue:      #3b82f6;
-            --blue-dim:  rgba(59,130,246,0.12);
-            --blue-glow: rgba(59,130,246,0.35);
-            --text:      #e2e8f0;
-            --muted:     #64748b;
-            --mono:      'JetBrains Mono', monospace;
-            --sans:      'Sora', sans-serif;
-        }
+<% content_for :title, "Aegis - Asset Configuration" %>
 
-        * { margin: 0; padding: 0; box-sizing: border-box; }
+<%= render 'shared/sidebar', current_page: 'assets' %>
 
-        body {
-            font-family: var(--sans);
-            background: var(--bg);
-            color: var(--text);
-            min-height: 100vh;
-        }
+<div class="layout">
 
-        body::before {
-            content: '';
-            position: fixed;
-            inset: 0;
-            background-image:
-                linear-gradient(rgba(59,130,246,0.03) 1px, transparent 1px),
-                linear-gradient(90deg, rgba(59,130,246,0.03) 1px, transparent 1px);
-            background-size: 40px 40px;
-            pointer-events: none;
-            z-index: 0;
-        }
-
-        .layout {
-            position: relative;
-            z-index: 1;
-            max-width: 1400px;
-            margin: 0 auto;
-            padding: 30px 30px 40px 84px;
-        }
-
-        .page-header {
-            background: var(--surface);
-            border: 1px solid var(--border);
-            padding: 28px 36px;
-            border-radius: 16px;
-            margin-bottom: 28px;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-        }
-
-        .page-title { font-size: 26px; font-weight: 700; color: #f1f5f9; }
-        .page-sub { color: var(--muted); margin-top: 4px; font-size: 13px; font-family: var(--mono); }
-
-        .btn {
-            padding: 11px 22px;
-            border-radius: 8px;
-            font-weight: 600;
-            font-size: 13px;
-            cursor: pointer;
-            text-decoration: none;
-            display: inline-flex;
-            align-items: center;
-            gap: 8px;
-            transition: all 0.2s;
-            border: none;
-            font-family: var(--sans);
-        }
-
-        .btn-primary {
-            background: linear-gradient(135deg, var(--blue), #1d4ed8);
-            color: white;
-            box-shadow: 0 4px 16px var(--blue-glow);
-        }
-
-        .btn-primary:hover { transform: translateY(-2px); box-shadow: 0 8px 24px var(--blue-glow); }
-
-        .btn-secondary {
-            background: transparent;
-            border: 1px solid rgba(255,255,255,0.1);
-            color: #94a3b8;
-        }
-
-        .btn-secondary:hover { border-color: var(--blue); color: #60a5fa; background: var(--blue-dim); }
-
-        .alert {
-            padding: 14px 18px;
-            border-radius: 10px;
-            font-size: 13px;
-            margin-bottom: 20px;
-            font-family: var(--mono);
-        }
-
-        .alert-success { background: rgba(16,185,129,0.1); border: 1px solid rgba(16,185,129,0.3); color: #6ee7b7; }
-        .alert-error   { background: rgba(239,68,68,0.1);  border: 1px solid rgba(239,68,68,0.3);  color: #fca5a5; }
-
-        .main-card {
-            background: var(--surface);
-            border: 1px solid var(--border);
-            border-radius: 16px;
-            overflow: hidden;
-        }
-
-        .card-header {
-            padding: 20px 28px;
-            border-bottom: 1px solid rgba(255,255,255,0.06);
-        }
-
-        .card-title    { font-size: 15px; font-weight: 600; color: #f1f5f9; }
-        .card-subtitle { font-family: var(--mono); font-size: 10px; color: var(--muted); letter-spacing: 1px; margin-top: 4px; }
-
-        .form-body {
-            padding: 28px;
-        }
-
-        .form-grid {
-            display: grid;
-            grid-template-columns: 1fr 1fr;
-            column-gap: 40px;
-            row-gap: 20px;
-        }
-
-        .form-group {
-            display: flex;
-            flex-direction: column;
-            gap: 8px;
-        }
-
-        .form-label {
-            font-family: var(--mono);
-            font-size: 10px;
-            letter-spacing: 1.5px;
-            text-transform: uppercase;
-            color: var(--muted);
-        }
-
-        .form-label.required::after {
-            content: " *";
-            color: #ef4444;
-        }
-
-        input[type="text"],
-        input[type="datetime-local"],
-        select {
-            background: var(--surface2);
-            border: 1px solid var(--border);
-            border-radius: 8px;
-            color: var(--text);
-            padding: 10px 14px;
-            font-size: 13px;
-            font-family: var(--mono);
-            width: 100%;
-            transition: border-color 0.2s;
-        }
-
-        input[type="text"]:focus,
-        input[type="datetime-local"]:focus,
-        select:focus {
-            outline: none;
-            border-color: var(--blue);
-            box-shadow: 0 0 0 3px var(--blue-dim);
-        }
-
-        select option { background: #0d1525; }
-
-        .boxed-group {
-            background: var(--surface2);
-            border: 1px solid var(--border);
-            border-radius: 8px;
-            padding: 12px 14px;
-            display: flex;
-            flex-direction: column;
-            gap: 10px;
-        }
-
-        .radio-option {
-            display: flex;
-            align-items: center;
-            gap: 10px;
-            font-size: 13px;
-            font-family: var(--mono);
-            cursor: pointer;
-            color: #cbd5e1;
-        }
-
-        input[type="radio"],
-        input[type="checkbox"] {
-            accent-color: var(--blue);
-            width: 15px;
-            height: 15px;
-            cursor: pointer;
-        }
-
-        .form-divider {
-            height: 1px;
-            background: rgba(255,255,255,0.06);
-            margin: 24px 0;
-        }
-
-        .form-actions {
-            display: flex;
-            gap: 12px;
-            align-items: center;
-            padding-top: 8px;
-        }
-
-        .btn-import {
-            background: transparent;
-            border: 1px dashed rgba(59,130,246,0.3);
-            color: #60a5fa;
-            padding: 10px 18px;
-            border-radius: 8px;
-            font-family: var(--mono);
-            font-size: 12px;
-            cursor: pointer;
-            transition: all 0.2s;
-        }
-
-        .btn-import:hover {
-            border-color: var(--blue);
-            background: var(--blue-dim);
-        }
-
-        #file-upload-name {
-            font-family: var(--mono);
-            font-size: 12px;
-            color: #60a5fa;
-        }
-
-        @keyframes fadeUp {
-            from { opacity: 0; transform: translateY(16px); }
-            to   { opacity: 1; transform: translateY(0); }
-        }
-
-        .page-header { animation: fadeUp 0.4s ease both; }
-        .main-card   { animation: fadeUp 0.4s 0.08s ease both; }
-    </style>
-</head>
-<body>
-
-    <%= render 'shared/sidebar', current_page: 'assets' %>
-
-    <div class="layout">
-
-        <div class="page-header">
-            <div>
-                <div class="page-title">Asset Configuration</div>
-                <div class="page-sub">// configure a new scan target</div>
-            </div>
-            <%= link_to "← Back to Assets", assets_path, class: "btn btn-secondary" %>
+    <div class="page-header">
+        <div>
+            <div class="page-title">Asset Configuration</div>
+            <div class="page-sub">Configure a new scan target</div>
         </div>
-
-        <% if flash[:alert] %>
-            <div class="alert alert-error"><%= flash[:alert] %></div>
-        <% end %>
-        <% if flash[:notice] %>
-            <div class="alert alert-success"><%= flash[:notice] %></div>
-        <% end %>
-
-        <div class="main-card">
-            <div class="card-header">
-                <div class="card-title">New Asset</div>
-                <div class="card-subtitle">SCAN TARGET CONFIGURATION</div>
-            </div>
-
-            <div class="form-body">
-                <%= form_with url: assets_path, method: :post, local: true, html: { id: 'scanForm' } do |f| %>
-                    <div class="form-grid">
-
-                        <div>
-                            <div class="form-group">
-                                <label class="form-label required">Scan Mode</label>
-                                <div class="boxed-group">
-                                    <label class="radio-option">
-                                        <%= radio_button_tag :scanMode, 'safe', false, required: true %>
-                                        Safe
-                                    </label>
-                                    <label class="radio-option">
-                                        <%= radio_button_tag :scanMode, 'exploits', false, required: true %>
-                                        Exploits
-                                    </label>
-                                </div>
-                            </div>
-
-                            <div class="form-group" style="margin-top: 20px;">
-                                <label class="form-label required">Target Scope</label>
-                                <div class="boxed-group">
-                                    <label class="radio-option">
-                                        <%= radio_button_tag :scope, 'individual', true, required: true %>
-                                        Individual Network
-                                    </label>
-                                    <label class="radio-option">
-                                        <%= radio_button_tag :scope, 'range', false, required: true %>
-                                        Range of Networks
-                                    </label>
-                                </div>
-                            </div>
-
-                            <div class="form-group" style="margin-top: 20px;">
-                                <label class="form-label required">Site (Agent Network)</label>
-                                <%= select_tag :site_id,
-                                    options_for_select(@sites.map { |s| ["#{s.name}#{s.network_range.present? ? " (#{s.network_range})" : ""}", s.id] }),
-                                    prompt: "Select a site...", required: true %>
-                            </div>
-
-                            <div class="form-group" style="margin-top: 20px;">
-                                <label class="form-label required">Network / Network Range</label>
-                                <%= text_field_tag :network, nil, placeholder: "e.g. 192.168.1.1/24", required: true %>
-                            </div>
-
-                            <div class="form-group" style="margin-top: 20px;">
-                                <label class="form-label required">Exclude Network</label>
-                                <%= text_field_tag :exclude, nil, placeholder: "e.g. 192.168.1.5", required: true %>
-                            </div>
-
-                            <div class="form-group" style="margin-top: 20px;">
-                                <label class="form-label required">Port / Port Range</label>
-                                <%= text_field_tag :port, nil, placeholder: "e.g. 80, 443, 8000-8080", required: true %>
-                            </div>
-                        </div>
-
-                        <div>
-                            <div class="form-group">
-                                <label class="form-label required">Operating System</label>
-                                <%= select_tag :os, options_for_select([
-                                    ['Select OS', ''],
-                                    ['Windows 10/11', 'win11'],
-                                    ['Windows Server 2019', 'server2019'],
-                                    ['Linux (Ubuntu/CentOS)', 'linux'],
-                                    ['macOS', 'macos']
-                                ]), required: true %>
-                            </div>
-
-                            <div class="form-group" style="margin-top: 20px;">
-                                <label class="form-label required">Asset Type</label>
-                                <%= select_tag :asset, options_for_select([
-                                    ['Server', 'server'],
-                                    ['Workstation', 'workstation'],
-                                    ['Network Device', 'network_device']
-                                ]), required: true %>
-                            </div>
-
-                            <div class="form-group" style="margin-top: 20px;">
-                                <label class="form-label required">Scan Type</label>
-                                <%= select_tag :scanType, options_for_select([
-                                    ['Full', 'full'],
-                                    ['Quick', 'quick'],
-                                    ['Custom', 'custom']
-                                ]), required: true %>
-                            </div>
-
-                            <div class="form-group" style="margin-top: 20px;">
-                                <label class="form-label">Schedule (optional)</label>
-                                <%= datetime_local_field_tag :schedule, nil %>
-                            </div>
-
-                            <div class="form-group" style="margin-top: 20px;">
-                                <label class="form-label required">Report Format</label>
-                                <div class="boxed-group">
-                                    <label class="radio-option">
-                                        <%= check_box_tag 'format[]', 'json', true, required: true %>
-                                        JSON
-                                    </label>
-                                    <label class="radio-option">
-                                        <%= check_box_tag 'format[]', 'pdf', false %>
-                                        PDF
-                                    </label>
-                                    <label class="radio-option">
-                                        <%= check_box_tag 'format[]', 'xlsx', false %>
-                                        Excel (.xlsx)
-                                    </label>
-                                    <label class="radio-option">
-                                        <%= check_box_tag 'format[]', 'csv', false %>
-                                        CSV (.csv)
-                                    </label>
-                                </div>
-                            </div>
-                        </div>
-
-                    </div>
-
-                    <div class="form-divider"></div>
-
-                    <div class="form-actions">
-                        <input type="file" id="jsonFile" accept=".json" style="display: none;">
-                        <button type="button" class="btn-import" onclick="document.getElementById('jsonFile').click()">
-                            Import JSON <span id="file-upload-name"></span>
-                        </button>
-                        <button type="submit" class="btn btn-primary" id="generateBtn">
-                            Add Asset
-                        </button>
-                    </div>
-                <% end %>
-            </div>
-        </div>
-
+        <%= link_to "← Back to Assets", assets_path, class: "btn btn-secondary" %>
     </div>
 
-    <script>
-        document.getElementById('jsonFile').addEventListener('change', function(e) {
-            const fileName = e.target.files[0] ? e.target.files[0].name : "";
-            const label = document.getElementById('file-upload-name');
-            label.textContent = fileName ? `— ${fileName}` : "";
-        });
-    </script>
-</body>
-</html>
+    <% if flash[:alert] %>
+        <div class="alert alert-error"><%= flash[:alert] %></div>
+    <% end %>
+    <% if flash[:notice] %>
+        <div class="alert alert-success"><%= flash[:notice] %></div>
+    <% end %>
+
+    <div class="main-card">
+        <div class="card-header">
+            <div class="card-title">New Asset</div>
+            <div class="card-subtitle">SCAN TARGET CONFIGURATION</div>
+        </div>
+
+        <div class="card-body">
+            <%= form_with url: assets_path, method: :post, local: true, html: { id: 'scanForm' } do |f| %>
+                <div class="form-grid">
+
+                    <div>
+                        <div class="form-group">
+                            <label class="form-label required">Scan Mode</label>
+                            <div class="boxed-group">
+                                <label class="radio-option">
+                                    <%= radio_button_tag :scanMode, 'safe', false, required: true %>
+                                    Safe
+                                </label>
+                                <label class="radio-option">
+                                    <%= radio_button_tag :scanMode, 'exploits', false, required: true %>
+                                    Exploits
+                                </label>
+                            </div>
+                        </div>
+
+                        <div class="form-group">
+                            <label class="form-label required">Target Scope</label>
+                            <div class="boxed-group">
+                                <label class="radio-option">
+                                    <%= radio_button_tag :scope, 'individual', true, required: true %>
+                                    Individual Network
+                                </label>
+                                <label class="radio-option">
+                                    <%= radio_button_tag :scope, 'range', false, required: true %>
+                                    Range of Networks
+                                </label>
+                            </div>
+                        </div>
+
+                        <div class="form-group">
+                            <label class="form-label required">Site (Agent Network)</label>
+                            <%= select_tag :site_id,
+                                options_for_select(@sites.map { |s| ["#{s.name}#{s.network_range.present? ? " (#{s.network_range})" : ""}", s.id] }),
+                                prompt: "Select a site...", required: true %>
+                        </div>
+
+                        <div class="form-group">
+                            <label class="form-label required">Network / Network Range</label>
+                            <%= text_field_tag :network, nil, placeholder: "e.g. 192.168.1.1/24", required: true %>
+                        </div>
+
+                        <div class="form-group">
+                            <label class="form-label required">Exclude Network</label>
+                            <%= text_field_tag :exclude, nil, placeholder: "e.g. 192.168.1.5", required: true %>
+                        </div>
+
+                        <div class="form-group">
+                            <label class="form-label required">Port / Port Range</label>
+                            <%= text_field_tag :port, nil, placeholder: "e.g. 80, 443, 8000-8080", required: true %>
+                        </div>
+                    </div>
+
+                    <div>
+                        <div class="form-group">
+                            <label class="form-label required">Operating System</label>
+                            <%= select_tag :os, options_for_select([
+                                ['Select OS', ''],
+                                ['Windows 10/11', 'win11'],
+                                ['Windows Server 2019', 'server2019'],
+                                ['Linux (Ubuntu/CentOS)', 'linux'],
+                                ['macOS', 'macos']
+                            ]), required: true %>
+                        </div>
+
+                        <div class="form-group">
+                            <label class="form-label required">Asset Type</label>
+                            <%= select_tag :asset, options_for_select([
+                                ['Server', 'server'],
+                                ['Workstation', 'workstation'],
+                                ['Network Device', 'network_device']
+                            ]), required: true %>
+                        </div>
+
+                        <div class="form-group">
+                            <label class="form-label required">Scan Type</label>
+                            <%= select_tag :scanType, options_for_select([
+                                ['Full', 'full'],
+                                ['Quick', 'quick'],
+                                ['Custom', 'custom']
+                            ]), required: true %>
+                        </div>
+
+                        <div class="form-group">
+                            <label class="form-label">Schedule (optional)</label>
+                            <%= datetime_local_field_tag :schedule, nil %>
+                        </div>
+
+                        <div class="form-group">
+                            <label class="form-label required">Report Format</label>
+                            <div class="boxed-group">
+                                <label class="radio-option">
+                                    <%= check_box_tag 'format[]', 'json', true, required: true %>
+                                    JSON
+                                </label>
+                                <label class="radio-option">
+                                    <%= check_box_tag 'format[]', 'pdf', false %>
+                                    PDF
+                                </label>
+                                <label class="radio-option">
+                                    <%= check_box_tag 'format[]', 'xlsx', false %>
+                                    Excel (.xlsx)
+                                </label>
+                                <label class="radio-option">
+                                    <%= check_box_tag 'format[]', 'csv', false %>
+                                    CSV (.csv)
+                                </label>
+                            </div>
+                        </div>
+                    </div>
+
+                </div>
+
+                <div class="form-divider"></div>
+
+                <div class="form-actions">
+                    <input type="file" id="jsonFile" accept=".json" style="display: none;">
+                    <button type="button" class="btn-import" onclick="document.getElementById('jsonFile').click()">
+                        Import JSON <span id="file-upload-name"></span>
+                    </button>
+                    <button type="submit" class="btn btn-primary" id="generateBtn">
+                        Add Asset
+                    </button>
+                </div>
+            <% end %>
+        </div>
+    </div>
+
+</div>
+
+<script>
+    document.getElementById('jsonFile').addEventListener('change', function(e) {
+        const fileName = e.target.files[0] ? e.target.files[0].name : "";
+        const label = document.getElementById('file-upload-name');
+        label.textContent = fileName ? `— ${fileName}` : "";
+    });
+</script>

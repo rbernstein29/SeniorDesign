@@ -1,193 +1,122 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <% content_for :title, "Aegis - Sites" %>
-    <%= csrf_meta_tags %>
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;600;700&family=Sora:wght@300;400;600;700&display=swap" rel="stylesheet">
-    <style>
-        :root {
-            --bg:        #080c14;
-            --surface:   #0d1525;
-            --surface2:  #111b30;
-            --border:    rgba(59,130,246,0.15);
-            --blue:      #3b82f6;
-            --blue-dim:  rgba(59,130,246,0.12);
-            --blue-glow: rgba(59,130,246,0.35);
-            --cyan:      #22d3ee;
-            --green:     #10b981;
-            --orange:    #f59e0b;
-            --red:       #ef4444;
-            --text:      #e2e8f0;
-            --muted:     #64748b;
-            --mono:      'JetBrains Mono', monospace;
-            --sans:      'Sora', sans-serif;
-        }
-        * { margin: 0; padding: 0; box-sizing: border-box; }
-        body { font-family: var(--sans); background: var(--bg); color: var(--text); min-height: 100vh; }
-        body::before {
-            content: '';
-            position: fixed; inset: 0;
-            background-image: linear-gradient(rgba(59,130,246,0.03) 1px, transparent 1px), linear-gradient(90deg, rgba(59,130,246,0.03) 1px, transparent 1px);
-            background-size: 40px 40px;
-            pointer-events: none; z-index: 0;
-        }
-        .layout { position: relative; z-index: 1; max-width: 1400px; margin: 0 auto; padding: 30px 30px 40px 84px; }
-        .page-header { background: var(--surface); border: 1px solid var(--border); padding: 28px 36px; border-radius: 16px; margin-bottom: 28px; display: flex; justify-content: space-between; align-items: center; }
-        .page-title { font-size: 26px; font-weight: 700; color: #f1f5f9; }
-        .page-sub { color: var(--muted); margin-top: 4px; font-size: 13px; font-family: var(--mono); }
-        .btn { padding: 11px 22px; border-radius: 8px; font-weight: 600; font-size: 13px; cursor: pointer; text-decoration: none; display: inline-flex; align-items: center; gap: 8px; transition: all 0.2s; border: none; font-family: var(--sans); }
-        .btn-primary { background: linear-gradient(135deg, var(--blue), #1d4ed8); color: white; box-shadow: 0 4px 16px var(--blue-glow); }
-        .btn-primary:hover { transform: translateY(-2px); box-shadow: 0 8px 24px var(--blue-glow); }
-        .btn-danger { background: rgba(239,68,68,0.12); border: 1px solid rgba(239,68,68,0.25); color: #f87171; }
-        .btn-danger:hover { background: rgba(239,68,68,0.2); }
-        .btn-sm { padding: 6px 14px; font-size: 12px; font-family: var(--mono); }
-        .main-card { background: var(--surface); border: 1px solid var(--border); border-radius: 16px; overflow: hidden; margin-bottom: 28px; }
-        .card-header { padding: 20px 28px; border-bottom: 1px solid rgba(255,255,255,0.06); }
-        .card-title { font-size: 15px; font-weight: 600; color: #f1f5f9; }
-        table { border-collapse: collapse; }
-        thead { background: rgba(255,255,255,0.03); border-bottom: 2px solid rgba(255,255,255,0.12); }
-        th { padding: 14px 20px; text-align: left; font-family: var(--mono); font-weight: 600; font-size: 10px; color: var(--muted); text-transform: uppercase; letter-spacing: 1px; white-space: nowrap; position: relative; box-sizing: border-box; border-right: 1px solid rgba(255,255,255,0.1); }
-        th:last-child { border-right: none; }
-        td { padding: 18px 20px; border-top: 1px solid rgba(255,255,255,0.1); border-right: 1px solid rgba(255,255,255,0.1); font-size: 13px; color: #cbd5e1; white-space: nowrap; overflow: hidden; box-sizing: border-box; }
-        td:last-child { border-right: none; }
-        tbody tr:hover { background: rgba(59,130,246,0.04); }
-        .resize-handle { position: absolute; right: 0; top: 0; bottom: 0; width: 5px; cursor: col-resize; user-select: none; z-index: 1; }
-        .resize-handle:hover, .resize-handle.active { background: rgba(59,130,246,0.5); }
-        .create-form { background: var(--surface); border: 1px solid var(--border); border-radius: 16px; padding: 28px 36px; }
-        .create-form h3 { font-size: 15px; font-weight: 600; color: #f1f5f9; margin-bottom: 20px; }
-        .form-row { display: flex; gap: 12px; align-items: flex-end; flex-wrap: wrap; }
-        .field-group { display: flex; flex-direction: column; gap: 6px; }
-        .field-group label { font-family: var(--mono); font-size: 10px; color: var(--muted); text-transform: uppercase; letter-spacing: 1px; }
-        .field-group input { background: #080c14; border: 1px solid rgba(59,130,246,0.3); color: #e2e8f0; padding: 10px 14px; border-radius: 8px; font-family: var(--mono); font-size: 13px; outline: none; min-width: 200px; }
-        .field-group input:focus { border-color: var(--blue); }
-        .state-box { padding: 60px 40px; text-align: center; }
-        .state-icon { font-size: 48px; margin-bottom: 16px; display: block; opacity: 0.6; }
-        .state-title { font-size: 18px; font-weight: 600; color: #94a3b8; margin-bottom: 8px; }
-        .state-sub { font-size: 13px; color: var(--muted); margin-bottom: 24px; }
-    </style>
-</head>
-<body>
-    <%= render 'shared/sidebar', current_page: 'sites' %>
+<% content_for :title, "Aegis - Sites" %>
 
-    <div class="layout">
-        <div class="page-header">
-            <div>
-                <div class="page-title">🏢 Sites</div>
-                <div class="page-sub">// manage network sites — one agent per site</div>
-            </div>
-        </div>
+<%= render 'shared/sidebar', current_page: 'sites' %>
 
-        <!-- Sites Table -->
-        <div class="main-card">
-            <div class="card-header">
-                <div class="card-title">Registered Sites</div>
-            </div>
-            <% if @sites.any? %>
-                <div style="overflow:auto;max-height:520px;">
-                <table style="width:100%;">
-                    <thead>
-                        <tr>
-                            <th>Site Name</th>
-                            <th>Network Range</th>
-                            <th>Agent</th>
-                            <th>Assets</th>
-                            <th>Actions</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        <% @sites.each do |site| %>
-                            <tr>
-                                <td style="font-weight:600;color:#f1f5f9;"><%= site.name %></td>
-                                <td>
-                                    <span style="font-family:var(--mono);font-size:12px;color:#67e8f9;">
-                                        <%= site.network_range.presence || '—' %>
-                                    </span>
-                                </td>
-                                <td>
-                                    <% agent = site.agents.first %>
-                                    <% if agent %>
-                                        <span style="font-family:var(--mono);font-size:11px;color:<%= agent.connected? ? '#34d399' : '#64748b' %>;">
-                                            <%= agent.connected? ? '● Connected' : '○ Offline' %>
-                                        </span>
-                                    <% else %>
-                                        <span style="color:var(--muted);font-size:12px;">No agent</span>
-                                    <% end %>
-                                </td>
-                                <td>
-                                    <span style="font-family:var(--mono);font-size:13px;">
-                                        <%= site.assets.count %>
-                                    </span>
-                                </td>
-                                <td>
-                                    <%= button_to "✕ Delete", site_path(site), method: :delete,
-                                        data: { confirm: "Delete site '#{site.name}'? This will unlink its agents and assets." },
-                                        class: "btn btn-danger btn-sm" %>
-                                </td>
-                            </tr>
-                        <% end %>
-                    </tbody>
-                </table>
-                </div>
-            <% else %>
-                <div class="state-box">
-                    <span class="state-icon">🏢</span>
-                    <div class="state-title">No Sites Yet</div>
-                    <div class="state-sub">Create a site to represent each network an agent will be deployed on</div>
-                </div>
-            <% end %>
-        </div>
-
-        <!-- Create Site Form -->
-        <div class="create-form">
-            <h3>Create New Site</h3>
-            <%= form_with url: sites_path, method: :post do |f| %>
-                <div class="form-row">
-                    <div class="field-group">
-                        <label>Site Name *</label>
-                        <%= f.text_field :name, name: "site[name]", placeholder: "e.g. New York Office", required: true %>
-                    </div>
-                    <div class="field-group">
-                        <label>Network Range (optional)</label>
-                        <%= f.text_field :network_range, name: "site[network_range]", placeholder: "e.g. 10.0.0.0/24" %>
-                    </div>
-                    <button type="submit" class="btn btn-primary">➕ Create Site</button>
-                </div>
-            <% end %>
+<div class="layout">
+    <div class="page-header">
+        <div>
+            <div class="page-title">🏢 Sites</div>
+            <div class="page-sub">Manage network sites — one agent per site</div>
         </div>
     </div>
-    <script>
-        function initResizableColumns() {
-            const table = document.querySelector('table');
-            if (!table) return;
-            const ths = Array.from(table.querySelectorAll('th'));
-            ths.forEach(th => { th.style.width = th.offsetWidth + 'px'; });
-            table.style.tableLayout = 'fixed';
-            table.style.width = Math.max(table.offsetWidth, ths.reduce((s, th) => s + th.offsetWidth, 0)) + 'px';
-            ths.forEach(th => {
-                const handle = document.createElement('div');
-                handle.className = 'resize-handle';
-                th.appendChild(handle);
-                let startX, startW, startTableW;
-                handle.addEventListener('mousedown', e => {
-                    startX = e.clientX; startW = th.offsetWidth;
-                    startTableW = parseInt(table.style.width, 10);
-                    handle.classList.add('active');
-                    const onMove = e => {
-                        const newW = Math.max(40, startW + (e.clientX - startX));
-                        th.style.width = newW + 'px';
-                        table.style.width = (startTableW + (newW - startW)) + 'px';
-                    };
-                    const onUp = () => { handle.classList.remove('active'); document.removeEventListener('mousemove', onMove); document.removeEventListener('mouseup', onUp); };
-                    document.addEventListener('mousemove', onMove);
-                    document.addEventListener('mouseup', onUp);
-                    e.preventDefault();
-                });
+
+    <!-- Sites Table -->
+    <div class="main-card">
+        <div class="card-header">
+            <div class="card-title">Registered Sites</div>
+        </div>
+        <% if @sites.any? %>
+            <div style="overflow:auto;max-height:520px;">
+            <table style="width:100%;">
+                <thead>
+                    <tr>
+                        <th>Site Name</th>
+                        <th>Network Range</th>
+                        <th>Agent</th>
+                        <th>Assets</th>
+                        <th>Actions</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <% @sites.each do |site| %>
+                        <tr>
+                            <td style="font-weight:600;color:var(--text);"><%= site.name %></td>
+                            <td>
+                                <span style="font-family:var(--mono);font-size:12px;color:var(--cyan);">
+                                    <%= site.network_range.presence || '—' %>
+                                </span>
+                            </td>
+                            <td>
+                                <% agent = site.agents.first %>
+                                <% if agent %>
+                                    <span style="font-family:var(--mono);font-size:11px;color:<%= agent.connected? ? 'var(--green)' : 'var(--muted)' %>;">
+                                        <%= agent.connected? ? '● Connected' : '○ Offline' %>
+                                    </span>
+                                <% else %>
+                                    <span style="color:var(--muted);font-size:12px;">No agent</span>
+                                <% end %>
+                            </td>
+                            <td>
+                                <span style="font-family:var(--mono);font-size:13px;">
+                                    <%= site.assets.count %>
+                                </span>
+                            </td>
+                            <td>
+                                <%= button_to "✕ Delete", site_path(site), method: :delete,
+                                    data: { confirm: "Delete site '#{site.name}'? This will unlink its agents and assets." },
+                                    class: "btn btn-danger btn-sm" %>
+                            </td>
+                        </tr>
+                    <% end %>
+                </tbody>
+            </table>
+            </div>
+        <% else %>
+            <div class="state-box">
+                <span class="state-icon">🏢</span>
+                <div class="state-title">No Sites Yet</div>
+                <div class="state-sub">Create a site to represent each network an agent will be deployed on</div>
+            </div>
+        <% end %>
+    </div>
+
+    <!-- Create Site Form -->
+    <div class="create-form">
+        <h3>Create New Site</h3>
+        <%= form_with url: sites_path, method: :post do |f| %>
+            <div class="form-row">
+                <div class="field-group">
+                    <label>Site Name *</label>
+                    <%= f.text_field :name, name: "site[name]", placeholder: "e.g. New York Office", required: true %>
+                </div>
+                <div class="field-group">
+                    <label>Network Range (optional)</label>
+                    <%= f.text_field :network_range, name: "site[network_range]", placeholder: "e.g. 10.0.0.0/24" %>
+                </div>
+                <button type="submit" class="btn btn-primary">➕ Create Site</button>
+            </div>
+        <% end %>
+    </div>
+</div>
+
+<script>
+    function initResizableColumns() {
+        const table = document.querySelector('table');
+        if (!table) return;
+        const ths = Array.from(table.querySelectorAll('th'));
+        ths.forEach(th => { th.style.width = th.offsetWidth + 'px'; });
+        table.style.tableLayout = 'fixed';
+        table.style.width = Math.max(table.offsetWidth, ths.reduce((s, th) => s + th.offsetWidth, 0)) + 'px';
+        ths.forEach(th => {
+            const handle = document.createElement('div');
+            handle.className = 'resize-handle';
+            th.appendChild(handle);
+            let startX, startW, startTableW;
+            handle.addEventListener('mousedown', e => {
+                startX = e.clientX; startW = th.offsetWidth;
+                startTableW = parseInt(table.style.width, 10);
+                handle.classList.add('active');
+                const onMove = e => {
+                    const newW = Math.max(40, startW + (e.clientX - startX));
+                    th.style.width = newW + 'px';
+                    table.style.width = (startTableW + (newW - startW)) + 'px';
+                };
+                const onUp = () => { handle.classList.remove('active'); document.removeEventListener('mousemove', onMove); document.removeEventListener('mouseup', onUp); };
+                document.addEventListener('mousemove', onMove);
+                document.addEventListener('mouseup', onUp);
+                e.preventDefault();
             });
-        }
-        initResizableColumns();
-    </script>
-</body>
-</html>
+        });
+    }
+    initResizableColumns();
+</script>

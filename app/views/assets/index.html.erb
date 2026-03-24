@@ -1,442 +1,124 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <% content_for :title, "Aegis - Asset Management" %>
-    <%= csrf_meta_tags %>
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;600;700&family=Sora:wght@300;400;600;700&display=swap" rel="stylesheet">
-    <style>
-        :root {
-            --bg:       #080c14;
-            --surface:  #0d1525;
-            --surface2: #111b30;
-            --border:   rgba(59,130,246,0.15);
-            --blue:     #3b82f6;
-            --blue-dim: rgba(59,130,246,0.12);
-            --blue-glow:rgba(59,130,246,0.35);
-            --cyan:     #22d3ee;
-            --green:    #10b981;
-            --orange:   #f59e0b;
-            --red:      #ef4444;
-            --text:     #e2e8f0;
-            --muted:    #64748b;
-            --mono:     'JetBrains Mono', monospace;
-            --sans:     'Sora', sans-serif;
-        }
+<% content_for :title, "Aegis - Asset Management" %>
 
-        * { margin: 0; padding: 0; box-sizing: border-box; }
+<%= render 'shared/sidebar', current_page: 'assets' %>
 
-        body {
-            font-family: var(--sans);
-            background: var(--bg);
-            color: var(--text);
-            min-height: 100vh;
-        }
-
-        body::before {
-            content: '';
-            position: fixed;
-            inset: 0;
-            background-image:
-                linear-gradient(rgba(59,130,246,0.03) 1px, transparent 1px),
-                linear-gradient(90deg, rgba(59,130,246,0.03) 1px, transparent 1px);
-            background-size: 40px 40px;
-            pointer-events: none;
-            z-index: 0;
-        }
-
-        .layout {
-            position: relative;
-            z-index: 1;
-            max-width: 1400px;
-            margin: 0 auto;
-            padding: 30px 30px 40px 84px;
-        }
-
-        /* ── Page Header ── */
-        .page-header {
-            background: var(--surface);
-            border: 1px solid var(--border);
-            padding: 28px 36px;
-            border-radius: 16px;
-            margin-bottom: 28px;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-        }
-
-        .page-title {
-            font-size: 26px;
-            font-weight: 700;
-            color: #f1f5f9;
-        }
-
-        .page-title span { font-size: 28px; margin-right: 10px; }
-
-        .page-sub {
-            color: var(--muted);
-            margin-top: 4px;
-            font-size: 13px;
-            font-family: var(--mono);
-        }
-
-        .btn {
-            padding: 11px 22px;
-            border-radius: 8px;
-            font-weight: 600;
-            font-size: 13px;
-            cursor: pointer;
-            text-decoration: none;
-            display: inline-flex;
-            align-items: center;
-            gap: 8px;
-            transition: all 0.2s;
-            border: none;
-            font-family: var(--sans);
-        }
-
-        .btn-primary {
-            background: linear-gradient(135deg, var(--blue), #1d4ed8);
-            color: white;
-            box-shadow: 0 4px 16px var(--blue-glow);
-        }
-
-        .btn-primary:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 8px 24px var(--blue-glow);
-        }
-
-        /* ── Stats Grid ── */
-        .stats-grid {
-            display: grid;
-            grid-template-columns: repeat(4, 1fr);
-            gap: 16px;
-            margin-bottom: 28px;
-        }
-
-        @media (max-width: 900px) {
-            .stats-grid { grid-template-columns: repeat(2, 1fr); }
-        }
-
-        .stat-card {
-            background: var(--surface);
-            border: 1px solid var(--border);
-            padding: 22px 24px;
-            border-radius: 12px;
-            position: relative;
-            overflow: hidden;
-            transition: border-color 0.3s;
-        }
-
-        .stat-card::after {
-            content: '';
-            position: absolute;
-            top: 0; left: 0; right: 0;
-            height: 2px;
-            background: var(--accent, var(--blue));
-        }
-
-        .stat-card.green { --accent: var(--green); }
-        .stat-card.orange { --accent: var(--orange); }
-        .stat-card.cyan { --accent: var(--cyan); }
-
-        .stat-card:hover { border-color: rgba(59,130,246,0.35); }
-
-        .stat-label {
-            font-family: var(--mono);
-            font-size: 10px;
-            letter-spacing: 1.5px;
-            text-transform: uppercase;
-            color: var(--muted);
-            margin-bottom: 10px;
-        }
-
-        .stat-number {
-            font-family: var(--mono);
-            font-size: 36px;
-            font-weight: 700;
-            color: #f1f5f9;
-        }
-
-        /* ── Table Container ── */
-        .table-container {
-            background: var(--surface);
-            border: 1px solid var(--border);
-            border-radius: 16px;
-            overflow: hidden;
-        }
-
-        .table-header {
-            padding: 20px 28px;
-            border-bottom: 1px solid rgba(255,255,255,0.06);
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
-        }
-
-        .table-title {
-            font-size: 15px;
-            font-weight: 600;
-            color: #f1f5f9;
-        }
-
-        .table-subtitle {
-            font-family: var(--mono);
-            font-size: 10px;
-            color: var(--muted);
-            letter-spacing: 1px;
-        }
-
-        table { border-collapse: collapse; }
-        thead { background: rgba(255,255,255,0.03); border-bottom: 2px solid rgba(255,255,255,0.12); }
-        th { padding: 14px 20px; text-align: left; font-family: var(--mono); font-weight: 600; font-size: 10px; color: var(--muted); text-transform: uppercase; letter-spacing: 1px; white-space: nowrap; position: relative; box-sizing: border-box; border-right: 1px solid rgba(255,255,255,0.1); }
-        th:last-child { border-right: none; }
-        td { padding: 16px 20px; border-top: 1px solid rgba(255,255,255,0.1); border-right: 1px solid rgba(255,255,255,0.1); font-size: 13px; color: #cbd5e1; white-space: nowrap; overflow: hidden; box-sizing: border-box; }
-        td:last-child { border-right: none; }
-        .resize-handle { position: absolute; right: 0; top: 0; bottom: 0; width: 5px; cursor: col-resize; user-select: none; z-index: 1; }
-        .resize-handle:hover, .resize-handle.active { background: rgba(59,130,246,0.5); }
-
-        tbody tr {
-            transition: background 0.15s;
-        }
-
-        tbody tr:hover {
-            background: rgba(59,130,246,0.04);
-        }
-
-        .id-cell {
-            font-family: var(--mono);
-            font-weight: 700;
-            color: var(--muted);
-            font-size: 12px;
-        }
-
-        .network-code {
-            background: rgba(59,130,246,0.1);
-            border: 1px solid rgba(59,130,246,0.2);
-            padding: 3px 10px;
-            border-radius: 6px;
-            font-family: var(--mono);
-            font-size: 12px;
-            color: #93c5fd;
-        }
-
-        .badge {
-            display: inline-block;
-            padding: 4px 12px;
-            border-radius: 10px;
-            font-family: var(--mono);
-            font-size: 10px;
-            font-weight: 700;
-            letter-spacing: 0.5px;
-        }
-
-        .badge-safe {
-            background: rgba(16,185,129,0.15);
-            border: 1px solid rgba(16,185,129,0.25);
-            color: #34d399;
-        }
-
-        .badge-exploits {
-            background: rgba(245,158,11,0.15);
-            border: 1px solid rgba(245,158,11,0.25);
-            color: #fbbf24;
-        }
-
-        .port-code {
-            background: var(--surface2);
-            border: 1px solid rgba(255,255,255,0.06);
-            padding: 3px 8px;
-            border-radius: 6px;
-            font-family: var(--mono);
-            font-size: 11px;
-            color: var(--muted);
-        }
-
-        .view-link {
-            display: inline-flex;
-            align-items: center;
-            gap: 6px;
-            color: var(--blue);
-            text-decoration: none;
-            font-size: 12px;
-            font-weight: 600;
-            font-family: var(--mono);
-            padding: 5px 12px;
-            border-radius: 6px;
-            border: 1px solid rgba(59,130,246,0.2);
-            background: rgba(59,130,246,0.08);
-            transition: all 0.2s;
-        }
-
-        .view-link:hover {
-            background: rgba(59,130,246,0.18);
-            border-color: rgba(59,130,246,0.4);
-            transform: translateX(2px);
-        }
-
-        /* ── Empty State ── */
-        .empty-state {
-            padding: 80px 40px;
-            text-align: center;
-        }
-
-        .empty-state-icon {
-            font-size: 48px;
-            margin-bottom: 16px;
-            opacity: 0.5;
-        }
-
-        .empty-state h3 {
-            font-size: 18px;
-            color: var(--muted);
-            margin-bottom: 8px;
-        }
-
-        .empty-state p {
-            color: #475569;
-            margin-bottom: 24px;
-            font-size: 13px;
-        }
-
-        /* Animations */
-        @keyframes fadeUp {
-            from { opacity: 0; transform: translateY(16px); }
-            to   { opacity: 1; transform: translateY(0); }
-        }
-
-        .page-header    { animation: fadeUp 0.4s ease both; }
-        .stats-grid     { animation: fadeUp 0.4s 0.08s ease both; }
-        .table-container{ animation: fadeUp 0.4s 0.16s ease both; }
-    </style>
-</head>
-<body>
-
-    <!-- Sidebar Navigation -->
-    <%= render 'shared/sidebar', current_page: 'assets' %>
-
-    <div class="layout">
-        <!-- Page Header -->
-        <div class="page-header">
-            <div>
-                <div class="page-title"><span>🖥️</span>Asset Management</div>
-                <div class="page-sub">// manage network scan targets and configurations</div>
-            </div>
-            <%= link_to new_asset_path, class: "btn btn-primary" do %>
-                <span>➕</span> Add New Asset
-            <% end %>
+<div class="layout">
+    <!-- Page Header -->
+    <div class="page-header">
+        <div>
+            <div class="page-title"><span>🖥️</span>Asset Management</div>
+            <div class="page-sub">Manage network scan targets and configurations</div>
         </div>
+        <%= link_to new_asset_path, class: "btn btn-primary" do %>
+            <span>➕</span> Add New Asset
+        <% end %>
+    </div>
 
-        <!-- Stats -->
-        <div class="stats-grid">
-            <div class="stat-card">
-                <div class="stat-label">Total Assets</div>
-                <div class="stat-number"><%= @assets.count %></div>
-            </div>
-            <div class="stat-card green">
-                <div class="stat-label">Safe Mode</div>
-                <div class="stat-number"><%= @assets.count { |a| a.scan_config&.dig('scanMode') == 'safe' } %></div>
-            </div>
-            <div class="stat-card orange">
-                <div class="stat-label">Exploit Mode</div>
-                <div class="stat-number"><%= @assets.count { |a| a.scan_config&.dig('scanMode') == 'exploits' } %></div>
-            </div>
-            <div class="stat-card cyan">
-                <div class="stat-label">Servers</div>
-                <div class="stat-number"><%= @assets.count { |a| a.scan_config&.dig('asset') == 'server' } %></div>
-            </div>
+    <!-- Stats -->
+    <div class="stats-grid">
+        <div class="stat-card">
+            <div class="stat-label">Total Assets</div>
+            <div class="stat-number"><%= @assets.count %></div>
         </div>
-
-        <!-- Table -->
-        <div class="table-container">
-            <div class="table-header">
-                <div>
-                    <div class="table-title">All Assets</div>
-                </div>
-                <div class="table-subtitle">TOTAL: <%= @assets.count %> RECORDS</div>
-            </div>
-
-            <% if @assets.any? %>
-                <div style="overflow:auto;max-height:520px;">
-                <table style="width:100%;">
-                    <thead>
-                        <tr>
-                            <th>#</th>
-                            <th>Network</th>
-                            <th>Scan Mode</th>
-                            <th>Asset Type</th>
-                            <th>OS</th>
-                            <th>Scan Type</th>
-                            <th>Ports</th>
-                            <th>Actions</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        <% @assets.each_with_index do |asset, index| %>
-                            <tr>
-                                <td><span class="id-cell">#<%= index + 1 %></span></td>
-                                <td><span class="network-code"><%= asset.ip_address %></span></td>
-                                <td>
-                                    <% scan_mode = asset.scan_config&.dig('scanMode') %>
-                                    <span class="badge badge-<%= scan_mode %>"><%= scan_mode&.upcase %></span>
-                                </td>
-                                <td><%= asset.scan_config&.dig('asset')&.humanize %></td>
-                                <td><span style="font-family: var(--mono); font-size: 12px;"><%= asset.scan_config&.dig('os')&.upcase %></span></td>
-                                <td><%= asset.scan_config&.dig('scanType')&.capitalize %></td>
-                                <td><span class="port-code"><%= asset.scan_config&.dig('port') %></span></td>
-                                <td style="display: flex; gap: 8px; align-items: center;">
-                                    <%= link_to "View →", asset_path(asset), class: "view-link" %>
-                                    <%= button_to "✕", asset_path(asset), method: :delete,
-                                        data: { confirm: "Delete this asset?" },
-                                        class: "view-link", style: "background: none; border: 1px solid rgba(239,68,68,0.3); color: #f87171; cursor: pointer; padding: 4px 10px; border-radius: 6px; font-family: var(--mono); font-size: 12px;" %>
-                                </td>
-                            </tr>
-                        <% end %>
-                    </tbody>
-                </table>
-                </div>
-            <% else %>
-                <div class="empty-state">
-                    <div class="empty-state-icon">🖥️</div>
-                    <h3>No Assets Configured</h3>
-                    <p>Add your first scan target to get started</p>
-                    <%= link_to "Add Your First Asset", new_asset_path, class: "btn btn-primary" %>
-                </div>
-            <% end %>
+        <div class="stat-card green">
+            <div class="stat-label">Safe Mode</div>
+            <div class="stat-number"><%= @assets.count { |a| a.scan_config&.dig('scanMode') == 'safe' } %></div>
+        </div>
+        <div class="stat-card orange">
+            <div class="stat-label">Exploit Mode</div>
+            <div class="stat-number"><%= @assets.count { |a| a.scan_config&.dig('scanMode') == 'exploits' } %></div>
+        </div>
+        <div class="stat-card cyan">
+            <div class="stat-label">Servers</div>
+            <div class="stat-number"><%= @assets.count { |a| a.scan_config&.dig('asset') == 'server' } %></div>
         </div>
     </div>
-    <script>
-        function initResizableColumns() {
-            const table = document.querySelector('table');
-            if (!table) return;
-            const ths = Array.from(table.querySelectorAll('th'));
-            ths.forEach(th => { th.style.width = th.offsetWidth + 'px'; });
-            table.style.tableLayout = 'fixed';
-            table.style.width = Math.max(table.offsetWidth, ths.reduce((s, th) => s + th.offsetWidth, 0)) + 'px';
-            ths.forEach(th => {
-                const handle = document.createElement('div');
-                handle.className = 'resize-handle';
-                th.appendChild(handle);
-                let startX, startW, startTableW;
-                handle.addEventListener('mousedown', e => {
-                    startX = e.clientX; startW = th.offsetWidth;
-                    startTableW = parseInt(table.style.width, 10);
-                    handle.classList.add('active');
-                    const onMove = e => {
-                        const newW = Math.max(40, startW + (e.clientX - startX));
-                        th.style.width = newW + 'px';
-                        table.style.width = (startTableW + (newW - startW)) + 'px';
-                    };
-                    const onUp = () => { handle.classList.remove('active'); document.removeEventListener('mousemove', onMove); document.removeEventListener('mouseup', onUp); };
-                    document.addEventListener('mousemove', onMove);
-                    document.addEventListener('mouseup', onUp);
-                    e.preventDefault();
-                });
+
+    <!-- Table -->
+    <div class="table-container">
+        <div class="table-header">
+            <div class="table-title">All Assets</div>
+            <div class="table-subtitle">TOTAL: <%= @assets.count %> RECORDS</div>
+        </div>
+
+        <% if @assets.any? %>
+            <div style="overflow:auto;max-height:520px;">
+            <table style="width:100%;">
+                <thead>
+                    <tr>
+                        <th>#</th>
+                        <th>Network</th>
+                        <th>Scan Mode</th>
+                        <th>Asset Type</th>
+                        <th>OS</th>
+                        <th>Scan Type</th>
+                        <th>Ports</th>
+                        <th>Actions</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <% @assets.each_with_index do |asset, index| %>
+                        <tr>
+                            <td><span class="id-cell">#<%= index + 1 %></span></td>
+                            <td><span class="network-code"><%= asset.ip_address %></span></td>
+                            <td>
+                                <% scan_mode = asset.scan_config&.dig('scanMode') %>
+                                <span class="badge badge-<%= scan_mode %>"><%= scan_mode&.upcase %></span>
+                            </td>
+                            <td><%= asset.scan_config&.dig('asset')&.humanize %></td>
+                            <td><span style="font-family: var(--mono); font-size: 12px;"><%= asset.scan_config&.dig('os')&.upcase %></span></td>
+                            <td><%= asset.scan_config&.dig('scanType')&.capitalize %></td>
+                            <td><span class="port-code"><%= asset.scan_config&.dig('port') %></span></td>
+                            <td style="display: flex; gap: 8px; align-items: center;">
+                                <%= link_to "View →", asset_path(asset), class: "view-link" %>
+                                <%= button_to "✕", asset_path(asset), method: :delete,
+                                    data: { confirm: "Delete this asset?" },
+                                    class: "view-link", style: "background: none; border: 1px solid rgba(239,68,68,0.3); color: var(--red); cursor: pointer; padding: 4px 10px; border-radius: 6px; font-family: var(--mono); font-size: 12px;" %>
+                            </td>
+                        </tr>
+                    <% end %>
+                </tbody>
+            </table>
+            </div>
+        <% else %>
+            <div class="empty-state">
+                <div class="empty-state-icon">🖥️</div>
+                <h3>No Assets Configured</h3>
+                <p>Add your first scan target to get started</p>
+                <%= link_to "Add Your First Asset", new_asset_path, class: "btn btn-primary" %>
+            </div>
+        <% end %>
+    </div>
+</div>
+
+<script>
+    function initResizableColumns() {
+        const table = document.querySelector('table');
+        if (!table) return;
+        const ths = Array.from(table.querySelectorAll('th'));
+        ths.forEach(th => { th.style.width = th.offsetWidth + 'px'; });
+        table.style.tableLayout = 'fixed';
+        table.style.width = Math.max(table.offsetWidth, ths.reduce((s, th) => s + th.offsetWidth, 0)) + 'px';
+        ths.forEach(th => {
+            const handle = document.createElement('div');
+            handle.className = 'resize-handle';
+            th.appendChild(handle);
+            let startX, startW, startTableW;
+            handle.addEventListener('mousedown', e => {
+                startX = e.clientX; startW = th.offsetWidth;
+                startTableW = parseInt(table.style.width, 10);
+                handle.classList.add('active');
+                const onMove = e => {
+                    const newW = Math.max(40, startW + (e.clientX - startX));
+                    th.style.width = newW + 'px';
+                    table.style.width = (startTableW + (newW - startW)) + 'px';
+                };
+                const onUp = () => { handle.classList.remove('active'); document.removeEventListener('mousemove', onMove); document.removeEventListener('mouseup', onUp); };
+                document.addEventListener('mousemove', onMove);
+                document.addEventListener('mouseup', onUp);
+                e.preventDefault();
             });
-        }
-        initResizableColumns();
-    </script>
-</body>
-</html>
+        });
+    }
+    initResizableColumns();
+</script>
