@@ -1480,9 +1480,9 @@ tbody tr:hover { background: var(--surface2); }
   padding: 24px;
   background-color: var(--bg);
   background-image:
-    radial-gradient(ellipse 700px 500px at 10% 5%,  rgba(79,134,247,0.13), transparent),
-    radial-gradient(ellipse 600px 400px at 90% 95%, rgba(79,134,247,0.09), transparent),
-    radial-gradient(circle, rgba(79,134,247,0.22) 1.5px, transparent 1.5px);
+    radial-gradient(ellipse 800px 600px at 15% 10%,  rgba(255,255,255,0.05), transparent),
+    radial-gradient(ellipse 600px 400px at 85% 90%, rgba(255,255,255,0.03), transparent),
+    radial-gradient(circle, rgba(255,255,255,0.18) 1.5px, transparent 1.5px);
   background-size: 100% 100%, 100% 100%, 30px 30px;
 }
 
