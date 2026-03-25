@@ -2,7 +2,7 @@
 
 <%= render 'shared/sidebar', current_page: 'home' %>
 
-<div class="layout">
+<div class="layout page-home">
   <!-- Top Bar -->
   <div class="topbar">
     <div class="topbar-brand">
@@ -32,7 +32,7 @@
   <!-- Stats -->
   <% connected = @agents&.count(&:connected?) || 0 %>
   <div class="stats-row">
-    <div class="stat-card green">
+    <div class="stat-card cyan">
       <div class="stat-label">Total Assets</div>
       <div class="stat-value"><%= @assets&.count || 0 %></div>
       <div class="stat-delta up">Configured targets</div>
@@ -53,12 +53,12 @@
       <div class="stat-value"><%= @agents&.count || 0 %></div>
       <div class="stat-delta">Registered agents</div>
     </div>
-    <div class="stat-card blue">
+    <div class="stat-card magenta">
       <div class="stat-label">Connected Agents</div>
       <div class="stat-value"><%= connected %></div>
       <div class="stat-delta <%= connected > 0 ? 'up' : '' %>"><%= connected > 0 ? 'Online now' : 'None online' %></div>
     </div>
-    <div class="stat-card red">
+    <div class="stat-card magenta">
       <div class="stat-label">Offline Agents</div>
       <% offline = (@agents&.count || 0) - connected %>
       <div class="stat-value"><%= offline %></div>
@@ -83,7 +83,7 @@
       <div class="stat-value"><%= @users_count || 0 %></div>
       <div class="stat-delta">Team members</div>
     </div>
-    <div class="stat-card purple">
+    <div class="stat-card orange">
       <div class="stat-label">Active Scans</div>
       <div class="stat-value"><%= @active_scans %></div>
       <div class="stat-delta"><%= @active_scans.to_i > 0 ? 'Currently running' : 'No scans running' %></div>
@@ -252,7 +252,7 @@
       <div style="padding: 8px 0;">
         <% if admin? %>
           <a href="<%= new_asset_path %>" class="quick-btn">
-            <div class="quick-btn-icon">➕</div>
+            <div class="quick-btn-icon">+</div>
             <span class="quick-btn-label">Add New Asset</span>
             <span class="quick-btn-arrow">→</span>
           </a>

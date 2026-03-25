@@ -252,7 +252,7 @@ body {
 .stat-card.orange  { border-left-color: var(--orange); }
 .stat-card.red     { border-left-color: var(--red); }
 .stat-card.cyan    { border-left-color: var(--cyan); }
-.stat-card.violet  { border-left-color: var(--purple); }
+.stat-card.violet  { border-left-color: #6366f1; }
 .stat-card.teal    { border-left-color: #2dd4bf; }
 .stat-card.purple  { border-left-color: var(--purple); }
 .stat-card.magenta { border-left-color: #d946ef; }
@@ -263,7 +263,7 @@ body {
 .stat-card.orange:hover  { border-color: var(--orange);  box-shadow: 0 0 14px 3px rgba(245,158,11,0.35); }
 .stat-card.red:hover     { border-color: var(--red);     box-shadow: 0 0 14px 3px rgba(239,68,68,0.35); }
 .stat-card.cyan:hover    { border-color: var(--cyan);    box-shadow: 0 0 14px 3px rgba(34,211,238,0.35); }
-.stat-card.violet:hover  { border-color: var(--purple);  box-shadow: 0 0 14px 3px rgba(167,139,250,0.35); }
+.stat-card.violet:hover  { border-color: #6366f1;        box-shadow: 0 0 14px 3px rgba(99,102,241,0.35); }
 .stat-card.teal:hover    { border-color: #2dd4bf;        box-shadow: 0 0 14px 3px rgba(45,212,191,0.35); }
 .stat-card.purple:hover  { border-color: var(--purple);  box-shadow: 0 0 14px 3px rgba(167,139,250,0.35); }
 .stat-card.magenta:hover { border-color: #d946ef;        box-shadow: 0 0 14px 3px rgba(217,70,239,0.35); }
@@ -1624,18 +1624,18 @@ tbody tr:hover { background: var(--surface2); }
   width: 100%;
   max-width: 460px;
   background: var(--surface);
-  border: 1px solid var(--border);
+  border: 1px solid rgba(255,255,255,0.45);
   border-radius: 14px;
-  box-shadow: 0 24px 64px rgba(0,0,0,0.55);
+  box-shadow: 0 24px 64px rgba(0,0,0,0.55), 0 0 32px 6px rgba(255,255,255,0.08);
 }
 
 .login-head { padding: 28px 28px 0; }
-.login-brand { display: flex; gap: 12px; align-items: center; }
+.login-brand { display: flex; flex-direction: column; gap: 10px; align-items: center; justify-content: center; }
 .login-brand h1 { margin: 0; font-size: 18px; font-weight: 700; color: var(--text); }
 
 .login-logo {
-  width: 40px;
-  height: 40px;
+  width: 52px;
+  height: 52px;
   border-radius: 9px;
   object-fit: contain;
   flex-shrink: 0;
@@ -1726,6 +1726,44 @@ tbody tr:hover { background: var(--surface2); }
   0%, 100% { opacity: 1; }
   50%       { opacity: 0.4; }
 }
+
+/* ── Per-page dot backgrounds ──────────────────────────────────────── */
+body:has(.page-home)    { background-image: radial-gradient(circle, rgba(255,255,255,0.18) 1.5px, transparent 1.5px); background-size: 30px 30px; }
+body:has(.page-orange)  { background-image: radial-gradient(circle, rgba(245,158,11,0.18)  1.5px, transparent 1.5px); background-size: 30px 30px; }
+body:has(.page-cyan)    { background-image: radial-gradient(circle, rgba(34,211,238,0.18)  1.5px, transparent 1.5px); background-size: 30px 30px; }
+body:has(.page-magenta) { background-image: radial-gradient(circle, rgba(217,70,239,0.18)  1.5px, transparent 1.5px); background-size: 30px 30px; }
+body:has(.page-teal)    { background-image: radial-gradient(circle, rgba(45,212,191,0.18)  1.5px, transparent 1.5px); background-size: 30px 30px; }
+body:has(.page-violet)  { background-image: radial-gradient(circle, rgba(99,102,241,0.18)  1.5px, transparent 1.5px); background-size: 30px 30px; }
+body:has(.page-yellow)  { background-image: radial-gradient(circle, rgba(251,191,36,0.18)  1.5px, transparent 1.5px); background-size: 30px 30px; }
+body:has(.page-blue)    { background-image: radial-gradient(circle, rgba(79,134,247,0.18)  1.5px, transparent 1.5px); background-size: 30px 30px; }
+body:has(.page-red)     { background-image: radial-gradient(circle, rgba(239,68,68,0.18)   1.5px, transparent 1.5px); background-size: 30px 30px; }
+
+/* ── Per-page content glow + button colours ────────────────────────── */
+.page-orange .btn-primary  { background: #f59e0b; border-color: #f59e0b; color: #0d0d0d; }
+.page-cyan .btn-primary    { background: #22d3ee; border-color: #22d3ee; color: #0d0d0d; }
+.page-magenta .btn-primary { background: #d946ef; border-color: #d946ef; color: #fff; }
+.page-teal .btn-primary    { background: #2dd4bf; border-color: #2dd4bf; color: #0d0d0d; }
+.page-violet .btn-primary  { background: #6366f1; border-color: #6366f1; color: #fff; }
+.page-yellow .btn-primary  { background: #fbbf24; border-color: #fbbf24; color: #0d0d0d; }
+.page-blue .btn-primary    { background: #4f86f7; border-color: #4f86f7; color: #fff; }
+.page-red .btn-primary     { background: #ef4444; border-color: #ef4444; color: #fff; }
+
+.page-orange .main-card, .page-orange .info-box, .page-orange .table-container, .page-orange .create-form, .page-orange .page-header
+  { border-color: rgba(245,158,11,0.3);  box-shadow: 0 0 20px 4px rgba(245,158,11,0.1); }
+.page-cyan .main-card, .page-cyan .info-box, .page-cyan .table-container, .page-cyan .create-form, .page-cyan .page-header
+  { border-color: rgba(34,211,238,0.3);  box-shadow: 0 0 20px 4px rgba(34,211,238,0.1); }
+.page-magenta .main-card, .page-magenta .info-box, .page-magenta .table-container, .page-magenta .create-form, .page-magenta .page-header
+  { border-color: rgba(217,70,239,0.3);  box-shadow: 0 0 20px 4px rgba(217,70,239,0.1); }
+.page-teal .main-card, .page-teal .info-box, .page-teal .table-container, .page-teal .create-form, .page-teal .page-header
+  { border-color: rgba(45,212,191,0.3);  box-shadow: 0 0 20px 4px rgba(45,212,191,0.1); }
+.page-violet .main-card, .page-violet .info-box, .page-violet .table-container, .page-violet .create-form, .page-violet .page-header
+  { border-color: rgba(99,102,241,0.3);  box-shadow: 0 0 20px 4px rgba(99,102,241,0.1); }
+.page-yellow .main-card, .page-yellow .info-box, .page-yellow .table-container, .page-yellow .create-form, .page-yellow .page-header
+  { border-color: rgba(251,191,36,0.3);  box-shadow: 0 0 20px 4px rgba(251,191,36,0.1); }
+.page-blue .main-card, .page-blue .info-box, .page-blue .table-container, .page-blue .create-form, .page-blue .page-header, .page-blue .settings-card
+  { border-color: rgba(79,134,247,0.3);  box-shadow: 0 0 20px 4px rgba(79,134,247,0.1); }
+.page-red .main-card, .page-red .info-box, .page-red .table-container, .page-red .create-form, .page-red .page-header
+  { border-color: rgba(239,68,68,0.3);   box-shadow: 0 0 20px 4px rgba(239,68,68,0.1); }
 
 @keyframes spin {
   to { transform: rotate(360deg); }

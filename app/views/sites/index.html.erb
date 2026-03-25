@@ -2,7 +2,7 @@
 
 <%= render 'shared/sidebar', current_page: 'sites' %>
 
-<div class="layout">
+<div class="layout page-teal">
     <div class="page-header">
         <div>
             <div class="page-title"><%= image_tag 'SDimagesWhite/SitesWhite.png', alt: '', class: 'page-title-img icon-white' %><%= image_tag 'SDimagesBlack/SitesBlack.png', alt: '', class: 'page-title-img icon-black' %> Sites</div>
@@ -83,7 +83,7 @@
                     <label>Network Range (optional)</label>
                     <%= f.text_field :network_range, name: "site[network_range]", placeholder: "e.g. 10.0.0.0/24" %>
                 </div>
-                <button type="submit" class="btn btn-primary">➕ Create Site</button>
+                <button type="submit" class="btn btn-primary">+ Create Site</button>
             </div>
         <% end %>
     </div>

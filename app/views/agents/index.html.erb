@@ -2,7 +2,7 @@
 
 <%= render 'shared/sidebar', current_page: 'agents' %>
 
-<div class="layout">
+<div class="layout page-magenta">
 
     <!-- Page Header -->
     <div class="page-header">
@@ -20,10 +20,10 @@
                         required: true %>
                     <button type="submit"
                         onclick="return confirm('Deploy a new agent for this site? This will generate SSH keys and a download package.')"
-                        class="btn btn-primary">➕ Deploy Agent</button>
+                        class="btn btn-primary">+ Deploy Agent</button>
                 <% else %>
                     <%= link_to sites_path, class: "btn btn-neutral", style: "font-family:var(--mono);white-space:nowrap;" do %><%= image_tag 'SDimagesWhite/SitesWhite.png', alt: '', class: 'nav-icon-img icon-white' %><%= image_tag 'SDimagesBlack/SitesBlack.png', alt: '', class: 'nav-icon-img icon-black' %> No Available Sites — Create One First<% end %>
-                    <button type="button" disabled class="btn btn-primary" style="opacity:0.35;cursor:not-allowed;">➕ Deploy Agent</button>
+                    <button type="button" disabled class="btn btn-primary" style="opacity:0.35;cursor:not-allowed;">+ Deploy Agent</button>
                 <% end %>
             </div>
         <% end %>
@@ -144,7 +144,7 @@
                     <span class="state-icon"><%= image_tag 'SDimagesWhite/Agent.png', alt: '', class: 'state-icon-img icon-white' %><%= image_tag 'SDimagesBlack/AgentsBlack.png', alt: '', class: 'state-icon-img icon-black' %></span>
                     <div class="state-title">No Agents Deployed</div>
                     <div class="state-sub">Deploy your first agent to start scanning private networks</div>
-                    <%= link_to "➕ Create a Site First, Then Deploy an Agent", sites_path, class: "btn btn-primary" %>
+                    <%= link_to "+ Create a Site First, Then Deploy an Agent", sites_path, class: "btn btn-primary" %>
                 </div>
             <% end %>
         </div>

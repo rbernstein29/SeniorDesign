@@ -2,14 +2,14 @@
 
 <%= render 'shared/sidebar', current_page: 'read_only_accounts' %>
 
-<div class="layout">
+<div class="layout page-yellow">
 
   <div class="page-header">
     <div>
       <div class="page-title">Configure Read-Only Users</div>
       <div class="page-sub">Manage read-only accounts in your organization</div>
     </div>
-    <%= link_to "➕ Add User", create_ro_account_path, class: "btn btn-primary" %>
+    <%= link_to "+ Add User", create_ro_account_path, class: "btn btn-primary" %>
   </div>
 
   <% if flash[:alert] %>
@@ -63,7 +63,7 @@
         <span class="state-icon">👥</span>
         <div class="state-title">No Read-Only Users</div>
         <div class="state-sub">Add a read-only user to give limited access to your organization</div>
-        <%= link_to "➕ Add Read-Only User", create_ro_account_path, class: "btn btn-primary" %>
+        <%= link_to "+ Add Read-Only User", create_ro_account_path, class: "btn btn-primary" %>
       </div>
     <% end %>
   </div>

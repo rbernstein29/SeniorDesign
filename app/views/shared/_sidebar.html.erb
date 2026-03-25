@@ -28,12 +28,12 @@
   <div class="sidebar-nav">
     <div class="sidebar-section-label">Main</div>
 
-    <a href="<%= root_path %>" class="sidebar-nav-item nav-green <%= current_page == 'home' ? 'active' : '' %>">
+    <a href="<%= root_path %>" class="sidebar-nav-item nav-red <%= current_page == 'home' ? 'active' : '' %>">
       <span class="nav-icon">
         <%= image_tag 'SDimagesWhite/DashboardWhite.png', alt: '', class: 'nav-icon-img icon-white' %>
         <%= image_tag 'SDimagesBlack/DashboardBlack.png', alt: '', class: 'nav-icon-img icon-black' %>
       </span>
-      <span class="nav-dot green"></span>
+      <span class="nav-dot red"></span>
       <span class="nav-label">Dashboard</span>
     </a>
 

@@ -2,7 +2,7 @@
 
 <%= render 'shared/sidebar', current_page: 'assets' %>
 
-<div class="layout">
+<div class="layout page-cyan">
     <!-- Page Header -->
     <div class="page-header">
         <div>
@@ -10,7 +10,7 @@
             <div class="page-sub">Manage network scan targets and configurations</div>
         </div>
         <%= link_to new_asset_path, class: "btn btn-primary" do %>
-            <span>➕</span> Add New Asset
+            <span>+</span> Add New Asset
         <% end %>
     </div>
 
