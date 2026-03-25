@@ -1323,7 +1323,7 @@ tbody tr:hover { background: var(--surface2); }
   transition: background 0.15s, border-color 0.15s, color 0.15s;
 }
 
-.sidebar-toggle:hover { background: var(--surface2); color: var(--text); border-color: var(--accent); }
+.sidebar-toggle:hover { background: var(--surface2); color: var(--text); border-color: rgba(255,255,255,0.6); }
 
 .hamburger-line {
   width: 16px; height: 2px;
