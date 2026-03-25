@@ -47,12 +47,12 @@
         <span class="nav-label">Scans</span>
       </a>
 
-      <a href="<%= assets_path %>" class="sidebar-nav-item nav-green <%= current_page == 'assets' ? 'active' : '' %>">
+      <a href="<%= assets_path %>" class="sidebar-nav-item nav-cyan <%= current_page == 'assets' ? 'active' : '' %>">
         <span class="nav-icon">
           <%= image_tag 'SDimagesWhite/AssetMangerWhite.png', alt: '', class: 'nav-icon-img icon-white' %>
           <%= image_tag 'SDimagesBlack/AssetMangerBLack.png', alt: '', class: 'nav-icon-img icon-black' %>
         </span>
-        <span class="nav-dot green"></span>
+        <span class="nav-dot cyan"></span>
         <span class="nav-label">Asset Management</span>
       </a>
 
@@ -65,12 +65,12 @@
         <span class="nav-label">Agents</span>
       </a>
 
-      <a href="<%= (sites_path rescue '#') %>" class="sidebar-nav-item nav-cyan <%= current_page == 'sites' ? 'active' : '' %>">
+      <a href="<%= (sites_path rescue '#') %>" class="sidebar-nav-item nav-teal <%= current_page == 'sites' ? 'active' : '' %>">
         <span class="nav-icon">
           <%= image_tag 'SDimagesWhite/SitesWhite.png', alt: '', class: 'nav-icon-img icon-white' %>
           <%= image_tag 'SDimagesBlack/SitesBlack.png', alt: '', class: 'nav-icon-img icon-black' %>
         </span>
-        <span class="nav-dot cyan"></span>
+        <span class="nav-dot teal"></span>
         <span class="nav-label">Sites</span>
       </a>
     <% end %>
@@ -87,12 +87,12 @@
     </a>
 
     <% if admin? %>
-      <a href="<%= (read_only_accounts_path rescue '#') %>" class="sidebar-nav-item nav-teal <%= current_page == 'read_only_accounts' ? 'active' : '' %>">
+      <a href="<%= (read_only_accounts_path rescue '#') %>" class="sidebar-nav-item nav-yellow <%= current_page == 'read_only_accounts' ? 'active' : '' %>">
         <span class="nav-icon">
           <%= image_tag 'SDimagesWhite/ConfigureAccountWhite.png', alt: '', class: 'nav-icon-img icon-white' %>
           <%= image_tag 'SDimagesBlack/ConfigureAccounts.png', alt: '', class: 'nav-icon-img icon-black' %>
         </span>
-        <span class="nav-dot teal"></span>
+        <span class="nav-dot yellow"></span>
         <span class="nav-label">Configure Accounts</span>
       </a>
     <% end %>

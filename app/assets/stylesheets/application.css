@@ -333,6 +333,8 @@ body {
 .nav-card.nav-violet:hover  { border-color: var(--purple);  box-shadow: 0 0 16px 3px rgba(167,139,250,0.3); }
 .nav-card.nav-teal:hover    { border-color: #2dd4bf;        box-shadow: 0 0 16px 3px rgba(45,212,191,0.3); }
 .nav-card.nav-magenta:hover  { border-color: #d946ef;       box-shadow: 0 0 16px 3px rgba(217,70,239,0.3); }
+.nav-card.nav-red:hover      { border-color: var(--red);    box-shadow: 0 0 16px 3px rgba(239,68,68,0.3); }
+.nav-card.nav-yellow:hover   { border-color: #fbbf24;       box-shadow: 0 0 16px 3px rgba(251,191,36,0.3); }
 
 .nav-card.nav-orange .card-icon-wrap  { border-color: rgba(245,158,11,0.4);  background: rgba(245,158,11,0.08); }
 .nav-card.nav-green  .card-icon-wrap  { border-color: rgba(34,197,94,0.4);   background: rgba(34,197,94,0.08); }
@@ -341,6 +343,8 @@ body {
 .nav-card.nav-violet .card-icon-wrap  { border-color: rgba(167,139,250,0.4); background: rgba(167,139,250,0.08); }
 .nav-card.nav-teal   .card-icon-wrap  { border-color: rgba(45,212,191,0.4);  background: rgba(45,212,191,0.08); }
 .nav-card.nav-magenta .card-icon-wrap  { border-color: rgba(217,70,239,0.4);  background: rgba(217,70,239,0.08); }
+.nav-card.nav-red     .card-icon-wrap  { border-color: rgba(239,68,68,0.4);   background: rgba(239,68,68,0.08); }
+.nav-card.nav-yellow  .card-icon-wrap  { border-color: rgba(251,191,36,0.4);  background: rgba(251,191,36,0.08); }
 
 .nav-card.nav-orange:hover .card-arrow  { background: var(--orange);  border-color: var(--orange);  color: white; }
 .nav-card.nav-green:hover  .card-arrow  { background: var(--green);   border-color: var(--green);   color: white; }
@@ -349,6 +353,8 @@ body {
 .nav-card.nav-violet:hover .card-arrow  { background: var(--purple);  border-color: var(--purple);  color: white; }
 .nav-card.nav-teal:hover   .card-arrow  { background: #2dd4bf;        border-color: #2dd4bf;        color: white; }
 .nav-card.nav-magenta:hover .card-arrow  { background: #d946ef;       border-color: #d946ef;        color: white; }
+.nav-card.nav-red:hover     .card-arrow  { background: var(--red);    border-color: var(--red);     color: white; }
+.nav-card.nav-yellow:hover  .card-arrow  { background: #fbbf24;       border-color: #fbbf24;        color: white; }
 
 .card-icon-wrap {
   width: 42px;
@@ -1197,6 +1203,8 @@ tbody tr:hover { background: var(--surface2); }
 .sidebar-nav-item.nav-violet:hover { box-shadow: 0 0 8px 1px rgba(167,139,250,0.45);border-color: rgba(167,139,250,0.3); }
 .sidebar-nav-item.nav-teal:hover   { box-shadow: 0 0 8px 1px rgba(45,212,191,0.45); border-color: rgba(45,212,191,0.3); }
 .sidebar-nav-item.nav-magenta:hover { box-shadow: 0 0 8px 1px rgba(217,70,239,0.45); border-color: rgba(217,70,239,0.3); }
+.sidebar-nav-item.nav-red:hover     { box-shadow: 0 0 8px 1px rgba(239,68,68,0.45);  border-color: rgba(239,68,68,0.3); }
+.sidebar-nav-item.nav-yellow:hover  { box-shadow: 0 0 8px 1px rgba(251,191,36,0.45); border-color: rgba(251,191,36,0.3); }
 
 .sidebar-nav-item.active {
   background: rgba(255,255,255,0.08);
@@ -1221,6 +1229,8 @@ tbody tr:hover { background: var(--surface2); }
 .nav-dot.violet { background: var(--purple); }
 .nav-dot.teal   { background: #2dd4bf; }
 .nav-dot.magenta { background: #d946ef; }
+.nav-dot.red     { background: var(--red); }
+.nav-dot.yellow  { background: #fbbf24; }
 
 .nav-badge {
   background: var(--accent-dim);

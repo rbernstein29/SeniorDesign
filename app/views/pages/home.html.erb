@@ -108,7 +108,7 @@
         <div class="card-tag">SCANNER</div>
       </a>
 
-      <a href="<%= assets_path %>" class="nav-card nav-green">
+      <a href="<%= assets_path %>" class="nav-card nav-cyan">
         <div class="card-arrow">→</div>
         <div class="card-icon-wrap">
           <%= image_tag 'SDimagesWhite/AssetMangerWhite.png', alt: '', class: 'card-icon-img icon-white' %>
@@ -134,7 +134,7 @@
         <div class="card-tag">AGENTS</div>
       </a>
 
-      <a href="<%= sites_path rescue '#' %>" class="nav-card nav-cyan">
+      <a href="<%= sites_path rescue '#' %>" class="nav-card nav-teal">
         <div class="card-arrow">→</div>
         <div class="card-icon-wrap">
           <%= image_tag 'SDimagesWhite/SitesWhite.png', alt: '', class: 'card-icon-img icon-white' %>
@@ -147,7 +147,7 @@
         <div class="card-tag">NETWORK</div>
       </a>
 
-      <a href="<%= scanner_path rescue '#' %>" class="nav-card nav-orange">
+      <a href="<%= scanner_path rescue '#' %>" class="nav-card nav-red">
         <div class="card-arrow">→</div>
         <div class="card-icon-wrap">
           <%= image_tag 'SDimagesWhite/snanerWhite.png', alt: '', class: 'card-icon-img icon-white' %>
@@ -175,7 +175,7 @@
     </a>
 
     <% if admin? %>
-      <a href="<%= read_only_accounts_path rescue '#' %>" class="nav-card nav-teal">
+      <a href="<%= read_only_accounts_path rescue '#' %>" class="nav-card nav-yellow">
         <div class="card-arrow">→</div>
         <div class="card-icon-wrap">
           <%= image_tag 'SDimagesWhite/ConfigureAccountWhite.png', alt: '', class: 'card-icon-img icon-white' %>
