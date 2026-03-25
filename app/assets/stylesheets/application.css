@@ -655,8 +655,8 @@ body {
 
 /* ── Info Box ── */
 .info-box {
-  background: var(--accent-dim);
-  border: 1px solid rgba(79,134,247,0.2);
+  background: var(--surface2);
+  border: 1px solid var(--border);
   border-radius: 10px;
   padding: 14px 18px;
   margin-bottom: 18px;
@@ -665,7 +665,7 @@ body {
 }
 .info-box-list { list-style: none; display: flex; flex-direction: column; gap: 6px; }
 .info-box-list li { font-size: 13px; color: var(--muted); display: flex; gap: 8px; }
-.info-box-list li::before { content: '//'; font-family: var(--mono); font-size: 11px; color: var(--accent); flex-shrink: 0; }
+.info-box-list li::before { content: '//'; font-family: var(--mono); font-size: 11px; color: var(--muted); flex-shrink: 0; }
 
 /* ── Empty State ── */
 .state-box   { padding: 60px 40px; text-align: center; }
@@ -945,8 +945,8 @@ tbody tr:hover { background: var(--surface2); }
 
 /* ── Info Box (scans page) ── */
 .info-box {
-  background: var(--accent-dim);
-  border: 1px solid rgba(79,134,247,0.12);
+  background: var(--surface2);
+  border: 1px solid var(--border);
   border-radius: 10px;
   padding: 16px 20px;
   margin-bottom: 20px;
@@ -972,7 +972,7 @@ tbody tr:hover { background: var(--surface2); }
 .info-box-list li::before {
   content: '—';
   font-size: 11px;
-  color: var(--accent);
+  color: var(--muted);
   flex-shrink: 0;
   margin-top: 1px;
 }
