@@ -52,6 +52,13 @@ module Authentication
         Current.session = session
         cookies.signed.permanent[:session_id] = { value: session.id, httponly: true, same_site: :lax }
       end
+    rescue ActiveRecord::RecordNotUnique
+      # Sequence out of sync with data (e.g. stale fixture rows from test runs).
+      # Advance it past the highest existing ID and retry once.
+      ActiveRecord::Base.connection.execute(
+        "SELECT setval('vuln_scanner.sessions_id_seq', (SELECT COALESCE(MAX(id), 1) FROM vuln_scanner.sessions))"
+      )
+      retry
     end
 
     def terminate_session
