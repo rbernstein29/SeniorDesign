@@ -498,9 +498,9 @@ body {
 }
 
 .btn-primary {
-  background: var(--accent);
-  color: white;
-  border-color: var(--accent);
+  background: var(--text);
+  color: var(--bg);
+  border-color: var(--text);
 }
 
 .btn-primary:hover { opacity: 0.85; }
@@ -548,8 +548,8 @@ body {
 .btn-sm { padding: 5px 11px; font-size: 12px; }
 
 .btn-scan {
-  background: var(--accent);
-  color: white;
+  background: var(--text);
+  color: var(--bg);
   border: none;
   border-radius: 8px;
   padding: 10px 24px;
@@ -1572,8 +1572,8 @@ tbody tr:hover { background: var(--surface2); }
 
 .btn-import {
   background: transparent;
-  border: 1px dashed rgba(79,134,247,0.3);
-  color: var(--accent);
+  border: 1px dashed var(--border);
+  color: var(--muted);
   padding: 9px 16px;
   border-radius: 8px;
   font-family: var(--mono);
@@ -1583,8 +1583,8 @@ tbody tr:hover { background: var(--surface2); }
 }
 
 .btn-import:hover {
-  border-color: var(--accent);
-  background: var(--accent-dim);
+  border-color: var(--text);
+  background: var(--surface2);
 }
 
 /* ── Login Page ── */
