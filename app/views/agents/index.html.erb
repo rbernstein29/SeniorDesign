@@ -22,7 +22,7 @@
                         onclick="return confirm('Deploy a new agent for this site? This will generate SSH keys and a download package.')"
                         class="btn btn-primary">➕ Deploy Agent</button>
                 <% else %>
-                    <%= link_to sites_path, class: "btn btn-secondary", style: "font-family:var(--mono);white-space:nowrap;" do %><%= image_tag 'SDimagesWhite/SitesWhite.png', alt: '', class: 'nav-icon-img icon-white' %><%= image_tag 'SDimagesBlack/SitesBlack.png', alt: '', class: 'nav-icon-img icon-black' %> No Available Sites — Create One First<% end %>
+                    <%= link_to sites_path, class: "btn", style: "background:var(--surface2);border-color:var(--border);color:var(--text);font-family:var(--mono);white-space:nowrap;" do %><%= image_tag 'SDimagesWhite/SitesWhite.png', alt: '', class: 'nav-icon-img icon-white' %><%= image_tag 'SDimagesBlack/SitesBlack.png', alt: '', class: 'nav-icon-img icon-black' %> No Available Sites — Create One First<% end %>
                     <button type="button" disabled class="btn btn-primary" style="opacity:0.35;cursor:not-allowed;">➕ Deploy Agent</button>
                 <% end %>
             </div>
