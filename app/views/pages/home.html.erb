@@ -32,18 +32,18 @@
   <!-- Stats -->
   <% connected = @agents&.count(&:connected?) || 0 %>
   <div class="stats-row">
-    <div class="stat-card green">
+    <div class="stat-card cyan">
       <div class="stat-label">Total Assets</div>
       <div class="stat-value"><%= @assets&.count || 0 %></div>
       <div class="stat-delta up">Configured targets</div>
     </div>
-    <div class="stat-card orange">
+    <div class="stat-card cyan">
       <div class="stat-label">Scan-Ready Assets</div>
       <% scan_ready = @assets&.count { |a| a.scan_config.present? } || 0 %>
       <div class="stat-value"><%= scan_ready %></div>
       <div class="stat-delta">With scan config</div>
     </div>
-    <div class="stat-card cyan">
+    <div class="stat-card teal">
       <div class="stat-label">Total Sites</div>
       <div class="stat-value"><%= @sites&.count || 0 %></div>
       <div class="stat-delta">Network sites</div>
@@ -53,12 +53,12 @@
       <div class="stat-value"><%= @agents&.count || 0 %></div>
       <div class="stat-delta">Registered agents</div>
     </div>
-    <div class="stat-card green">
+    <div class="stat-card magenta">
       <div class="stat-label">Connected Agents</div>
       <div class="stat-value"><%= connected %></div>
       <div class="stat-delta <%= connected > 0 ? 'up' : '' %>"><%= connected > 0 ? 'Online now' : 'None online' %></div>
     </div>
-    <div class="stat-card red">
+    <div class="stat-card magenta">
       <div class="stat-label">Offline Agents</div>
       <% offline = (@agents&.count || 0) - connected %>
       <div class="stat-value"><%= offline %></div>
@@ -78,12 +78,12 @@
       <% end %>
       <div class="stat-delta">Most recent scan</div>
     </div>
-    <div class="stat-card teal">
+    <div class="stat-card yellow">
       <div class="stat-label">Org Users</div>
       <div class="stat-value"><%= @users_count || 0 %></div>
       <div class="stat-delta">Team members</div>
     </div>
-    <div class="stat-card red">
+    <div class="stat-card orange">
       <div class="stat-label">Active Scans</div>
       <div class="stat-value"><%= @active_scans %></div>
       <div class="stat-delta"><%= @active_scans.to_i > 0 ? 'Currently running' : 'No scans running' %></div>

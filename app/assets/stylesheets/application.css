@@ -256,6 +256,7 @@ body {
 .stat-card.teal    { border-left-color: #2dd4bf; }
 .stat-card.purple  { border-left-color: var(--purple); }
 .stat-card.magenta { border-left-color: #d946ef; }
+.stat-card.yellow  { border-left-color: #fbbf24; }
 
 .stat-card.blue:hover    { border-color: var(--accent);  box-shadow: 0 0 14px 3px rgba(79,134,247,0.35); }
 .stat-card.green:hover   { border-color: var(--green);   box-shadow: 0 0 14px 3px rgba(34,197,94,0.35); }
@@ -266,6 +267,7 @@ body {
 .stat-card.teal:hover    { border-color: #2dd4bf;        box-shadow: 0 0 14px 3px rgba(45,212,191,0.35); }
 .stat-card.purple:hover  { border-color: var(--purple);  box-shadow: 0 0 14px 3px rgba(167,139,250,0.35); }
 .stat-card.magenta:hover { border-color: #d946ef;        box-shadow: 0 0 14px 3px rgba(217,70,239,0.35); }
+.stat-card.yellow:hover  { border-color: #fbbf24;        box-shadow: 0 0 14px 3px rgba(251,191,36,0.35); }
 
 .stat-label {
   font-size: 10px;
