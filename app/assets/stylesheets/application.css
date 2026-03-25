@@ -1690,6 +1690,19 @@ tbody tr:hover { background: var(--surface2); }
   width: 100%;
 }
 
+/* ── Login light mode card ── */
+[data-theme="light"] .login-card {
+  border-color: rgba(0,0,0,0.45);
+  box-shadow: 0 24px 64px rgba(0,0,0,0.15), 0 0 32px 6px rgba(0,0,0,0.08);
+}
+
+/* ── Login light mode dots ── */
+[data-theme="light"] .login-wrap {
+  background-image:
+    radial-gradient(circle, rgba(0,0,0,0.12) 1.5px, transparent 1.5px);
+  background-size: 30px 30px;
+}
+
 /* ── Login accent overrides (no blue) ── */
 .login-wrap .btn-primary {
   background: rgba(255,255,255,0.12);
@@ -1732,6 +1745,7 @@ tbody tr:hover { background: var(--surface2); }
 
 /* ── Per-page dot backgrounds ──────────────────────────────────────── */
 body:has(.page-home)    { background-image: radial-gradient(circle, rgba(255,255,255,0.18) 1.5px, transparent 1.5px); background-size: 30px 30px; }
+[data-theme="light"] body:has(.page-home) { background-image: radial-gradient(circle, rgba(0,0,0,0.12) 1.5px, transparent 1.5px); }
 body:has(.page-orange)  { background-image: radial-gradient(circle, rgba(245,158,11,0.18)  1.5px, transparent 1.5px); background-size: 30px 30px; }
 body:has(.page-cyan)    { background-image: radial-gradient(circle, rgba(34,211,238,0.18)  1.5px, transparent 1.5px); background-size: 30px 30px; }
 body:has(.page-magenta) { background-image: radial-gradient(circle, rgba(217,70,239,0.18)  1.5px, transparent 1.5px); background-size: 30px 30px; }
