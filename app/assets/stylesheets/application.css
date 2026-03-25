@@ -1303,6 +1303,8 @@ tbody tr:hover { background: var(--surface2); }
 }
 
 .theme-toggle:hover { background: var(--surface); color: var(--text); border-color: var(--accent); }
+:root:not([data-theme="light"]) .theme-toggle:hover { border-color: rgba(255,255,255,0.6); }
+[data-theme="light"] .theme-toggle:hover { border-color: rgba(0,0,0,0.6); }
 
 /* ── Hamburger Toggle ── */
 .sidebar-toggle {
@@ -1324,6 +1326,7 @@ tbody tr:hover { background: var(--surface2); }
 }
 
 .sidebar-toggle:hover { background: var(--surface2); color: var(--text); border-color: rgba(255,255,255,0.6); }
+[data-theme="light"] .sidebar-toggle:hover { border-color: rgba(0,0,0,0.6); }
 
 .hamburger-line {
   width: 16px; height: 2px;
