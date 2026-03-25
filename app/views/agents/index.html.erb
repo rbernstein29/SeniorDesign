@@ -21,8 +21,8 @@
                     onclick="return confirm('Deploy a new agent for this site? This will generate SSH keys and a download package.')"
                     class="btn btn-primary">➕ Deploy Agent</button>
             <% else %>
-                <%= link_to sites_path, style: "font-family:var(--mono);font-size:12px;color:var(--muted);background:var(--surface2);border:1px solid var(--border);padding:9px 18px;border-radius:8px;text-decoration:none;white-space:nowrap;display:inline-flex;align-items:center;gap:6px;" do %><%= image_tag 'SDimagesWhite/SitesWhite.png', alt: '', class: 'nav-icon-img icon-white' %><%= image_tag 'SDimagesBlack/SitesBlack.png', alt: '', class: 'nav-icon-img icon-black' %> No Available Sites — Create One First<% end %>
-                <button type="button" disabled style="opacity:0.35;cursor:not-allowed;" class="btn btn-primary">➕ Deploy Agent</button>
+                <%= link_to sites_path, style: "font-family:var(--mono);font-size:12px;color:var(--muted);background:var(--surface2);border:1px solid var(--border);padding:9px 18px;box-sizing:border-box;height:38px;border-radius:8px;text-decoration:none;white-space:nowrap;display:inline-flex;align-items:center;gap:6px;" do %><%= image_tag 'SDimagesWhite/SitesWhite.png', alt: '', class: 'nav-icon-img icon-white' %><%= image_tag 'SDimagesBlack/SitesBlack.png', alt: '', class: 'nav-icon-img icon-black' %> No Available Sites — Create One First<% end %>
+                <button type="button" disabled style="opacity:0.35;cursor:not-allowed;box-sizing:border-box;height:38px;" class="btn btn-primary">➕ Deploy Agent</button>
             <% end %>
         <% end %>
     </div>
