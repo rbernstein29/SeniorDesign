@@ -10,20 +10,22 @@
             <div class="page-title"><%= image_tag 'SDimagesWhite/Agent.png', alt: '', class: 'page-title-img icon-white' %><%= image_tag 'SDimagesBlack/AgentsBlack.png', alt: '', class: 'page-title-img icon-black' %> Network Agents</div>
             <div class="page-sub">Deploy and manage distributed scanning agents</div>
         </div>
-        <%= form_with url: agents_path, method: :post, style: "display:flex;gap:10px;align-items:center;" do |f| %>
-            <% if @sites.any? %>
-                <%= select_tag "agent[site_id]",
-                    options_for_select(@sites.map { |s| ["#{s.name}#{s.network_range.present? ? " — #{s.network_range}" : ""}", s.id] }),
-                    prompt: "Select site...",
-                    style: "background:var(--surface2);border:1px solid var(--border);color:var(--text);padding:10px 14px;border-radius:8px;font-family:var(--mono);font-size:13px;width:240px;outline:none;",
-                    required: true %>
-                <button type="submit"
-                    onclick="return confirm('Deploy a new agent for this site? This will generate SSH keys and a download package.')"
-                    class="btn btn-primary">➕ Deploy Agent</button>
-            <% else %>
-                <%= link_to sites_path, class: "btn btn-secondary", style: "font-family:var(--mono);white-space:nowrap;" do %><%= image_tag 'SDimagesWhite/SitesWhite.png', alt: '', class: 'nav-icon-img icon-white' %><%= image_tag 'SDimagesBlack/SitesBlack.png', alt: '', class: 'nav-icon-img icon-black' %> No Available Sites — Create One First<% end %>
-                <button type="button" disabled class="btn btn-disabled" style="opacity:0.35;">➕ Deploy Agent</button>
-            <% end %>
+        <%= form_with url: agents_path, method: :post do |f| %>
+            <div style="display:flex;gap:10px;align-items:center;">
+                <% if @sites.any? %>
+                    <%= select_tag "agent[site_id]",
+                        options_for_select(@sites.map { |s| ["#{s.name}#{s.network_range.present? ? " — #{s.network_range}" : ""}", s.id] }),
+                        prompt: "Select site...",
+                        style: "background:var(--surface2);border:1px solid var(--border);color:var(--text);padding:10px 14px;border-radius:8px;font-family:var(--mono);font-size:13px;width:240px;outline:none;",
+                        required: true %>
+                    <button type="submit"
+                        onclick="return confirm('Deploy a new agent for this site? This will generate SSH keys and a download package.')"
+                        class="btn btn-primary">➕ Deploy Agent</button>
+                <% else %>
+                    <%= link_to sites_path, class: "btn btn-secondary", style: "font-family:var(--mono);white-space:nowrap;" do %><%= image_tag 'SDimagesWhite/SitesWhite.png', alt: '', class: 'nav-icon-img icon-white' %><%= image_tag 'SDimagesBlack/SitesBlack.png', alt: '', class: 'nav-icon-img icon-black' %> No Available Sites — Create One First<% end %>
+                    <button type="button" disabled class="btn btn-primary" style="opacity:0.35;cursor:not-allowed;">➕ Deploy Agent</button>
+                <% end %>
+            </div>
         <% end %>
     </div>
 
