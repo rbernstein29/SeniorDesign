@@ -513,6 +513,13 @@ body {
 
 .btn-secondary:hover { border-color: var(--accent); color: var(--accent); background: var(--accent-dim); }
 
+.btn-neutral {
+  background: var(--surface2);
+  border-color: var(--border);
+  color: var(--text);
+}
+.btn-neutral:hover { background: var(--surface); border-color: var(--muted); }
+
 .btn-danger {
   background: rgba(239,68,68,0.08);
   border-color: rgba(239,68,68,0.22);
