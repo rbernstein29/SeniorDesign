@@ -29,7 +29,8 @@ bootsnap/
 /node_modules
 
 # AI
-/.claude/
+/.claude/plans
+/.claude/settings.local.json
 
 # --- OS & Editors (Keep these from the previous list) ---
 /app/.DS_Store
