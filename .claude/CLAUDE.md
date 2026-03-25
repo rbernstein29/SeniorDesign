@@ -45,3 +45,7 @@ Rails auto-generates `create_schema "vuln_scanner"` (no `IF NOT EXISTS`). Never 
 - A separate test schema or test database
 - `schema_search_path` overrides in the test block of `database.yml`
 - `RAILS_ENV=test` commands for the user to type manually
+
+## HTML / CSS
+
+**Never put `display:flex` on a `<form>` element.** Browser UA stylesheets apply special handling to `<form>` that disrupts flex child alignment even when `align-items:center` is set. Always wrap form content in an inner `<div style="display:flex;...">`, or preferably, use a grid instead.
