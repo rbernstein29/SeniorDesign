@@ -56,7 +56,12 @@ class PagesControllerTest < ActionDispatch::IntegrationTest
   test "POST /scanner/trigger queues a scan and redirects admin to scans" do
     sign_in_as(users(:admin_user))
     assert_enqueued_with(job: ScanJob) do
-      post trigger_scan_path, params: { trigger_scan: { exploit_ids: [] } }
+      post trigger_scan_path, params: {
+        target_mode:  'asset',
+        asset_ids:    [assets(:asset_one).id],
+        exploit_mode: 'manual',
+        exploit_ids:  [exploits(:test_exploit).id]
+      }
     end
     assert_redirected_to scans_path
   end
