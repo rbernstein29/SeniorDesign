@@ -349,7 +349,7 @@ class ScanService
   def get_targets(org_id)
     condition = @asset_ids.any? ? "AND id IN (#{@asset_ids.map(&:to_i).join(',')})" : ""
     result = ActiveRecord::Base.connection.select_all(
-      "SELECT id, ip_address, scan_config FROM assets WHERE organization_id = #{org_id.to_i} AND is_active = true #{condition}"
+      "SELECT id, ip_address, scan_config FROM vuln_scanner.assets WHERE organization_id = #{org_id.to_i} AND is_active = true #{condition}"
     )
     targets = []
     result.each do |row|
