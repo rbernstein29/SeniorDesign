@@ -138,3 +138,28 @@ exploits_data.each do |attrs|
 end
 
 puts "Seeded #{exploits_data.count} exploit records."
+
+# Seed operating systems and exploit OS compatibility
+os_patterns = {
+  'Windows' => %w[windows smb rdp ms0 ms1 ms08 ms17 netapi dcerpc],
+  'Linux'   => %w[linux unix ftp ssh vsftpd distcc],
+  'macOS'   => %w[osx apple_ios macos darwin apple],
+  'Multi'   => %w[multi]
+}
+
+os_patterns.each do |family, patterns|
+  exploit_ids = Exploit.where(
+    patterns.map { "metasploit_module ILIKE ?" }.join(" OR "),
+    *patterns.map { |p| "%#{p}%" }
+  ).pluck(:id)
+  next if exploit_ids.empty?
+
+  os = OperatingSystem.find_or_create_by!(os_family: family, os_name: family, os_version: 'any')
+  exploit_ids.each do |eid|
+    ExploitOsCompatibility.find_or_create_by!(exploit_id: eid, os_id: os.id) do |r|
+      r.os_family_match = family
+    end
+  end
+  puts "  #{family}: #{exploit_ids.size} exploit(s)"
+end
+puts "Seeded OS compatibility data."

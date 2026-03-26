@@ -7,6 +7,7 @@ Rails.application.routes.draw do
   root "pages#home"
   get "/login",    to: "pages#login"
   get "/home",     to: "pages#home"
+  get '/home/recent_findings', to: 'pages#home_recent_findings', as: :home_recent_findings
   get "/scanner",  to: "pages#scanner"
   post "/scanner/trigger", to: "pages#trigger_scan", as: :trigger_scan
   get "/scans",    to: "pages#scans",    as: :scans
@@ -58,6 +59,7 @@ Rails.application.routes.draw do
   end
   patch '/accounts/generate_api_key', to: 'accounts#generate_api_key', as: :generate_api_key
   post '/exploits/sync', to: 'exploits#sync', as: :sync_exploits
+  get  '/exploits/count', to: 'exploits#count', as: :exploit_count
 
   get "up" => "rails/health#show", as: :rails_health_check
 end

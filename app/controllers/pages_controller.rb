@@ -39,6 +39,14 @@ class PagesController < ApplicationController
     end
   end
 
+  def home_recent_findings
+    org_id = current_org_id
+    @recent_findings = Finding.where(
+      scan_id: Scan.for_org(org_id).select(:id)
+    ).includes(:exploit, :asset).order(discovered_at: :desc).limit(10) rescue []
+    render partial: 'recent_findings', locals: { recent_findings: @recent_findings }
+  end
+
   def scanner
     org_id    = Current.user.organization_id
     @assets   = Asset.where(organization_id: org_id).includes(:site).order(:ip_address)
@@ -70,16 +78,10 @@ class PagesController < ApplicationController
     end
 
     # Resolve exploit IDs
-    exploit_ids = case params[:exploit_mode]
-    when 'profile'
+    exploit_ids = if params[:profile_id].present?
       ScanProfile.find_by(id: params[:profile_id], organization_id: org_id)&.exploit_ids || []
-    when 'auto'
-      os_list = Asset.where(id: asset_ids).pluck(:scan_config).map { |c|
-        (c || {})['os']
-      }.compact.uniq
-      auto_select_exploits(os_list)
-    else # 'manual'
-      Array(params[:exploit_ids]).map(&:to_i).select { |id| id > 0 }
+    else
+      filter_exploits(Array(params[:severities]), params[:platform].presence)
     end
 
     if exploit_ids.empty?
@@ -137,20 +139,19 @@ class PagesController < ApplicationController
 
   private
 
-  def auto_select_exploits(os_list)
-    return Exploit.pluck(:id) if os_list.empty?
-    os_patterns = os_list.flat_map { |os|
-      case os
-      when 'linux'   then ['linux', 'unix']
-      when 'windows' then ['windows', 'smb', 'ms1', 'ms0', 'rdp']
-      when 'macos'   then ['macos', 'osx', 'apple']
-      else []
+  def filter_exploits(severities, platform)
+    scope = Exploit.all
+    scope = scope.where(severity: severities) if severities.any?
+    if platform.present? && platform != 'any'
+      patterns = platform_patterns(platform)
+      unless patterns.empty?
+        scope = scope.where(
+          patterns.map { "metasploit_module ILIKE ?" }.join(" OR "),
+          *patterns.map { |p| "%#{p}%" }
+        )
       end
-    }.uniq
-    return Exploit.pluck(:id) if os_patterns.empty?
-    Exploit.where(
-      os_patterns.map { "metasploit_module ILIKE ?" }.join(" OR "),
-      *os_patterns.map { |p| "%#{p}%" }
-    ).pluck(:id)
+    end
+    scope.pluck(:id)
   end
+
 end

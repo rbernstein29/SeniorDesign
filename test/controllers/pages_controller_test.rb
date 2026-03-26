@@ -57,10 +57,10 @@ class PagesControllerTest < ActionDispatch::IntegrationTest
     sign_in_as(users(:admin_user))
     assert_enqueued_with(job: ScanJob) do
       post trigger_scan_path, params: {
-        target_mode:  'asset',
-        asset_ids:    [assets(:asset_one).id],
-        exploit_mode: 'manual',
-        exploit_ids:  [exploits(:test_exploit).id]
+        target_mode: 'asset',
+        asset_ids:   [assets(:asset_one).id],
+        severities:  ['low'],
+        platform:    'any'
       }
     end
     assert_redirected_to scans_path
