@@ -1,0 +1,7 @@
+<p>Hi <%= @user.name %>,</p>
+
+<p>Thanks for registering with Aegis. Please verify your email address to activate your account.</p>
+
+<p><%= link_to "Verify my email address", verify_email_url(@user.generate_token_for(:email_verification)) %></p>
+
+<p>This link expires in 30 minutes. If you didn't create an account, you can ignore this email.</p>

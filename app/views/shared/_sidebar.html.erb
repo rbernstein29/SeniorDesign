@@ -28,12 +28,12 @@
   <div class="sidebar-nav">
     <div class="sidebar-section-label">Main</div>
 
-    <a href="<%= root_path %>" class="sidebar-nav-item nav-red <%= current_page == 'home' ? 'active' : '' %>">
+    <a href="<%= root_path %>" class="sidebar-nav-item nav-white <%= current_page == 'home' ? 'active' : '' %>">
       <span class="nav-icon">
         <%= image_tag 'SDimagesWhite/DashboardWhite.png', alt: '', class: 'nav-icon-img icon-white' %>
         <%= image_tag 'SDimagesBlack/DashboardBlack.png', alt: '', class: 'nav-icon-img icon-black' %>
       </span>
-      <span class="nav-dot red"></span>
+      <span class="nav-dot white"></span>
       <span class="nav-label">Dashboard</span>
     </a>
 
@@ -44,7 +44,7 @@
           <%= image_tag 'SDimagesBlack/ScansBlack.png', alt: '', class: 'nav-icon-img icon-black' %>
         </span>
         <span class="nav-dot orange"></span>
-        <span class="nav-label">Scans</span>
+        <span class="nav-label">Scan History</span>
       </a>
 
       <a href="<%= (scanner_path rescue '#') %>" class="sidebar-nav-item nav-red <%= current_page == 'scanner' ? 'active' : '' %>">
@@ -56,12 +56,12 @@
         <span class="nav-label">Scanner</span>
       </a>
 
-      <a href="<%= (scan_profiles_path rescue '#') %>" class="sidebar-nav-item nav-cyan <%= current_page == 'scan_profiles' ? 'active' : '' %>">
+      <a href="<%= (scan_profiles_path rescue '#') %>" class="sidebar-nav-item nav-yellow <%= current_page == 'scan_profiles' ? 'active' : '' %>">
         <span class="nav-icon">
           <%= image_tag 'SDimagesWhite/snanerWhite.png', alt: '', class: 'nav-icon-img icon-white' %>
           <%= image_tag 'SDimagesBlack/ScansBlack.png',  alt: '', class: 'nav-icon-img icon-black' %>
         </span>
-        <span class="nav-dot cyan"></span>
+        <span class="nav-dot yellow"></span>
         <span class="nav-label">Scan Profiles</span>
       </a>
 
@@ -105,12 +105,12 @@
     </a>
 
     <% if admin? %>
-      <a href="<%= (read_only_accounts_path rescue '#') %>" class="sidebar-nav-item nav-yellow <%= current_page == 'read_only_accounts' ? 'active' : '' %>">
+      <a href="<%= (read_only_accounts_path rescue '#') %>" class="sidebar-nav-item nav-green <%= current_page == 'read_only_accounts' ? 'active' : '' %>">
         <span class="nav-icon">
           <%= image_tag 'SDimagesWhite/ConfigureAccountWhite.png', alt: '', class: 'nav-icon-img icon-white' %>
           <%= image_tag 'SDimagesBlack/ConfigureAccounts.png', alt: '', class: 'nav-icon-img icon-black' %>
         </span>
-        <span class="nav-dot yellow"></span>
+        <span class="nav-dot green"></span>
         <span class="nav-label">Configure Accounts</span>
       </a>
     <% end %>

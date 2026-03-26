@@ -521,6 +521,9 @@ body {
 
 .btn-secondary:hover { border-color: var(--accent); color: var(--accent); background: var(--accent-dim); }
 
+.btn-yellow-glow { border-color: rgba(251,191,36,0.5); color: #fbbf24; }
+.btn-yellow-glow:hover { border-color: #fbbf24; color: #fbbf24; background: rgba(251,191,36,0.08); box-shadow: 0 0 12px 3px rgba(251,191,36,0.3); }
+
 .btn-neutral {
   background: var(--surface2);
   border-color: var(--border);
@@ -1207,6 +1210,7 @@ tbody tr:hover { background: var(--surface2); }
 .sidebar-nav-item.nav-magenta:hover { box-shadow: 0 0 8px 1px rgba(217,70,239,0.45); border-color: rgba(217,70,239,0.3); }
 .sidebar-nav-item.nav-red:hover     { box-shadow: 0 0 8px 1px rgba(239,68,68,0.45);  border-color: rgba(239,68,68,0.3); }
 .sidebar-nav-item.nav-yellow:hover  { box-shadow: 0 0 8px 1px rgba(251,191,36,0.45); border-color: rgba(251,191,36,0.3); }
+.sidebar-nav-item.nav-white:hover   { box-shadow: 0 0 8px 1px rgba(255,255,255,0.35); border-color: rgba(255,255,255,0.25); }
 
 .sidebar-nav-item.active {
   background: rgba(255,255,255,0.08);
@@ -1233,6 +1237,7 @@ tbody tr:hover { background: var(--surface2); }
 .nav-dot.magenta { background: #d946ef; }
 .nav-dot.red     { background: var(--red); }
 .nav-dot.yellow  { background: #fbbf24; }
+.nav-dot.white   { background: #ffffff; }
 
 .nav-badge {
   background: var(--accent-dim);
@@ -1754,6 +1759,7 @@ body:has(.page-violet)  { background-image: radial-gradient(circle, rgba(99,102,
 body:has(.page-yellow)  { background-image: radial-gradient(circle, rgba(251,191,36,0.18)  1.5px, transparent 1.5px); background-size: 30px 30px; }
 body:has(.page-blue)    { background-image: radial-gradient(circle, rgba(79,134,247,0.18)  1.5px, transparent 1.5px); background-size: 30px 30px; }
 body:has(.page-red)     { background-image: radial-gradient(circle, rgba(239,68,68,0.18)   1.5px, transparent 1.5px); background-size: 30px 30px; }
+body:has(.page-green)   { background-image: radial-gradient(circle, rgba(34,197,94,0.18)   1.5px, transparent 1.5px); background-size: 30px 30px; }
 
 /* ── Per-page content glow + button colours ────────────────────────── */
 .page-orange .btn-primary  { background: #f59e0b; border-color: #f59e0b; color: #0d0d0d; }
@@ -1764,6 +1770,7 @@ body:has(.page-red)     { background-image: radial-gradient(circle, rgba(239,68,
 .page-yellow .btn-primary  { background: #fbbf24; border-color: #fbbf24; color: #0d0d0d; }
 .page-blue .btn-primary    { background: #4f86f7; border-color: #4f86f7; color: #fff; }
 .page-red .btn-primary     { background: #ef4444; border-color: #ef4444; color: #fff; }
+.page-green .btn-primary   { background: #22c55e; border-color: #22c55e; color: #0d0d0d; }
 
 .page-orange .main-card, .page-orange .info-box, .page-orange .table-container, .page-orange .create-form, .page-orange .page-header
   { border-color: rgba(245,158,11,0.3);  box-shadow: 0 0 20px 4px rgba(245,158,11,0.1); }
@@ -1779,8 +1786,10 @@ body:has(.page-red)     { background-image: radial-gradient(circle, rgba(239,68,
   { border-color: rgba(251,191,36,0.3);  box-shadow: 0 0 20px 4px rgba(251,191,36,0.1); }
 .page-blue .main-card, .page-blue .info-box, .page-blue .table-container, .page-blue .create-form, .page-blue .page-header, .page-blue .settings-card
   { border-color: rgba(79,134,247,0.3);  box-shadow: 0 0 20px 4px rgba(79,134,247,0.1); }
-.page-red .main-card, .page-red .info-box, .page-red .table-container, .page-red .create-form, .page-red .page-header
+.page-red .main-card, .page-red .card, .page-red .info-box, .page-red .table-container, .page-red .create-form, .page-red .page-header
   { border-color: rgba(239,68,68,0.3);   box-shadow: 0 0 20px 4px rgba(239,68,68,0.1); }
+.page-green .main-card, .page-green .info-box, .page-green .table-container, .page-green .create-form, .page-green .page-header
+  { border-color: rgba(34,197,94,0.3);   box-shadow: 0 0 20px 4px rgba(34,197,94,0.1); }
 
 @keyframes spin {
   to { transform: rotate(360deg); }

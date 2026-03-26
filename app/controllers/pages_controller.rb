@@ -2,7 +2,7 @@
 class PagesController < ApplicationController
   allow_unauthenticated_access only: [:login]
 
-  before_action :require_admin, only: [:scanner, :trigger_scan, :scans, :stop_scan]
+  before_action :require_admin, only: [:scanner, :trigger_scan, :scans, :stop_scan, :create_ro_account]
 
   def login
     # login page
@@ -81,6 +81,14 @@ class PagesController < ApplicationController
       severities: Array(params[:severities]).presence
     }.compact
 
+    if params[:profile_id].present?
+      profile = ScanProfile.find_by(id: params[:profile_id], organization_id: org_id)
+      if profile&.exploit_ids&.any?
+        allowlist = Exploit.where(id: profile.exploit_ids).pluck(:metasploit_module).compact
+        filter_params[:module_allowlist] = allowlist if allowlist.any?
+      end
+    end
+
     scan_options = {
       port_override: params[:port_override].presence,
       timeout:       params[:timeout].presence&.to_i,
@@ -127,6 +135,10 @@ class PagesController < ApplicationController
       organization_id: Current.user.organization_id,
       access_level: "read_only"
     )
+  end
+
+  def create_ro_account
+    # form rendered by view; submission handled by ReadOnlyAccountsController#create
   end
 
   private

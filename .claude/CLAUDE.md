@@ -46,6 +46,12 @@ Rails auto-generates `create_schema "vuln_scanner"` (no `IF NOT EXISTS`). Never 
 - `schema_search_path` overrides in the test block of `database.yml`
 - `RAILS_ENV=test` commands for the user to type manually
 
+## Raw SQL Schema Prefixes
+
+All raw SQL queries must use the explicit `vuln_scanner.` schema prefix (e.g. `vuln_scanner.assets`, `vuln_scanner.findings`). Do **not** rely on the search_path silently resolving unqualified table names — use the prefix everywhere for consistency and to make schema intent explicit.
+
+ActiveRecord model queries (e.g. `Asset.where(...)`) and migration helpers (e.g. `add_column :exploits`) do **not** need the prefix — they use the search_path correctly.
+
 ## HTML / CSS
 
 **Never put `display:flex` on a `<form>` element.** Browser UA stylesheets apply special handling to `<form>` that disrupts flex child alignment even when `align-items:center` is set. Always wrap form content in an inner `<div style="display:flex;...">`, or preferably, use a grid instead.

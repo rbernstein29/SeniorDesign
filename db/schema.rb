@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.0].define(version: 2026_03_26_025756) do
+ActiveRecord::Schema[8.0].define(version: 2026_03_26_120000) do
   create_schema "vuln_scanner"
 
   # These are extensions that must be enabled in order to support this database
@@ -249,6 +249,7 @@ ActiveRecord::Schema[8.0].define(version: 2026_03_26_025756) do
     t.datetime "created_at", precision: nil, default: -> { "CURRENT_TIMESTAMP" }
     t.datetime "updated_at", precision: nil, default: -> { "CURRENT_TIMESTAMP" }
     t.string "api_key"
+    t.datetime "email_verified_at"
     t.index "lower((email_address)::text), organization_id", name: "index_users_on_email_and_org", unique: true
     t.index ["api_key"], name: "index_users_on_api_key", unique: true
     t.index ["email_address"], name: "idx_user_email"

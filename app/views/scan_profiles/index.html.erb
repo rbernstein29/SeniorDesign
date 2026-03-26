@@ -2,7 +2,7 @@
 
 <%= render 'shared/sidebar', current_page: 'scan_profiles' %>
 
-<div class="layout page-cyan">
+<div class="layout page-yellow">
     <div class="page-header">
         <div>
             <div class="page-title">Scan Profiles</div>
@@ -48,7 +48,10 @@
             </table>
         <% else %>
             <div class="empty-state">
-                <div style="font-size:32px;opacity:0.4;margin-bottom:10px;">📋</div>
+                <div style="opacity:0.4;margin-bottom:10px;">
+                    <%= image_tag 'SDimagesWhite/scanprofileWhite.png', alt: '', class: 'icon-white', style: 'width:40px;height:40px;' %>
+                    <%= image_tag 'SDimagesBlack/scanprofileBlack.png', alt: '', class: 'icon-black', style: 'width:40px;height:40px;' %>
+                </div>
                 <h3>No Scan Profiles</h3>
                 <p>Create a profile to save a set of exploits for reuse</p>
                 <%= link_to "Create First Profile", new_scan_profile_path, class: "btn btn-primary" %>

@@ -118,6 +118,7 @@ class ScanService
     Report.create!(
       organization_id: @org_id,
       user_id:         @user_id,
+      generated_by:    @user_id,
       scan_id:         @scan&.id,
       report_name:     "Scan #{Time.current.strftime('%Y-%m-%d %H:%M')}",
       report_type:     'vulnerability',
@@ -206,7 +207,7 @@ class ScanService
       "set ConnectTimeout 15",
       (proxy ? "set Proxies #{proxy}" : nil),
       "run -z",
-      "sleep 5",
+      "sleep 15",
       "sessions -l",
       "exit -y"
     ].compact
@@ -308,11 +309,15 @@ class ScanService
   end
 
   def get_modules_for_target(target_os)
-    platform = @filter_params['platform'].presence || target_os
-    dirs     = platform_dirs(platform)
-    files    = dirs.any? ? dirs.flat_map { |d| Dir.glob("#{MSF_BASE}/#{d}/**/*.rb") }
-                         : Dir.glob("#{MSF_BASE}/**/*.rb")
-    files.uniq.map { |f| { path: 'exploit/' + f.sub("#{MSF_BASE}/", '').sub('.rb', ''), file: f } }
+    platform  = @filter_params['platform'].presence || target_os
+    allowlist = @filter_params['module_allowlist']
+
+    dirs  = platform_dirs(platform)
+    files = dirs.any? ? dirs.flat_map { |d| Dir.glob("#{MSF_BASE}/#{d}/**/*.rb") }
+                      : Dir.glob("#{MSF_BASE}/**/*.rb")
+
+    mods = files.uniq.map { |f| { path: 'exploit/' + f.sub("#{MSF_BASE}/", '').sub('.rb', ''), file: f } }
+    allowlist.present? ? mods.select { |m| allowlist.include?(m[:path]) } : mods
   end
 
   def platform_dirs(platform)
@@ -348,7 +353,7 @@ class ScanService
   def get_targets(org_id)
     condition = @asset_ids.any? ? "AND id IN (#{@asset_ids.map(&:to_i).join(',')})" : ""
     result = ActiveRecord::Base.connection.select_all(
-      "SELECT id, ip_address, scan_config FROM assets WHERE organization_id = #{org_id.to_i} AND is_active = true #{condition}"
+      "SELECT id, ip_address, scan_config FROM vuln_scanner.assets WHERE organization_id = #{org_id.to_i} AND is_active = true #{condition}"
     )
     targets = []
     result.each do |row|
