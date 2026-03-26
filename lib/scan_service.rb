@@ -7,13 +7,15 @@ require 'net/smtp'
 require 'thread'
 
 class ScanService
-  def initialize(org_id, exploit_range, user_id, scan = nil, asset_ids = [], scan_options = {})
-    @org_id = org_id
-    @exploit_range = exploit_range
-    @user_id = user_id
-    @scan = scan
-    @asset_ids = Array(asset_ids).map(&:to_i).select { |id| id > 0 }
-    @scan_options = scan_options || {}
+  MSF_BASE = ENV.fetch('MSF_MODULES_PATH', '/usr/share/metasploit-framework/modules/exploits')
+
+  def initialize(org_id, filter_params, user_id, scan = nil, asset_ids = [], scan_options = {})
+    @org_id        = org_id
+    @filter_params = (filter_params || {}).transform_keys(&:to_s)
+    @user_id       = user_id
+    @scan          = scan
+    @asset_ids     = Array(asset_ids).map(&:to_i).select { |id| id > 0 }
+    @scan_options  = scan_options || {}
   end
 
   def perform
@@ -35,30 +37,43 @@ class ScanService
           target_exploits = 0
 
           if connect_network(target_ip) == 1
+            target_os  = target['os']
+            modules    = get_modules_for_target(target_os)
+            sev_filter = @filter_params['severities']
+
             target_ports.each do |port|
-              @exploit_range.each do |id|
-                exploit = get_exploit(id)
-                next unless exploit
+              modules.each do |mod|
+                severity = read_module_rank(mod[:file])
+                next if sev_filter.present? && !sev_filter.include?(severity)
+
+                exploit_record = get_or_create_exploit_record(mod[:path], mod[:file])
+                exploit_hash = {
+                  'id'                => exploit_record.id,
+                  'name'              => exploit_record.name,
+                  'metasploit_module' => mod[:path],
+                  'severity'          => severity,
+                  'default_payload'   => exploit_record.default_payload
+                }
 
                 start_ms = (Time.now.to_f * 1000).to_i
-                result   = attack(exploit, target_ip, port, target['proxy'])
+                result   = attack(exploit_hash, target_ip, port, target['proxy'])
                 elapsed  = (Time.now.to_f * 1000).to_i - start_ms
 
                 target_exploits += 1
                 exploit_result = result[:success] ? 'success' : 'failed'
-                create_scan_exploit(asset_id, exploit['id'].to_i, exploit_result, elapsed)
+                create_scan_exploit(asset_id, exploit_record.id, exploit_result, elapsed)
 
                 if result[:success]
                   target_findings += 1
-                  create_finding(asset_id, exploit['id'].to_i, exploit['severity'], result[:evidence])
+                  create_finding(asset_id, exploit_record.id, severity, result[:evidence])
                 end
 
                 mutex.synchronize do
                   results << {
                     target:    target_ip,
                     port:      port,
-                    exploit:   exploit['name'],
-                    severity:  exploit['severity'],
+                    exploit:   mod[:path],
+                    severity:  severity,
                     success:   result[:success],
                     timestamp: Time.now
                   }
@@ -292,12 +307,42 @@ class ScanService
     end
   end
 
-  def get_exploit(exploit_id)
-    result = ActiveRecord::Base.connection.select_one("SELECT * FROM exploits WHERE id = #{exploit_id.to_i}")
-    return result
-  rescue => e
-    puts "Error fetching exploit: #{e.message}"
-    return nil
+  def get_modules_for_target(target_os)
+    platform = @filter_params['platform'].presence || target_os
+    dirs     = platform_dirs(platform)
+    files    = dirs.any? ? dirs.flat_map { |d| Dir.glob("#{MSF_BASE}/#{d}/**/*.rb") }
+                         : Dir.glob("#{MSF_BASE}/**/*.rb")
+    files.uniq.map { |f| { path: 'exploit/' + f.sub("#{MSF_BASE}/", '').sub('.rb', ''), file: f } }
+  end
+
+  def platform_dirs(platform)
+    case platform&.downcase
+    when 'windows' then %w[windows multi]
+    when 'linux'   then %w[linux unix multi]
+    when 'macos'   then %w[osx apple_ios multi]
+    else []
+    end
+  end
+
+  def read_module_rank(file_path)
+    content = File.read(file_path) rescue ''
+    rank    = content.match(/\bRank\s*=\s*(\w+)/i)&.[](1).to_s.downcase
+    case rank
+    when /excellent|great/ then 'critical'
+    when /good/            then 'high'
+    when /normal|average/  then 'medium'
+    else                        'low'
+    end
+  end
+
+  def get_or_create_exploit_record(module_path, file_path)
+    Exploit.find_or_create_by!(exploit_id: module_path) do |e|
+      e.name              = module_path.split('/').last.tr('_', ' ').split.map(&:capitalize).join(' ')
+      e.severity          = read_module_rank(file_path)
+      e.metasploit_module = module_path
+    end
+  rescue ActiveRecord::RecordNotUnique
+    Exploit.find_by!(exploit_id: module_path)
   end
 
   def get_targets(org_id)
@@ -317,7 +362,7 @@ class ScanService
         agent ? "socks5:127.0.0.1:#{agent.tunnel_port}" : nil
       end
       puts proxy ? "Routing #{ip} via agent proxy #{proxy}" : "Scanning #{ip} directly (no agent)"
-      targets << { 'ip' => ip, 'asset_id' => row['id'].to_i, 'ports' => [port], 'proxy' => proxy }
+      targets << { 'ip' => ip, 'asset_id' => row['id'].to_i, 'ports' => [port], 'proxy' => proxy, 'os' => config['os'] }
     end
     targets
   rescue => e

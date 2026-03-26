@@ -76,24 +76,33 @@
         </div>
 
         <% if admin? %>
-            <!-- Exploit Database -->
+            <!-- Metasploit Modules -->
+            <% msf_base  = ENV.fetch('MSF_MODULES_PATH', '/usr/share/metasploit-framework/modules/exploits') %>
+            <% msf_count = Dir.exist?(msf_base) ? Dir.glob("#{msf_base}/**/*.rb").size : nil %>
             <div class="settings-card full-width">
                 <div class="card-header">
                     <div class="card-header-icon"><%= image_tag 'SDimagesWhite/snanerWhite.png', alt: '', class: 'hdr-icon-img icon-white' %><%= image_tag 'SDimagesBlack/ScansBlack.png', alt: '', class: 'hdr-icon-img icon-black' %></div>
                     <div>
-                        <div class="card-title">Exploit Database</div>
-                        <div class="card-subtitle">METASPLOIT SYNC</div>
+                        <div class="card-title">Metasploit Modules</div>
+                        <div class="card-subtitle">EXPLOIT SOURCE</div>
                     </div>
                 </div>
-                <div class="settings-body" style="flex-direction:row;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:16px;">
+                <div class="settings-body">
                     <div>
-                        <div style="font-size:13px;font-weight:600;color:var(--text);margin-bottom:4px;">Sync Exploits from Metasploit</div>
-                        <div style="font-size:12px;color:var(--muted);">Imports all available exploit modules from your Metasploit RPC server into the local database. Required before running scans.</div>
-                        <div style="font-size:12px;color:var(--muted);margin-top:4px;">Current exploit count: <strong style="color:var(--text);"><%= Exploit.count %></strong></div>
+                        <div style="font-size:13px;font-weight:600;color:var(--text);margin-bottom:4px;">Filesystem-based exploit discovery</div>
+                        <div style="font-size:12px;color:var(--muted);">Exploits are read directly from the Metasploit installation at scan time — no sync needed, always up to date.</div>
+                        <div style="font-size:12px;color:var(--muted);margin-top:8px;">
+                            Path: <code style="font-family:var(--mono);font-size:11px;color:var(--accent);"><%= msf_base %></code>
+                        </div>
+                        <div style="font-size:12px;color:var(--muted);margin-top:4px;">
+                            Available exploit modules:&nbsp;
+                            <% if msf_count %>
+                                <strong style="color:var(--accent);"><%= msf_count %></strong>
+                            <% else %>
+                                <strong style="color:var(--red);">Not found — set MSF_MODULES_PATH env var</strong>
+                            <% end %>
+                        </div>
                     </div>
-                    <%= button_to "↻ Sync Exploits", sync_exploits_path,
-                        method: :post,
-                        class: "btn btn-primary btn-sm" %>
                 </div>
             </div>
 

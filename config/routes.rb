@@ -58,8 +58,7 @@ Rails.application.routes.draw do
     end
   end
   patch '/accounts/generate_api_key', to: 'accounts#generate_api_key', as: :generate_api_key
-  post '/exploits/sync', to: 'exploits#sync', as: :sync_exploits
-  get  '/exploits/count', to: 'exploits#count', as: :exploit_count
+  get '/exploits/count', to: 'exploits#count', as: :exploit_count
 
   get "up" => "rails/health#show", as: :rails_health_check
 end
