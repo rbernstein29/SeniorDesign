@@ -81,6 +81,14 @@ class PagesController < ApplicationController
       severities: Array(params[:severities]).presence
     }.compact
 
+    if params[:profile_id].present?
+      profile = ScanProfile.find_by(id: params[:profile_id], organization_id: org_id)
+      if profile&.exploit_ids&.any?
+        allowlist = Exploit.where(id: profile.exploit_ids).pluck(:metasploit_module).compact
+        filter_params[:module_allowlist] = allowlist if allowlist.any?
+      end
+    end
+
     scan_options = {
       port_override: params[:port_override].presence,
       timeout:       params[:timeout].presence&.to_i,

@@ -309,11 +309,15 @@ class ScanService
   end
 
   def get_modules_for_target(target_os)
-    platform = @filter_params['platform'].presence || target_os
-    dirs     = platform_dirs(platform)
-    files    = dirs.any? ? dirs.flat_map { |d| Dir.glob("#{MSF_BASE}/#{d}/**/*.rb") }
-                         : Dir.glob("#{MSF_BASE}/**/*.rb")
-    files.uniq.map { |f| { path: 'exploit/' + f.sub("#{MSF_BASE}/", '').sub('.rb', ''), file: f } }
+    platform  = @filter_params['platform'].presence || target_os
+    allowlist = @filter_params['module_allowlist']
+
+    dirs  = platform_dirs(platform)
+    files = dirs.any? ? dirs.flat_map { |d| Dir.glob("#{MSF_BASE}/#{d}/**/*.rb") }
+                      : Dir.glob("#{MSF_BASE}/**/*.rb")
+
+    mods = files.uniq.map { |f| { path: 'exploit/' + f.sub("#{MSF_BASE}/", '').sub('.rb', ''), file: f } }
+    allowlist.present? ? mods.select { |m| allowlist.include?(m[:path]) } : mods
   end
 
   def platform_dirs(platform)
