@@ -1,19 +1,33 @@
 class AccountsController < ApplicationController
   skip_before_action :verify_authenticity_token, only: [:create]
-  allow_unauthenticated_access only: [:create]
-  
-  def create
-    ActiveRecord::Base.transaction do 
-      @organization = Organization.create!(organization_params)
-      @user = User.create!(user_params.merge(organization_id: @organization.id, access_level: "admin"))
+  allow_unauthenticated_access only: [:create, :verify_email]
 
-      start_new_session_for @user
-      redirect_to root_path
+  def create
+    ActiveRecord::Base.transaction do
+      @organization = Organization.create!(organization_params)
+      @user = User.create!(user_params.merge(organization_id: @organization.id, access_level: "admin", email_verified_at: Time.current))
     end
+
+    # TODO: uncomment once an email delivery service is configured
+    # EmailVerifyMailer.verify(@user).deliver_later
+    # redirect_to login_path, notice: "Account created. Please check your email to verify your address before logging in."
+    start_new_session_for @user
+    redirect_to root_path
   rescue ActiveRecord::RecordInvalid => e
     redirect_to login_path, alert: e.message
   rescue ActiveRecord::RecordNotUnique
     redirect_to login_path, alert: "That organization name or email is already registered."
+  end
+
+  def verify_email
+    user = User.find_by_token_for(:email_verification, params[:token])
+    if user
+      user.update!(email_verified_at: Time.current)
+      start_new_session_for user
+      redirect_to root_path, notice: "Email verified! Welcome to Aegis."
+    else
+      redirect_to login_path, alert: "Verification link is invalid or has expired."
+    end
   end
 
   def generate_api_key
