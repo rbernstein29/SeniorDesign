@@ -12,7 +12,7 @@
     </div>
 
     <div class="stats-grid">
-        <div class="stat-card">
+        <div class="stat-card violet">
             <div class="stat-label">Total Reports</div>
             <div class="stat-number"><%= @reports&.count || 0 %></div>
         </div>
@@ -101,7 +101,7 @@
                 </thead>
                 <tbody>
                     <% @reports.each do |report| %>
-                    <tr>
+                    <tr id="report-<%= report.id %>">
                         <td>
                             <div class="file-icon">
                                 <div class="file-icon-glyph">{ }</div>

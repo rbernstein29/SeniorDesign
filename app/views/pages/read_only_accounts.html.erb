@@ -2,7 +2,7 @@
 
 <%= render 'shared/sidebar', current_page: 'read_only_accounts' %>
 
-<div class="layout page-yellow">
+<div class="layout page-green">
 
   <div class="page-header">
     <div>
@@ -60,7 +60,10 @@
       </div>
     <% else %>
       <div class="state-box">
-        <span class="state-icon">👥</span>
+        <span class="state-icon">
+          <%= image_tag 'SDimagesWhite/UserprofileWhite.png', alt: '', class: 'icon-white', style: 'width:40px;height:40px;opacity:0.4;' %>
+          <%= image_tag 'SDimagesBlack/UserprofileBlack.png', alt: '', class: 'icon-black', style: 'width:40px;height:40px;opacity:0.4;' %>
+        </span>
         <div class="state-title">No Read-Only Users</div>
         <div class="state-sub">Add a read-only user to give limited access to your organization</div>
         <%= link_to "+ Add Read-Only User", create_ro_account_path, class: "btn btn-primary" %>

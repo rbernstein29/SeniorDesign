@@ -2,15 +2,17 @@
 
 <%= render 'shared/sidebar', current_page: 'scanner' %>
 
-<div class="layout page-orange">
+<div class="layout page-red">
 
     <div class="page-header">
         <div>
             <div class="page-title"><%= image_tag 'SDimagesWhite/snanerWhite.png', alt: '', class: 'page-title-img icon-white' %><%= image_tag 'SDimagesBlack/ScansBlack.png', alt: '', class: 'page-title-img icon-black' %> Scanner</div>
             <div class="page-sub">// Metasploit-powered vulnerability assessment</div>
         </div>
-        <%= link_to scan_profiles_path, class: "btn btn-secondary" do %>
-            📋 Manage Profiles
+        <%= link_to scan_profiles_path, class: "btn btn-secondary btn-yellow-glow" do %>
+            <%= image_tag 'SDimagesWhite/scanprofileWhite.png', alt: '', class: 'nav-icon-img icon-white', style: 'width:16px;height:16px;vertical-align:middle;margin-right:4px;' %>
+            <%= image_tag 'SDimagesBlack/scanprofileBlack.png', alt: '', class: 'nav-icon-img icon-black', style: 'width:16px;height:16px;vertical-align:middle;margin-right:4px;' %>
+            Manage Profiles
         <% end %>
     </div>
 
@@ -27,7 +29,10 @@
         <!-- ═══ 1. TARGET SELECTION ═══ -->
         <div class="card" style="margin-bottom:16px;">
             <div class="card-header">
-                <span class="card-header-icon">🎯</span>
+                <span class="card-header-icon">
+                    <%= image_tag 'SDimagesWhite/targetWhite.png', alt: '', class: 'nav-icon-img icon-white', style: 'width:20px;height:20px;' %>
+                    <%= image_tag 'SDimagesBlack/targetBlack.png', alt: '', class: 'nav-icon-img icon-black', style: 'width:20px;height:20px;' %>
+                </span>
                 <div>
                     <div class="card-title">Target Selection</div>
                     <div class="card-subtitle">SELECT WHAT TO SCAN</div>
@@ -136,7 +141,10 @@
         <!-- ═══ 2. EXPLOIT FILTERS ═══ -->
         <div class="card" style="margin-bottom:16px;">
             <div class="card-header">
-                <span class="card-header-icon">⚡</span>
+                <span class="card-header-icon">
+                    <%= image_tag 'SDimagesWhite/SeverityWhite.png', alt: '', class: 'nav-icon-img icon-white', style: 'width:20px;height:20px;' %>
+                    <%= image_tag 'SDimagesBlack/SeverityBlack.png', alt: '', class: 'nav-icon-img icon-black', style: 'width:20px;height:20px;' %>
+                </span>
                 <div>
                     <div class="card-title">Exploit Filters</div>
                     <div class="card-subtitle">SELECT TRAITS — EXPLOITS AUTO-MATCHED</div>
@@ -150,10 +158,11 @@
                     <div class="form-group">
                         <label class="form-label">Severity</label>
                         <div style="display:flex;flex-wrap:wrap;gap:10px;margin-top:4px;">
-                            <% [['critical','var(--red)'],['high','var(--orange)'],['medium','var(--yellow)'],['low','var(--teal)']].each do |sev, color| %>
+                            <% [['critical','#ef4444'],['high','#f59e0b'],['medium','#fbbf24'],['low','#22c55e']].each do |sev, color| %>
                                 <label style="display:flex;align-items:center;gap:6px;cursor:pointer;font-size:13px;">
                                     <input type="checkbox" name="severities[]" value="<%= sev %>"
                                            class="severity-checkbox" checked
+                                           style="accent-color:<%= color %>;"
                                            onchange="updateExploitCount()">
                                     <span style="font-family:var(--mono);color:<%= color %>;text-transform:uppercase;font-size:12px;"><%= sev %></span>
                                 </label>
@@ -213,7 +222,10 @@
         <!-- ═══ 3. SCAN OPTIONS ═══ -->
         <div class="card" style="margin-bottom:16px;">
             <div class="card-header" style="cursor:pointer;" onclick="toggleScanOptions()">
-                <span class="card-header-icon">⚙️</span>
+                <span class="card-header-icon">
+                    <%= image_tag 'SDimagesWhite/SettingsWhite.png', alt: '', class: 'nav-icon-img icon-white', style: 'width:20px;height:20px;' %>
+                    <%= image_tag 'SDimagesBlack/SettingsBlack.png', alt: '', class: 'nav-icon-img icon-black', style: 'width:20px;height:20px;' %>
+                </span>
                 <div>
                     <div class="card-title">Scan Options</div>
                     <div class="card-subtitle">OPTIONAL OVERRIDES</div>

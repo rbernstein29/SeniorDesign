@@ -148,14 +148,20 @@
                 <div class="card-body">
 
                     <%= link_to scanner_path, class: "asset-quick-action" do %>
-                        <div class="asset-qa-icon">▶️</div>
+                        <div class="asset-qa-icon">
+                            <%= image_tag 'SDimagesWhite/PlayWhite.png', alt: '', class: 'icon-white', style: 'width:18px;height:18px;' %>
+                            <%= image_tag 'SDimagesBlack/PlayBlack.png', alt: '', class: 'icon-black', style: 'width:18px;height:18px;' %>
+                        </div>
                         <span>Run Scan on This Asset</span>
                     <% end %>
 
                     <%= button_to asset_path(@asset), method: :delete,
                         data: { confirm: "Delete this asset? This cannot be undone." },
                         class: "asset-quick-action asset-quick-action-danger" do %>
-                        <div class="asset-qa-icon asset-qa-icon-danger">🗑️</div>
+                        <div class="asset-qa-icon asset-qa-icon-danger">
+                            <%= image_tag 'SDimagesWhite/trashWhite.png', alt: '', class: 'icon-white', style: 'width:18px;height:18px;' %>
+                            <%= image_tag 'SDimagesBlack/trashBlack.png', alt: '', class: 'icon-black', style: 'width:18px;height:18px;' %>
+                        </div>
                         <span>Delete Asset</span>
                     <% end %>
 
