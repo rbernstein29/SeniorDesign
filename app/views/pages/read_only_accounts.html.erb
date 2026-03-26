@@ -2,7 +2,7 @@
 
 <%= render 'shared/sidebar', current_page: 'read_only_accounts' %>
 
-<div class="layout page-yellow">
+<div class="layout page-green">
 
   <div class="page-header">
     <div>
@@ -17,6 +17,10 @@
   <% end %>
 
   <div class="info-box">
+    <div class="info-box-icon">
+      <%= image_tag 'SDimagesWhite/InformationWhite.png', alt: '', class: 'icon-white', style: 'width:20px;height:20px;' %>
+      <%= image_tag 'SDimagesBlack/InformationBlack.png', alt: '', class: 'icon-black', style: 'width:20px;height:20px;' %>
+    </div>
     <ul class="info-box-list">
       <li>Read-only accounts are able to view and download scan reports</li>
       <li>They are not able to create assets or run scans</li>
@@ -49,9 +53,13 @@
                 <td class="id-cell"><%= user.email_address %></td>
                 <td class="id-cell"><%= user.created_at.strftime("%b %d, %Y") %></td>
                 <td>
-                  <%= button_to "🗑 Delete", delete_read_only_account_path(user), method: :delete,
+                  <%= button_to delete_read_only_account_path(user), method: :delete,
                       class: "btn btn-danger btn-sm",
-                      data: { confirm: "Delete #{user.name}? This cannot be undone." } %>
+                      data: { confirm: "Delete #{user.name}? This cannot be undone." } do %>
+                    <%= image_tag 'SDimagesWhite/trashWhite.png', alt: '', class: 'icon-white', style: 'width:14px;height:14px;' %>
+                    <%= image_tag 'SDimagesBlack/trashBlack.png', alt: '', class: 'icon-black', style: 'width:14px;height:14px;' %>
+                    Delete
+                  <% end %>
                 </td>
               </tr>
             <% end %>
@@ -60,7 +68,10 @@
       </div>
     <% else %>
       <div class="state-box">
-        <span class="state-icon">👥</span>
+        <span class="state-icon">
+          <%= image_tag 'SDimagesWhite/UserprofileWhite.png', alt: '', class: 'icon-white', style: 'width:40px;height:40px;opacity:0.4;' %>
+          <%= image_tag 'SDimagesBlack/UserprofileBlack.png', alt: '', class: 'icon-black', style: 'width:40px;height:40px;opacity:0.4;' %>
+        </span>
         <div class="state-title">No Read-Only Users</div>
         <div class="state-sub">Add a read-only user to give limited access to your organization</div>
         <%= link_to "+ Add Read-Only User", create_ro_account_path, class: "btn btn-primary" %>

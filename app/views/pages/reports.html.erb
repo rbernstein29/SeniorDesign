@@ -12,7 +12,7 @@
     </div>
 
     <div class="stats-grid">
-        <div class="stat-card">
+        <div class="stat-card violet">
             <div class="stat-label">Total Reports</div>
             <div class="stat-number"><%= @reports&.count || 0 %></div>
         </div>
@@ -84,7 +84,7 @@
 
         <% if @reports.nil? || @reports.empty? %>
             <div class="state-box">
-                <span class="state-icon">&#x1F4CB;</span>
+                <span class="state-icon"><%= image_tag 'SDimagesWhite/AssetMangerWhite.png', alt: '', class: 'icon-white', style: 'width:40px;height:40px;opacity:0.4;' %><%= image_tag 'SDimagesBlack/AssetMangerBLack.png', alt: '', class: 'icon-black', style: 'width:40px;height:40px;opacity:0.4;' %></span>
                 <div class="state-title">No Reports Yet</div>
                 <div class="state-sub">Reports are generated automatically after scans complete.</div>
             </div>
@@ -101,7 +101,7 @@
                 </thead>
                 <tbody>
                     <% @reports.each do |report| %>
-                    <tr>
+                    <tr id="report-<%= report.id %>">
                         <td>
                             <div class="file-icon">
                                 <div class="file-icon-glyph">{ }</div>
@@ -121,25 +121,35 @@
                             <div class="actions">
                                 <button class="btn btn-preview"
                                         onclick="openPreview(<%= report.id %>, '<%= j report.report_name %>')">
-                                    &#x1F441; Preview
+                                    <%= image_tag 'SDimagesWhite/previewWhite.png', alt: '', class: 'icon-white', style: 'width:14px;height:14px;' %>
+                                    <%= image_tag 'SDimagesBlack/previewBlack.png', alt: '', class: 'icon-black', style: 'width:14px;height:14px;' %>
+                                    Preview
                                 </button>
                                 <button class="btn btn-download"
                                         onclick="downloadReport(<%= report.id %>, '<%= j report.report_name %>')">
-                                    &#x2B73; JSON
+                                    JSON
                                 </button>
                                 <%= link_to download_pdf_report_path(report), class: "btn btn-download" do %>
-                                    &#x1F4C4; PDF
+                                    <%= image_tag 'SDimagesWhite/PDFWhite.png', alt: '', class: 'icon-white', style: 'width:14px;height:14px;' %>
+                                    <%= image_tag 'SDimagesBlack/PDFBlack.png', alt: '', class: 'icon-black', style: 'width:14px;height:14px;' %>
+                                    PDF
                                 <% end %>
                                 <%= link_to download_xlsx_report_path(report), class: "btn btn-download" do %>
-                                    &#x1F4CA; XLSX
+                                    <%= image_tag 'SDimagesWhite/xlxsWhite.png', alt: '', class: 'icon-white', style: 'width:14px;height:14px;' %>
+                                    <%= image_tag 'SDimagesBlack/xlxsBlack.png', alt: '', class: 'icon-black', style: 'width:14px;height:14px;' %>
+                                    XLSX
                                 <% end %>
                                 <%= link_to download_csv_report_path(report), class: "btn btn-download" do %>
-                                    &#x1F4CB; CSV
+                                    <%= image_tag 'SDimagesWhite/csvWhite.png', alt: '', class: 'icon-white', style: 'width:14px;height:14px;' %>
+                                    <%= image_tag 'SDimagesBlack/csvBlack.png', alt: '', class: 'icon-black', style: 'width:14px;height:14px;' %>
+                                    CSV
                                 <% end %>
                                 <%= button_to report_path(report), method: :delete,
                                     data: { turbo_confirm: "Delete this report? This cannot be undone." },
                                     class: "btn btn-delete" do %>
-                                    &#x2715; Delete
+                                    <%= image_tag 'SDimagesWhite/trashWhite.png', alt: '', class: 'icon-white', style: 'width:14px;height:14px;' %>
+                                    <%= image_tag 'SDimagesBlack/trashBlack.png', alt: '', class: 'icon-black', style: 'width:14px;height:14px;' %>
+                                    Delete
                                 <% end %>
                             </div>
                         </td>

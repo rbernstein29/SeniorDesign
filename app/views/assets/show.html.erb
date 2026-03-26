@@ -107,7 +107,7 @@
                     <span style="font-family:var(--mono);font-size:10px;color:var(--muted);letter-spacing:1px;">COMING SOON</span>
                 </div>
                 <div style="text-align:center;padding:32px 20px;">
-                    <div style="font-size:32px;opacity:0.4;margin-bottom:10px;">📭</div>
+                    <div style="opacity:0.4;margin-bottom:10px;"><%= image_tag 'SDimagesWhite/MailboxincomingWhite.png', alt: '', class: 'icon-white', style: 'width:32px;height:32px;' %><%= image_tag 'SDimagesBlack/MailboxincomingBlack.png', alt: '', class: 'icon-black', style: 'width:32px;height:32px;' %></div>
                     <div style="font-size:13px;color:var(--muted);">Per-asset scan history coming in a future release</div>
                 </div>
             </div>
@@ -117,12 +117,12 @@
         <div>
             <div class="card">
                 <div class="card-header">
-                    <span class="card-header-icon">📡</span>
+                    <span class="card-header-icon"><%= image_tag 'SDimagesWhite/StatusWhite.png', alt: '', class: 'hdr-icon-img icon-white' %><%= image_tag 'SDimagesBlack/StatusBlack.png', alt: '', class: 'hdr-icon-img icon-black' %></span>
                     <span class="card-title">Status</span>
                 </div>
                 <div class="card-body">
                     <div class="asset-status-panel">
-                        <div class="asset-status-icon">🕐</div>
+                        <div class="asset-status-icon"><%= image_tag 'SDimagesWhite/TimerWhite.png', alt: '', class: 'hdr-icon-img icon-white', style: 'width:20px;height:20px;' %><%= image_tag 'SDimagesBlack/TimerBlack.png', alt: '', class: 'hdr-icon-img icon-black', style: 'width:20px;height:20px;' %></div>
                         <div class="asset-status-label">Last Scan</div>
                         <div class="asset-status-value">
                             <% if @last_scan&.end_time %>
@@ -142,20 +142,26 @@
 
             <div class="card">
                 <div class="card-header">
-                    <span class="card-header-icon">⚡</span>
+                    <span class="card-header-icon"><%= image_tag 'SDimagesWhite/QuickActionWhite.png', alt: '', class: 'hdr-icon-img icon-white' %><%= image_tag 'SDimagesBlack/QuickActionBlack.png', alt: '', class: 'hdr-icon-img icon-black' %></span>
                     <span class="card-title">Quick Actions</span>
                 </div>
                 <div class="card-body">
 
                     <%= link_to scanner_path, class: "asset-quick-action" do %>
-                        <div class="asset-qa-icon">▶️</div>
+                        <div class="asset-qa-icon">
+                            <%= image_tag 'SDimagesWhite/PlayWhite.png', alt: '', class: 'icon-white', style: 'width:18px;height:18px;' %>
+                            <%= image_tag 'SDimagesBlack/PlayBlack.png', alt: '', class: 'icon-black', style: 'width:18px;height:18px;' %>
+                        </div>
                         <span>Run Scan on This Asset</span>
                     <% end %>
 
                     <%= button_to asset_path(@asset), method: :delete,
                         data: { confirm: "Delete this asset? This cannot be undone." },
                         class: "asset-quick-action asset-quick-action-danger" do %>
-                        <div class="asset-qa-icon asset-qa-icon-danger">🗑️</div>
+                        <div class="asset-qa-icon asset-qa-icon-danger">
+                            <%= image_tag 'SDimagesWhite/trashWhite.png', alt: '', class: 'icon-white', style: 'width:18px;height:18px;' %>
+                            <%= image_tag 'SDimagesBlack/trashBlack.png', alt: '', class: 'icon-black', style: 'width:18px;height:18px;' %>
+                        </div>
                         <span>Delete Asset</span>
                     <% end %>
 

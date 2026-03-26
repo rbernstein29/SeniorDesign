@@ -6,11 +6,13 @@
 
     <div class="page-header">
         <div>
-            <div class="page-title">Scans</div>
+            <div class="page-title">Scan History</div>
             <div class="page-sub">Run and manage vulnerability scans</div>
         </div>
         <%= link_to "+ New Scan", "/scanner", class: "btn btn-primary" %>
     </div>
+
+    <%= turbo_stream_from "scan_progress_#{Current.user.id}" %>
 
     <% if flash[:notice] %>
         <div class="alert alert-success"><%= flash[:notice] %></div>
@@ -19,8 +21,10 @@
         <div class="alert alert-error"><%= flash[:alert] %></div>
     <% end %>
 
+    <div id="scan_progress_area"></div>
+
     <div class="stats-grid">
-        <div class="stat-card">
+        <div class="stat-card orange">
             <div class="stat-label">Total Scans</div>
             <div class="stat-number"><%= @total_scans %></div>
         </div>
@@ -39,7 +43,10 @@
     </div>
 
     <div class="info-box">
-        <div class="info-box-icon">ℹ</div>
+        <div class="info-box-icon">
+            <%= image_tag 'SDimagesWhite/InformationWhite.png', alt: '', class: 'icon-white', style: 'width:20px;height:20px;' %>
+            <%= image_tag 'SDimagesBlack/InformationBlack.png', alt: '', class: 'icon-black', style: 'width:20px;height:20px;' %>
+        </div>
         <div>
             <div class="info-box-title">How Scanning Works</div>
             <ul class="info-box-list">
@@ -130,8 +137,10 @@
                                         class: "btn btn-danger btn-sm",
                                         data: { turbo_confirm: "Stop this scan?" } %>
                                 <% end %>
-                                <% if scan.reports.any? %>
-                                    <%= link_to "Report", reports_path,
+                                <% if scan.status == 'completed' %>
+                                    <% report = scan.reports.first %>
+                                    <%= link_to "View Report",
+                                        report ? reports_path(anchor: "report-#{report.id}") : reports_path,
                                         class: "btn btn-secondary btn-sm" %>
                                 <% end %>
                             </div>

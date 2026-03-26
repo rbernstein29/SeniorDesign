@@ -39,6 +39,7 @@ Rails.application.routes.draw do
   post 'agents/:agent_id/heartbeat', to: 'agents#heartbeat', as: :agent_heartbeat
 
   # Accounts
+  get '/verify_email/:token', to: 'accounts#verify_email', as: :verify_email
   resources :accounts, only: [:create]
   resources :read_only_accounts, only: [:create]
   resources :reports, only: [:destroy] do
