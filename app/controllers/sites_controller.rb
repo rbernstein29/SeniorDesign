@@ -2,7 +2,7 @@ class SitesController < ApplicationController
   before_action :require_admin
 
   def index
-    @sites = Site.where(organization_id: current_org_id).order(created_at: :desc)
+    @sites = Site.where(organization_id: current_org_id).includes(:agents, :assets).order(created_at: :desc)
   end
 
   def create

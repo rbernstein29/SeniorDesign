@@ -32,6 +32,9 @@ class AssetsController < ApplicationController
 
   def show
     @asset = Asset.where(organization_id: current_org_id).find(params[:id])
+    asset_scan_ids  = Finding.where(asset_id: @asset.id).distinct.pluck(:scan_id)
+    @last_scan      = Scan.where(id: asset_scan_ids).order('end_time desc nulls last').first
+    @findings_count = Finding.where(asset_id: @asset.id).count
   rescue ActiveRecord::RecordNotFound
     redirect_to assets_path, alert: 'Asset not found'
   end

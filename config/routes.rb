@@ -42,6 +42,7 @@ Rails.application.routes.draw do
       get :download_pdf
       get :download_xlsx
       get :download_csv
+      get :data
     end
   end
 

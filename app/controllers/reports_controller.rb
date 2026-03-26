@@ -41,6 +41,13 @@ class ReportsController < ApplicationController
     redirect_to reports_path, alert: 'Report not found'
   end
 
+  def data
+    report = org_reports.find(params[:id])
+    render json: { report_data: report.report_data }
+  rescue ActiveRecord::RecordNotFound
+    render json: { error: 'Not found' }, status: :not_found
+  end
+
   private
 
   def org_reports

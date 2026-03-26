@@ -212,34 +212,33 @@
         <div class="panel-title">Recent Activity</div>
         <div class="panel-sub">LAST 24 HRS</div>
       </div>
-      <div class="activity-item">
-        <div class="activity-dot dot-blue"></div>
-        <div>
-          <div class="activity-text">Platform initialized and <strong>ready for scanning</strong></div>
-          <div class="activity-time">just now</div>
+      <% if @recent_activity.any? %>
+        <% @recent_activity.each do |item| %>
+          <div class="activity-item">
+            <div class="activity-dot dot-<%= item[:color] %>"></div>
+            <div>
+              <% if item[:scan] %>
+                <div class="activity-text">Scan <strong><%= item[:scan].scan_name %></strong> <%= item[:scan].status %></div>
+                <div class="activity-time"><%= item[:scan].start_time ? time_ago_in_words(item[:scan].start_time) + ' ago' : '—' %></div>
+              <% elsif item[:agent] %>
+                <div class="activity-text">Agent <strong><%= item[:agent].agent_id.first(8) %>&hellip;</strong> last heartbeat</div>
+                <div class="activity-time"><%= time_ago_in_words(item[:agent].last_seen) %> ago</div>
+              <% elsif item[:session] %>
+                <div class="activity-text">User <strong><%= item[:session].user.name %></strong> signed in</div>
+                <div class="activity-time"><%= time_ago_in_words(item[:session].created_at) %> ago</div>
+              <% end %>
+            </div>
+          </div>
+        <% end %>
+      <% else %>
+        <div class="activity-item">
+          <div class="activity-dot dot-gray"></div>
+          <div>
+            <div class="activity-text">No activity yet</div>
+            <div class="activity-time">—</div>
+          </div>
         </div>
-      </div>
-      <div class="activity-item">
-        <div class="activity-dot dot-green"></div>
-        <div>
-          <div class="activity-text">Asset management module <strong>loaded successfully</strong></div>
-          <div class="activity-time">1 min ago</div>
-        </div>
-      </div>
-      <div class="activity-item">
-        <div class="activity-dot dot-green"></div>
-        <div>
-          <div class="activity-text">Database connection <strong>established</strong></div>
-          <div class="activity-time">2 min ago</div>
-        </div>
-      </div>
-      <div class="activity-item">
-        <div class="activity-dot dot-orange"></div>
-        <div>
-          <div class="activity-text">No scans have been run yet — <strong>configure an asset to begin</strong></div>
-          <div class="activity-time">—</div>
-        </div>
-      </div>
+      <% end %>
     </div>
 
     <!-- Quick Actions -->

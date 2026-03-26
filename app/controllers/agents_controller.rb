@@ -115,7 +115,7 @@ class AgentsController < ApplicationController
         total:        agents.count,
         connected:    agents.count(&:connected?),
         offline:      agents.count { |a| !a.connected? },
-        tunnel_ports: agents.count
+        sites_active: agents.select(&:connected?).map(&:site_id).compact.uniq.count
       },
       agents: agents.map do |a|
         {

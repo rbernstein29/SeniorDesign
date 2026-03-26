@@ -1,552 +1,143 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <% content_for :title, "Aegis - Asset Details" %>
-    <%= csrf_meta_tags %>
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;600;700&family=Sora:wght@300;400;600;700&display=swap" rel="stylesheet">
-    <style>
-        :root {
-            --bg:        #080c14;
-            --surface:   #0d1525;
-            --surface2:  #111b30;
-            --border:    rgba(59,130,246,0.15);
-            --blue:      #3b82f6;
-            --blue-dim:  rgba(59,130,246,0.12);
-            --blue-glow: rgba(59,130,246,0.35);
-            --cyan:      #22d3ee;
-            --green:     #10b981;
-            --orange:    #f59e0b;
-            --red:       #ef4444;
-            --text:      #e2e8f0;
-            --muted:     #64748b;
-            --mono:      'JetBrains Mono', monospace;
-            --sans:      'Sora', sans-serif;
-        }
+<% content_for :title, "Aegis - Asset Details" %>
 
-        * { margin: 0; padding: 0; box-sizing: border-box; }
+<%= render 'shared/sidebar', current_page: 'assets' %>
 
-        body {
-            font-family: var(--sans);
-            background: var(--bg);
-            color: var(--text);
-            min-height: 100vh;
-        }
+<div class="layout page-cyan">
 
-        body::before {
-            content: '';
-            position: fixed;
-            inset: 0;
-            background-image:
-                linear-gradient(rgba(59,130,246,0.03) 1px, transparent 1px),
-                linear-gradient(90deg, rgba(59,130,246,0.03) 1px, transparent 1px);
-            background-size: 40px 40px;
-            pointer-events: none;
-            z-index: 0;
-        }
-
-        .layout {
-            position: relative;
-            z-index: 1;
-            max-width: 1200px;
-            margin: 0 auto;
-            padding: 30px 30px 40px 84px;
-        }
-
-        /* ── Page Header ── */
-        .page-header {
-            background: var(--surface);
-            border: 1px solid var(--border);
-            padding: 28px 36px;
-            border-radius: 16px;
-            margin-bottom: 28px;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-        }
-
-        .breadcrumb {
-            font-family: var(--mono);
-            font-size: 11px;
-            color: var(--muted);
-            letter-spacing: 1px;
-            margin-bottom: 8px;
-            display: flex;
-            align-items: center;
-            gap: 8px;
-        }
-
-        .breadcrumb a {
-            color: var(--blue);
-            text-decoration: none;
-        }
-
-        .breadcrumb a:hover { text-decoration: underline; }
-
-        .page-title {
-            font-size: 26px;
-            font-weight: 700;
-            color: #f1f5f9;
-            display: flex;
-            align-items: center;
-            gap: 12px;
-        }
-
-        .page-sub {
-            color: var(--muted);
-            margin-top: 4px;
-            font-size: 13px;
-            font-family: var(--mono);
-        }
-
-        .header-actions {
-            display: flex;
-            gap: 12px;
-            align-items: center;
-        }
-
-        /* ── Buttons ── */
-        .btn {
-            padding: 11px 22px;
-            border-radius: 8px;
-            font-weight: 600;
-            font-size: 13px;
-            cursor: pointer;
-            text-decoration: none;
-            display: inline-flex;
-            align-items: center;
-            gap: 8px;
-            transition: all 0.2s;
-            border: none;
-            font-family: var(--sans);
-        }
-
-        .btn-primary {
-            background: linear-gradient(135deg, var(--blue), #1d4ed8);
-            color: white;
-            box-shadow: 0 4px 16px var(--blue-glow);
-        }
-
-        .btn-primary:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 8px 24px var(--blue-glow);
-        }
-
-        .btn-secondary {
-            background: transparent;
-            border: 1px solid rgba(255,255,255,0.1);
-            color: #94a3b8;
-        }
-
-        .btn-secondary:hover {
-            border-color: var(--blue);
-            color: #60a5fa;
-            background: var(--blue-dim);
-        }
-
-        .btn-danger {
-            background: rgba(239,68,68,0.12);
-            border: 1px solid rgba(239,68,68,0.25);
-            color: #f87171;
-        }
-
-        .btn-danger:hover {
-            background: rgba(239,68,68,0.2);
-            border-color: rgba(239,68,68,0.4);
-        }
-
-        /* ── Grid Layout ── */
-        .content-grid {
-            display: grid;
-            grid-template-columns: 2fr 1fr;
-            gap: 20px;
-        }
-
-        @media (max-width: 900px) {
-            .content-grid { grid-template-columns: 1fr; }
-        }
-
-        /* ── Cards ── */
-        .card {
-            background: var(--surface);
-            border: 1px solid var(--border);
-            border-radius: 16px;
-            overflow: hidden;
-            margin-bottom: 20px;
-        }
-
-        .card-header {
-            padding: 18px 24px;
-            border-bottom: 1px solid rgba(255,255,255,0.06);
-            display: flex;
-            align-items: center;
-            gap: 10px;
-        }
-
-        .card-header-icon {
-            font-size: 16px;
-        }
-
-        .card-title {
-            font-size: 14px;
-            font-weight: 600;
-            color: #f1f5f9;
-            flex: 1;
-        }
-
-        .card-tag {
-            font-family: var(--mono);
-            font-size: 10px;
-            color: var(--muted);
-            letter-spacing: 1px;
-        }
-
-        .card-body {
-            padding: 24px;
-        }
-
-        /* ── Detail Rows ── */
-        .detail-row {
-            display: flex;
-            align-items: flex-start;
-            padding: 14px 0;
-            border-bottom: 1px solid rgba(255,255,255,0.04);
-            gap: 16px;
-        }
-
-        .detail-row:last-child { border-bottom: none; }
-
-        .detail-label {
-            font-family: var(--mono);
-            font-size: 11px;
-            letter-spacing: 1px;
-            text-transform: uppercase;
-            color: var(--muted);
-            width: 140px;
-            flex-shrink: 0;
-            padding-top: 2px;
-        }
-
-        .detail-value {
-            font-size: 14px;
-            color: #e2e8f0;
-            flex: 1;
-        }
-
-        /* ── Badges ── */
-        .badge {
-            display: inline-flex;
-            align-items: center;
-            gap: 6px;
-            padding: 4px 12px;
-            border-radius: 10px;
-            font-family: var(--mono);
-            font-size: 11px;
-            font-weight: 700;
-            letter-spacing: 0.5px;
-        }
-
-        .badge-safe {
-            background: rgba(16,185,129,0.12);
-            border: 1px solid rgba(16,185,129,0.25);
-            color: #34d399;
-        }
-
-        .badge-exploits {
-            background: rgba(245,158,11,0.15);
-            border: 1px solid rgba(245,158,11,0.25);
-            color: #fbbf24;
-        }
-
-        .network-code {
-            background: rgba(59,130,246,0.1);
-            border: 1px solid rgba(59,130,246,0.2);
-            padding: 4px 12px;
-            border-radius: 6px;
-            font-family: var(--mono);
-            font-size: 13px;
-            color: #93c5fd;
-            display: inline-block;
-        }
-
-        .port-tag {
-            background: var(--surface2);
-            border: 1px solid rgba(255,255,255,0.06);
-            padding: 4px 10px;
-            border-radius: 6px;
-            font-family: var(--mono);
-            font-size: 12px;
-            color: #94a3b8;
-            display: inline-block;
-            margin: 2px;
-        }
-
-        .os-tag {
-            background: rgba(139,92,246,0.1);
-            border: 1px solid rgba(139,92,246,0.2);
-            padding: 4px 12px;
-            border-radius: 6px;
-            font-family: var(--mono);
-            font-size: 12px;
-            color: #c4b5fd;
-            display: inline-block;
-        }
-
-        /* ── Status Panel ── */
-        .status-panel {
-            background: var(--surface2);
-            border: 1px solid var(--border);
-            border-radius: 12px;
-            padding: 20px;
-            text-align: center;
-            margin-bottom: 16px;
-        }
-
-        .status-icon {
-            font-size: 36px;
-            margin-bottom: 10px;
-        }
-
-        .status-label {
-            font-family: var(--mono);
-            font-size: 10px;
-            letter-spacing: 1.5px;
-            text-transform: uppercase;
-            color: var(--muted);
-            margin-bottom: 6px;
-        }
-
-        .status-value {
-            font-size: 15px;
-            font-weight: 700;
-            color: #f1f5f9;
-        }
-
-        /* ── Scan History Placeholder ── */
-        .history-empty {
-            text-align: center;
-            padding: 32px 20px;
-        }
-
-        .history-empty-icon { font-size: 32px; margin-bottom: 10px; opacity: 0.4; }
-        .history-empty-text { font-size: 13px; color: var(--muted); }
-
-        /* ── Quick Actions ── */
-        .quick-action {
-            display: flex;
-            align-items: center;
-            gap: 12px;
-            padding: 12px 16px;
-            border-radius: 10px;
-            background: var(--surface2);
-            border: 1px solid rgba(255,255,255,0.06);
-            color: var(--text);
-            text-decoration: none;
-            font-size: 13px;
-            font-weight: 500;
-            transition: all 0.2s;
-            margin-bottom: 8px;
-            cursor: pointer;
-            width: 100%;
-            text-align: left;
-        }
-
-        .quick-action:hover {
-            background: rgba(59,130,246,0.1);
-            border-color: rgba(59,130,246,0.3);
-            color: #60a5fa;
-        }
-
-        .quick-action.danger:hover {
-            background: rgba(239,68,68,0.08);
-            border-color: rgba(239,68,68,0.25);
-            color: #f87171;
-        }
-
-        .qa-icon {
-            width: 30px;
-            height: 30px;
-            border-radius: 7px;
-            background: var(--blue-dim);
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-size: 13px;
-            flex-shrink: 0;
-        }
-
-        .qa-icon.danger-icon {
-            background: rgba(239,68,68,0.1);
-        }
-
-        /* Animations */
-        @keyframes fadeUp {
-            from { opacity: 0; transform: translateY(16px); }
-            to   { opacity: 1; transform: translateY(0); }
-        }
-
-        .page-header  { animation: fadeUp 0.4s ease both; }
-        .content-grid { animation: fadeUp 0.4s 0.1s ease both; }
-    </style>
-</head>
-<body>
-
-    <%= render 'shared/sidebar', current_page: 'assets' %>
-
-    <div class="layout">
-
-        <!-- Page Header -->
-        <div class="page-header">
-            <div>
-                <div class="breadcrumb">
-                    <%= link_to "Asset Management", assets_path %> / <span>Asset #<%= @asset[:id] || params[:id] %></span>
-                </div>
-                <div class="page-title">
-                    <%= image_tag 'SDimagesWhite/AssetMangerWhite.png', alt: '', class: 'page-title-img icon-white' %><%= image_tag 'SDimagesBlack/AssetMangerBLack.png', alt: '', class: 'page-title-img icon-black' %> <%= (@asset[:network] || @asset['network']) %>
-                </div>
-                <div class="page-sub">// asset configuration details</div>
+    <div class="page-header">
+        <div>
+            <div class="breadcrumb">
+                <%= link_to "Asset Management", assets_path %> <span>/</span> <span>Asset #<%= @asset.id %></span>
             </div>
-            <div class="header-actions">
-                <%= link_to "← Back to Assets", assets_path, class: "btn btn-secondary" %>
-                <%= link_to "▶ Run Scan", scanner_path, class: "btn btn-primary" %>
+            <div class="page-title">
+                <%= image_tag 'SDimagesWhite/AssetMangerWhite.png', alt: '', class: 'page-title-img icon-white' %><%= image_tag 'SDimagesBlack/AssetMangerBLack.png', alt: '', class: 'page-title-img icon-black' %> <%= @asset.ip_address %>
             </div>
+            <div class="page-sub">// asset configuration details</div>
         </div>
-
-        <!-- Content Grid -->
-        <div class="content-grid">
-
-            <!-- Left Column -->
-            <div>
-                <!-- Configuration Details -->
-                <div class="card">
-                    <div class="card-header">
-                        <span class="card-header-icon"><%= image_tag 'SDimagesWhite/SettingsWhite.png', alt: '', class: 'hdr-icon-img icon-white' %><%= image_tag 'SDimagesBlack/SettingsBlack.png', alt: '', class: 'hdr-icon-img icon-black' %></span>
-                        <span class="card-title">Configuration</span>
-                        <span class="card-tag">ASSET CONFIG</span>
-                    </div>
-                    <div class="card-body">
-
-                        <div class="detail-row">
-                            <div class="detail-label">Network</div>
-                            <div class="detail-value">
-                                <span class="network-code"><%= @asset.ip_address %></span>
-                            </div>
-                        </div>
-
-                        <div class="detail-row">
-                            <div class="detail-label">Scan Mode</div>
-                            <div class="detail-value">
-                                <% scan_mode = @asset.scan_config&.dig('scanMode') %>
-                                <span class="badge badge-<%= scan_mode %>">
-                                    <%= scan_mode&.upcase %>
-                                </span>
-                            </div>
-                        </div>
-
-                        <div class="detail-row">
-                            <div class="detail-label">Asset Type</div>
-                            <div class="detail-value">
-                                <%= @asset.scan_config&.dig('asset')&.humanize %>
-                            </div>
-                        </div>
-
-                        <div class="detail-row">
-                            <div class="detail-label">Operating System</div>
-                            <div class="detail-value">
-                                <span class="os-tag"><%= @asset.scan_config&.dig('os')&.upcase %></span>
-                            </div>
-                        </div>
-
-                        <div class="detail-row">
-                            <div class="detail-label">Scan Type</div>
-                            <div class="detail-value">
-                                <%= @asset.scan_config&.dig('scanType')&.capitalize %>
-                            </div>
-                        </div>
-
-                        <div class="detail-row">
-                            <div class="detail-label">Ports</div>
-                            <div class="detail-value">
-                                <% ports = @asset.scan_config&.dig('port').to_s.split(',') %>
-                                <% ports.each do |port| %>
-                                    <span class="port-tag"><%= port.strip %></span>
-                                <% end %>
-                            </div>
-                        </div>
-
-                    </div>
-                </div>
-
-                <!-- Scan History Placeholder -->
-                <div class="card">
-                    <div class="card-header">
-                        <span class="card-header-icon"><%= image_tag 'SDimagesWhite/VIewReportsWhite.png', alt: '', class: 'hdr-icon-img icon-white' %><%= image_tag 'SDimagesBlack/ViewReportBlack.png', alt: '', class: 'hdr-icon-img icon-black' %></span>
-                        <span class="card-title">Scan History</span>
-                        <span class="card-tag">COMING SOON</span>
-                    </div>
-                    <div class="history-empty">
-                        <div class="history-empty-icon">📭</div>
-                        <div class="history-empty-text">No scans have been run against this asset yet</div>
-                    </div>
-                </div>
-            </div>
-
-            <!-- Right Column -->
-            <div>
-                <!-- Status -->
-                <div class="card">
-                    <div class="card-header">
-                        <span class="card-header-icon">📡</span>
-                        <span class="card-title">Status</span>
-                    </div>
-                    <div class="card-body">
-                        <div class="status-panel">
-                            <div class="status-icon">🟡</div>
-                            <div class="status-label">Last Scan</div>
-                            <div class="status-value">Never</div>
-                        </div>
-                        <div class="status-panel">
-                            <div class="status-icon"><%= image_tag 'SDimagesWhite/snanerWhite.png', alt: '', class: 'hdr-icon-img icon-white' %><%= image_tag 'SDimagesBlack/ScansBlack.png', alt: '', class: 'hdr-icon-img icon-black' %></div>
-                            <div class="status-label">Findings</div>
-                            <div class="status-value">—</div>
-                        </div>
-                    </div>
-                </div>
-
-                <!-- Quick Actions -->
-                <div class="card">
-                    <div class="card-header">
-                        <span class="card-header-icon">⚡</span>
-                        <span class="card-title">Quick Actions</span>
-                    </div>
-                    <div class="card-body">
-
-                        <%= link_to scanner_path, class: "quick-action" do %>
-                            <div class="qa-icon">▶️</div>
-                            <span>Run Scan on This Asset</span>
-                        <% end %>
-
-                        <%# Edit link — wire up when edit action is ready %>
-                        <a href="#" class="quick-action">
-                            <div class="qa-icon">✏️</div>
-                            <span>Edit Configuration</span>
-                        </a>
-
-                        <%= button_to asset_path(@asset), method: :delete,
-                            data: { confirm: "Delete this asset? This cannot be undone." },
-                            class: "quick-action danger", style: "width: 100%; background: none; border: none; text-align: left; cursor: pointer;" do %>
-                            <div class="qa-icon danger-icon">🗑️</div>
-                            <span>Delete Asset</span>
-                        <% end %>
-
-                    </div>
-                </div>
-
-            </div>
+        <div style="display:flex;gap:10px;align-items:center;">
+            <%= link_to "← Back to Assets", assets_path, class: "btn btn-secondary" %>
+            <%= link_to "▶ Run Scan", scanner_path, class: "btn btn-primary" %>
         </div>
     </div>
 
-</body>
-</html>
+    <div class="asset-content-grid">
+
+        <!-- Left Column -->
+        <div>
+            <div class="card">
+                <div class="card-header">
+                    <span class="card-header-icon"><%= image_tag 'SDimagesWhite/SettingsWhite.png', alt: '', class: 'hdr-icon-img icon-white' %><%= image_tag 'SDimagesBlack/SettingsBlack.png', alt: '', class: 'hdr-icon-img icon-black' %></span>
+                    <span class="card-title">Configuration</span>
+                    <span style="font-family:var(--mono);font-size:10px;color:var(--muted);letter-spacing:1px;">ASSET CONFIG</span>
+                </div>
+                <div class="card-body">
+
+                    <div class="asset-detail-row">
+                        <div class="asset-detail-label">Network</div>
+                        <div class="asset-detail-value">
+                            <span class="network-code"><%= @asset.ip_address %></span>
+                        </div>
+                    </div>
+
+                    <div class="asset-detail-row">
+                        <div class="asset-detail-label">Scan Mode</div>
+                        <div class="asset-detail-value">
+                            <% scan_mode = @asset.scan_config&.dig('scanMode') %>
+                            <span class="badge badge-<%= scan_mode %>"><%= scan_mode&.upcase %></span>
+                        </div>
+                    </div>
+
+                    <div class="asset-detail-row">
+                        <div class="asset-detail-label">Asset Type</div>
+                        <div class="asset-detail-value"><%= @asset.scan_config&.dig('asset')&.humanize %></div>
+                    </div>
+
+                    <div class="asset-detail-row">
+                        <div class="asset-detail-label">Operating System</div>
+                        <div class="asset-detail-value">
+                            <span class="asset-os-tag"><%= @asset.scan_config&.dig('os')&.upcase %></span>
+                        </div>
+                    </div>
+
+                    <div class="asset-detail-row">
+                        <div class="asset-detail-label">Scan Type</div>
+                        <div class="asset-detail-value"><%= @asset.scan_config&.dig('scanType')&.capitalize %></div>
+                    </div>
+
+                    <div class="asset-detail-row">
+                        <div class="asset-detail-label">Ports</div>
+                        <div class="asset-detail-value">
+                            <% ports = @asset.scan_config&.dig('port').to_s.split(',') %>
+                            <% ports.each do |port| %>
+                                <span class="asset-port-tag"><%= port.strip %></span>
+                            <% end %>
+                        </div>
+                    </div>
+
+                </div>
+            </div>
+
+            <div class="card">
+                <div class="card-header">
+                    <span class="card-header-icon"><%= image_tag 'SDimagesWhite/VIewReportsWhite.png', alt: '', class: 'hdr-icon-img icon-white' %><%= image_tag 'SDimagesBlack/ViewReportBlack.png', alt: '', class: 'hdr-icon-img icon-black' %></span>
+                    <span class="card-title">Scan History</span>
+                    <span style="font-family:var(--mono);font-size:10px;color:var(--muted);letter-spacing:1px;">COMING SOON</span>
+                </div>
+                <div style="text-align:center;padding:32px 20px;">
+                    <div style="font-size:32px;opacity:0.4;margin-bottom:10px;">📭</div>
+                    <div style="font-size:13px;color:var(--muted);">Per-asset scan history coming in a future release</div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Right Column -->
+        <div>
+            <div class="card">
+                <div class="card-header">
+                    <span class="card-header-icon">📡</span>
+                    <span class="card-title">Status</span>
+                </div>
+                <div class="card-body">
+                    <div class="asset-status-panel">
+                        <div class="asset-status-icon">🕐</div>
+                        <div class="asset-status-label">Last Scan</div>
+                        <div class="asset-status-value">
+                            <% if @last_scan&.end_time %>
+                                <%= time_ago_in_words(@last_scan.end_time) %> ago
+                            <% else %>
+                                Never
+                            <% end %>
+                        </div>
+                    </div>
+                    <div class="asset-status-panel">
+                        <div class="asset-status-icon"><%= image_tag 'SDimagesWhite/snanerWhite.png', alt: '', class: 'hdr-icon-img icon-white' %><%= image_tag 'SDimagesBlack/ScansBlack.png', alt: '', class: 'hdr-icon-img icon-black' %></div>
+                        <div class="asset-status-label">Findings</div>
+                        <div class="asset-status-value"><%= @findings_count > 0 ? @findings_count : '—' %></div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="card">
+                <div class="card-header">
+                    <span class="card-header-icon">⚡</span>
+                    <span class="card-title">Quick Actions</span>
+                </div>
+                <div class="card-body">
+
+                    <%= link_to scanner_path, class: "asset-quick-action" do %>
+                        <div class="asset-qa-icon">▶️</div>
+                        <span>Run Scan on This Asset</span>
+                    <% end %>
+
+                    <%= button_to asset_path(@asset), method: :delete,
+                        data: { confirm: "Delete this asset? This cannot be undone." },
+                        class: "asset-quick-action asset-quick-action-danger" do %>
+                        <div class="asset-qa-icon asset-qa-icon-danger">🗑️</div>
+                        <span>Delete Asset</span>
+                    <% end %>
+
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

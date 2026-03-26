@@ -2,6 +2,7 @@ class Finding < ApplicationRecord
   self.table_name = 'vuln_scanner.findings'
 
   belongs_to :exploit, optional: true
+  belongs_to :asset,   optional: true
 
   SEVERITY_ORDER = %w[critical high medium low].freeze
 

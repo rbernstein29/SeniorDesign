@@ -18,6 +18,21 @@ class PagesController < ApplicationController
     @users_count = User.where(organization_id: org_id).count rescue 0
     @last_scan   = Report.where(user_id: org_user_ids).maximum(:generated_at) rescue nil
     @active_scans = Scan.for_org(current_org_id).running.count rescue 0
+
+    @recent_activity = []
+    begin
+      recent_scans = Scan.for_org(org_id).order(created_at: :desc).limit(5)
+      recent_scans.each do |scan|
+        color = scan.status == 'completed' ? 'green' : scan.status == 'failed' ? 'red' : 'cyan'
+        @recent_activity << { color: color, scan: scan }
+      end
+      last_agent = Agent.where(organization_id: org_id).order(last_seen: :desc).first
+      @recent_activity << { color: last_agent.connected? ? 'green' : 'orange', agent: last_agent } if last_agent&.last_seen
+      last_session = Session.joins(:user).where(users: { organization_id: org_id }).order(created_at: :desc).first
+      @recent_activity << { color: 'blue', session: last_session } if last_session
+    rescue => e
+      Rails.logger.warn "recent_activity error: #{e.message}"
+    end
   end
 
   def scanner
@@ -63,7 +78,7 @@ class PagesController < ApplicationController
     @critical_findings   = scans.sum(:critical_findings)
     @high_findings       = scans.sum(:high_findings)
     @medium_low_findings = scans.sum(:medium_findings) + scans.sum(:low_findings)
-    @findings = Finding.where(scan_id: scan_ids).order(discovered_at: :desc).limit(200) rescue []
+    @findings = Finding.where(scan_id: scan_ids).includes(:exploit, :asset).order(discovered_at: :desc).limit(200) rescue []
   end
 
   def settings

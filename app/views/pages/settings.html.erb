@@ -16,39 +16,6 @@
 
     <div class="settings-grid">
 
-        <!-- Server Configuration -->
-        <% if admin? %>
-            <div class="settings-card">
-                <div class="card-header">
-                    <div class="card-header-icon">🖥</div>
-                    <div>
-                        <div class="card-title">Server Configuration</div>
-                        <div class="card-subtitle">INFRASTRUCTURE</div>
-                    </div>
-                </div>
-                <div class="settings-body">
-                    <div class="status-row">
-                        <div class="status-dot-sm dot-green-sm"></div>
-                        <span class="status-text">Database connected — PostgreSQL @ <%= ENV.fetch('DB_HOST', 'configured') %></span>
-                    </div>
-                    <div class="field-group">
-                        <div class="field-label">Scanner Server IP</div>
-                        <input class="field-input mono" type="text" value="<%= ENV.fetch('DB_HOST', 'configured') %>" disabled>
-                        <div class="field-hint">Tailscale IP of the Linux scanning server</div>
-                    </div>
-                    <div class="field-group">
-                        <div class="field-label">Rails Port</div>
-                        <input class="field-input mono" type="text" value="3000" disabled>
-                    </div>
-                    <div class="field-group">
-                        <div class="field-label">Agent Tunnel Port Range</div>
-                        <input class="field-input mono" type="text" value="9000 – 9999" disabled>
-                        <div class="field-hint">Ports allocated to SSH reverse tunnels from agents</div>
-                    </div>
-                </div>
-            </div>
-        <% end %>
-
         <!-- Account -->
         <div class="settings-card">
             <div class="card-header">
@@ -109,50 +76,6 @@
         </div>
 
         <% if admin? %>
-            <!-- Scanner Defaults -->
-            <div class="settings-card">
-                <div class="card-header">
-                    <div class="card-header-icon"><%= image_tag 'SDimagesWhite/snanerWhite.png', alt: '', class: 'hdr-icon-img icon-white' %><%= image_tag 'SDimagesBlack/ScansBlack.png', alt: '', class: 'hdr-icon-img icon-black' %></div>
-                    <div>
-                        <div class="card-title">Scanner Defaults</div>
-                        <div class="card-subtitle">SCAN BEHAVIOR</div>
-                    </div>
-                </div>
-                <div class="settings-body">
-                    <div class="toggle-row">
-                        <div>
-                            <div class="toggle-label">Auto-generate reports after scan</div>
-                            <div class="toggle-hint">Create a report automatically when a scan completes</div>
-                        </div>
-                        <label class="toggle">
-                            <input type="checkbox" checked disabled>
-                            <span class="toggle-slider"></span>
-                        </label>
-                    </div>
-                    <div class="toggle-row">
-                        <div>
-                            <div class="toggle-label">Route scans through agent tunnel</div>
-                            <div class="toggle-hint">Use SOCKS5 proxy from connected agents</div>
-                        </div>
-                        <label class="toggle">
-                            <input type="checkbox" checked disabled>
-                            <span class="toggle-slider"></span>
-                        </label>
-                    </div>
-                    <div class="toggle-row">
-                        <div>
-                            <div class="toggle-label">Enable aggressive scan mode</div>
-                            <div class="toggle-hint">Faster but more detectable — use with caution</div>
-                        </div>
-                        <label class="toggle">
-                            <input type="checkbox" disabled>
-                            <span class="toggle-slider"></span>
-                        </label>
-                    </div>
-                    <div class="field-hint">Editable settings coming in a future release</div>
-                </div>
-            </div>
-
             <!-- Danger Zone -->
             <div class="settings-card danger-zone full-width">
                 <div class="card-header">
