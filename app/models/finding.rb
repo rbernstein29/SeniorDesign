@@ -7,8 +7,8 @@ class Finding < ApplicationRecord
   SEVERITY_ORDER = %w[critical high medium low].freeze
 
   scope :for_org, ->(org_id) {
-    joins("JOIN public.assets ON public.assets.id = vuln_scanner.findings.asset_id")
-      .where("public.assets.organization_id = ?", org_id)
+    joins("JOIN vuln_scanner.assets ON vuln_scanner.assets.id = vuln_scanner.findings.asset_id")
+      .where("vuln_scanner.assets.organization_id = ?", org_id)
   }
 
   def severity_badge_class
