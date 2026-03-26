@@ -12,12 +12,16 @@
         <%= link_to "+ New Scan", "/scanner", class: "btn btn-primary" %>
     </div>
 
+    <%= turbo_stream_from "scan_progress_#{Current.user.id}" %>
+
     <% if flash[:notice] %>
         <div class="alert alert-success"><%= flash[:notice] %></div>
     <% end %>
     <% if flash[:alert] %>
         <div class="alert alert-error"><%= flash[:alert] %></div>
     <% end %>
+
+    <div id="scan_progress_area"></div>
 
     <div class="stats-grid">
         <div class="stat-card orange">

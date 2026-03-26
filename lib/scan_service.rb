@@ -118,6 +118,7 @@ class ScanService
     Report.create!(
       organization_id: @org_id,
       user_id:         @user_id,
+      generated_by:    @user_id,
       scan_id:         @scan&.id,
       report_name:     "Scan #{Time.current.strftime('%Y-%m-%d %H:%M')}",
       report_type:     'vulnerability',
@@ -206,7 +207,7 @@ class ScanService
       "set ConnectTimeout 15",
       (proxy ? "set Proxies #{proxy}" : nil),
       "run -z",
-      "sleep 5",
+      "sleep 15",
       "sessions -l",
       "exit -y"
     ].compact

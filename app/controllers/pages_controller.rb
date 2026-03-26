@@ -2,7 +2,7 @@
 class PagesController < ApplicationController
   allow_unauthenticated_access only: [:login]
 
-  before_action :require_admin, only: [:scanner, :trigger_scan, :scans, :stop_scan]
+  before_action :require_admin, only: [:scanner, :trigger_scan, :scans, :stop_scan, :create_ro_account]
 
   def login
     # login page
@@ -127,6 +127,10 @@ class PagesController < ApplicationController
       organization_id: Current.user.organization_id,
       access_level: "read_only"
     )
+  end
+
+  def create_ro_account
+    # form rendered by view; submission handled by ReadOnlyAccountsController#create
   end
 
   private
