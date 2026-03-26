@@ -23,7 +23,6 @@
 
     <%= form_with url: trigger_scan_path, method: :post, local: true, id: "scanner-form" do %>
         <input type="hidden" name="target_mode" id="target_mode_input" value="asset">
-        <input type="hidden" name="exploit_mode" id="exploit_mode_input" value="manual">
 
         <!-- ═══ 1. TARGET SELECTION ═══ -->
         <div class="card" style="margin-bottom:16px;">
@@ -134,84 +133,74 @@
             </div>
         </div>
 
-        <!-- ═══ 2. EXPLOIT SELECTION ═══ -->
+        <!-- ═══ 2. EXPLOIT FILTERS ═══ -->
         <div class="card" style="margin-bottom:16px;">
             <div class="card-header">
                 <span class="card-header-icon">⚡</span>
                 <div>
-                    <div class="card-title">Exploit Selection</div>
-                    <div class="card-subtitle">CHOOSE EXPLOIT SET</div>
+                    <div class="card-title">Exploit Filters</div>
+                    <div class="card-subtitle">SELECT TRAITS — EXPLOITS AUTO-MATCHED</div>
                 </div>
             </div>
             <div class="card-body">
 
-                <!-- Mode tabs -->
-                <div style="display:flex;gap:8px;margin-bottom:20px;">
-                    <button type="button" class="scanner-tab active" id="tab-exploit-manual" onclick="switchExploitMode('manual')">Manual</button>
-                    <button type="button" class="scanner-tab" id="tab-exploit-profile" onclick="switchExploitMode('profile')">Profile</button>
-                    <button type="button" class="scanner-tab" id="tab-exploit-auto" onclick="switchExploitMode('auto')">Auto</button>
-                </div>
+                <div class="form-grid" style="grid-template-columns:1fr 1fr;gap:20px;">
 
-                <!-- Manual -->
-                <div id="exploit-panel-manual">
-                    <% if @exploits.any? %>
-                        <div style="display:flex;gap:8px;margin-bottom:10px;">
-                            <button type="button" onclick="selectAllExploits(true)" class="btn btn-secondary" style="padding:4px 10px;font-size:12px;">Select All</button>
-                            <button type="button" onclick="selectAllExploits(false)" class="btn btn-secondary" style="padding:4px 10px;font-size:12px;">Clear</button>
-                        </div>
-                        <div style="max-height:280px;overflow-y:auto;border:1px solid var(--border);border-radius:8px;padding:8px;">
-                            <% @exploits.group_by { |e| e.severity&.downcase }.sort_by { |s, _| %w[critical high medium low].index(s) || 99 }.each do |severity, exploits| %>
-                                <div style="font-family:var(--mono);font-size:10px;letter-spacing:1px;color:var(--muted);padding:6px 4px 4px;text-transform:uppercase;"><%= severity || 'other' %></div>
-                                <% exploits.each do |exploit| %>
-                                    <label class="exploit-check-row">
-                                        <input type="checkbox" name="exploit_ids[]" value="<%= exploit.id %>" class="exploit-checkbox" checked>
-                                        <span style="font-family:var(--mono);color:var(--accent);font-size:12px;"><%= exploit.exploit_id %></span>
-                                        <span style="color:var(--fg);font-size:13px;"><%= exploit.name %></span>
-                                    </label>
-                                <% end %>
+                    <!-- Severity -->
+                    <div class="form-group">
+                        <label class="form-label">Severity</label>
+                        <div style="display:flex;flex-wrap:wrap;gap:10px;margin-top:4px;">
+                            <% [['critical','var(--red)'],['high','var(--orange)'],['medium','var(--yellow)'],['low','var(--teal)']].each do |sev, color| %>
+                                <label style="display:flex;align-items:center;gap:6px;cursor:pointer;font-size:13px;">
+                                    <input type="checkbox" name="severities[]" value="<%= sev %>"
+                                           class="severity-checkbox" checked
+                                           onchange="updateExploitCount()">
+                                    <span style="font-family:var(--mono);color:<%= color %>;text-transform:uppercase;font-size:12px;"><%= sev %></span>
+                                </label>
                             <% end %>
                         </div>
-                        <div style="margin-top:8px;font-size:12px;color:var(--muted);">
-                            <span id="exploit-selected-count"><%= @exploits.count %></span> exploit(s) selected
-                        </div>
-                    <% else %>
-                        <div style="color:var(--muted);font-size:13px;">No exploits loaded in the database.</div>
-                    <% end %>
-                </div>
+                    </div>
 
-                <!-- Profile -->
-                <div id="exploit-panel-profile" style="display:none;">
-                    <% if @profiles.any? %>
-                        <div class="form-group" style="max-width:400px;">
-                            <label class="form-label">Saved Profile</label>
-                            <select name="profile_id" id="profile-select" onchange="updateProfilePreview()">
-                                <option value="">Select a profile…</option>
-                                <% @profiles.each do |profile| %>
-                                    <option value="<%= profile.id %>"
-                                        data-count="<%= profile.exploit_ids.size %>"
-                                        data-desc="<%= profile.description %>">
-                                        <%= profile.name %> (<%= profile.exploit_ids.size %> exploits)
-                                    </option>
-                                <% end %>
-                            </select>
-                            <div id="profile-preview" style="margin-top:8px;font-size:12px;color:var(--muted);"></div>
-                        </div>
-                    <% else %>
-                        <div style="color:var(--muted);font-size:13px;">
-                            No profiles saved — <%= link_to "create one", new_scan_profile_path, style: "color:var(--accent);" %>
-                        </div>
-                    <% end %>
-                </div>
-
-                <!-- Auto -->
-                <div id="exploit-panel-auto" style="display:none;">
-                    <div style="padding:16px;border:1px solid var(--border);border-radius:8px;background:var(--surface2);">
-                        <div style="font-family:var(--mono);font-size:12px;margin-bottom:8px;">AUTO MODE</div>
-                        <div style="font-size:13px;color:var(--muted);">
-                            Exploits will be automatically selected based on the OS metadata of your chosen targets.
-                            Linux targets get linux/unix exploits, Windows targets get SMB/RDP/Windows exploits, etc.
+                    <!-- Platform -->
+                    <div class="form-group">
+                        <label class="form-label">Platform</label>
+                        <div style="display:flex;flex-wrap:wrap;gap:10px;margin-top:4px;">
+                            <% [['any','Any'],['windows','Windows'],['linux','Linux'],['macos','macOS']].each do |val, label| %>
+                                <label style="display:flex;align-items:center;gap:6px;cursor:pointer;font-size:13px;">
+                                    <input type="radio" name="platform" value="<%= val %>"
+                                           <%= val == 'any' ? 'checked' : '' %>
+                                           onchange="updateExploitCount()">
+                                    <span><%= label %></span>
+                                </label>
+                            <% end %>
                         </div>
                     </div>
+
+                </div>
+
+                <!-- Optional profile override -->
+                <div class="form-group" style="max-width:400px;margin-top:8px;">
+                    <label class="form-label">Profile Override <span style="font-weight:400;color:var(--muted);">(optional — overrides severity/platform)</span></label>
+                    <select name="profile_id" id="profile-select" onchange="updateExploitCount()">
+                        <option value="">— use trait filters above —</option>
+                        <% @profiles.each do |profile| %>
+                            <option value="<%= profile.id %>"
+                                data-count="<%= profile.exploit_ids.size %>">
+                                <%= profile.name %> (<%= profile.exploit_ids.size %> exploits)
+                            </option>
+                        <% end %>
+                    </select>
+                    <% if @profiles.empty? %>
+                        <div style="font-size:11px;color:var(--muted);margin-top:4px;">
+                            No profiles yet — <%= link_to "create one", new_scan_profile_path, style: "color:var(--accent);" %>
+                        </div>
+                    <% end %>
+                </div>
+
+                <!-- Live count -->
+                <div style="margin-top:12px;padding:10px 14px;background:var(--surface2);border-radius:6px;border:1px solid var(--border);display:inline-flex;align-items:center;gap:8px;">
+                    <span style="font-family:var(--mono);font-size:11px;color:var(--muted);">MATCHING EXPLOITS</span>
+                    <span id="exploit-match-count" style="font-family:var(--mono);font-size:18px;font-weight:700;color:var(--accent);"><%= @exploits.count %></span>
                 </div>
 
             </div>
@@ -305,14 +294,28 @@ function switchTargetMode(mode) {
     });
 }
 
-// Exploit mode switching
-function switchExploitMode(mode) {
-    document.getElementById('exploit_mode_input').value = mode;
-    ['manual','profile','auto'].forEach(m => {
-        document.getElementById('exploit-panel-' + m).style.display = m === mode ? '' : 'none';
-        const tab = document.getElementById('tab-exploit-' + m);
-        tab.classList.toggle('active', m === mode);
-    });
+// Live exploit count via AJAX
+function updateExploitCount() {
+    var profileSel = document.getElementById('profile-select');
+    if (profileSel && profileSel.value) {
+        var opt = profileSel.options[profileSel.selectedIndex];
+        var el = document.getElementById('exploit-match-count');
+        if (el) el.textContent = opt.dataset.count || '?';
+        return;
+    }
+    var severities = Array.from(document.querySelectorAll('.severity-checkbox:checked')).map(function(cb) { return cb.value; });
+    var platformEl = document.querySelector('input[name="platform"]:checked');
+    var platform = platformEl ? platformEl.value : 'any';
+    var params = new URLSearchParams();
+    severities.forEach(function(s) { params.append('severities[]', s); });
+    params.set('platform', platform);
+    fetch('<%= exploit_count_path %>?' + params.toString())
+        .then(function(r) { return r.json(); })
+        .then(function(data) {
+            var el = document.getElementById('exploit-match-count');
+            if (el) el.textContent = data.count;
+        })
+        .catch(function() {});
 }
 
 // Asset filter
@@ -348,22 +351,7 @@ document.addEventListener('DOMContentLoaded', () => {
     document.querySelectorAll('.asset-checkbox').forEach(cb => {
         cb.addEventListener('change', updateAssetCount);
     });
-    document.querySelectorAll('.exploit-checkbox').forEach(cb => {
-        cb.addEventListener('change', updateExploitCount);
-    });
 });
-
-// Exploit count
-function selectAllExploits(checked) {
-    document.querySelectorAll('.exploit-checkbox').forEach(cb => cb.checked = checked);
-    updateExploitCount();
-}
-
-function updateExploitCount() {
-    const count = document.querySelectorAll('.exploit-checkbox:checked').length;
-    const el = document.getElementById('exploit-selected-count');
-    if (el) el.textContent = count;
-}
 
 // Site count
 function updateSiteCount() {
@@ -388,19 +376,6 @@ function checkCidrCount() {
             el.textContent = (data.count || 0) + ' matching asset(s) in your inventory';
         })
         .catch(() => { el.textContent = ''; });
-}
-
-// Profile preview
-function updateProfilePreview() {
-    const sel = document.getElementById('profile-select');
-    const opt = sel.options[sel.selectedIndex];
-    const el  = document.getElementById('profile-preview');
-    if (opt && sel.value) {
-        const desc = opt.dataset.desc;
-        el.textContent = desc ? desc : opt.dataset.count + ' exploit(s)';
-    } else {
-        el.textContent = '';
-    }
 }
 
 // Scan options toggle

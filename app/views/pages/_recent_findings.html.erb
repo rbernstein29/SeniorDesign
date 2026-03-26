@@ -1,0 +1,34 @@
+<% recent_findings = local_assigns[:recent_findings] || @recent_findings || [] %>
+<% if recent_findings.any? %>
+  <table style="width:100%;border-collapse:collapse;font-size:13px;">
+    <thead>
+      <tr style="border-bottom:1px solid var(--border);background:var(--surface2);">
+        <th style="padding:10px 16px;text-align:left;font-family:var(--mono);font-size:11px;color:var(--muted);font-weight:500;">SEVERITY</th>
+        <th style="padding:10px 16px;text-align:left;font-family:var(--mono);font-size:11px;color:var(--muted);font-weight:500;">ASSET</th>
+        <th style="padding:10px 16px;text-align:left;font-family:var(--mono);font-size:11px;color:var(--muted);font-weight:500;">EXPLOIT</th>
+        <th style="padding:10px 16px;text-align:left;font-family:var(--mono);font-size:11px;color:var(--muted);font-weight:500;">DISCOVERED</th>
+        <th style="padding:10px 16px;text-align:left;font-family:var(--mono);font-size:11px;color:var(--muted);font-weight:500;">STATUS</th>
+      </tr>
+    </thead>
+    <tbody>
+      <% recent_findings.each do |f| %>
+        <% sev_color = { 'critical' => 'var(--red)', 'high' => 'var(--orange)', 'medium' => 'var(--yellow)', 'low' => 'var(--teal)' }[f.severity&.downcase] || 'var(--muted)' %>
+        <tr style="border-bottom:1px solid var(--border);">
+          <td style="padding:10px 16px;">
+            <span style="font-family:var(--mono);font-size:11px;font-weight:700;color:<%= sev_color %>;text-transform:uppercase;"><%= f.severity %></span>
+          </td>
+          <td style="padding:10px 16px;font-family:var(--mono);color:var(--text);"><%= f.asset&.ip_address || '—' %></td>
+          <td style="padding:10px 16px;color:var(--text);"><%= f.exploit&.name || '—' %></td>
+          <td style="padding:10px 16px;color:var(--muted);font-size:12px;"><%= f.discovered_at ? time_ago_in_words(f.discovered_at) + ' ago' : '—' %></td>
+          <td style="padding:10px 16px;">
+            <span style="font-family:var(--mono);font-size:11px;color:<%= f.status == 'open' ? 'var(--red)' : 'var(--green)' %>;"><%= f.status&.upcase %></span>
+          </td>
+        </tr>
+      <% end %>
+    </tbody>
+  </table>
+<% else %>
+  <div style="padding:32px;text-align:center;color:var(--muted);font-size:13px;">
+    No vulnerabilities found yet — run a scan to see results here.
+  </div>
+<% end %>

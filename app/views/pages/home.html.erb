@@ -90,42 +90,130 @@
     </div>
   </div>
 
+  <!-- Navigation Cards -->
+  <div class="section-header">Navigate</div>
+  <div class="nav-grid">
+    <% if admin? %>
+      <a href="<%= scans_path rescue '#' %>" class="nav-card nav-orange">
+        <div class="card-arrow">→</div>
+        <div class="card-icon-wrap">
+          <%= image_tag 'SDimagesWhite/snanerWhite.png', alt: '', class: 'card-icon-img icon-white' %>
+          <%= image_tag 'SDimagesBlack/ScansBlack.png', alt: '', class: 'card-icon-img icon-black' %>
+        </div>
+        <div>
+          <div class="card-title">Run a Scan</div>
+          <div class="card-desc">Configure and launch vulnerability scans against your targets.</div>
+        </div>
+        <div class="card-tag">SCANNER</div>
+      </a>
+      <a href="<%= scanner_path rescue '#' %>" class="nav-card nav-red">
+        <div class="card-arrow">→</div>
+        <div class="card-icon-wrap">
+          <%= image_tag 'SDimagesWhite/snanerWhite.png', alt: '', class: 'card-icon-img icon-white' %>
+          <%= image_tag 'SDimagesBlack/ScansBlack.png', alt: '', class: 'card-icon-img icon-black' %>
+        </div>
+        <div>
+          <div class="card-title">Scanner</div>
+          <div class="card-desc">Configure scan parameters, select targets and exploit filters.</div>
+        </div>
+        <div class="card-tag">SCANNER</div>
+      </a>
+      <a href="<%= assets_path %>" class="nav-card nav-cyan">
+        <div class="card-arrow">→</div>
+        <div class="card-icon-wrap">
+          <%= image_tag 'SDimagesWhite/AssetMangerWhite.png', alt: '', class: 'card-icon-img icon-white' %>
+          <%= image_tag 'SDimagesBlack/AssetMangerBLack.png', alt: '', class: 'card-icon-img icon-black' %>
+        </div>
+        <div>
+          <div class="card-title">Asset Management</div>
+          <div class="card-desc">Add, edit, and organize your network targets and scan configurations.</div>
+        </div>
+        <div class="card-tag">ASSETS</div>
+      </a>
+      <a href="<%= agents_path rescue '#' %>" class="nav-card nav-magenta">
+        <div class="card-arrow">→</div>
+        <div class="card-icon-wrap">
+          <%= image_tag 'SDimagesWhite/Agent.png', alt: '', class: 'card-icon-img icon-white' %>
+          <%= image_tag 'SDimagesBlack/AgentsBlack.png', alt: '', class: 'card-icon-img icon-black' %>
+        </div>
+        <div>
+          <div class="card-title">Agents</div>
+          <div class="card-desc">Manage distributed scanning agents deployed across your network.</div>
+        </div>
+        <div class="card-tag">AGENTS</div>
+      </a>
+      <a href="<%= sites_path rescue '#' %>" class="nav-card nav-teal">
+        <div class="card-arrow">→</div>
+        <div class="card-icon-wrap">
+          <%= image_tag 'SDimagesWhite/SitesWhite.png', alt: '', class: 'card-icon-img icon-white' %>
+          <%= image_tag 'SDimagesBlack/SitesBlack.png', alt: '', class: 'card-icon-img icon-black' %>
+        </div>
+        <div>
+          <div class="card-title">Network Sites</div>
+          <div class="card-desc">Organize assets by physical or logical network location.</div>
+        </div>
+        <div class="card-tag">NETWORK</div>
+      </a>
+      <a href="<%= scan_profiles_path rescue '#' %>" class="nav-card nav-cyan">
+        <div class="card-arrow">→</div>
+        <div class="card-icon-wrap">
+          <%= image_tag 'SDimagesWhite/snanerWhite.png', alt: '', class: 'card-icon-img icon-white' %>
+          <%= image_tag 'SDimagesBlack/ScansBlack.png', alt: '', class: 'card-icon-img icon-black' %>
+        </div>
+        <div>
+          <div class="card-title">Scan Profiles</div>
+          <div class="card-desc">Save and manage reusable exploit filter configurations.</div>
+        </div>
+        <div class="card-tag">PROFILES</div>
+      </a>
+    <% end %>
+    <a href="<%= reports_path rescue '#' %>" class="nav-card nav-violet">
+      <div class="card-arrow">→</div>
+      <div class="card-icon-wrap">
+        <%= image_tag 'SDimagesWhite/VIewReportsWhite.png', alt: '', class: 'card-icon-img icon-white' %>
+        <%= image_tag 'SDimagesBlack/ViewReportBlack.png', alt: '', class: 'card-icon-img icon-black' %>
+      </div>
+      <div>
+        <div class="card-title">View Reports</div>
+        <div class="card-desc">Review scan results, vulnerability findings, and remediation data.</div>
+      </div>
+      <div class="card-tag">REPORTS</div>
+    </a>
+    <% if admin? %>
+      <a href="<%= read_only_accounts_path rescue '#' %>" class="nav-card nav-yellow">
+        <div class="card-arrow">→</div>
+        <div class="card-icon-wrap">
+          <%= image_tag 'SDimagesWhite/ConfigureAccountWhite.png', alt: '', class: 'card-icon-img icon-white' %>
+          <%= image_tag 'SDimagesBlack/ConfigureAccounts.png', alt: '', class: 'card-icon-img icon-black' %>
+        </div>
+        <div>
+          <div class="card-title">Configure Accounts</div>
+          <div class="card-desc">Create and delete read-only accounts.</div>
+        </div>
+        <div class="card-tag">CONFIG</div>
+      </a>
+    <% end %>
+    <a href="<%= settings_path rescue '#' %>" class="nav-card nav-blue">
+      <div class="card-arrow">→</div>
+      <div class="card-icon-wrap">
+        <%= image_tag 'SDimagesWhite/SettingsWhite.png', alt: '', class: 'card-icon-img icon-white' %>
+        <%= image_tag 'SDimagesBlack/SettingsBlack.png', alt: '', class: 'card-icon-img icon-black' %>
+      </div>
+      <div>
+        <div class="card-title">Settings</div>
+        <div class="card-desc">Configure scanner options, API keys, and sync exploits from Metasploit.</div>
+      </div>
+      <div class="card-tag">CONFIG</div>
+    </a>
+  </div>
+
   <!-- Recent Vulnerabilities -->
   <div class="section-header">Recent Vulnerabilities</div>
-  <div class="main-card" style="padding:0;overflow:hidden;">
-    <% if @recent_findings.any? %>
-      <table style="width:100%;border-collapse:collapse;font-size:13px;">
-        <thead>
-          <tr style="border-bottom:1px solid var(--border);background:var(--surface2);">
-            <th style="padding:10px 16px;text-align:left;font-family:var(--mono);font-size:11px;color:var(--muted);font-weight:500;">SEVERITY</th>
-            <th style="padding:10px 16px;text-align:left;font-family:var(--mono);font-size:11px;color:var(--muted);font-weight:500;">ASSET</th>
-            <th style="padding:10px 16px;text-align:left;font-family:var(--mono);font-size:11px;color:var(--muted);font-weight:500;">EXPLOIT</th>
-            <th style="padding:10px 16px;text-align:left;font-family:var(--mono);font-size:11px;color:var(--muted);font-weight:500;">DISCOVERED</th>
-            <th style="padding:10px 16px;text-align:left;font-family:var(--mono);font-size:11px;color:var(--muted);font-weight:500;">STATUS</th>
-          </tr>
-        </thead>
-        <tbody>
-          <% @recent_findings.each do |f| %>
-            <% sev_color = { 'critical' => 'var(--red)', 'high' => 'var(--orange)', 'medium' => 'var(--yellow)', 'low' => 'var(--teal)' }[f.severity&.downcase] || 'var(--muted)' %>
-            <tr style="border-bottom:1px solid var(--border);">
-              <td style="padding:10px 16px;">
-                <span style="font-family:var(--mono);font-size:11px;font-weight:700;color:<%= sev_color %>;text-transform:uppercase;"><%= f.severity %></span>
-              </td>
-              <td style="padding:10px 16px;font-family:var(--mono);color:var(--text);"><%= f.asset&.ip_address || '—' %></td>
-              <td style="padding:10px 16px;color:var(--text);"><%= f.exploit&.name || '—' %></td>
-              <td style="padding:10px 16px;color:var(--muted);font-size:12px;"><%= f.discovered_at ? time_ago_in_words(f.discovered_at) + ' ago' : '—' %></td>
-              <td style="padding:10px 16px;">
-                <span style="font-family:var(--mono);font-size:11px;color:<%= f.status == 'open' ? 'var(--red)' : 'var(--green)' %>;"><%= f.status&.upcase %></span>
-              </td>
-            </tr>
-          <% end %>
-        </tbody>
-      </table>
-    <% else %>
-      <div style="padding:32px;text-align:center;color:var(--muted);font-size:13px;">
-        No vulnerabilities found yet — run a scan to see results here.
-      </div>
-    <% end %>
+  <div class="main-card" style="padding:0;overflow:hidden;"
+       id="recent-vulns-container"
+       data-refresh-url="<%= home_recent_findings_path %>"
+       data-refresh-interval="10000">
+    <%= render 'recent_findings', recent_findings: @recent_findings %>
   </div>
 
   <!-- Bottom Row -->
@@ -216,4 +304,14 @@
   }
   updateClock();
   setInterval(updateClock, 1000);
+
+  (function() {
+    var el = document.getElementById('recent-vulns-container');
+    if (!el) return;
+    setInterval(function() {
+      fetch(el.dataset.refreshUrl)
+        .then(function(r) { return r.text(); })
+        .then(function(html) { el.innerHTML = html; });
+    }, parseInt(el.dataset.refreshInterval));
+  })();
 </script>
