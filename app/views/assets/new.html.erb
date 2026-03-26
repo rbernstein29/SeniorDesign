@@ -1,13 +1,13 @@
-<% content_for :title, "Aegis - Asset Configuration" %>
+<% content_for :title, "Aegis - Add Asset" %>
 
 <%= render 'shared/sidebar', current_page: 'assets' %>
 
-<div class="layout">
+<div class="layout page-cyan">
 
     <div class="page-header">
         <div>
-            <div class="page-title">Asset Configuration</div>
-            <div class="page-sub">Configure a new scan target</div>
+            <div class="page-title"><%= image_tag 'SDimagesWhite/AssetMangerWhite.png', alt: '', class: 'page-title-img icon-white' %><%= image_tag 'SDimagesBlack/AssetMangerBLack.png', alt: '', class: 'page-title-img icon-black' %> Add Asset</div>
+            <div class="page-sub">// configure a new scan target</div>
         </div>
         <%= link_to "← Back to Assets", assets_path, class: "btn btn-secondary" %>
     </div>
@@ -15,153 +15,85 @@
     <% if flash[:alert] %>
         <div class="alert alert-error"><%= flash[:alert] %></div>
     <% end %>
-    <% if flash[:notice] %>
-        <div class="alert alert-success"><%= flash[:notice] %></div>
-    <% end %>
 
     <div class="main-card">
         <div class="card-header">
             <div class="card-title">New Asset</div>
-            <div class="card-subtitle">SCAN TARGET CONFIGURATION</div>
+            <div class="card-subtitle">SCAN TARGET</div>
         </div>
-
         <div class="card-body">
-            <%= form_with url: assets_path, method: :post, local: true, html: { id: 'scanForm' } do |f| %>
-                <div class="form-grid">
+            <%= form_with url: assets_path, method: :post, local: true do %>
 
-                    <div>
+                <div style="margin-bottom:24px;">
+                    <div style="font-family:var(--mono);font-size:11px;letter-spacing:1px;color:var(--muted);margin-bottom:14px;">REQUIRED</div>
+                    <div class="form-grid">
                         <div class="form-group">
-                            <label class="form-label required">Scan Mode</label>
-                            <div class="boxed-group">
-                                <label class="radio-option">
-                                    <%= radio_button_tag :scanMode, 'safe', false, required: true %>
-                                    Safe
-                                </label>
-                                <label class="radio-option">
-                                    <%= radio_button_tag :scanMode, 'exploits', false, required: true %>
-                                    Exploits
-                                </label>
-                            </div>
+                            <label class="form-label required">IP Address or CIDR Range</label>
+                            <%= text_field_tag :network, nil,
+                                placeholder: "192.168.1.5  or  192.168.1.0/24",
+                                required: true %>
+                            <div style="font-size:11px;color:var(--muted);margin-top:4px;">Use /24 or smaller for ranges (e.g. /24 = 254 hosts)</div>
                         </div>
-
                         <div class="form-group">
-                            <label class="form-label required">Target Scope</label>
-                            <div class="boxed-group">
-                                <label class="radio-option">
-                                    <%= radio_button_tag :scope, 'individual', true, required: true %>
-                                    Individual Network
-                                </label>
-                                <label class="radio-option">
-                                    <%= radio_button_tag :scope, 'range', false, required: true %>
-                                    Range of Networks
-                                </label>
-                            </div>
-                        </div>
-
-                        <div class="form-group">
-                            <label class="form-label required">Site (Agent Network)</label>
+                            <label class="form-label">Site</label>
                             <%= select_tag :site_id,
-                                options_for_select(@sites.map { |s| ["#{s.name}#{s.network_range.present? ? " (#{s.network_range})" : ""}", s.id] }),
-                                prompt: "Select a site...", required: true %>
-                        </div>
-
-                        <div class="form-group">
-                            <label class="form-label required">Network / Network Range</label>
-                            <%= text_field_tag :network, nil, placeholder: "e.g. 192.168.1.1/24", required: true %>
-                        </div>
-
-                        <div class="form-group">
-                            <label class="form-label required">Exclude Network</label>
-                            <%= text_field_tag :exclude, nil, placeholder: "e.g. 192.168.1.5", required: true %>
-                        </div>
-
-                        <div class="form-group">
-                            <label class="form-label required">Port / Port Range</label>
-                            <%= text_field_tag :port, nil, placeholder: "e.g. 80, 443, 8000-8080", required: true %>
+                                options_for_select([["No site", ""]] + @sites.map { |s| ["#{s.name}#{s.network_range.present? ? " (#{s.network_range})" : ""}", s.id] }),
+                                prompt: nil %>
                         </div>
                     </div>
-
-                    <div>
-                        <div class="form-group">
-                            <label class="form-label required">Operating System</label>
-                            <%= select_tag :os, options_for_select([
-                                ['Select OS', ''],
-                                ['Windows 10/11', 'win11'],
-                                ['Windows Server 2019', 'server2019'],
-                                ['Linux (Ubuntu/CentOS)', 'linux'],
-                                ['macOS', 'macos']
-                            ]), required: true %>
-                        </div>
-
-                        <div class="form-group">
-                            <label class="form-label required">Asset Type</label>
-                            <%= select_tag :asset, options_for_select([
-                                ['Server', 'server'],
-                                ['Workstation', 'workstation'],
-                                ['Network Device', 'network_device']
-                            ]), required: true %>
-                        </div>
-
-                        <div class="form-group">
-                            <label class="form-label required">Scan Type</label>
-                            <%= select_tag :scanType, options_for_select([
-                                ['Full', 'full'],
-                                ['Quick', 'quick'],
-                                ['Custom', 'custom']
-                            ]), required: true %>
-                        </div>
-
-                        <div class="form-group">
-                            <label class="form-label">Schedule (optional)</label>
-                            <%= datetime_local_field_tag :schedule, nil %>
-                        </div>
-
-                        <div class="form-group">
-                            <label class="form-label required">Report Format</label>
-                            <div class="boxed-group">
-                                <label class="radio-option">
-                                    <%= check_box_tag 'format[]', 'json', true, required: true %>
-                                    JSON
-                                </label>
-                                <label class="radio-option">
-                                    <%= check_box_tag 'format[]', 'pdf', false %>
-                                    PDF
-                                </label>
-                                <label class="radio-option">
-                                    <%= check_box_tag 'format[]', 'xlsx', false %>
-                                    Excel (.xlsx)
-                                </label>
-                                <label class="radio-option">
-                                    <%= check_box_tag 'format[]', 'csv', false %>
-                                    CSV (.csv)
-                                </label>
-                            </div>
-                        </div>
-                    </div>
-
                 </div>
 
-                <div class="form-divider"></div>
+                <div style="border-top:1px solid var(--border);padding-top:20px;margin-bottom:24px;">
+                    <div style="font-family:var(--mono);font-size:11px;letter-spacing:1px;color:var(--muted);margin-bottom:14px;">OPTIONAL</div>
+                    <div class="form-grid">
+                        <div class="form-group">
+                            <label class="form-label">Hostname</label>
+                            <%= text_field_tag :hostname, nil, placeholder: "e.g. web-server-01.example.com" %>
+                            <div style="font-size:11px;color:var(--muted);margin-top:4px;">Leave blank to auto-detect via DNS</div>
+                        </div>
+                        <div class="form-group">
+                            <label class="form-label">Ports</label>
+                            <%= text_field_tag :port, nil, placeholder: "22, 80, 443" %>
+                            <div style="font-size:11px;color:var(--muted);margin-top:4px;">Leave blank to let the scanner choose</div>
+                        </div>
+                        <div class="form-group">
+                            <label class="form-label">Operating System</label>
+                            <%= select_tag :os, options_for_select([
+                                ["Unknown", ""],
+                                ["Linux", "linux"],
+                                ["Windows", "windows"],
+                                ["macOS", "macos"]
+                            ]) %>
+                        </div>
+                        <div class="form-group">
+                            <label class="form-label">Asset Type</label>
+                            <%= select_tag :asset_type, options_for_select([
+                                ["Unknown", ""],
+                                ["Server", "server"],
+                                ["Workstation", "workstation"],
+                                ["Network Device", "network_device"]
+                            ]) %>
+                        </div>
+                        <div class="form-group">
+                            <label class="form-label">Criticality</label>
+                            <%= select_tag :criticality, options_for_select([
+                                ["Unknown", "unknown"],
+                                ["High", "high"],
+                                ["Medium", "medium"],
+                                ["Low", "low"]
+                            ]) %>
+                        </div>
+                        <div class="form-group" style="grid-column:1/-1;">
+                            <label class="form-label">Notes</label>
+                            <%= text_area_tag :notes, nil, placeholder: "Any additional context about this asset", rows: 3 %>
+                        </div>
+                    </div>
+                </div>
 
                 <div class="form-actions">
-                    <input type="file" id="jsonFile" accept=".json" style="display: none;">
-                    <button type="button" class="btn-import" onclick="document.getElementById('jsonFile').click()">
-                        Import JSON <span id="file-upload-name"></span>
-                    </button>
-                    <button type="submit" class="btn btn-primary" id="generateBtn">
-                        Add Asset
-                    </button>
+                    <button type="submit" class="btn btn-primary">Add Asset</button>
                 </div>
             <% end %>
         </div>
     </div>
-
 </div>
-
-<script>
-    document.getElementById('jsonFile').addEventListener('change', function(e) {
-        const fileName = e.target.files[0] ? e.target.files[0].name : "";
-        const label = document.getElementById('file-upload-name');
-        label.textContent = fileName ? `— ${fileName}` : "";
-    });
-</script>

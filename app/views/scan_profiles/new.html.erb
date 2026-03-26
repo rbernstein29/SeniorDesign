@@ -1,0 +1,77 @@
+<% content_for :title, "Aegis - New Scan Profile" %>
+
+<%= render 'shared/sidebar', current_page: 'scanner' %>
+
+<div class="layout page-cyan">
+    <div class="page-header">
+        <div>
+            <div class="page-title">New Scan Profile</div>
+            <div class="page-sub">// save an exploit set for reuse</div>
+        </div>
+        <%= link_to "← Back to Profiles", scan_profiles_path, class: "btn btn-secondary" %>
+    </div>
+
+    <% if flash[:alert] %>
+        <div class="alert alert-error"><%= flash[:alert] %></div>
+    <% end %>
+
+    <div class="main-card">
+        <div class="card-header">
+            <div class="card-title">Profile Details</div>
+            <div class="card-subtitle">SCAN PROFILE</div>
+        </div>
+        <div class="card-body">
+            <%= form_with url: scan_profiles_path, method: :post, local: true do %>
+                <div class="form-group">
+                    <label class="form-label required">Profile Name</label>
+                    <%= text_field_tag :name, nil, placeholder: "e.g. Windows Full Scan", required: true, style: "max-width:400px;" %>
+                </div>
+                <div class="form-group">
+                    <label class="form-label">Description</label>
+                    <%= text_area_tag :description, nil, placeholder: "Optional description", rows: 2, style: "max-width:600px;" %>
+                </div>
+
+                <div class="form-group">
+                    <label class="form-label">Exploits</label>
+                    <div style="font-size:12px;color:var(--muted);margin-bottom:8px;">Select the exploits to include in this profile</div>
+
+                    <% severity_order = %w[critical high medium low] %>
+                    <% grouped = @exploits.group_by { |e| e.severity&.downcase } %>
+                    <% severity_order.each do |sev| %>
+                        <% next unless grouped[sev]&.any? %>
+                        <div style="margin-bottom:16px;">
+                            <div style="font-family:var(--mono);font-size:11px;letter-spacing:1px;color:var(--muted);margin-bottom:6px;text-transform:uppercase;"><%= sev %></div>
+                            <div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(280px,1fr));gap:4px;">
+                                <% grouped[sev].each do |exploit| %>
+                                    <label style="display:flex;align-items:center;gap:8px;padding:6px 8px;border-radius:6px;cursor:pointer;font-size:13px;border:1px solid var(--border);">
+                                        <%= check_box_tag 'exploit_ids[]', exploit.id, false %>
+                                        <span><%= exploit.name %></span>
+                                    </label>
+                                <% end %>
+                            </div>
+                        </div>
+                    <% end %>
+
+                    <% ungrouped = @exploits.reject { |e| severity_order.include?(e.severity&.downcase) } %>
+                    <% if ungrouped.any? %>
+                        <div style="margin-bottom:16px;">
+                            <div style="font-family:var(--mono);font-size:11px;letter-spacing:1px;color:var(--muted);margin-bottom:6px;">OTHER</div>
+                            <div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(280px,1fr));gap:4px;">
+                                <% ungrouped.each do |exploit| %>
+                                    <label style="display:flex;align-items:center;gap:8px;padding:6px 8px;border-radius:6px;cursor:pointer;font-size:13px;border:1px solid var(--border);">
+                                        <%= check_box_tag 'exploit_ids[]', exploit.id, false %>
+                                        <span><%= exploit.name %></span>
+                                    </label>
+                                <% end %>
+                            </div>
+                        </div>
+                    <% end %>
+                </div>
+
+                <div class="form-actions">
+                    <button type="submit" class="btn btn-primary">Save Profile</button>
+                </div>
+            <% end %>
+        </div>
+    </div>
+</div>

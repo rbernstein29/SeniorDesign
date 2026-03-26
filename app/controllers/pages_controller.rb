@@ -36,24 +36,61 @@ class PagesController < ApplicationController
   end
 
   def scanner
-    org_id   = Current.user.organization_id
-    @assets  = Asset.where(organization_id: org_id).order(:ip_address)
-    @exploits = Exploit.order(:id)
+    org_id    = Current.user.organization_id
+    @assets   = Asset.where(organization_id: org_id).includes(:site).order(:ip_address)
+    @sites    = Site.where(organization_id: org_id)
+    @exploits = Exploit.order(:severity, :name)
+    @profiles = ScanProfile.where(organization_id: org_id)
   end
 
   def trigger_scan
-    unless Current.user.access_level == "admin"
-      redirect_to scanner_path, alert: "You do not have permission to perform scans."
+    org_id = Current.user.organization_id
+
+    # Resolve target asset IDs
+    asset_ids = case params[:target_mode]
+    when 'site'
+      Asset.where(organization_id: org_id, site_id: params[:site_id]).pluck(:id)
+    when 'cidr'
+      require 'ipaddr'
+      range = IPAddr.new(params[:cidr_range].to_s) rescue nil
+      range ? Asset.where(organization_id: org_id).select { |a|
+        range.include?(IPAddr.new(a.ip_address.to_s.split('/').first)) rescue false
+      }.map(&:id) : []
+    else # 'asset'
+      Array(params[:asset_ids]).map(&:to_i).select { |id| id > 0 }
+    end
+
+    if asset_ids.empty?
+      redirect_to scanner_path, alert: "No targets selected."
       return
     end
 
-    org_id = Current.user.organization_id
-    exploit_ids_param = params.dig(:trigger_scan, :exploit_ids) || []
-    exploit_range = Array(exploit_ids_param).map(&:to_i).select { |id| id > 0 }
+    # Resolve exploit IDs
+    exploit_ids = case params[:exploit_mode]
+    when 'profile'
+      ScanProfile.find_by(id: params[:profile_id], organization_id: org_id)&.exploit_ids || []
+    when 'auto'
+      os_list = Asset.where(id: asset_ids).pluck(:scan_config).map { |c|
+        (c || {})['os']
+      }.compact.uniq
+      auto_select_exploits(os_list)
+    else # 'manual'
+      Array(params[:exploit_ids]).map(&:to_i).select { |id| id > 0 }
+    end
 
-    asset_id = params[:asset_id].presence&.to_i
-    ScanJob.perform_later(org_id, exploit_range, Current.user.id, asset_id)
-    redirect_to scans_path, notice: "Scan queued."
+    if exploit_ids.empty?
+      redirect_to scanner_path, alert: "No exploits selected."
+      return
+    end
+
+    scan_options = {
+      port_override:    params[:port_override].presence,
+      payload_override: params[:payload_override].presence,
+      timeout:          params[:timeout].presence&.to_i
+    }.compact
+
+    ScanJob.perform_later(org_id, exploit_ids, Current.user.id, asset_ids, scan_options)
+    redirect_to scans_path, notice: "Scan queued for #{asset_ids.size} target(s)."
   end
 
   def scans
@@ -92,5 +129,24 @@ class PagesController < ApplicationController
       organization_id: Current.user.organization_id,
       access_level: "read_only"
     )
+  end
+
+  private
+
+  def auto_select_exploits(os_list)
+    return Exploit.pluck(:id) if os_list.empty?
+    os_patterns = os_list.flat_map { |os|
+      case os
+      when 'linux'   then ['linux', 'unix']
+      when 'windows' then ['windows', 'smb', 'ms1', 'ms0', 'rdp']
+      when 'macos'   then ['macos', 'osx', 'apple']
+      else []
+      end
+    }.uniq
+    return Exploit.pluck(:id) if os_patterns.empty?
+    Exploit.where(
+      os_patterns.map { "metasploit_module ILIKE ?" }.join(" OR "),
+      *os_patterns.map { |p| "%#{p}%" }
+    ).pluck(:id)
   end
 end

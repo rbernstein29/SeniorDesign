@@ -21,16 +21,16 @@
             <div class="stat-number"><%= @assets.count %></div>
         </div>
         <div class="stat-card green">
-            <div class="stat-label">Safe Mode</div>
-            <div class="stat-number"><%= @assets.count { |a| a.scan_config&.dig('scanMode') == 'safe' } %></div>
+            <div class="stat-label">Linux</div>
+            <div class="stat-number"><%= @assets.count { |a| a.scan_config&.dig('os') == 'linux' } %></div>
         </div>
-        <div class="stat-card orange">
-            <div class="stat-label">Exploit Mode</div>
-            <div class="stat-number"><%= @assets.count { |a| a.scan_config&.dig('scanMode') == 'exploits' } %></div>
+        <div class="stat-card blue">
+            <div class="stat-label">Windows</div>
+            <div class="stat-number"><%= @assets.count { |a| a.scan_config&.dig('os') == 'windows' } %></div>
         </div>
         <div class="stat-card cyan">
             <div class="stat-label">Servers</div>
-            <div class="stat-number"><%= @assets.count { |a| a.scan_config&.dig('asset') == 'server' } %></div>
+            <div class="stat-number"><%= @assets.count { |a| a.scan_config&.dig('asset_type') == 'server' } %></div>
         </div>
     </div>
 
@@ -47,12 +47,13 @@
                 <thead>
                     <tr>
                         <th>#</th>
-                        <th>Network</th>
-                        <th>Scan Mode</th>
-                        <th>Asset Type</th>
+                        <th>Target</th>
+                        <th>Hostname</th>
                         <th>OS</th>
-                        <th>Scan Type</th>
+                        <th>Asset Type</th>
+                        <th>Criticality</th>
                         <th>Ports</th>
+                        <th>Site</th>
                         <th>Actions</th>
                     </tr>
                 </thead>
@@ -61,19 +62,27 @@
                         <tr>
                             <td><span class="id-cell">#<%= index + 1 %></span></td>
                             <td><span class="network-code"><%= asset.ip_address %></span></td>
-                            <td>
-                                <% scan_mode = asset.scan_config&.dig('scanMode') %>
-                                <span class="badge badge-<%= scan_mode %>"><%= scan_mode&.upcase %></span>
+                            <td style="font-size:12px;color:var(--muted);">
+                                <% if asset.hostname.blank? %>
+                                    <span style="font-style:italic;opacity:0.5;">Resolving…</span>
+                                <% else %>
+                                    <%= asset.hostname %>
+                                <% end %>
                             </td>
-                            <td><%= asset.scan_config&.dig('asset')&.humanize %></td>
-                            <td><span style="font-family: var(--mono); font-size: 12px;"><%= asset.scan_config&.dig('os')&.upcase %></span></td>
-                            <td><%= asset.scan_config&.dig('scanType')&.capitalize %></td>
-                            <td><span class="port-code"><%= asset.scan_config&.dig('port') %></span></td>
-                            <td style="display: flex; gap: 8px; align-items: center;">
+                            <td><span style="font-family:var(--mono);font-size:12px;"><%= asset.scan_config&.dig('os')&.upcase.presence || '—' %></span></td>
+                            <td><%= asset.scan_config&.dig('asset_type')&.humanize.presence || '—' %></td>
+                            <td>
+                                <% crit = asset.criticality&.downcase %>
+                                <% crit_color = { 'high' => 'red', 'medium' => 'orange', 'low' => 'green' }[crit] || 'muted' %>
+                                <span style="font-family:var(--mono);font-size:11px;color:var(--<%= crit_color %>);text-transform:uppercase;"><%= crit.presence || '—' %></span>
+                            </td>
+                            <td><span class="port-code"><%= asset.scan_config&.dig('port').presence || '—' %></span></td>
+                            <td style="font-size:12px;color:var(--muted);"><%= asset.site&.name.presence || '—' %></td>
+                            <td style="display:flex;gap:8px;align-items:center;">
                                 <%= link_to "View →", asset_path(asset), class: "view-link" %>
                                 <%= button_to "✕", asset_path(asset), method: :delete,
                                     data: { confirm: "Delete this asset?" },
-                                    class: "view-link", style: "background: none; border: 1px solid rgba(239,68,68,0.3); color: var(--red); cursor: pointer; padding: 4px 10px; border-radius: 6px; font-family: var(--mono); font-size: 12px;" %>
+                                    class: "view-link", style: "background:none;border:1px solid rgba(239,68,68,0.3);color:var(--red);cursor:pointer;padding:4px 10px;border-radius:6px;font-family:var(--mono);font-size:12px;" %>
                             </td>
                         </tr>
                     <% end %>

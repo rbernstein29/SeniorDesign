@@ -1,0 +1,58 @@
+<% content_for :title, "Aegis - Scan Profiles" %>
+
+<%= render 'shared/sidebar', current_page: 'scanner' %>
+
+<div class="layout page-cyan">
+    <div class="page-header">
+        <div>
+            <div class="page-title">Scan Profiles</div>
+            <div class="page-sub">// saved exploit sets for reuse in scans</div>
+        </div>
+        <%= link_to new_scan_profile_path, class: "btn btn-primary" do %>
+            <span>+</span> New Profile
+        <% end %>
+    </div>
+
+    <div class="table-container">
+        <div class="table-header">
+            <div class="table-title">All Profiles</div>
+            <div class="table-subtitle">TOTAL: <%= @profiles.count %> RECORDS</div>
+        </div>
+
+        <% if @profiles.any? %>
+            <table style="width:100%;">
+                <thead>
+                    <tr>
+                        <th>Name</th>
+                        <th>Description</th>
+                        <th>Exploits</th>
+                        <th>Created</th>
+                        <th>Actions</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <% @profiles.each do |profile| %>
+                        <tr>
+                            <td><strong><%= profile.name %></strong></td>
+                            <td style="color:var(--muted);"><%= profile.description.presence || '—' %></td>
+                            <td><span class="badge badge-cyan"><%= profile.exploit_ids.size %> exploits</span></td>
+                            <td style="font-family:var(--mono);font-size:12px;"><%= profile.created_at.strftime('%Y-%m-%d') %></td>
+                            <td>
+                                <%= button_to "✕", scan_profile_path(profile), method: :delete,
+                                    data: { confirm: "Delete profile '#{profile.name}'?" },
+                                    style: "background:none;border:1px solid rgba(239,68,68,0.3);color:var(--red);cursor:pointer;padding:4px 10px;border-radius:6px;font-family:var(--mono);font-size:12px;" %>
+                            </td>
+                        </tr>
+                    <% end %>
+                </tbody>
+            </table>
+        <% else %>
+            <div class="empty-state">
+                <div style="font-size:32px;opacity:0.4;margin-bottom:10px;">📋</div>
+                <h3>No Scan Profiles</h3>
+                <p>Create a profile to save a set of exploits for reuse</p>
+                <%= link_to "Create First Profile", new_scan_profile_path, class: "btn btn-primary" %>
+            </div>
+        <% end %>
+    </div>
+</div>

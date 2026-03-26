@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.0].define(version: 2026_03_24_220000) do
+ActiveRecord::Schema[8.0].define(version: 2026_03_26_025756) do
   create_schema "vuln_scanner"
 
   # These are extensions that must be enabled in order to support this database
@@ -58,6 +58,8 @@ ActiveRecord::Schema[8.0].define(version: 2026_03_24_220000) do
     t.datetime "updated_at", precision: nil, default: -> { "CURRENT_TIMESTAMP" }
     t.jsonb "scan_config", default: {}
     t.integer "site_id"
+    t.string "criticality", default: "unknown"
+    t.text "notes"
     t.index ["ip_address"], name: "idx_asset_ip"
     t.index ["is_active"], name: "idx_asset_active", where: "(is_active = true)"
     t.index ["organization_id"], name: "idx_asset_org"
@@ -164,6 +166,16 @@ ActiveRecord::Schema[8.0].define(version: 2026_03_24_220000) do
     t.index ["asset_id"], name: "idx_scan_exploit_asset"
     t.index ["result"], name: "idx_scan_exploit_result"
     t.index ["scan_id"], name: "idx_scan_exploit_scan"
+  end
+
+  create_table "scan_profiles", force: :cascade do |t|
+    t.integer "organization_id", null: false
+    t.string "name", null: false
+    t.text "description"
+    t.integer "exploit_ids", default: [], array: true
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["organization_id"], name: "index_scan_profiles_on_organization_id"
   end
 
   create_table "scan_targets", id: :serial, force: :cascade do |t|

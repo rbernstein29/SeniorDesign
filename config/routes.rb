@@ -23,6 +23,9 @@ Rails.application.routes.draw do
   # Assets
   resources :assets, only: [:index, :new, :create, :show, :destroy], path: 'scan-assets'
 
+  # Scan Profiles
+  resources :scan_profiles, only: [:index, :new, :create, :destroy]
+
   # Agents
   resources :agents, only: [:index, :create, :destroy] do
     member do

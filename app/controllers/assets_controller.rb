@@ -4,6 +4,22 @@ class AssetsController < ApplicationController
 
   def index
     @assets = Asset.where(organization_id: current_org_id).order(created_at: :desc)
+    if request.format.json?
+      cidr = params[:cidr].to_s.strip
+      count = 0
+      if cidr.present?
+        begin
+          require 'ipaddr'
+          range = IPAddr.new(cidr)
+          count = Asset.where(organization_id: current_org_id).count { |a|
+            range.include?(IPAddr.new(a.ip_address.to_s.split('/').first)) rescue false
+          }
+        rescue IPAddr::InvalidAddressError
+          count = 0
+        end
+      end
+      render json: { count: count }
+    end
   end
 
   def new
@@ -11,23 +27,42 @@ class AssetsController < ApplicationController
   end
 
   def create
-    scan_config = params.permit(:scanMode, :scope, :exclude, :port, :os, :asset, :scanType, :credential, :schedule, :cve, format: []).to_h
-    asset = Asset.new(
-      ip_address: params[:network],
-      organization_id: current_org_id,
-      site_id: params[:site_id].presence,
-      scan_config: scan_config
-    )
+    network     = params[:network].to_s.strip
+    hostname    = params[:hostname].presence
+    site_id     = params[:site_id].presence
+    scan_config = {
+      'port'       => params[:port].presence,
+      'os'         => params[:os].presence,
+      'asset_type' => params[:asset_type].presence
+    }.compact
+    criticality = params[:criticality].presence || 'unknown'
+    notes       = params[:notes].presence
 
-    if asset.ip_address.nil? && params[:network].present?
-      redirect_to new_asset_path, alert: "Invalid IP address: '#{params[:network]}'"
+    ips = expand_targets(network)
+
+    if ips.empty?
+      redirect_to new_asset_path, alert: "Invalid target: '#{network}'"
       return
     end
 
-    asset.save!
-    redirect_to assets_path, notice: 'Asset added successfully!'
+    created = 0
+    ips.each do |ip|
+      asset = Asset.create!(
+        ip_address:      ip,
+        organization_id: current_org_id,
+        site_id:         site_id,
+        scan_config:     scan_config,
+        hostname:        hostname,
+        criticality:     criticality,
+        notes:           notes
+      )
+      DnsLookupJob.perform_later(asset.id) unless hostname.present?
+      created += 1
+    end
+
+    redirect_to assets_path, notice: "#{created} asset(s) added."
   rescue => e
-    redirect_to new_asset_path, alert: "Failed to add asset: #{e.message}"
+    redirect_to new_asset_path, alert: "Failed: #{e.message}"
   end
 
   def show
@@ -45,5 +80,20 @@ class AssetsController < ApplicationController
     redirect_to assets_path, notice: 'Asset deleted.'
   rescue ActiveRecord::RecordNotFound
     redirect_to assets_path, alert: 'Asset not found'
+  end
+
+  private
+
+  def expand_targets(network)
+    require 'ipaddr'
+    addr = IPAddr.new(network)
+    if network.exclude?('/') || addr.prefix == 32
+      [addr.to_s]
+    else
+      raise "Range too large — use /24 or smaller" if addr.prefix < 24
+      addr.to_range.to_a[1..-2].map(&:to_s)
+    end
+  rescue IPAddr::InvalidAddressError
+    []
   end
 end

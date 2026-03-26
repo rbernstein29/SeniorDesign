@@ -6,9 +6,12 @@
 
     <div class="page-header">
         <div>
-            <div class="page-title">Scanner</div>
-            <div class="page-sub">Metasploit-powered vulnerability assessment</div>
+            <div class="page-title"><%= image_tag 'SDimagesWhite/snanerWhite.png', alt: '', class: 'page-title-img icon-white' %><%= image_tag 'SDimagesBlack/ScansBlack.png', alt: '', class: 'page-title-img icon-black' %> Scanner</div>
+            <div class="page-sub">// Metasploit-powered vulnerability assessment</div>
         </div>
+        <%= link_to scan_profiles_path, class: "btn btn-secondary" do %>
+            📋 Manage Profiles
+        <% end %>
     </div>
 
     <% if flash[:notice] %>
@@ -18,56 +21,386 @@
         <div class="alert alert-error"><%= flash[:alert] %></div>
     <% end %>
 
-    <div class="card">
-        <div class="card-header">
-            <div class="card-header-icon"><%= image_tag 'SDimagesWhite/SearchWhite.png', alt: '', class: 'hdr-icon-img icon-white' %><%= image_tag 'SDimagesBlack/SearchBlack.png', alt: '', class: 'hdr-icon-img icon-black' %></div>
-            <div>
-                <div class="card-title">Launch Scan</div>
-                <div class="card-subtitle">VULNERABILITY ASSESSMENT</div>
-            </div>
-        </div>
-        <div class="card-body">
+    <%= form_with url: trigger_scan_path, method: :post, local: true, id: "scanner-form" do %>
+        <input type="hidden" name="target_mode" id="target_mode_input" value="asset">
+        <input type="hidden" name="exploit_mode" id="exploit_mode_input" value="manual">
 
-            <%= form_with url: trigger_scan_path, method: :post, local: true do |form| %>
-                <div class="field-group">
-                    <label class="field-label">Asset</label>
-                    <% if @assets.any? %>
-                        <%= select_tag "asset_id",
-                            options_for_select(@assets.map { |a| [a.ip_address, a.id] }),
-                            prompt: "Select asset...",
-                            style: "max-width:300px;",
-                            required: true %>
-                    <% else %>
-                        <span style="font-family:var(--mono);font-size:12px;color:var(--muted);background:var(--surface2);border:1px solid var(--border);padding:8px 14px;border-radius:8px;display:inline-block;">
-                            No assets found — <%= link_to "add one first", new_asset_path, style: "color:var(--accent);" %>
-                        </span>
-                    <% end %>
-                    <div class="field-hint">The target IP address to scan.</div>
+        <!-- ═══ 1. TARGET SELECTION ═══ -->
+        <div class="card" style="margin-bottom:16px;">
+            <div class="card-header">
+                <span class="card-header-icon">🎯</span>
+                <div>
+                    <div class="card-title">Target Selection</div>
+                    <div class="card-subtitle">SELECT WHAT TO SCAN</div>
+                </div>
+            </div>
+            <div class="card-body">
+
+                <!-- Mode tabs -->
+                <div style="display:flex;gap:8px;margin-bottom:20px;">
+                    <button type="button" class="scanner-tab active" id="tab-target-asset" onclick="switchTargetMode('asset')">By Asset</button>
+                    <button type="button" class="scanner-tab" id="tab-target-site" onclick="switchTargetMode('site')">By Site</button>
+                    <button type="button" class="scanner-tab" id="tab-target-cidr" onclick="switchTargetMode('cidr')">By CIDR</button>
                 </div>
 
-                <div class="field-group">
-                    <%= form.label :exploit_ids, "Exploits", class: "field-label" %>
-                    <% if @exploits.any? %>
-                        <div style="max-height:220px;overflow-y:auto;border:1px solid var(--border);border-radius:8px;padding:8px 12px;background:var(--surface2);">
-                            <% @exploits.each do |exploit| %>
-                                <label class="radio-option">
-                                    <%= check_box_tag "trigger_scan[exploit_ids][]", exploit.id, true, id: "exploit_#{exploit.id}" %>
-                                    <span style="font-family:var(--mono);color:var(--accent)"><%= exploit.exploit_id %></span>
-                                    <% if exploit.respond_to?(:use_case_name) && exploit.use_case_name.present? %>
-                                        <span style="color:var(--muted)">— <%= exploit.use_case_name %></span>
+                <!-- By Asset -->
+                <div id="target-panel-asset">
+                    <% if @assets.any? %>
+                        <div style="display:flex;gap:10px;margin-bottom:12px;flex-wrap:wrap;">
+                            <select id="filter-site" onchange="filterAssets()" style="min-width:160px;">
+                                <option value="">All Sites</option>
+                                <% @sites.each do |site| %>
+                                    <option value="<%= site.id %>"><%= site.name %></option>
+                                <% end %>
+                            </select>
+                            <select id="filter-os" onchange="filterAssets()" style="min-width:140px;">
+                                <option value="">All OS</option>
+                                <option value="linux">Linux</option>
+                                <option value="windows">Windows</option>
+                                <option value="macos">macOS</option>
+                            </select>
+                            <select id="filter-crit" onchange="filterAssets()" style="min-width:150px;">
+                                <option value="">All Criticality</option>
+                                <option value="high">High</option>
+                                <option value="medium">Medium</option>
+                                <option value="low">Low</option>
+                                <option value="unknown">Unknown</option>
+                            </select>
+                            <button type="button" onclick="selectAllVisible(true)" class="btn btn-secondary" style="padding:4px 10px;font-size:12px;">Select All</button>
+                            <button type="button" onclick="selectAllVisible(false)" class="btn btn-secondary" style="padding:4px 10px;font-size:12px;">Clear</button>
+                        </div>
+                        <div style="max-height:240px;overflow-y:auto;border:1px solid var(--border);border-radius:8px;padding:8px;">
+                            <% @assets.each do |asset| %>
+                                <label class="asset-check-row"
+                                    data-site="<%= asset.site_id %>"
+                                    data-os="<%= asset.scan_config&.dig('os') %>"
+                                    data-crit="<%= asset.criticality %>">
+                                    <input type="checkbox" name="asset_ids[]" value="<%= asset.id %>" class="asset-checkbox">
+                                    <span class="network-code" style="font-size:13px;"><%= asset.ip_address %></span>
+                                    <% if asset.hostname.present? && asset.hostname != 'No Domain Name' %>
+                                        <span style="color:var(--muted);font-size:12px;"><%= asset.hostname %></span>
+                                    <% end %>
+                                    <% os = asset.scan_config&.dig('os') %>
+                                    <% if os.present? %>
+                                        <span style="font-family:var(--mono);font-size:11px;color:var(--muted);"><%= os.upcase %></span>
+                                    <% end %>
+                                    <% if asset.site %>
+                                        <span style="font-size:11px;color:var(--muted);margin-left:auto;"><%= asset.site.name %></span>
                                     <% end %>
                                 </label>
                             <% end %>
                         </div>
-                        <div class="field-hint">Select which exploits to run against the target.</div>
+                        <div style="margin-top:8px;font-size:12px;color:var(--muted);">
+                            <span id="asset-selected-count">0</span> asset(s) selected
+                        </div>
                     <% else %>
-                        <div class="field-hint">No exploits loaded in the database.</div>
+                        <div style="text-align:center;padding:24px;color:var(--muted);">
+                            No assets configured — <%= link_to "add one first", new_asset_path, style: "color:var(--accent);" %>
+                        </div>
                     <% end %>
                 </div>
 
-                <%= form.submit "Run Scan", class: "btn-scan" %>
-            <% end %>
+                <!-- By Site -->
+                <div id="target-panel-site" style="display:none;">
+                    <% if @sites.any? %>
+                        <div class="form-group" style="max-width:400px;">
+                            <label class="form-label">Site</label>
+                            <select name="site_id" id="site-select" onchange="updateSiteCount()">
+                                <option value="">Select a site…</option>
+                                <% @sites.each do |site| %>
+                                    <option value="<%= site.id %>" data-count="<%= site.assets.count %>">
+                                        <%= site.name %><%= site.network_range.present? ? " (#{site.network_range})" : "" %>
+                                    </option>
+                                <% end %>
+                            </select>
+                            <div id="site-asset-count" style="margin-top:6px;font-size:12px;color:var(--muted);"></div>
+                        </div>
+                    <% else %>
+                        <div style="color:var(--muted);font-size:13px;">No sites configured.</div>
+                    <% end %>
+                </div>
+
+                <!-- By CIDR -->
+                <div id="target-panel-cidr" style="display:none;">
+                    <div class="form-group" style="max-width:400px;">
+                        <label class="form-label">CIDR Range</label>
+                        <%= text_field_tag :cidr_range, nil, placeholder: "192.168.1.0/24",
+                            id: "cidr-input",
+                            onblur: "checkCidrCount()" %>
+                        <div id="cidr-asset-count" style="margin-top:6px;font-size:12px;color:var(--muted);"></div>
+                    </div>
+                </div>
+
+            </div>
         </div>
-    </div>
+
+        <!-- ═══ 2. EXPLOIT SELECTION ═══ -->
+        <div class="card" style="margin-bottom:16px;">
+            <div class="card-header">
+                <span class="card-header-icon">⚡</span>
+                <div>
+                    <div class="card-title">Exploit Selection</div>
+                    <div class="card-subtitle">CHOOSE EXPLOIT SET</div>
+                </div>
+            </div>
+            <div class="card-body">
+
+                <!-- Mode tabs -->
+                <div style="display:flex;gap:8px;margin-bottom:20px;">
+                    <button type="button" class="scanner-tab active" id="tab-exploit-manual" onclick="switchExploitMode('manual')">Manual</button>
+                    <button type="button" class="scanner-tab" id="tab-exploit-profile" onclick="switchExploitMode('profile')">Profile</button>
+                    <button type="button" class="scanner-tab" id="tab-exploit-auto" onclick="switchExploitMode('auto')">Auto</button>
+                </div>
+
+                <!-- Manual -->
+                <div id="exploit-panel-manual">
+                    <% if @exploits.any? %>
+                        <div style="display:flex;gap:8px;margin-bottom:10px;">
+                            <button type="button" onclick="selectAllExploits(true)" class="btn btn-secondary" style="padding:4px 10px;font-size:12px;">Select All</button>
+                            <button type="button" onclick="selectAllExploits(false)" class="btn btn-secondary" style="padding:4px 10px;font-size:12px;">Clear</button>
+                        </div>
+                        <div style="max-height:280px;overflow-y:auto;border:1px solid var(--border);border-radius:8px;padding:8px;">
+                            <% @exploits.group_by { |e| e.severity&.downcase }.sort_by { |s, _| %w[critical high medium low].index(s) || 99 }.each do |severity, exploits| %>
+                                <div style="font-family:var(--mono);font-size:10px;letter-spacing:1px;color:var(--muted);padding:6px 4px 4px;text-transform:uppercase;"><%= severity || 'other' %></div>
+                                <% exploits.each do |exploit| %>
+                                    <label class="exploit-check-row">
+                                        <input type="checkbox" name="exploit_ids[]" value="<%= exploit.id %>" class="exploit-checkbox" checked>
+                                        <span style="font-family:var(--mono);color:var(--accent);font-size:12px;"><%= exploit.exploit_id %></span>
+                                        <span style="color:var(--fg);font-size:13px;"><%= exploit.name %></span>
+                                    </label>
+                                <% end %>
+                            <% end %>
+                        </div>
+                        <div style="margin-top:8px;font-size:12px;color:var(--muted);">
+                            <span id="exploit-selected-count"><%= @exploits.count %></span> exploit(s) selected
+                        </div>
+                    <% else %>
+                        <div style="color:var(--muted);font-size:13px;">No exploits loaded in the database.</div>
+                    <% end %>
+                </div>
+
+                <!-- Profile -->
+                <div id="exploit-panel-profile" style="display:none;">
+                    <% if @profiles.any? %>
+                        <div class="form-group" style="max-width:400px;">
+                            <label class="form-label">Saved Profile</label>
+                            <select name="profile_id" id="profile-select" onchange="updateProfilePreview()">
+                                <option value="">Select a profile…</option>
+                                <% @profiles.each do |profile| %>
+                                    <option value="<%= profile.id %>"
+                                        data-count="<%= profile.exploit_ids.size %>"
+                                        data-desc="<%= profile.description %>">
+                                        <%= profile.name %> (<%= profile.exploit_ids.size %> exploits)
+                                    </option>
+                                <% end %>
+                            </select>
+                            <div id="profile-preview" style="margin-top:8px;font-size:12px;color:var(--muted);"></div>
+                        </div>
+                    <% else %>
+                        <div style="color:var(--muted);font-size:13px;">
+                            No profiles saved — <%= link_to "create one", new_scan_profile_path, style: "color:var(--accent);" %>
+                        </div>
+                    <% end %>
+                </div>
+
+                <!-- Auto -->
+                <div id="exploit-panel-auto" style="display:none;">
+                    <div style="padding:16px;border:1px solid var(--border);border-radius:8px;background:var(--surface2);">
+                        <div style="font-family:var(--mono);font-size:12px;margin-bottom:8px;">AUTO MODE</div>
+                        <div style="font-size:13px;color:var(--muted);">
+                            Exploits will be automatically selected based on the OS metadata of your chosen targets.
+                            Linux targets get linux/unix exploits, Windows targets get SMB/RDP/Windows exploits, etc.
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+        </div>
+
+        <!-- ═══ 3. SCAN OPTIONS ═══ -->
+        <div class="card" style="margin-bottom:16px;">
+            <div class="card-header" style="cursor:pointer;" onclick="toggleScanOptions()">
+                <span class="card-header-icon">⚙️</span>
+                <div>
+                    <div class="card-title">Scan Options</div>
+                    <div class="card-subtitle">OPTIONAL OVERRIDES</div>
+                </div>
+                <span id="scan-options-arrow" style="margin-left:auto;font-family:var(--mono);color:var(--muted);">▼</span>
+            </div>
+            <div id="scan-options-body" style="display:none;" class="card-body">
+                <div class="form-grid">
+                    <div class="form-group">
+                        <label class="form-label">Port Override</label>
+                        <%= text_field_tag :port_override, nil, placeholder: "e.g. 80, 443" %>
+                        <div style="font-size:11px;color:var(--muted);margin-top:4px;">Overrides per-asset port config for this scan only</div>
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">Timeout (seconds)</label>
+                        <%= number_field_tag :timeout, 120, min: 10, max: 600 %>
+                        <div style="font-size:11px;color:var(--muted);margin-top:4px;">Seconds per exploit attempt (default: 120)</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Submit -->
+        <div style="display:flex;gap:12px;align-items:center;">
+            <button type="submit" class="btn-scan">▶ Run Scan</button>
+            <span style="font-size:12px;color:var(--muted);">Scan will be queued and run in the background</span>
+        </div>
+
+    <% end %>
 
 </div>
+
+<style>
+.scanner-tab {
+    padding: 6px 16px;
+    border-radius: 6px;
+    border: 1px solid var(--border);
+    background: var(--surface2);
+    color: var(--muted);
+    font-family: var(--mono);
+    font-size: 12px;
+    cursor: pointer;
+    transition: all 0.15s;
+}
+.scanner-tab.active {
+    border-color: var(--accent);
+    color: var(--accent);
+    background: rgba(var(--accent-rgb, 0,200,255), 0.08);
+}
+.asset-check-row, .exploit-check-row {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 6px 8px;
+    border-radius: 6px;
+    cursor: pointer;
+    font-size: 13px;
+    transition: background 0.1s;
+}
+.asset-check-row:hover, .exploit-check-row:hover {
+    background: var(--surface2);
+}
+.asset-check-row[style*="display:none"] { display: none !important; }
+</style>
+
+<script>
+// Target mode switching
+function switchTargetMode(mode) {
+    document.getElementById('target_mode_input').value = mode;
+    ['asset','site','cidr'].forEach(m => {
+        document.getElementById('target-panel-' + m).style.display = m === mode ? '' : 'none';
+        const tab = document.getElementById('tab-target-' + m);
+        tab.classList.toggle('active', m === mode);
+    });
+}
+
+// Exploit mode switching
+function switchExploitMode(mode) {
+    document.getElementById('exploit_mode_input').value = mode;
+    ['manual','profile','auto'].forEach(m => {
+        document.getElementById('exploit-panel-' + m).style.display = m === mode ? '' : 'none';
+        const tab = document.getElementById('tab-exploit-' + m);
+        tab.classList.toggle('active', m === mode);
+    });
+}
+
+// Asset filter
+function filterAssets() {
+    const site = document.getElementById('filter-site').value;
+    const os   = document.getElementById('filter-os').value;
+    const crit = document.getElementById('filter-crit').value;
+    document.querySelectorAll('.asset-check-row').forEach(row => {
+        const matchSite = !site || row.dataset.site == site;
+        const matchOs   = !os   || row.dataset.os   == os;
+        const matchCrit = !crit || row.dataset.crit == crit;
+        row.style.display = (matchSite && matchOs && matchCrit) ? '' : 'none';
+    });
+    updateAssetCount();
+}
+
+function selectAllVisible(checked) {
+    document.querySelectorAll('.asset-check-row').forEach(row => {
+        if (row.style.display !== 'none') {
+            row.querySelector('.asset-checkbox').checked = checked;
+        }
+    });
+    updateAssetCount();
+}
+
+function updateAssetCount() {
+    const count = document.querySelectorAll('.asset-checkbox:checked').length;
+    const el = document.getElementById('asset-selected-count');
+    if (el) el.textContent = count;
+}
+
+document.addEventListener('DOMContentLoaded', () => {
+    document.querySelectorAll('.asset-checkbox').forEach(cb => {
+        cb.addEventListener('change', updateAssetCount);
+    });
+    document.querySelectorAll('.exploit-checkbox').forEach(cb => {
+        cb.addEventListener('change', updateExploitCount);
+    });
+});
+
+// Exploit count
+function selectAllExploits(checked) {
+    document.querySelectorAll('.exploit-checkbox').forEach(cb => cb.checked = checked);
+    updateExploitCount();
+}
+
+function updateExploitCount() {
+    const count = document.querySelectorAll('.exploit-checkbox:checked').length;
+    const el = document.getElementById('exploit-selected-count');
+    if (el) el.textContent = count;
+}
+
+// Site count
+function updateSiteCount() {
+    const sel = document.getElementById('site-select');
+    const opt = sel.options[sel.selectedIndex];
+    const el  = document.getElementById('site-asset-count');
+    if (opt && opt.dataset.count !== undefined && sel.value) {
+        el.textContent = opt.dataset.count + ' asset(s) in this site';
+    } else {
+        el.textContent = '';
+    }
+}
+
+// CIDR count
+function checkCidrCount() {
+    const cidr = document.getElementById('cidr-input').value.trim();
+    const el   = document.getElementById('cidr-asset-count');
+    if (!cidr) { el.textContent = ''; return; }
+    fetch('/scan-assets.json?cidr=' + encodeURIComponent(cidr))
+        .then(r => r.json())
+        .then(data => {
+            el.textContent = (data.count || 0) + ' matching asset(s) in your inventory';
+        })
+        .catch(() => { el.textContent = ''; });
+}
+
+// Profile preview
+function updateProfilePreview() {
+    const sel = document.getElementById('profile-select');
+    const opt = sel.options[sel.selectedIndex];
+    const el  = document.getElementById('profile-preview');
+    if (opt && sel.value) {
+        const desc = opt.dataset.desc;
+        el.textContent = desc ? desc : opt.dataset.count + ' exploit(s)';
+    } else {
+        el.textContent = '';
+    }
+}
+
+// Scan options toggle
+function toggleScanOptions() {
+    const body  = document.getElementById('scan-options-body');
+    const arrow = document.getElementById('scan-options-arrow');
+    const open  = body.style.display !== 'none';
+    body.style.display  = open ? 'none' : '';
+    arrow.textContent   = open ? '▼' : '▲';
+}
+</script>

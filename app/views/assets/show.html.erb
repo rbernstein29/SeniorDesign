@@ -33,46 +33,69 @@
                 <div class="card-body">
 
                     <div class="asset-detail-row">
-                        <div class="asset-detail-label">Network</div>
+                        <div class="asset-detail-label">Target</div>
                         <div class="asset-detail-value">
                             <span class="network-code"><%= @asset.ip_address %></span>
                         </div>
                     </div>
 
                     <div class="asset-detail-row">
-                        <div class="asset-detail-label">Scan Mode</div>
+                        <div class="asset-detail-label">Hostname</div>
                         <div class="asset-detail-value">
-                            <% scan_mode = @asset.scan_config&.dig('scanMode') %>
-                            <span class="badge badge-<%= scan_mode %>"><%= scan_mode&.upcase %></span>
+                            <% if @asset.hostname.blank? %>
+                                <span style="font-style:italic;opacity:0.5;">Resolving…</span>
+                            <% else %>
+                                <%= @asset.hostname %>
+                            <% end %>
                         </div>
                     </div>
 
                     <div class="asset-detail-row">
-                        <div class="asset-detail-label">Asset Type</div>
-                        <div class="asset-detail-value"><%= @asset.scan_config&.dig('asset')&.humanize %></div>
-                    </div>
-
-                    <div class="asset-detail-row">
-                        <div class="asset-detail-label">Operating System</div>
-                        <div class="asset-detail-value">
-                            <span class="asset-os-tag"><%= @asset.scan_config&.dig('os')&.upcase %></span>
-                        </div>
-                    </div>
-
-                    <div class="asset-detail-row">
-                        <div class="asset-detail-label">Scan Type</div>
-                        <div class="asset-detail-value"><%= @asset.scan_config&.dig('scanType')&.capitalize %></div>
+                        <div class="asset-detail-label">Site</div>
+                        <div class="asset-detail-value"><%= @asset.site&.name.presence || '—' %></div>
                     </div>
 
                     <div class="asset-detail-row">
                         <div class="asset-detail-label">Ports</div>
                         <div class="asset-detail-value">
                             <% ports = @asset.scan_config&.dig('port').to_s.split(',') %>
-                            <% ports.each do |port| %>
-                                <span class="asset-port-tag"><%= port.strip %></span>
+                            <% if ports.any?(&:present?) %>
+                                <% ports.each do |port| %>
+                                    <span class="asset-port-tag"><%= port.strip %></span>
+                                <% end %>
+                            <% else %>
+                                <span style="opacity:0.5;">Auto</span>
                             <% end %>
                         </div>
                     </div>
+
+                    <div class="asset-detail-row">
+                        <div class="asset-detail-label">Operating System</div>
+                        <div class="asset-detail-value">
+                            <span class="asset-os-tag"><%= @asset.scan_config&.dig('os')&.upcase.presence || '—' %></span>
+                        </div>
+                    </div>
+
+                    <div class="asset-detail-row">
+                        <div class="asset-detail-label">Asset Type</div>
+                        <div class="asset-detail-value"><%= @asset.scan_config&.dig('asset_type')&.humanize.presence || '—' %></div>
+                    </div>
+
+                    <div class="asset-detail-row">
+                        <div class="asset-detail-label">Criticality</div>
+                        <div class="asset-detail-value">
+                            <% crit = @asset.criticality&.downcase %>
+                            <% crit_color = { 'high' => 'red', 'medium' => 'orange', 'low' => 'green' }[crit] || 'muted' %>
+                            <span style="font-family:var(--mono);font-size:12px;color:var(--<%= crit_color %>);text-transform:uppercase;"><%= crit.presence || '—' %></span>
+                        </div>
+                    </div>
+
+                    <% if @asset.notes.present? %>
+                        <div class="asset-detail-row">
+                            <div class="asset-detail-label">Notes</div>
+                            <div class="asset-detail-value" style="white-space:pre-wrap;"><%= @asset.notes %></div>
+                        </div>
+                    <% end %>
 
                 </div>
             </div>

