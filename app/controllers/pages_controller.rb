@@ -19,6 +19,10 @@ class PagesController < ApplicationController
     @last_scan   = Report.where(user_id: org_user_ids).maximum(:generated_at) rescue nil
     @active_scans = Scan.for_org(current_org_id).running.count rescue 0
 
+    @recent_findings = Finding.where(
+      scan_id: Scan.for_org(org_id).select(:id)
+    ).includes(:exploit, :asset).order(discovered_at: :desc).limit(10) rescue []
+
     @recent_activity = []
     begin
       recent_scans = Scan.for_org(org_id).order(created_at: :desc).limit(5)
@@ -84,9 +88,9 @@ class PagesController < ApplicationController
     end
 
     scan_options = {
-      port_override:    params[:port_override].presence,
-      payload_override: params[:payload_override].presence,
-      timeout:          params[:timeout].presence&.to_i
+      port_override: params[:port_override].presence,
+      timeout:       params[:timeout].presence&.to_i,
+      use_agent:     params[:use_agent] == 'true'
     }.compact
 
     ScanJob.perform_later(org_id, exploit_ids, Current.user.id, asset_ids, scan_options)
