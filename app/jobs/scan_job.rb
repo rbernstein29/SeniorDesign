@@ -19,13 +19,8 @@ class ScanJob < ApplicationJob
     )
 
     agents = Agent.where(organization_id: org_id).select(&:connected?)
-    if agents.empty?
-      scan.update!(status: 'failed', end_time: Time.current)
-      broadcast_progress(user_id, 0, "Error: No connected agents found.", error: true)
-      return
-    end
-
-    broadcast_progress(user_id, 10, "Starting scan via #{agents.count} agent(s)...")
+    agent_msg = agents.any? ? "#{agents.count} agent(s) available for proxy routing" : "No connected agents — scanning directly"
+    broadcast_progress(user_id, 10, "Starting scan... #{agent_msg}")
 
     ScanService.new(org_id, exploit_ids, user_id, scan, asset_ids, scan_options).perform
 

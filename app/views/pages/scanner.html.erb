@@ -230,6 +230,14 @@
             <div id="scan-options-body" style="display:none;" class="card-body">
                 <div class="form-grid">
                     <div class="form-group">
+                        <label class="form-label">Route via Agent</label>
+                        <%= select_tag :use_agent, options_for_select([
+                            ['No — scan directly over internet (public / blackbox)', 'false'],
+                            ['Yes — route through agent via SOCKS5 (internal / whitebox)', 'true']
+                        ], 'false') %>
+                        <div style="font-size:11px;color:var(--muted);margin-top:4px;">When Yes: all packets are proxied through your deployed agent to reach internal devices</div>
+                    </div>
+                    <div class="form-group">
                         <label class="form-label">Port Override</label>
                         <%= text_field_tag :port_override, nil, placeholder: "e.g. 80, 443" %>
                         <div style="font-size:11px;color:var(--muted);margin-top:4px;">Overrides per-asset port config for this scan only</div>

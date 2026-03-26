@@ -303,9 +303,13 @@ class ScanService
       config = JSON.parse(row['scan_config'] || '{}') rescue {}
       port   = parse_port(config['port'])
       ip     = row['ip_address'].to_s
-      agent  = Agent.find_for_target(org_id, ip)
-      proxy  = agent ? "socks5:127.0.0.1:#{agent.tunnel_port}" : nil
-      puts "WARNING: No connected agent for #{ip} — attempting direct scan" unless proxy
+      proxy = if @scan_options[:use_agent] == false
+        nil
+      else
+        agent = Agent.find_for_target(org_id, ip)
+        agent ? "socks5:127.0.0.1:#{agent.tunnel_port}" : nil
+      end
+      puts proxy ? "Routing #{ip} via agent proxy #{proxy}" : "Scanning #{ip} directly (no agent)"
       targets << { 'ip' => ip, 'asset_id' => row['id'].to_i, 'ports' => [port], 'proxy' => proxy }
     end
     targets
