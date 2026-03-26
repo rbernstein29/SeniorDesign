@@ -33,6 +33,12 @@
   <% connected = @agents&.count(&:connected?) || 0 %>
   <div class="stats-row">
     <div class="stat-card magenta">
+      <div class="stat-label">Offline Agents</div>
+      <% offline = (@agents&.count || 0) - connected %>
+      <div class="stat-value"><%= offline %></div>
+      <div class="stat-delta <%= offline > 0 ? 'bad' : '' %>"><%= offline > 0 ? 'Not reachable' : 'All online' %></div>
+    </div>
+    <div class="stat-card magenta">
       <div class="stat-label">Total Agents</div>
       <div class="stat-value"><%= @agents&.count || 0 %></div>
       <div class="stat-delta">Registered agents</div>
@@ -41,12 +47,6 @@
       <div class="stat-label">Connected Agents</div>
       <div class="stat-value"><%= connected %></div>
       <div class="stat-delta <%= connected > 0 ? 'up' : '' %>"><%= connected > 0 ? 'Online now' : 'None online' %></div>
-    </div>
-    <div class="stat-card magenta">
-      <div class="stat-label">Offline Agents</div>
-      <% offline = (@agents&.count || 0) - connected %>
-      <div class="stat-value"><%= offline %></div>
-      <div class="stat-delta <%= offline > 0 ? 'bad' : '' %>"><%= offline > 0 ? 'Not reachable' : 'All online' %></div>
     </div>
     <div class="stat-card orange">
       <div class="stat-label">Active Scans</div>
