@@ -23,6 +23,22 @@
         <div class="alert alert-error"><%= flash[:alert] %></div>
     <% end %>
 
+    <div class="info-box" style="margin-bottom:16px;">
+        <div class="info-box-icon">
+            <%= image_tag 'SDimagesWhite/InformationWhite.png', alt: '', class: 'icon-white', style: 'width:20px;height:20px;' %>
+            <%= image_tag 'SDimagesBlack/InformationBlack.png', alt: '', class: 'icon-black', style: 'width:20px;height:20px;' %>
+        </div>
+        <div>
+            <div class="info-box-title">How Scanning Works</div>
+            <ul class="info-box-list">
+                <li>Deploy a network agent on the target network first</li>
+                <li>Add scan targets under Asset Management</li>
+                <li>Scans route through the agent's SSH tunnel — no VPN needed</li>
+                <li>Results are parsed and stored as vulnerability findings</li>
+            </ul>
+        </div>
+    </div>
+
     <%= form_with url: trigger_scan_path, method: :post, local: true, id: "scanner-form" do %>
         <input type="hidden" name="target_mode" id="target_mode_input" value="asset">
 

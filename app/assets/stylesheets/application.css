@@ -1786,7 +1786,7 @@ body:has(.page-green)   { background-image: radial-gradient(circle, rgba(34,197,
   { border-color: rgba(251,191,36,0.3);  box-shadow: 0 0 20px 4px rgba(251,191,36,0.1); }
 .page-blue .main-card, .page-blue .info-box, .page-blue .table-container, .page-blue .create-form, .page-blue .page-header, .page-blue .settings-card
   { border-color: rgba(79,134,247,0.3);  box-shadow: 0 0 20px 4px rgba(79,134,247,0.1); }
-.page-red .main-card, .page-red .info-box, .page-red .table-container, .page-red .create-form, .page-red .page-header
+.page-red .main-card, .page-red .card, .page-red .info-box, .page-red .table-container, .page-red .create-form, .page-red .page-header
   { border-color: rgba(239,68,68,0.3);   box-shadow: 0 0 20px 4px rgba(239,68,68,0.1); }
 .page-green .main-card, .page-green .info-box, .page-green .table-container, .page-green .create-form, .page-green .page-header
   { border-color: rgba(34,197,94,0.3);   box-shadow: 0 0 20px 4px rgba(34,197,94,0.1); }
