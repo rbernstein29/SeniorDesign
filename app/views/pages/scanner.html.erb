@@ -200,7 +200,11 @@
                 <!-- Live count -->
                 <div style="margin-top:12px;padding:10px 14px;background:var(--surface2);border-radius:6px;border:1px solid var(--border);display:inline-flex;align-items:center;gap:8px;">
                     <span style="font-family:var(--mono);font-size:11px;color:var(--muted);">MATCHING EXPLOITS</span>
-                    <span id="exploit-match-count" style="font-family:var(--mono);font-size:18px;font-weight:700;color:var(--accent);"><%= @exploits.count %></span>
+                    <span id="exploit-match-count" style="font-family:var(--mono);font-size:18px;font-weight:700;color:var(--accent);">—</span>
+                </div>
+                <div style="margin-top:8px;font-size:11px;color:var(--muted);">
+                    Exploits are pulled directly from your Metasploit installation at runtime.
+                    <strong style="color:var(--orange);">Platform = Any</strong> will attempt all available modules — expect a significantly longer scan.
                 </div>
 
             </div>
@@ -351,6 +355,7 @@ document.addEventListener('DOMContentLoaded', () => {
     document.querySelectorAll('.asset-checkbox').forEach(cb => {
         cb.addEventListener('change', updateAssetCount);
     });
+    updateExploitCount();
 });
 
 // Site count

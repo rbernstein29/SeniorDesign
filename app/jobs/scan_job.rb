@@ -1,7 +1,7 @@
 class ScanJob < ApplicationJob
   queue_as :default
 
-  def perform(org_id, exploit_ids, user_id, asset_ids = [], scan_options = {})
+  def perform(org_id, filter_params, user_id, asset_ids = [], scan_options = {})
     user = User.find_by(id: user_id)
     return unless user
 
@@ -22,7 +22,7 @@ class ScanJob < ApplicationJob
     agent_msg = agents.any? ? "#{agents.count} agent(s) available for proxy routing" : "No connected agents — scanning directly"
     broadcast_progress(user_id, 10, "Starting scan... #{agent_msg}")
 
-    ScanService.new(org_id, exploit_ids, user_id, scan, asset_ids, scan_options).perform
+    ScanService.new(org_id, filter_params, user_id, scan, asset_ids, scan_options).perform
 
     broadcast_complete(user_id)
   rescue => e

@@ -29,12 +29,4 @@ class ApplicationController < ActionController::Base
     response.headers["Expires"] = "0"
   end
 
-  def platform_patterns(platform)
-    case platform
-    when 'windows' then %w[windows smb rdp ms0 ms1 ms08 ms17 netapi dcerpc]
-    when 'linux'   then %w[linux unix ftp ssh vsftpd distcc]
-    when 'macos'   then %w[osx apple_ios macos darwin apple]
-    else []
-    end
-  end
 end

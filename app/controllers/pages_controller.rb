@@ -51,7 +51,6 @@ class PagesController < ApplicationController
     org_id    = Current.user.organization_id
     @assets   = Asset.where(organization_id: org_id).includes(:site).order(:ip_address)
     @sites    = Site.where(organization_id: org_id)
-    @exploits = Exploit.order(:severity, :name)
     @profiles = ScanProfile.where(organization_id: org_id)
   end
 
@@ -77,17 +76,10 @@ class PagesController < ApplicationController
       return
     end
 
-    # Resolve exploit IDs
-    exploit_ids = if params[:profile_id].present?
-      ScanProfile.find_by(id: params[:profile_id], organization_id: org_id)&.exploit_ids || []
-    else
-      filter_exploits(Array(params[:severities]), params[:platform].presence)
-    end
-
-    if exploit_ids.empty?
-      redirect_to scanner_path, alert: "No exploits selected."
-      return
-    end
+    filter_params = {
+      platform:   params[:platform].presence || 'any',
+      severities: Array(params[:severities]).presence
+    }.compact
 
     scan_options = {
       port_override: params[:port_override].presence,
@@ -95,7 +87,7 @@ class PagesController < ApplicationController
       use_agent:     params[:use_agent] == 'true'
     }.compact
 
-    ScanJob.perform_later(org_id, exploit_ids, Current.user.id, asset_ids, scan_options)
+    ScanJob.perform_later(org_id, filter_params, Current.user.id, asset_ids, scan_options)
     redirect_to scans_path, notice: "Scan queued for #{asset_ids.size} target(s)."
   end
 
@@ -138,20 +130,5 @@ class PagesController < ApplicationController
   end
 
   private
-
-  def filter_exploits(severities, platform)
-    scope = Exploit.all
-    scope = scope.where(severity: severities) if severities.any?
-    if platform.present? && platform != 'any'
-      patterns = platform_patterns(platform)
-      unless patterns.empty?
-        scope = scope.where(
-          patterns.map { "metasploit_module ILIKE ?" }.join(" OR "),
-          *patterns.map { |p| "%#{p}%" }
-        )
-      end
-    end
-    scope.pluck(:id)
-  end
 
 end
