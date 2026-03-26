@@ -43,7 +43,7 @@
             <div class="stat-label">Offline</div>
             <div class="stat-number" data-stat="offline"><%= @agents.count { |a| !a.connected? } %></div>
         </div>
-        <div class="stat-card purple">
+        <div class="stat-card teal">
             <div class="stat-label">Active Sites</div>
             <div class="stat-number" data-stat="sites_active"><%= @agents.select(&:connected?).map(&:site_id).compact.uniq.count %></div>
         </div>
