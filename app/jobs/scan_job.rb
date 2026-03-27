@@ -22,7 +22,10 @@ class ScanJob < ApplicationJob
     agent_msg = agents.any? ? "#{agents.count} agent(s) available for proxy routing" : "No connected agents — scanning directly"
     broadcast_progress(user_id, 10, "Starting scan... #{agent_msg}")
 
-    ScanService.new(org_id, filter_params, user_id, scan, asset_ids, scan_options).perform
+    ScanService.new(org_id, filter_params, user_id, scan, asset_ids, scan_options) do |done, total, ip|
+      pct = 10 + ((done.to_f / total) * 85).to_i
+      broadcast_progress(user_id, pct, "Scanned #{ip} (#{done}/#{total} targets)")
+    end.perform
 
     broadcast_complete(user_id)
   rescue => e

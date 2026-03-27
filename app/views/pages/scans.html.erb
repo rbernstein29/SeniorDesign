@@ -153,3 +153,9 @@
     </div>
 
 </div>
+
+<% if @running_scans > 0 %>
+<script>
+  setTimeout(function() { location.reload(); }, 5000);
+</script>
+<% end %>

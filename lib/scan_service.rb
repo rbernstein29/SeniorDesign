@@ -9,13 +9,14 @@ require 'thread'
 class ScanService
   MSF_BASE = ENV.fetch('MSF_MODULES_PATH', '/usr/share/metasploit-framework/modules/exploits')
 
-  def initialize(org_id, filter_params, user_id, scan = nil, asset_ids = [], scan_options = {})
+  def initialize(org_id, filter_params, user_id, scan = nil, asset_ids = [], scan_options = {}, &progress_cb)
     @org_id        = org_id
     @filter_params = (filter_params || {}).transform_keys(&:to_s)
     @user_id       = user_id
     @scan          = scan
     @asset_ids     = Array(asset_ids).map(&:to_i).select { |id| id > 0 }
     @scan_options  = scan_options || {}
+    @progress_cb   = progress_cb
   end
 
   def perform
@@ -24,6 +25,8 @@ class ScanService
     results = []
     threads = []
     mutex = Mutex.new
+
+    done_count = 0
 
     targets.each do |target|
       target_ip    = target['ip']
@@ -87,6 +90,9 @@ class ScanService
           end
 
           complete_scan_target(scan_target_id, target_exploits, target_findings)
+
+          n = mutex.synchronize { done_count += 1 }
+          @progress_cb&.call(n, targets.size, target_ip)
         rescue => e
           puts "Error scanning target #{target_ip}: #{e.message}"
         end
