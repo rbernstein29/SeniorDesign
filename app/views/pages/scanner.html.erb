@@ -186,26 +186,12 @@
                         </div>
                     </div>
 
-                    <!-- Platform -->
-                    <div class="form-group">
-                        <label class="form-label">Platform</label>
-                        <div style="display:flex;flex-wrap:wrap;gap:10px;margin-top:4px;">
-                            <% [['any','Any'],['windows','Windows'],['linux','Linux'],['macos','macOS']].each do |val, label| %>
-                                <label style="display:flex;align-items:center;gap:6px;cursor:pointer;font-size:13px;">
-                                    <input type="radio" name="platform" value="<%= val %>"
-                                           <%= val == 'any' ? 'checked' : '' %>
-                                           onchange="updateExploitCount()">
-                                    <span><%= label %></span>
-                                </label>
-                            <% end %>
-                        </div>
-                    </div>
 
                 </div>
 
                 <!-- Optional profile override -->
                 <div class="form-group" style="max-width:400px;margin-top:8px;">
-                    <label class="form-label">Profile Override <span style="font-weight:400;color:var(--muted);">(optional — overrides severity/platform)</span></label>
+                    <label class="form-label">Profile Override <span style="font-weight:400;color:var(--muted);">(optional — limits to a curated exploit list)</span></label>
                     <select name="profile_id" id="profile-select" onchange="updateExploitCount()">
                         <option value="">— use trait filters above —</option>
                         <% @profiles.each do |profile| %>
@@ -228,8 +214,7 @@
                     <span id="exploit-match-count" style="font-family:var(--mono);font-size:18px;font-weight:700;color:var(--accent);">—</span>
                 </div>
                 <div style="margin-top:8px;font-size:11px;color:var(--muted);">
-                    Exploits are pulled directly from your Metasploit installation at runtime.
-                    <strong style="color:var(--orange);">Platform = Any</strong> will attempt all available modules — expect a significantly longer scan.
+                    Exploits are matched to each asset's OS at runtime from your Metasploit installation.
                 </div>
 
             </div>
@@ -336,11 +321,8 @@ function updateExploitCount() {
         return;
     }
     var severities = Array.from(document.querySelectorAll('.severity-checkbox:checked')).map(function(cb) { return cb.value; });
-    var platformEl = document.querySelector('input[name="platform"]:checked');
-    var platform = platformEl ? platformEl.value : 'any';
     var params = new URLSearchParams();
     severities.forEach(function(s) { params.append('severities[]', s); });
-    params.set('platform', platform);
     fetch('<%= exploit_count_path %>?' + params.toString())
         .then(function(r) { return r.json(); })
         .then(function(data) {

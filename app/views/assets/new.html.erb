@@ -53,8 +53,8 @@
                         </div>
                         <div class="form-group">
                             <label class="form-label">Ports</label>
-                            <%= text_field_tag :port, nil, placeholder: "22, 80, 443" %>
-                            <div style="font-size:11px;color:var(--muted);margin-top:4px;">Leave blank to let the scanner choose</div>
+                            <%= text_field_tag :port, nil, placeholder: "e.g. 22  or  22, 80, 443" %>
+                            <div style="font-size:11px;color:var(--muted);margin-top:4px;">Single port, comma-separated list, or range (e.g. 8000-8080). All listed ports are scanned individually. Leave blank to let the scanner choose.</div>
                         </div>
                         <div class="form-group">
                             <label class="form-label">Operating System</label>
@@ -74,15 +74,7 @@
                                 ["Network Device", "network_device"]
                             ]) %>
                         </div>
-                        <div class="form-group">
-                            <label class="form-label">Criticality</label>
-                            <%= select_tag :criticality, options_for_select([
-                                ["Unknown", "unknown"],
-                                ["High", "high"],
-                                ["Medium", "medium"],
-                                ["Low", "low"]
-                            ]) %>
-                        </div>
+
                         <div class="form-group" style="grid-column:1/-1;">
                             <label class="form-label">Notes</label>
                             <%= text_area_tag :notes, nil, placeholder: "Any additional context about this asset", rows: 3 %>
