@@ -57,19 +57,8 @@ class PagesController < ApplicationController
   def trigger_scan
     org_id = Current.user.organization_id
 
-    # Resolve target asset IDs
-    asset_ids = case params[:target_mode]
-    when 'site'
-      Asset.where(organization_id: org_id, site_id: params[:site_id]).pluck(:id)
-    when 'cidr'
-      require 'ipaddr'
-      range = IPAddr.new(params[:cidr_range].to_s) rescue nil
-      range ? Asset.where(organization_id: org_id).select { |a|
-        range.include?(IPAddr.new(a.ip_address.to_s.split('/').first)) rescue false
-      }.map(&:id) : []
-    else # 'asset'
-      Array(params[:asset_ids]).map(&:to_i).select { |id| id > 0 }
-    end
+    # Resolve target asset IDs from checkboxes (all target modes submit asset_ids[])
+    asset_ids = Array(params[:asset_ids]).map(&:to_i).select { |id| id > 0 }
 
     if asset_ids.empty?
       redirect_to scanner_path, alert: "No targets selected."

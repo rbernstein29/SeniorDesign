@@ -40,7 +40,6 @@
     </div>
 
     <%= form_with url: trigger_scan_path, method: :post, local: true, id: "scanner-form" do %>
-        <input type="hidden" name="target_mode" id="target_mode_input" value="asset">
 
         <!-- ═══ 1. TARGET SELECTION ═══ -->
         <div class="card" style="margin-bottom:16px;">
@@ -60,96 +59,96 @@
                 <div style="display:flex;gap:8px;margin-bottom:20px;">
                     <button type="button" class="scanner-tab active" id="tab-target-asset" onclick="switchTargetMode('asset')">By Asset</button>
                     <button type="button" class="scanner-tab" id="tab-target-site" onclick="switchTargetMode('site')">By Site</button>
-                    <button type="button" class="scanner-tab" id="tab-target-cidr" onclick="switchTargetMode('cidr')">By CIDR</button>
+                    <button type="button" class="scanner-tab" id="tab-target-cidr" onclick="switchTargetMode('cidr')">By IP</button>
                 </div>
 
-                <!-- By Asset -->
+                <!-- By Asset: filter controls -->
                 <div id="target-panel-asset">
-                    <% if @assets.any? %>
-                        <div style="display:flex;gap:10px;margin-bottom:12px;flex-wrap:wrap;">
-                            <select id="filter-site" onchange="filterAssets()" style="min-width:160px;">
-                                <option value="">All Sites</option>
-                                <% @sites.each do |site| %>
-                                    <option value="<%= site.id %>"><%= site.name %></option>
-                                <% end %>
-                            </select>
-                            <select id="filter-os" onchange="filterAssets()" style="min-width:140px;">
-                                <option value="">All OS</option>
-                                <option value="linux">Linux</option>
-                                <option value="windows">Windows</option>
-                                <option value="macos">macOS</option>
-                            </select>
-                            <select id="filter-crit" onchange="filterAssets()" style="min-width:150px;">
-                                <option value="">All Criticality</option>
-                                <option value="high">High</option>
-                                <option value="medium">Medium</option>
-                                <option value="low">Low</option>
-                                <option value="unknown">Unknown</option>
-                            </select>
-                            <button type="button" onclick="selectAllVisible(true)" class="btn btn-secondary" style="padding:4px 10px;font-size:12px;">Select All</button>
-                            <button type="button" onclick="selectAllVisible(false)" class="btn btn-secondary" style="padding:4px 10px;font-size:12px;">Clear</button>
-                        </div>
-                        <div style="max-height:240px;overflow-y:auto;border:1px solid var(--border);border-radius:8px;padding:8px;">
-                            <% @assets.each do |asset| %>
-                                <label class="asset-check-row"
-                                    data-site="<%= asset.site_id %>"
-                                    data-os="<%= asset.scan_config&.dig('os') %>"
-                                    data-crit="<%= asset.criticality %>">
-                                    <input type="checkbox" name="asset_ids[]" value="<%= asset.id %>" class="asset-checkbox">
-                                    <span class="network-code" style="font-size:13px;"><%= asset.ip_address %></span>
-                                    <% if asset.hostname.present? && asset.hostname != 'No Domain Name' %>
-                                        <span style="color:var(--muted);font-size:12px;"><%= asset.hostname %></span>
-                                    <% end %>
-                                    <% os = asset.scan_config&.dig('os') %>
-                                    <% if os.present? %>
-                                        <span style="font-family:var(--mono);font-size:11px;color:var(--muted);"><%= os.upcase %></span>
-                                    <% end %>
-                                    <% if asset.site %>
-                                        <span style="font-size:11px;color:var(--muted);margin-left:auto;"><%= asset.site.name %></span>
-                                    <% end %>
-                                </label>
+                    <div style="display:flex;gap:10px;flex-wrap:wrap;">
+                        <select id="filter-site" onchange="applyFilter()" style="min-width:160px;">
+                            <option value="">All Sites</option>
+                            <% @sites.each do |site| %>
+                                <option value="<%= site.id %>"><%= site.name %></option>
                             <% end %>
-                        </div>
-                        <div style="margin-top:8px;font-size:12px;color:var(--muted);">
-                            <span id="asset-selected-count">0</span> asset(s) selected
-                        </div>
-                    <% else %>
-                        <div style="text-align:center;padding:24px;color:var(--muted);">
-                            No assets configured — <%= link_to "add one first", new_asset_path, style: "color:var(--accent);" %>
-                        </div>
-                    <% end %>
+                        </select>
+                        <select id="filter-os" onchange="applyFilter()" style="min-width:140px;">
+                            <option value="">All OS</option>
+                            <option value="linux">Linux</option>
+                            <option value="windows">Windows</option>
+                            <option value="macos">macOS</option>
+                        </select>
+                        <select id="filter-crit" onchange="applyFilter()" style="min-width:150px;">
+                            <option value="">All Criticality</option>
+                            <option value="high">High</option>
+                            <option value="medium">Medium</option>
+                            <option value="low">Low</option>
+                            <option value="unknown">Unknown</option>
+                        </select>
+                    </div>
                 </div>
 
-                <!-- By Site -->
+                <!-- By Site: filter controls -->
                 <div id="target-panel-site" style="display:none;">
                     <% if @sites.any? %>
-                        <div class="form-group" style="max-width:400px;">
-                            <label class="form-label">Site</label>
-                            <select name="site_id" id="site-select" onchange="updateSiteCount()">
+                        <div style="max-width:400px;">
+                            <select id="site-filter-select" onchange="applyFilter()" style="width:100%;">
                                 <option value="">Select a site…</option>
                                 <% @sites.each do |site| %>
-                                    <option value="<%= site.id %>" data-count="<%= site.assets.count %>">
+                                    <option value="<%= site.id %>">
                                         <%= site.name %><%= site.network_range.present? ? " (#{site.network_range})" : "" %>
                                     </option>
                                 <% end %>
                             </select>
-                            <div id="site-asset-count" style="margin-top:6px;font-size:12px;color:var(--muted);"></div>
                         </div>
                     <% else %>
                         <div style="color:var(--muted);font-size:13px;">No sites configured.</div>
                     <% end %>
                 </div>
 
-                <!-- By CIDR -->
+                <!-- By CIDR: filter controls -->
                 <div id="target-panel-cidr" style="display:none;">
-                    <div class="form-group" style="max-width:400px;">
-                        <label class="form-label">CIDR Range</label>
-                        <%= text_field_tag :cidr_range, nil, placeholder: "192.168.1.0/24",
-                            id: "cidr-input",
-                            onblur: "checkCidrCount()" %>
-                        <div id="cidr-asset-count" style="margin-top:6px;font-size:12px;color:var(--muted);"></div>
+                    <div style="max-width:400px;">
+                        <input type="text" id="cidr-filter-input" placeholder="e.g. 192.168.1.1 or 192.168.1.0/24" oninput="applyFilter()"
+                            style="width:100%;">
                     </div>
                 </div>
+
+                <!-- Shared asset list (all modes) -->
+                <% if @assets.any? %>
+                    <div style="display:flex;gap:8px;margin-top:12px;margin-bottom:8px;flex-wrap:wrap;">
+                        <button type="button" onclick="selectAllVisible(true)" class="btn btn-secondary" style="padding:4px 10px;font-size:12px;">Select All</button>
+                        <button type="button" onclick="selectAllVisible(false)" class="btn btn-secondary" style="padding:4px 10px;font-size:12px;">Clear</button>
+                    </div>
+                    <div style="max-height:240px;overflow-y:auto;border:1px solid var(--border);border-radius:8px;padding:8px;">
+                        <% @assets.each do |asset| %>
+                            <label class="asset-check-row"
+                                data-site="<%= asset.site_id %>"
+                                data-os="<%= asset.scan_config&.dig('os') %>"
+                                data-crit="<%= asset.criticality %>"
+                                data-ip="<%= asset.ip_address.to_s.split('/').first %>">
+                                <input type="checkbox" name="asset_ids[]" value="<%= asset.id %>" class="asset-checkbox">
+                                <span class="network-code" style="font-size:13px;"><%= asset.ip_address %></span>
+                                <% if asset.hostname.present? && asset.hostname != 'No Domain Name' %>
+                                    <span style="color:var(--muted);font-size:12px;"><%= asset.hostname %></span>
+                                <% end %>
+                                <% os = asset.scan_config&.dig('os') %>
+                                <% if os.present? %>
+                                    <span style="font-family:var(--mono);font-size:11px;color:var(--muted);"><%= os.upcase %></span>
+                                <% end %>
+                                <% if asset.site %>
+                                    <span style="font-size:11px;color:var(--muted);margin-left:auto;"><%= asset.site.name %></span>
+                                <% end %>
+                            </label>
+                        <% end %>
+                    </div>
+                    <div style="margin-top:8px;font-size:12px;color:var(--muted);">
+                        <span id="asset-selected-count">0</span> asset(s) selected
+                    </div>
+                <% else %>
+                    <div style="text-align:center;padding:24px;color:var(--muted);margin-top:12px;">
+                        No assets configured — <%= link_to "add one first", new_asset_path, style: "color:var(--accent);" %>
+                    </div>
+                <% end %>
 
             </div>
         </div>
@@ -316,14 +315,64 @@
 </style>
 
 <script>
-// Target mode switching
+let currentTargetMode = 'asset';
+
 function switchTargetMode(mode) {
-    document.getElementById('target_mode_input').value = mode;
+    currentTargetMode = mode;
     ['asset','site','cidr'].forEach(m => {
         document.getElementById('target-panel-' + m).style.display = m === mode ? '' : 'none';
-        const tab = document.getElementById('tab-target-' + m);
-        tab.classList.toggle('active', m === mode);
+        document.getElementById('tab-target-' + m).classList.toggle('active', m === mode);
     });
+    applyFilter();
+}
+
+function applyFilter() {
+    let filterFn;
+    if (currentTargetMode === 'asset') {
+        const site = document.getElementById('filter-site').value;
+        const os   = document.getElementById('filter-os').value;
+        const crit = document.getElementById('filter-crit').value;
+        filterFn = row =>
+            (!site || row.dataset.site == site) &&
+            (!os   || row.dataset.os   == os)   &&
+            (!crit || row.dataset.crit == crit);
+    } else if (currentTargetMode === 'site') {
+        const site = document.getElementById('site-filter-select').value;
+        filterFn = row => !site || row.dataset.site == site;
+    } else {
+        const cidr = document.getElementById('cidr-filter-input').value.trim();
+        filterFn = row => !cidr || cidrMatch(row.dataset.ip, cidr);
+    }
+    document.querySelectorAll('.asset-check-row').forEach(row => {
+        row.style.display = filterFn(row) ? '' : 'none';
+    });
+    updateAssetCount();
+}
+
+function cidrMatch(ip, cidr) {
+    try {
+        if (!cidr.includes('/')) return ip.startsWith(cidr);
+        const [base, bits] = cidr.split('/');
+        const mask    = bits === '0' ? 0 : (~0 << (32 - parseInt(bits))) >>> 0;
+        const ipInt   = ip.split('.').reduce((a, o) => (a * 256 + parseInt(o)), 0) >>> 0;
+        const baseInt = base.split('.').reduce((a, o) => (a * 256 + parseInt(o)), 0) >>> 0;
+        return (ipInt & mask) === (baseInt & mask);
+    } catch(e) { return false; }
+}
+
+function selectAllVisible(checked) {
+    document.querySelectorAll('.asset-check-row').forEach(row => {
+        if (row.style.display !== 'none') {
+            row.querySelector('.asset-checkbox').checked = checked;
+        }
+    });
+    updateAssetCount();
+}
+
+function updateAssetCount() {
+    const count = document.querySelectorAll('.asset-checkbox:checked').length;
+    const el = document.getElementById('asset-selected-count');
+    if (el) el.textContent = count;
 }
 
 // Live exploit count via AJAX
@@ -350,67 +399,6 @@ function updateExploitCount() {
         .catch(function() {});
 }
 
-// Asset filter
-function filterAssets() {
-    const site = document.getElementById('filter-site').value;
-    const os   = document.getElementById('filter-os').value;
-    const crit = document.getElementById('filter-crit').value;
-    document.querySelectorAll('.asset-check-row').forEach(row => {
-        const matchSite = !site || row.dataset.site == site;
-        const matchOs   = !os   || row.dataset.os   == os;
-        const matchCrit = !crit || row.dataset.crit == crit;
-        row.style.display = (matchSite && matchOs && matchCrit) ? '' : 'none';
-    });
-    updateAssetCount();
-}
-
-function selectAllVisible(checked) {
-    document.querySelectorAll('.asset-check-row').forEach(row => {
-        if (row.style.display !== 'none') {
-            row.querySelector('.asset-checkbox').checked = checked;
-        }
-    });
-    updateAssetCount();
-}
-
-function updateAssetCount() {
-    const count = document.querySelectorAll('.asset-checkbox:checked').length;
-    const el = document.getElementById('asset-selected-count');
-    if (el) el.textContent = count;
-}
-
-document.addEventListener('DOMContentLoaded', () => {
-    document.querySelectorAll('.asset-checkbox').forEach(cb => {
-        cb.addEventListener('change', updateAssetCount);
-    });
-    updateExploitCount();
-});
-
-// Site count
-function updateSiteCount() {
-    const sel = document.getElementById('site-select');
-    const opt = sel.options[sel.selectedIndex];
-    const el  = document.getElementById('site-asset-count');
-    if (opt && opt.dataset.count !== undefined && sel.value) {
-        el.textContent = opt.dataset.count + ' asset(s) in this site';
-    } else {
-        el.textContent = '';
-    }
-}
-
-// CIDR count
-function checkCidrCount() {
-    const cidr = document.getElementById('cidr-input').value.trim();
-    const el   = document.getElementById('cidr-asset-count');
-    if (!cidr) { el.textContent = ''; return; }
-    fetch('/scan-assets.json?cidr=' + encodeURIComponent(cidr))
-        .then(r => r.json())
-        .then(data => {
-            el.textContent = (data.count || 0) + ' matching asset(s) in your inventory';
-        })
-        .catch(() => { el.textContent = ''; });
-}
-
 // Scan options toggle
 function toggleScanOptions() {
     const body  = document.getElementById('scan-options-body');
@@ -419,4 +407,11 @@ function toggleScanOptions() {
     body.style.display  = open ? 'none' : '';
     arrow.textContent   = open ? '▼' : '▲';
 }
+
+document.addEventListener('DOMContentLoaded', () => {
+    document.querySelectorAll('.asset-checkbox').forEach(cb => {
+        cb.addEventListener('change', updateAssetCount);
+    });
+    updateExploitCount();
+});
 </script>

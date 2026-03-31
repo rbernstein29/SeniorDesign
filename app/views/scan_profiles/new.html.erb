@@ -35,34 +35,75 @@
                     <label class="form-label">Exploits</label>
                     <div style="font-size:12px;color:var(--muted);margin-bottom:8px;">Select the exploits to include in this profile</div>
 
+                    <script>
+                        function toggleSection(btn) {
+                            const body = btn.nextElementSibling;
+                            const chevron = btn.querySelector('.chevron');
+                            const collapsed = body.style.display === 'none';
+                            body.style.display = collapsed ? '' : 'none';
+                            chevron.style.transform = collapsed ? 'rotate(0deg)' : 'rotate(-90deg)';
+                        }
+                        function filterExploits(input) {
+                            const query = input.value.toLowerCase();
+                            const body = input.closest('.exploit-body');
+                            if (query && body.style.display === 'none') {
+                                body.previousElementSibling.querySelector('.chevron').style.transform = 'rotate(0deg)';
+                                body.style.display = '';
+                            }
+                            body.querySelectorAll('.exploit-label').forEach(label => {
+                                label.style.display = label.dataset.name.includes(query) ? '' : 'none';
+                            });
+                        }
+                    </script>
+
                     <% severity_order = %w[critical high medium low] %>
                     <% grouped = @exploits.group_by { |e| e.severity&.downcase } %>
                     <% severity_order.each do |sev| %>
                         <% next unless grouped[sev]&.any? %>
-                        <div style="margin-bottom:16px;">
-                            <div style="font-family:var(--mono);font-size:11px;letter-spacing:1px;color:var(--muted);margin-bottom:6px;text-transform:uppercase;"><%= sev %></div>
-                            <div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(280px,1fr));gap:4px;">
-                                <% grouped[sev].each do |exploit| %>
-                                    <label style="display:flex;align-items:center;gap:8px;padding:6px 8px;border-radius:6px;cursor:pointer;font-size:13px;border:1px solid var(--border);">
-                                        <%= check_box_tag 'exploit_ids[]', exploit.id, false %>
-                                        <span><%= exploit.name %></span>
-                                    </label>
-                                <% end %>
+                        <div style="margin-bottom:8px;border:1px solid var(--border);border-radius:8px;overflow:hidden;">
+                            <button type="button" onclick="toggleSection(this)"
+                                style="width:100%;display:flex;align-items:center;justify-content:space-between;padding:8px 12px;background:var(--card-bg);border:none;cursor:pointer;font-family:var(--mono);font-size:11px;letter-spacing:1px;color:var(--muted);text-transform:uppercase;">
+                                <span><%= sev %> (<%= grouped[sev].size %>)</span>
+                                <span class="chevron" style="transition:transform 0.2s;transform:rotate(-90deg);">&#8964;</span>
+                            </button>
+                            <div class="exploit-body" style="display:none;">
+                                <div style="padding:8px 8px 4px;">
+                                    <input type="text" placeholder="Search <%= sev %> exploits..." oninput="filterExploits(this)"
+                                        style="width:100%;max-width:400px;font-size:12px;padding:5px 8px;border-radius:6px;border:1px solid var(--border);background:var(--input-bg);color:var(--text);">
+                                </div>
+                                <div style="padding:4px 8px 8px;display:grid;grid-template-columns:repeat(auto-fill,minmax(280px,1fr));gap:4px;">
+                                    <% grouped[sev].each do |exploit| %>
+                                        <label class="exploit-label" data-name="<%= exploit.name.downcase %>" style="display:flex;align-items:center;gap:8px;padding:6px 8px;border-radius:6px;cursor:pointer;font-size:13px;border:1px solid var(--border);">
+                                            <%= check_box_tag 'exploit_ids[]', exploit.id, false %>
+                                            <span><%= exploit.name %></span>
+                                        </label>
+                                    <% end %>
+                                </div>
                             </div>
                         </div>
                     <% end %>
 
                     <% ungrouped = @exploits.reject { |e| severity_order.include?(e.severity&.downcase) } %>
                     <% if ungrouped.any? %>
-                        <div style="margin-bottom:16px;">
-                            <div style="font-family:var(--mono);font-size:11px;letter-spacing:1px;color:var(--muted);margin-bottom:6px;">OTHER</div>
-                            <div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(280px,1fr));gap:4px;">
-                                <% ungrouped.each do |exploit| %>
-                                    <label style="display:flex;align-items:center;gap:8px;padding:6px 8px;border-radius:6px;cursor:pointer;font-size:13px;border:1px solid var(--border);">
-                                        <%= check_box_tag 'exploit_ids[]', exploit.id, false %>
-                                        <span><%= exploit.name %></span>
-                                    </label>
-                                <% end %>
+                        <div style="margin-bottom:8px;border:1px solid var(--border);border-radius:8px;overflow:hidden;">
+                            <button type="button" onclick="toggleSection(this)"
+                                style="width:100%;display:flex;align-items:center;justify-content:space-between;padding:8px 12px;background:var(--card-bg);border:none;cursor:pointer;font-family:var(--mono);font-size:11px;letter-spacing:1px;color:var(--muted);text-transform:uppercase;">
+                                <span>OTHER (<%= ungrouped.size %>)</span>
+                                <span class="chevron" style="transition:transform 0.2s;transform:rotate(-90deg);">&#8964;</span>
+                            </button>
+                            <div class="exploit-body" style="display:none;">
+                                <div style="padding:8px 8px 4px;">
+                                    <input type="text" placeholder="Search other exploits..." oninput="filterExploits(this)"
+                                        style="width:100%;max-width:400px;font-size:12px;padding:5px 8px;border-radius:6px;border:1px solid var(--border);background:var(--input-bg);color:var(--text);">
+                                </div>
+                                <div style="padding:4px 8px 8px;display:grid;grid-template-columns:repeat(auto-fill,minmax(280px,1fr));gap:4px;">
+                                    <% ungrouped.each do |exploit| %>
+                                        <label class="exploit-label" data-name="<%= exploit.name.downcase %>" style="display:flex;align-items:center;gap:8px;padding:6px 8px;border-radius:6px;cursor:pointer;font-size:13px;border:1px solid var(--border);">
+                                            <%= check_box_tag 'exploit_ids[]', exploit.id, false %>
+                                            <span><%= exploit.name %></span>
+                                        </label>
+                                    <% end %>
+                                </div>
                             </div>
                         </div>
                     <% end %>
