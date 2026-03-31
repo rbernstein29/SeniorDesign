@@ -9,14 +9,13 @@ require 'thread'
 class ScanService
   MSF_BASE = ENV.fetch('MSF_MODULES_PATH', '/usr/share/metasploit-framework/modules/exploits')
 
-  def initialize(org_id, filter_params, user_id, scan = nil, asset_ids = [], scan_options = {}, &progress_cb)
+  def initialize(org_id, filter_params, user_id, scan = nil, asset_ids = [], scan_options = {})
     @org_id        = org_id
     @filter_params = (filter_params || {}).transform_keys(&:to_s)
     @user_id       = user_id
     @scan          = scan
     @asset_ids     = Array(asset_ids).map(&:to_i).select { |id| id > 0 }
     @scan_options  = scan_options || {}
-    @progress_cb   = progress_cb
   end
 
   def perform
@@ -25,8 +24,6 @@ class ScanService
     results = []
     threads = []
     mutex = Mutex.new
-
-    done_count = 0
 
     targets.each do |target|
       target_ip    = target['ip']
@@ -90,9 +87,6 @@ class ScanService
           end
 
           complete_scan_target(scan_target_id, target_exploits, target_findings)
-
-          n = mutex.synchronize { done_count += 1 }
-          @progress_cb&.call(n, targets.size, target_ip)
         rescue => e
           puts "Error scanning target #{target_ip}: #{e.message}"
         end
@@ -315,10 +309,9 @@ class ScanService
   end
 
   def get_modules_for_target(target_os)
-    platform  = @filter_params['platform'].presence || target_os
     allowlist = @filter_params['module_allowlist']
 
-    dirs  = platform_dirs(platform)
+    dirs  = platform_dirs(target_os)
     files = dirs.any? ? dirs.flat_map { |d| Dir.glob("#{MSF_BASE}/#{d}/**/*.rb") }
                       : Dir.glob("#{MSF_BASE}/**/*.rb")
 
@@ -364,7 +357,7 @@ class ScanService
     targets = []
     result.each do |row|
       config = JSON.parse(row['scan_config'] || '{}') rescue {}
-      port   = parse_port(config['port'])
+      ports  = parse_ports(config['port'])
       ip     = row['ip_address'].to_s
       proxy = if @scan_options[:use_agent] == false
         nil
@@ -373,7 +366,7 @@ class ScanService
         agent ? "socks5:127.0.0.1:#{agent.tunnel_port}" : nil
       end
       puts proxy ? "Routing #{ip} via agent proxy #{proxy}" : "Scanning #{ip} directly (no agent)"
-      targets << { 'ip' => ip, 'asset_id' => row['id'].to_i, 'ports' => [port], 'proxy' => proxy, 'os' => config['os'] }
+      targets << { 'ip' => ip, 'asset_id' => row['id'].to_i, 'ports' => ports, 'proxy' => proxy, 'os' => config['os'] }
     end
     targets
   rescue => e
@@ -381,23 +374,23 @@ class ScanService
     []
   end
 
-  def parse_port(port_str)
-    return rand(1..1024) if port_str.blank?
+  def parse_ports(port_str)
+    return [rand(1..65535)] if port_str.blank?
 
     str = port_str.to_s.strip
 
-    # Range: "8000-8080"
+    # Range: "8000-8080" — pick one random port in range
     if str =~ /\A(\d+)-(\d+)\z/
       lo, hi = $1.to_i, $2.to_i
-      return rand(lo..hi) if lo >= 1 && hi <= 65535 && lo <= hi
+      return [rand(lo..hi)] if lo >= 1 && hi <= 65535 && lo <= hi
     end
 
-    # Comma-separated or single: "80, 443" — use first valid
+    # Comma-separated or single: "22, 80, 443" — return all valid ports
     ports = str.split(',').map { |p| p.strip.to_i }.select { |p| p >= 1 && p <= 65535 }
-    return ports.first unless ports.empty?
-
-    rand(1..1024)
+    ports.any? ? ports : [rand(1..65535)]
   end
+
+  def parse_port(port_str) = parse_ports(port_str).first
 
   def send_email(to_email, subject, body)
     from_email = ENV.fetch('SMTP_FROM', 'scanner@example.com')
