@@ -5,8 +5,6 @@ class ScanJob < ApplicationJob
     user = User.find_by(id: user_id)
     return unless user
 
-    broadcast_progress(user_id, 0, "Initializing scan...")
-
     asset_ids = Array(asset_ids).map(&:to_i).select { |id| id > 0 }
     total = asset_ids.any? ? asset_ids.size : Asset.where(organization_id: org_id, is_active: true).count
     scan = Scan.create!(
@@ -17,6 +15,8 @@ class ScanJob < ApplicationJob
       start_time:   Time.current,
       total_assets: total
     )
+
+    broadcast_progress(user_id, 0, "Initializing scan...")
 
     agents = Agent.where(organization_id: org_id).select(&:connected?)
     agent_msg = agents.any? ? "#{agents.count} agent(s) available for proxy routing" : "No connected agents — scanning directly"
@@ -55,6 +55,8 @@ class ScanJob < ApplicationJob
       target: "scan_progress_area",
       html: html
     )
+  rescue => e
+    Rails.logger.warn("ScanJob broadcast failed: #{e.message}")
   end
 
   def broadcast_complete(user_id)
@@ -75,5 +77,7 @@ class ScanJob < ApplicationJob
       target: "scan_progress_area",
       html: html
     )
+  rescue => e
+    Rails.logger.warn("ScanJob broadcast_complete failed: #{e.message}")
   end
 end
