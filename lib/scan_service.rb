@@ -7,7 +7,7 @@ require 'net/smtp'
 require 'thread'
 
 class ScanService
-  MSF_BASE = ENV.fetch('MSF_MODULES_PATH', '/usr/share/metasploit-framework/modules/exploits')
+  MSF_BASE = ENV.fetch('MSF_MODULES_PATH', '/opt/metasploit-framework/embedded/framework/modules/exploits')
 
   def initialize(org_id, filter_params, user_id, scan = nil, asset_ids = [], scan_options = {})
     @org_id        = org_id
