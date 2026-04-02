@@ -87,11 +87,11 @@
                 </thead>
                 <tbody>
                     <% @scans.each do |scan| %>
-                    <tr>
+                    <tr data-scan-id="<%= scan.id %>">
                         <td style="font-family:var(--mono);font-size:12px;color:var(--text);font-weight:600;">
                             <%= scan.scan_name %>
                         </td>
-                        <td>
+                        <td data-field="status">
                             <% case scan.status
                                when 'running' %>
                                 <span class="status-badge status-running">
@@ -114,13 +114,13 @@
                         <td style="font-family:var(--mono);font-size:12px;">
                             <%= scan.start_time&.strftime("%b %d, %Y  %H:%M") || raw('&mdash;') %>
                         </td>
-                        <td style="font-family:var(--mono);">
+                        <td data-field="assets" style="font-family:var(--mono);">
                             <%= scan.scanned_assets %> / <%= scan.total_assets %>
                         </td>
-                        <td style="font-family:var(--mono);">
+                        <td data-field="exploits" style="font-family:var(--mono);">
                             <%= scan.total_exploits_tested %>
                         </td>
-                        <td>
+                        <td data-field="findings">
                             <% if scan.findings_count > 0 %>
                                 <span class="severity-tag" style="color:var(--red);border-color:rgba(239,68,68,0.2);background:rgba(239,68,68,0.07);">
                                     <%= scan.findings_count %>
@@ -129,7 +129,7 @@
                                 <span style="font-family:var(--mono);color:var(--muted);">0</span>
                             <% end %>
                         </td>
-                        <td>
+                        <td data-field="actions">
                             <div class="action-buttons">
                                 <% if scan.status == 'running' %>
                                     <%= button_to "Stop", stop_scan_path, method: :post,
@@ -156,6 +156,66 @@
 
 <% if @running_scans > 0 %>
 <script>
-  setTimeout(function() { location.reload(); }, 5000);
+  const REPORTS_PATH = "<%= reports_path %>";
+
+  function updateScanRow(scan) {
+    const row = document.querySelector(`tr[data-scan-id="${scan.id}"]`);
+    if (!row) return;
+
+    const statusCell = row.querySelector('[data-field="status"]');
+    if (statusCell) {
+      const labels = { running: 'Running', completed: 'Complete', failed: 'Failed', cancelled: 'Cancelled' };
+      const badges = { running: 'status-running', completed: 'status-complete', failed: 'status-failed', cancelled: 'status-failed' };
+      const dots   = { running: 'dot-cyan',        completed: 'dot-green',        failed: 'dot-red',       cancelled: 'dot-red' };
+      const badge  = badges[scan.status] || 'status-queued';
+      const dot    = dots[scan.status]   || 'dot-gray';
+      const label  = labels[scan.status] || scan.status.charAt(0).toUpperCase() + scan.status.slice(1);
+      statusCell.innerHTML = `<span class="status-badge ${badge}"><span class="status-dot ${dot}"></span>${label}</span>`;
+    }
+
+    const assetsCell = row.querySelector('[data-field="assets"]');
+    if (assetsCell) assetsCell.textContent = `${scan.scanned_assets} / ${scan.total_assets}`;
+
+    const exploitsCell = row.querySelector('[data-field="exploits"]');
+    if (exploitsCell) exploitsCell.textContent = scan.total_exploits_tested;
+
+    const findingsCell = row.querySelector('[data-field="findings"]');
+    if (findingsCell) {
+      if (scan.findings_count > 0) {
+        findingsCell.innerHTML = `<span class="severity-tag" style="color:var(--red);border-color:rgba(239,68,68,0.2);background:rgba(239,68,68,0.07);">${scan.findings_count}</span>`;
+      } else {
+        findingsCell.innerHTML = `<span style="font-family:var(--mono);color:var(--muted);">0</span>`;
+      }
+    }
+
+    if (scan.status !== 'running') {
+      const actionsCell = row.querySelector('[data-field="actions"]');
+      if (actionsCell) {
+        if (scan.status === 'completed') {
+          const anchor = scan.report_id ? `${REPORTS_PATH}#report-${scan.report_id}` : REPORTS_PATH;
+          actionsCell.innerHTML = `<div class="action-buttons"><a href="${anchor}" class="btn btn-secondary btn-sm">View Report</a></div>`;
+        } else {
+          actionsCell.innerHTML = `<div class="action-buttons"></div>`;
+        }
+      }
+    }
+  }
+
+  function pollRunningScans() {
+    const runningRows = Array.from(document.querySelectorAll('tr[data-scan-id]')).filter(row => {
+      return row.querySelector('.status-running') !== null;
+    });
+    if (runningRows.length === 0) return;
+
+    const ids = runningRows.map(r => r.dataset.scanId);
+    const url = `/scans/status?${ids.map(id => `ids[]=${id}`).join('&')}`;
+
+    fetch(url, { headers: { 'Accept': 'application/json' } })
+      .then(r => r.json())
+      .then(scans => scans.forEach(updateScanRow))
+      .catch(err => console.error('Scan status poll failed:', err));
+  }
+
+  setInterval(pollRunningScans, 5000);
 </script>
 <% end %>

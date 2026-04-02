@@ -97,6 +97,23 @@ class PagesController < ApplicationController
     @failed_scans = @scans.failed.count
   end
 
+  def scans_status
+    ids = Array(params[:ids]).map(&:to_i).select { |id| id > 0 }
+    scans = Scan.for_org(current_org_id).where(id: ids)
+    render json: scans.map { |s|
+      report = s.reports.first
+      {
+        id:                    s.id,
+        status:                s.status,
+        scanned_assets:        s.scanned_assets,
+        total_assets:          s.total_assets,
+        total_exploits_tested: s.total_exploits_tested,
+        findings_count:        s.findings_count,
+        report_id:             report&.id
+      }
+    }
+  end
+
   def stop_scan
     scan = Scan.for_org(current_org_id).running.find_by(id: params[:scan_id])
     scan&.update!(status: 'cancelled', end_time: Time.current)
