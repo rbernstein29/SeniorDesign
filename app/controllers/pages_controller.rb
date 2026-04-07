@@ -81,7 +81,8 @@ class PagesController < ApplicationController
     scan_options = {
       port_override: params[:port_override].presence,
       timeout:       params[:timeout].presence&.to_i,
-      use_agent:     params[:use_agent] == 'true'
+      use_agent:     params[:use_agent] == 'true',
+      safe_mode:     params[:safe_mode] == 'true'
     }.compact
 
     ScanJob.perform_later(org_id, filter_params, Current.user.id, asset_ids, scan_options)
