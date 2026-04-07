@@ -84,7 +84,7 @@ class ScanReportPdf < Prawn::Document
       return
     end
 
-    data = [["Target", "Port", "Exploit", "Status", "Time"]]
+    data = [["Target", "Port", "Exploit Name", "CVE", "Severity", "Status", "Time"]]
 
     results.each do |result|
       r = result.with_indifferent_access
@@ -93,7 +93,9 @@ class ScanReportPdf < Prawn::Document
       data << [
         r[:target],
         r[:port].to_s,
-        r[:exploit],
+        r[:exploit_name].presence || r[:exploit],
+        r[:cve_id].presence || "—",
+        r[:severity]&.upcase || "—",
         status,
         (Time.parse(r[:timestamp].to_s).strftime("%H:%M:%S") rescue r[:timestamp].to_s)
       ]
@@ -106,7 +108,7 @@ class ScanReportPdf < Prawn::Document
       cells.borders = [:bottom]
       cells.border_width = 0.5
 
-      column(3).each do |cell|
+      column(5).each do |cell|
         if cell.content == "VULNERABLE"
           cell.text_color = "CC0000"
           cell.font_style = :bold

@@ -29,11 +29,25 @@ class ScanReportXlsx
     end
 
     wb.add_worksheet(name: "Findings") do |sheet|
-      sheet.add_row ["Target", "Port", "Exploit", "Status", "Time"], b: true
+      sheet.add_row ["Target", "Port", "Exploit Module", "Exploit Name", "CVE ID", "Severity", "Description", "Disclosure Date", "References", "Status", "Evidence", "Time"], b: true
       results.each do |r|
         status = r[:success] ? "VULNERABLE" : "Secure"
-        time = (Time.parse(r[:timestamp].to_s).strftime("%H:%M:%S") rescue r[:timestamp].to_s)
-        sheet.add_row [r[:target], r[:port].to_s, r[:exploit], status, time]
+        time   = (Time.parse(r[:timestamp].to_s).strftime("%H:%M:%S") rescue r[:timestamp].to_s)
+        refs   = Array(r[:references]).map { |ref| "#{ref['type']}: #{ref['value']}" }.join(" | ")
+        sheet.add_row [
+          r[:target],
+          r[:port].to_s,
+          r[:exploit],
+          r[:exploit_name],
+          r[:cve_id],
+          r[:severity],
+          r[:description],
+          r[:disclosure_date],
+          refs,
+          status,
+          r[:evidence],
+          time
+        ]
       end
     end
 

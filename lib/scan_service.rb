@@ -71,12 +71,18 @@ class ScanService
 
                 mutex.synchronize do
                   results << {
-                    target:    target_ip,
-                    port:      port,
-                    exploit:   mod[:path],
-                    severity:  severity,
-                    success:   result[:success],
-                    timestamp: Time.now
+                    target:          target_ip,
+                    port:            port,
+                    exploit:         mod[:path],
+                    exploit_name:    exploit_record.name,
+                    severity:        severity,
+                    success:         result[:success],
+                    timestamp:       Time.now,
+                    cve_id:          exploit_record.cve_id,
+                    description:     exploit_record.description,
+                    disclosure_date: exploit_record.disclosure_date&.to_s,
+                    references:      exploit_record.references,
+                    evidence:        result[:evidence]
                   }
                 end
               end
@@ -381,13 +387,55 @@ class ScanService
   end
 
   def get_or_create_exploit_record(module_path, file_path)
-    Exploit.find_or_create_by!(exploit_id: module_path) do |e|
-      e.name              = module_path.split('/').last.tr('_', ' ').split.map(&:capitalize).join(' ')
-      e.severity          = read_module_rank(file_path)
-      e.metasploit_module = module_path
+    exploit = Exploit.find_or_initialize_by(exploit_id: module_path)
+    if exploit.new_record? || exploit.description.blank?
+      meta = parse_module_metadata(file_path)
+      exploit.name             = meta[:name].presence ||
+                                 module_path.split('/').last.tr('_', ' ').split.map(&:capitalize).join(' ')
+      exploit.description      = meta[:description]
+      exploit.cve_id           = meta[:cve_id]
+      exploit.disclosure_date  = meta[:disclosure_date]
+      exploit.references       = meta[:references]
+      exploit.authors          = meta[:authors]
+      exploit.severity         = read_module_rank(file_path)
+      exploit.metasploit_module = module_path
+      exploit.save!
     end
+    exploit
   rescue ActiveRecord::RecordNotUnique
     Exploit.find_by!(exploit_id: module_path)
+  end
+
+  def parse_module_metadata(file_path)
+    content = File.read(file_path) rescue ''
+
+    # Real module name
+    name = content.match(/'Name'\s*=>\s*['"]([^'"]+)['"]/m)&.[](1)&.strip
+
+    # Description — handles %q{}, %q(), or plain string
+    desc = content.match(/'Description'\s*=>\s*%q[{(](.+?)[})]/m)&.[](1)
+    desc ||= content.match(/'Description'\s*=>\s*["'](.+?)["']/m)&.[](1)
+    desc = desc&.gsub(/\s+/, ' ')&.strip
+
+    # CVE — first match, normalise to CVE-YYYY-NNNN
+    raw_cve = content.match(/\[\s*['"]CVE['"]\s*,\s*['"]([^'"]+)['"]\s*\]/)&.[](1)
+    cve_id  = raw_cve ? (raw_cve.start_with?('CVE') ? raw_cve : "CVE-#{raw_cve}") : nil
+
+    # All references as [{type, value}] pairs
+    refs = content.scan(/\[\s*['"](\w+)['"]\s*,\s*['"]([^'"]+)['"]\s*\]/)
+                  .map { |type, val| { 'type' => type, 'value' => val } }
+
+    # Disclosure date
+    raw_date       = content.match(/'DisclosureDate'\s*=>\s*['"]([^'"]+)['"]/m)&.[](1)
+    disclosure_date = raw_date ? (Date.parse(raw_date) rescue nil) : nil
+
+    # Author(s)
+    authors_block = content.match(/'Authors?'\s*=>\s*\[([^\]]+)\]/m)&.[](1)
+    authors = authors_block&.scan(/['"]([^'"]+)['"]/)&.flatten&.join(', ')
+    authors ||= content.match(/'Authors?'\s*=>\s*['"]([^'"]+)['"]/m)&.[](1)
+
+    { name: name, description: desc, cve_id: cve_id, references: refs,
+      disclosure_date: disclosure_date, authors: authors }
   end
 
   def get_targets(org_id)

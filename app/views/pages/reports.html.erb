@@ -43,6 +43,8 @@
                     <th>Severity</th>
                     <th>Target</th>
                     <th>Exploit</th>
+                    <th>CVE</th>
+                    <th>Description</th>
                     <th>Evidence</th>
                     <th>Discovered</th>
                 </tr>
@@ -58,10 +60,21 @@
                     <td style="font-family: var(--mono); font-size: 12px;">
                         <%= finding.asset&.ip_address || finding.asset_id %>
                     </td>
-                    <td>
+                    <td style="font-family:var(--mono);font-size:12px;">
                         <%= finding.exploit&.name || finding.exploit_id || '—' %>
                     </td>
-                    <td style="max-width:320px; overflow:hidden; text-overflow:ellipsis; white-space:nowrap;"
+                    <td style="font-family:var(--mono);font-size:12px;white-space:nowrap;">
+                        <% if finding.exploit&.cve_id.present? %>
+                            <span style="color:var(--accent);"><%= finding.exploit.cve_id %></span>
+                        <% else %>
+                            <span style="opacity:0.4;">—</span>
+                        <% end %>
+                    </td>
+                    <td style="max-width:260px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;font-size:12px;"
+                        title="<%= h finding.exploit&.description %>">
+                        <%= finding.exploit&.description.presence || '—' %>
+                    </td>
+                    <td style="max-width:240px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;"
                         title="<%= h finding.evidence %>">
                         <%= finding.evidence.presence || '—' %>
                     </td>

@@ -11,11 +11,25 @@ class ScanReportCsv
     results = raw.map { |r| r.is_a?(Hash) ? r.with_indifferent_access : {} }
 
     CSV.generate do |csv|
-      csv << ["Target", "Port", "Exploit", "Status", "Time"]
+      csv << ["Target", "Port", "Exploit Module", "Exploit Name", "CVE ID", "Severity", "Description", "Disclosure Date", "References", "Status", "Evidence", "Time"]
       results.each do |r|
         status = r[:success] ? "VULNERABLE" : "Secure"
-        time = (Time.parse(r[:timestamp].to_s).strftime("%H:%M:%S") rescue r[:timestamp].to_s)
-        csv << [r[:target], r[:port].to_s, r[:exploit], status, time]
+        time   = (Time.parse(r[:timestamp].to_s).strftime("%H:%M:%S") rescue r[:timestamp].to_s)
+        refs   = Array(r[:references]).map { |ref| "#{ref['type']}: #{ref['value']}" }.join(" | ")
+        csv << [
+          r[:target],
+          r[:port].to_s,
+          r[:exploit],
+          r[:exploit_name],
+          r[:cve_id],
+          r[:severity],
+          r[:description],
+          r[:disclosure_date],
+          refs,
+          status,
+          r[:evidence],
+          time
+        ]
       end
     end
   end

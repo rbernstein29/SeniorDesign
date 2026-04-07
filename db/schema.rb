@@ -97,6 +97,9 @@ ActiveRecord::Schema[8.0].define(version: 2026_04_07_211310) do
     t.string "metasploit_module", limit: 255
     t.datetime "created_at", precision: nil, default: -> { "CURRENT_TIMESTAMP" }
     t.string "default_payload", limit: 255
+    t.date   "disclosure_date"
+    t.jsonb  "references", default: []
+    t.text   "authors"
     t.index ["cve_id"], name: "idx_exploit_cve", where: "(cve_id IS NOT NULL)"
     t.index ["severity"], name: "idx_exploit_severity"
     t.unique_constraint ["exploit_id"], name: "exploits_exploit_id_key"
