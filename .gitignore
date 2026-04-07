@@ -18,6 +18,9 @@ bootsnap/
 /db/*.sqlite3
 /db/*.sqlite3-journal
 
+# Ignore migration files
+/db/migrate/
+
 # Rails environment configuration (Sensitive)
 /config/master.key
 /config/credentials.yml.enc
