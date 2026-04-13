@@ -1,0 +1,5 @@
+class AddSafeModeToScans < ActiveRecord::Migration[8.0]
+  def change
+    add_column :scans, :safe_mode, :boolean, default: false, null: false
+  end
+end

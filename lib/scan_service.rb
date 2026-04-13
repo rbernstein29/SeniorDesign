@@ -78,6 +78,7 @@ class ScanService
                     exploit_name:    exploit_record.name,
                     severity:        severity,
                     success:         result[:success],
+                    scan_mode:       @scan_options[:safe_mode] ? 'reconnaissance' : 'exploit',
                     timestamp:       Time.now,
                     cve_id:          exploit_record.cve_id,
                     description:     exploit_record.description,
@@ -118,10 +119,11 @@ class ScanService
       critical_findings:     critical,
       high_findings:         high,
       medium_findings:       medium,
-      low_findings:          low
+      low_findings:          low,
+      safe_mode:             @scan_options[:safe_mode] || false
     )
 
-    successful_results = results.select { |r| r[:success] }
+    successful_results = @scan_options[:safe_mode] ? results : results.select { |r| r[:success] }
     report_json = result_to_json(successful_results)
 
     Report.create!(
@@ -130,7 +132,7 @@ class ScanService
       generated_by:    @user_id,
       scan_id:         @scan&.id,
       report_name:     "Scan #{Time.current.strftime('%Y-%m-%d %H:%M')}",
-      report_type:     'vulnerability',
+      report_type:     @scan_options[:safe_mode] ? 'reconnaissance' : 'vulnerability',
       report_format:   'json',
       report_data:     successful_results,
       generated_at:    Time.current
@@ -287,21 +289,36 @@ class ScanService
 
   def rpc_run_auxiliary(client, exploit, target_ip, port, proxy, timeout_secs)
     mod_name = exploit['metasploit_module'].sub(/\Aauxiliary\//, '')
-    options  = { 'RHOSTS' => target_ip, 'ConnectTimeout' => '15' }
-    options['RPORT']   = port.to_s if port
-    options['Proxies'] = proxy     if proxy
+    con = client.call('console.create')
+    cid = con['id'].to_s
+    begin
+      cmds = [
+        "use auxiliary/#{mod_name}",
+        "set RHOSTS #{target_ip}",
+        (port ? "set RPORT #{port}" : nil),
+        "set ConnectTimeout 15",
+        (proxy ? "set Proxies #{proxy}" : nil),
+        "run",
+        ""
+      ].compact.join("\n") + "\n"
 
-    result = client.call('module.execute', 'auxiliary', mod_name, options)
-    job_id = result['job_id']&.to_s
-    return { success: false, evidence: nil } unless job_id
+      client.call('console.write', cid, cmds)
+      deadline = Time.now + timeout_secs
+      output = ''
+      while Time.now < deadline
+        sleep 2
+        res     = client.call('console.read', cid) rescue {}
+        output += res['data'].to_s
+        break unless res['busy']
+      end
 
-    deadline = Time.now + timeout_secs
-    while Time.now < deadline
-      sleep 2
-      jobs = client.call('job.list') rescue {}
-      break unless jobs.key?(job_id)
+      success  = output.match?(/\[\+\]/i)
+      evidence = output.scan(/\[\+\].+/).map(&:strip).join("\n").first(500)
+      puts success ? "[+] #{mod_name} detected something on #{target_ip}" : "[-] #{mod_name} — nothing detected"
+      { success: success, evidence: evidence.presence }
+    ensure
+      client.call('console.destroy', cid) rescue nil
     end
-    { success: true, evidence: "Auxiliary scan completed: #{mod_name}" }
   rescue Msf::RPC::ServerException => e
     puts "RPC ServerException [#{mod_name}]: #{e.message}"
     { success: false, evidence: nil }

@@ -108,6 +108,7 @@
                     <tr>
                         <th>File</th>
                         <th>Type</th>
+                        <th>Mode</th>
                         <th>Generated</th>
                         <th>Actions</th>
                     </tr>
@@ -126,6 +127,13 @@
                         </td>
                         <td>
                             <span class="type-badge"><%= report.report_type || 'report' %></span>
+                        </td>
+                        <td>
+                            <% if report.report_type == 'reconnaissance' %>
+                                <span class="type-badge" style="background:rgba(234,179,8,0.15);color:#ca8a04;border-color:rgba(234,179,8,0.3);">Recon</span>
+                            <% else %>
+                                <span class="type-badge" style="background:rgba(239,68,68,0.12);color:#dc2626;border-color:rgba(239,68,68,0.25);">Exploit</span>
+                            <% end %>
                         </td>
                         <td style="font-family: var(--mono); font-size: 12px;">
                             <%= report.generated_at&.strftime("%b %d, %Y  %H:%M") || '&mdash;' %>

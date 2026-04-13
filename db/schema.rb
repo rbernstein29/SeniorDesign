@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.0].define(version: 2026_04_07_211310) do
+ActiveRecord::Schema[8.0].define(version: 2026_04_08_000002) do
   create_schema "vuln_scanner"
 
   # These are extensions that must be enabled in order to support this database
@@ -209,6 +209,7 @@ ActiveRecord::Schema[8.0].define(version: 2026_04_07_211310) do
     t.integer "high_findings", default: 0
     t.integer "medium_findings", default: 0
     t.integer "low_findings", default: 0
+    t.boolean "safe_mode", default: false, null: false
     t.datetime "created_at", precision: nil, default: -> { "CURRENT_TIMESTAMP" }
     t.index ["organization_id"], name: "idx_scan_org"
     t.index ["start_time", "end_time"], name: "idx_scan_times"

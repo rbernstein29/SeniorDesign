@@ -12,42 +12,75 @@ class ScanReportXlsx
     raw = @report.report_data || []
     raw = JSON.parse(raw) if raw.is_a?(String)
     results = raw.map { |r| r.is_a?(Hash) ? r.with_indifferent_access : {} }
-    vulnerable_count = results.count { |r| r[:success] }
-    secure_count = results.size - vulnerable_count
+    safe = @report.report_type == 'reconnaissance'
+
+    detected_count   = results.count { |r| r[:success] }
+    undetected_count = results.size - detected_count
 
     wb.add_worksheet(name: "Summary") do |sheet|
-      sheet.add_row ["Vulnerability Scan Report"], b: true
-      sheet.add_row []
-      sheet.add_row ["Report ID",      "##{@report.id}"]
-      sheet.add_row ["Generated At",   @report.generated_at&.strftime("%Y-%m-%d %H:%M:%S")]
-      sheet.add_row ["Organization ID", @report.organization_id]
-      sheet.add_row ["Initiated By",   @report.user&.email_address || "Unknown"]
-      sheet.add_row []
-      sheet.add_row ["Total Results",  results.size]
-      sheet.add_row ["Vulnerable",     vulnerable_count]
-      sheet.add_row ["Secure",         secure_count]
+      if safe
+        sheet.add_row ["Reconnaissance Scan Report"], b: true
+        sheet.add_row []
+        sheet.add_row ["Report ID",      "##{@report.id}"]
+        sheet.add_row ["Generated At",   @report.generated_at&.strftime("%Y-%m-%d %H:%M:%S")]
+        sheet.add_row ["Organization ID", @report.organization_id]
+        sheet.add_row ["Initiated By",   @report.user&.email_address || "Unknown"]
+        sheet.add_row []
+        sheet.add_row ["Total Modules Run", results.size]
+        sheet.add_row ["Detected",          detected_count]
+        sheet.add_row ["Not Detected",      undetected_count]
+      else
+        vulnerable_count = detected_count
+        secure_count     = undetected_count
+        sheet.add_row ["Vulnerability Scan Report"], b: true
+        sheet.add_row []
+        sheet.add_row ["Report ID",      "##{@report.id}"]
+        sheet.add_row ["Generated At",   @report.generated_at&.strftime("%Y-%m-%d %H:%M:%S")]
+        sheet.add_row ["Organization ID", @report.organization_id]
+        sheet.add_row ["Initiated By",   @report.user&.email_address || "Unknown"]
+        sheet.add_row []
+        sheet.add_row ["Total Results",  results.size]
+        sheet.add_row ["Vulnerable",     vulnerable_count]
+        sheet.add_row ["Secure",         secure_count]
+      end
     end
 
     wb.add_worksheet(name: "Findings") do |sheet|
-      sheet.add_row ["Target", "Port", "Exploit Module", "Exploit Name", "CVE ID", "Severity", "Description", "Disclosure Date", "References", "Status", "Evidence", "Time"], b: true
-      results.each do |r|
-        status = r[:success] ? "VULNERABLE" : "Secure"
-        time   = (Time.parse(r[:timestamp].to_s).strftime("%H:%M:%S") rescue r[:timestamp].to_s)
-        refs   = Array(r[:references]).map { |ref| "#{ref['type']}: #{ref['value']}" }.join(" | ")
-        sheet.add_row [
-          r[:target],
-          r[:port].to_s,
-          r[:exploit],
-          r[:exploit_name],
-          r[:cve_id],
-          r[:severity],
-          r[:description],
-          r[:disclosure_date],
-          refs,
-          status,
-          r[:evidence],
-          time
-        ]
+      if safe
+        sheet.add_row ["Target", "Port", "Module", "Detected", "Evidence", "Time"], b: true
+        results.each do |r|
+          time = (Time.parse(r[:timestamp].to_s).strftime("%H:%M:%S") rescue r[:timestamp].to_s)
+          sheet.add_row [
+            r[:target],
+            r[:port].to_s,
+            r[:exploit_name].presence || r[:exploit],
+            r[:success] ? "Yes" : "No",
+            r[:evidence],
+            time
+          ]
+        end
+      else
+        sheet.add_row ["Target", "Port", "Exploit Module", "Exploit Name", "CVE ID", "Severity",
+                       "Description", "Disclosure Date", "References", "Status", "Evidence", "Time"], b: true
+        results.each do |r|
+          status = r[:success] ? "VULNERABLE" : "Secure"
+          time   = (Time.parse(r[:timestamp].to_s).strftime("%H:%M:%S") rescue r[:timestamp].to_s)
+          refs   = Array(r[:references]).map { |ref| "#{ref['type']}: #{ref['value']}" }.join(" | ")
+          sheet.add_row [
+            r[:target],
+            r[:port].to_s,
+            r[:exploit],
+            r[:exploit_name],
+            r[:cve_id],
+            r[:severity],
+            r[:description],
+            r[:disclosure_date],
+            refs,
+            status,
+            r[:evidence],
+            time
+          ]
+        end
       end
     end
 
