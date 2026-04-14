@@ -97,9 +97,9 @@ ActiveRecord::Schema[8.0].define(version: 2026_04_08_000002) do
     t.string "metasploit_module", limit: 255
     t.datetime "created_at", precision: nil, default: -> { "CURRENT_TIMESTAMP" }
     t.string "default_payload", limit: 255
-    t.date   "disclosure_date"
-    t.jsonb  "references", default: []
-    t.text   "authors"
+    t.date "disclosure_date"
+    t.jsonb "references", default: []
+    t.text "authors"
     t.index ["cve_id"], name: "idx_exploit_cve", where: "(cve_id IS NOT NULL)"
     t.index ["severity"], name: "idx_exploit_severity"
     t.unique_constraint ["exploit_id"], name: "exploits_exploit_id_key"
@@ -209,8 +209,8 @@ ActiveRecord::Schema[8.0].define(version: 2026_04_08_000002) do
     t.integer "high_findings", default: 0
     t.integer "medium_findings", default: 0
     t.integer "low_findings", default: 0
-    t.boolean "safe_mode", default: false, null: false
     t.datetime "created_at", precision: nil, default: -> { "CURRENT_TIMESTAMP" }
+    t.boolean "safe_mode", default: false, null: false
     t.index ["organization_id"], name: "idx_scan_org"
     t.index ["start_time", "end_time"], name: "idx_scan_times"
     t.index ["status"], name: "idx_scan_status"
