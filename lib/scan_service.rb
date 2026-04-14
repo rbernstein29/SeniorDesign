@@ -8,8 +8,17 @@ require 'thread'
 require 'msfrpc-client'
 
 class ScanService
-  MSF_BASE           = ENV.fetch('MSF_MODULES_PATH',   '/opt/metasploit-framework/embedded/framework/modules/exploits')
-  MSF_AUXILIARY_BASE = ENV.fetch('MSF_AUXILIARY_PATH', '/opt/metasploit-framework/embedded/framework/modules/auxiliary')
+  MSF_BASE = begin
+    apt = '/usr/share/metasploit-framework/modules/exploits'
+    rpm = '/opt/metasploit-framework/embedded/framework/modules/exploits'
+    ENV['MSF_MODULES_PATH'] || (Dir.exist?(apt) ? apt : rpm)
+  end
+
+  MSF_AUXILIARY_BASE = begin
+    apt = '/usr/share/metasploit-framework/modules/auxiliary'
+    rpm = '/opt/metasploit-framework/embedded/framework/modules/auxiliary'
+    ENV['MSF_AUXILIARY_PATH'] || (Dir.exist?(apt) ? apt : rpm)
+  end
 
   def initialize(org_id, filter_params, user_id, scan = nil, asset_ids = [], scan_options = {})
     @org_id        = org_id
@@ -303,13 +312,22 @@ class ScanService
       ].compact.join("\n") + "\n"
 
       client.call('console.write', cid, cmds)
-      deadline = Time.now + timeout_secs
-      output = ''
+      sleep 4  # give MSF time to load and start the module before first read
+
+      deadline         = Time.now + timeout_secs
+      output           = ''
+      consecutive_idle = 0
+
       while Time.now < deadline
         sleep 2
         res     = client.call('console.read', cid) rescue {}
         output += res['data'].to_s
-        break unless res['busy']
+        if res['busy']
+          consecutive_idle = 0
+        else
+          consecutive_idle += 1
+          break if consecutive_idle >= 2  # two idle reads in a row = module finished
+        end
       end
 
       success  = output.match?(/\[\+\]/i)
@@ -514,6 +532,10 @@ class ScanService
 
     files = dirs.any? ? dirs.flat_map { |d| Dir.glob("#{base}/#{d}/**/*.rb") }
                       : Dir.glob("#{base}/**/*.rb")
+
+    if @scan_options[:safe_mode]
+      puts "[SafeMode] Auxiliary base: #{base} | dirs: #{dirs.inspect} | modules found: #{files.size}"
+    end
 
     mods = files.uniq.map { |f| { path: prefix + f.sub("#{base}/", '').sub('.rb', ''), file: f } }
     allowlist.present? ? mods.select { |m| allowlist.include?(m[:path]) } : mods
