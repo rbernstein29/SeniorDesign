@@ -212,11 +212,11 @@
                     <label class="form-label">Safe Mode</label>
                     <div style="display:flex;gap:16px;margin-top:4px;">
                         <label style="display:flex;align-items:center;gap:6px;cursor:pointer;font-size:13px;">
-                            <input type="radio" name="safe_mode" value="false" checked>
+                            <input type="radio" name="safe_mode" value="false" checked onchange="updateExploitCount()">
                             <span>Off</span>
                         </label>
                         <label style="display:flex;align-items:center;gap:6px;cursor:pointer;font-size:13px;">
-                            <input type="radio" name="safe_mode" value="true">
+                            <input type="radio" name="safe_mode" value="true" onchange="updateExploitCount()">
                             <span>On — auxiliary only (no exploitation)</span>
                         </label>
                     </div>
@@ -224,7 +224,7 @@
 
                 <!-- Live count -->
                 <div style="margin-top:12px;padding:10px 14px;background:var(--surface2);border-radius:6px;border:1px solid var(--border);display:inline-flex;align-items:center;gap:8px;">
-                    <span style="font-family:var(--mono);font-size:11px;color:var(--muted);">MATCHING EXPLOITS</span>
+                    <span id="exploit-match-label" style="font-family:var(--mono);font-size:11px;color:var(--muted);">MATCHING EXPLOITS</span>
                     <span id="exploit-match-count" style="font-family:var(--mono);font-size:18px;font-weight:700;color:var(--accent);">—</span>
                 </div>
                 <div style="margin-top:8px;font-size:11px;color:var(--muted);">
@@ -377,10 +377,21 @@ function updateAssetCount() {
 
 // Live exploit count via AJAX
 function updateExploitCount() {
+    var el = document.getElementById('exploit-match-count');
+    var label = document.getElementById('exploit-match-label');
+    var safeMode = document.querySelector('input[name="safe_mode"]:checked')?.value === 'true';
+
+    if (safeMode) {
+        if (el) el.textContent = '—';
+        if (label) label.textContent = 'AUXILIARY MODULES (by asset OS)';
+        return;
+    }
+
+    if (label) label.textContent = 'MATCHING EXPLOITS';
+
     var profileSel = document.getElementById('profile-select');
     if (profileSel && profileSel.value) {
         var opt = profileSel.options[profileSel.selectedIndex];
-        var el = document.getElementById('exploit-match-count');
         if (el) el.textContent = opt.dataset.count || '?';
         return;
     }
@@ -390,7 +401,6 @@ function updateExploitCount() {
     fetch('<%= exploit_count_path %>?' + params.toString())
         .then(function(r) { return r.json(); })
         .then(function(data) {
-            var el = document.getElementById('exploit-match-count');
             if (el) el.textContent = data.count;
         })
         .catch(function() {});

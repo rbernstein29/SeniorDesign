@@ -71,7 +71,11 @@ class ScanService
                 elapsed  = (Time.now.to_f * 1000).to_i - start_ms
 
                 target_exploits += 1
-                exploit_result = result[:success] ? 'success' : 'failed'
+                exploit_result = if @scan_options[:safe_mode]
+                  result[:success] ? 'detected' : 'not_detected'
+                else
+                  result[:success] ? 'success' : 'failed'
+                end
                 create_scan_exploit(asset_id, exploit_record.id, exploit_result, elapsed)
 
                 if result[:success]
@@ -460,7 +464,7 @@ class ScanService
 
   def create_scan_exploit(asset_id, exploit_id, result, elapsed_ms)
     return unless @scan&.id && asset_id && exploit_id
-    safe_result = %w[success failed].include?(result) ? result : 'failed'
+    safe_result = %w[success failed detected not_detected].include?(result) ? result : 'failed'
     ActiveRecord::Base.connection.execute(
       "INSERT INTO vuln_scanner.scan_exploits (scan_id, asset_id, exploit_id, result, execution_time_ms, tested_at) " \
       "VALUES (#{@scan.id.to_i}, #{asset_id.to_i}, #{exploit_id.to_i}, '#{safe_result}', #{elapsed_ms.to_i}, NOW())"
