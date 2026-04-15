@@ -52,6 +52,19 @@ class ScanService
             modules    = get_modules_for_target(target_os)
             sev_filter = @filter_params['severities']
 
+            # Safe mode: open one shared MSF console for all modules on this target
+            # so we avoid the overhead of create/destroy per module
+            if @scan_options[:safe_mode]
+              aux_client = rpc_client
+              if aux_client
+                con = aux_client.call('console.create') rescue nil
+                if con
+                  Thread.current[:msf_aux_console] = con['id'].to_s
+                  puts "[SafeMode] Shared console #{Thread.current[:msf_aux_console]} opened for #{target_ip}"
+                end
+              end
+            end
+
             target_ports.each do |port|
               modules.each do |mod|
                 severity = read_module_rank(mod[:file])
@@ -101,6 +114,13 @@ class ScanService
                   }
                 end
               end
+            end
+
+            # Destroy the shared auxiliary console now that all modules are done
+            if @scan_options[:safe_mode] && Thread.current[:msf_aux_console]
+              rpc_client&.call('console.destroy', Thread.current[:msf_aux_console]) rescue nil
+              puts "[SafeMode] Shared console closed for #{target_ip}"
+              Thread.current[:msf_aux_console] = nil
             end
 
             disconnect_network()
@@ -301,9 +321,17 @@ class ScanService
   end
 
   def rpc_run_auxiliary(client, exploit, target_ip, port, proxy, timeout_secs)
-    mod_name = exploit['metasploit_module'].sub(/\Aauxiliary\//, '')
-    con = client.call('console.create')
-    cid = con['id'].to_s
+    mod_name   = exploit['metasploit_module'].sub(/\Aauxiliary\//, '')
+    shared_cid = Thread.current[:msf_aux_console]
+    own_cid    = nil
+
+    unless shared_cid
+      con     = client.call('console.create')
+      own_cid = con['id'].to_s
+    end
+
+    cid = shared_cid || own_cid
+
     begin
       cmds = [
         "use auxiliary/#{mod_name}",
@@ -312,37 +340,32 @@ class ScanService
         "set ConnectTimeout 15",
         (proxy ? "set Proxies #{proxy}" : nil),
         "run",
-        ""
+        "echo ===AEGIS_DONE==="
       ].compact.join("\n") + "\n"
 
       client.call('console.write', cid, cmds)
-      sleep 4  # give MSF time to load and start the module before first read
 
-      deadline         = Time.now + timeout_secs
-      output           = ''
-      consecutive_idle = 0
+      deadline = Time.now + timeout_secs
+      output   = ''
 
       while Time.now < deadline
         sleep 2
         res     = client.call('console.read', cid) rescue {}
         output += res['data'].to_s
-        if res['busy']
-          consecutive_idle = 0
-        else
-          consecutive_idle += 1
-          break if consecutive_idle >= 2  # two idle reads in a row = module finished
-        end
+        break if output.include?('===AEGIS_DONE===')
       end
 
+      output   = output.sub('===AEGIS_DONE===', '').rstrip
       success  = output.match?(/\[\+\]/i)
       evidence = output.scan(/\[\+\].+/).map(&:strip).join("\n").first(500)
       puts success ? "[+] #{mod_name} detected something on #{target_ip}" : "[-] #{mod_name} — nothing detected"
       { success: success, evidence: evidence.presence }
     ensure
-      client.call('console.destroy', cid) rescue nil
+      client.call('console.destroy', own_cid) rescue nil if own_cid
     end
   rescue Msf::RPC::ServerException => e
     puts "RPC ServerException [#{mod_name}]: #{e.message}"
+    Thread.current[:msf_aux_console] = nil if shared_cid  # console may be dead; clear so next module creates fresh
     { success: false, evidence: nil }
   end
 
