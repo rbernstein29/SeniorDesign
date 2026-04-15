@@ -65,12 +65,24 @@ class ScanService
               end
             end
 
-            target_ports.each do |port|
+            succeeded_exploit_ids = Set.new
+
+            effective_ports = if @scan_options[:port_override].present?
+              parsed = parse_ports(@scan_options[:port_override])
+              puts "Port override for #{target_ip}: #{parsed.join(', ')}"
+              parsed
+            else
+              target_ports
+            end
+
+            effective_ports.each do |port|
               modules.each do |mod|
                 severity = read_module_rank(mod[:file])
                 next if sev_filter.present? && !sev_filter.include?(severity)
 
                 exploit_record = get_or_create_exploit_record(mod[:path], mod[:file])
+                next if succeeded_exploit_ids.include?(exploit_record.id)
+
                 exploit_hash = {
                   'id'                => exploit_record.id,
                   'name'              => exploit_record.name,
@@ -93,6 +105,7 @@ class ScanService
 
                 if result[:success]
                   target_findings += 1
+                  succeeded_exploit_ids << exploit_record.id
                   create_finding(asset_id, exploit_record.id, severity, result[:evidence])
                 end
 
@@ -146,7 +159,7 @@ class ScanService
     @scan&.update!(
       status:                'completed',
       end_time:              Time.current,
-      total_exploits_tested: results.size,
+      total_exploits_tested: results.map { |r| r[:exploit] }.uniq.size,
       findings_count:        findings_count,
       scanned_assets:        targets.size,
       critical_findings:     critical,
@@ -198,18 +211,17 @@ class ScanService
   end
 
   def attack(exploit, target_ip, port, proxy = nil)
-    effective_port = @scan_options[:port_override].presence || port
-    timeout_secs   = (@scan_options[:timeout].presence || 120).to_i
-    client         = rpc_client
+    timeout_secs = (@scan_options[:timeout].presence || 120).to_i
+    client       = rpc_client
 
     unless client
-      return attack_subprocess(exploit, target_ip, effective_port, proxy, timeout_secs)
+      return attack_subprocess(exploit, target_ip, port, proxy, timeout_secs)
     end
 
     if @scan_options[:safe_mode]
-      rpc_run_auxiliary(client, exploit, target_ip, effective_port, proxy, timeout_secs)
+      rpc_run_auxiliary(client, exploit, target_ip, port, proxy, timeout_secs)
     else
-      rpc_run_exploit(client, exploit, target_ip, effective_port, proxy, timeout_secs)
+      rpc_run_exploit(client, exploit, target_ip, port, proxy, timeout_secs)
     end
   rescue => e
     puts "Attack error [#{exploit['metasploit_module']}]: #{e.message}"
