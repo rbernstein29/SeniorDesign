@@ -5,6 +5,7 @@ require 'tempfile'
 require 'timeout'
 require 'net/smtp'
 require 'thread'
+require 'set'
 require 'msfrpc-client'
 
 class ScanService
@@ -14,11 +15,10 @@ class ScanService
     ENV['MSF_MODULES_PATH'] || (Dir.exist?(apt) ? apt : rpm)
   end
 
-  MSF_AUXILIARY_BASE = begin
-    apt = '/usr/share/metasploit-framework/modules/auxiliary'
-    rpm = '/opt/metasploit-framework/embedded/framework/modules/auxiliary'
-    ENV['MSF_AUXILIARY_PATH'] || (Dir.exist?(apt) ? apt : rpm)
-  end
+  MSF_AUXILIARY_BASE = ENV['MSF_AUXILIARY_PATH'] ||
+    MSF_BASE.sub('/modules/exploits', '/modules/auxiliary')
+
+  puts "[ScanService] MSF_BASE=#{MSF_BASE} MSF_AUXILIARY_BASE=#{MSF_AUXILIARY_BASE}"
 
   def initialize(org_id, filter_params, user_id, scan = nil, asset_ids = [], scan_options = {})
     @org_id        = org_id
@@ -144,6 +144,7 @@ class ScanService
           complete_scan_target(scan_target_id, target_exploits, target_findings)
         rescue => e
           puts "Error scanning target #{target_ip}: #{e.message}"
+          puts e.backtrace.first(6).join("\n")
         end
       end
     end
@@ -356,18 +357,29 @@ class ScanService
       ].compact.join("\n") + "\n"
 
       client.call('console.write', cid, cmds)
+      sleep 4  # give MSF time to load the module before first read
 
-      deadline = Time.now + timeout_secs
-      output   = ''
+      deadline         = Time.now + timeout_secs
+      output           = ''
+      consecutive_idle = 0
 
       while Time.now < deadline
         sleep 2
         res     = client.call('console.read', cid) rescue {}
-        output += res['data'].to_s
+        chunk   = res['data'].to_s
+        output += chunk
+        # Sentinel wins immediately if echo command is supported
         break if output.include?('===AEGIS_DONE===')
+        # Fallback: two consecutive idle (busy:false) reads means module is done
+        if res['busy']
+          consecutive_idle = 0
+        else
+          consecutive_idle += 1
+          break if consecutive_idle >= 2
+        end
       end
 
-      output   = output.sub('===AEGIS_DONE===', '').rstrip
+      output = output.sub('===AEGIS_DONE===', '').rstrip
       success  = output.match?(/\[\+\]/i)
       evidence = output.scan(/\[\+\].+/).map(&:strip).join("\n").first(500)
       puts success ? "[+] #{mod_name} detected something on #{target_ip}" : "[-] #{mod_name} — nothing detected"
@@ -571,6 +583,12 @@ class ScanService
 
     files = dirs.any? ? dirs.flat_map { |d| Dir.glob("#{base}/#{d}/**/*.rb") }
                       : Dir.glob("#{base}/**/*.rb")
+
+    # If the targeted subdirs produced nothing, fall back to the full tree
+    if files.empty? && dirs.any?
+      puts "[#{@scan_options[:safe_mode] ? 'SafeMode' : 'Scan'}] Subdirs #{dirs.inspect} empty under #{base}, falling back to full tree"
+      files = Dir.glob("#{base}/**/*.rb")
+    end
 
     if @scan_options[:safe_mode]
       puts "[SafeMode] Auxiliary base: #{base} | dirs: #{dirs.inspect} | modules found: #{files.size}"
