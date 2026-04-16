@@ -21,7 +21,7 @@ default: &default
   database: vulnerability_scanner
   username: aegis
   password: goodyear
-  host: 100.69.88.107
+  host: localhost
   port: 5432
   schema_search_path: "vuln_scanner"
 
@@ -85,9 +85,10 @@ test:
 production:
   primary: &primary_production
     <<: *default
-    database: server_production
-    username: server
-    password: <%= ENV["SERVER_DATABASE_PASSWORD"] %>
+    database: vulnerability_scanner
+    username: aegis
+    password: goodyear
+    schema_search_path: "vuln_scanner"
   cache:
     <<: *primary_production
     database: server_production_cache
