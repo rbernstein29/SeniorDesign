@@ -40,8 +40,10 @@ plugin :solid_queue if ENV["SOLID_QUEUE_IN_PUMA"]
 # In other environments, only set the PID file if requested.
 # pidfile ENV["PIDFILE"] if ENV["PIDFILE"]
 
-shared_dir = "/home/aegis/SeniorDesign/shared"
-bind "unix://#{shared_dir}/tmp/sockets/puma.sock"
-stdout_redirect "#{shared_dir}/log/puma.stdout.log", "#{shared_dir}/log/puma.stderr.log", true
-pidfile "#{shared_dir}/tmp/pids/server.pid"
-state_path "#{shared_dir}/tmp/pids/server.state"
+if ENV["RAILS_ENV"] == "production"
+  shared_dir = "/home/aegis/SeniorDesign/shared"
+  bind "unix://#{shared_dir}/tmp/sockets/puma.sock"
+  stdout_redirect "#{shared_dir}/log/puma.stdout.log", "#{shared_dir}/log/puma.stderr.log", true
+  pidfile "#{shared_dir}/tmp/pids/server.pid"
+  state_path "#{shared_dir}/tmp/pids/server.state"
+end
