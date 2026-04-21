@@ -10,9 +10,9 @@ require 'msfrpc-client'
 
 class ScanService
   MSF_BASE = begin
+    opt = '/opt/metasploit-framework/embedded/framework/modules/exploits'
     apt = '/usr/share/metasploit-framework/modules/exploits'
-    rpm = '/opt/metasploit-framework/embedded/framework/modules/exploits'
-    ENV['MSF_MODULES_PATH'] || (Dir.exist?(apt) ? apt : rpm)
+    ENV['MSF_MODULES_PATH'] || (Dir.exist?(opt) ? opt : apt)
   end
 
   MSF_AUXILIARY_BASE = ENV['MSF_AUXILIARY_PATH'] ||
