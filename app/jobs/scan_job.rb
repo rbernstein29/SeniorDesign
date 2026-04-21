@@ -7,6 +7,12 @@ class ScanJob < ApplicationJob
 
     asset_ids = Array(asset_ids).map(&:to_i).select { |id| id > 0 }
     total = asset_ids.any? ? asset_ids.size : Asset.where(organization_id: org_id, is_active: true).count
+
+    ActiveRecord::Base.connection.execute(
+      "SELECT setval(pg_get_serial_sequence('vuln_scanner.scans', 'id'), " \
+      "COALESCE((SELECT MAX(id) FROM vuln_scanner.scans), 1))"
+    )
+
     scan = Scan.create!(
       scan_name:       "Scan #{Time.current.strftime('%Y-%m-%d %H:%M')}",
       organization_id: org_id,
