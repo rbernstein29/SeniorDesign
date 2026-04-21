@@ -6,6 +6,7 @@ require 'timeout'
 require 'net/smtp'
 require 'thread'
 require 'set'
+require 'shellwords'
 require 'msfrpc-client'
 
 class ScanService
@@ -47,7 +48,7 @@ class ScanService
           target_findings = 0
           target_exploits = 0
 
-          if connect_network(target_ip) == 1
+          if connect_network(target_ip, target['proxy']) == 1
             target_os  = target['os']
             modules    = get_modules_for_target(target_os)
             sev_filter = @filter_params['severities']
@@ -200,15 +201,79 @@ class ScanService
 
   private
 
-  def connect_network(ip)
-    puts "Connecting to network at #{ip}..."
-    # Actual connectivity is verified by Metasploit via the configured SOCKS5 proxy.
-    return 1
+  def connect_network(ip, proxy = nil)
+    puts "Checking connectivity to #{ip}#{proxy ? " via #{proxy}" : " (direct)"}..."
+    proxy ? socks5_alive_check(ip, proxy) : direct_alive_check(ip)
   end
 
   def disconnect_network
     puts "Disconnecting from network..."
     return 1
+  end
+
+  def socks5_alive_check(target_ip, proxy)
+    parts      = proxy.sub(/\Asocks5:\/?\/?/, '').split(':')
+    socks_host = parts[0]
+    socks_port = parts[1].to_i
+    return 0 unless socks_host.present? && socks_port > 0
+
+    [22, 80, 443, 445].each do |test_port|
+      begin
+        Timeout.timeout(5) do
+          sock = TCPSocket.new(socks_host, socks_port)
+          sock.write("\x05\x01\x00")
+          unless sock.read(2) == "\x05\x00"
+            sock.close
+            next
+          end
+          addr_bytes = target_ip.split('.').map(&:to_i).pack('C4')
+          sock.write("\x05\x01\x00\x01" + addr_bytes + [test_port].pack('n'))
+          resp = sock.read(10)
+          sock.close
+          if resp && resp.bytesize >= 2 && resp.getbyte(1) == 0
+            puts "[+] #{target_ip}:#{test_port} reachable via agent proxy"
+            return 1
+          end
+        end
+      rescue Errno::ECONNREFUSED
+        puts "[+] #{target_ip}:#{test_port} refused via proxy — host is alive"
+        return 1
+      rescue => e
+        puts "[-] #{target_ip}:#{test_port} via proxy: #{e.message}"
+      end
+    end
+    puts "[-] #{target_ip} unreachable via agent proxy"
+    0
+  rescue => e
+    puts "Connect check error for #{target_ip}: #{e.message}"
+    0
+  end
+
+  def direct_alive_check(ip)
+    # ICMP ping — fast single-packet probe
+    if system("ping -c 1 -W 1 #{Shellwords.escape(ip)} > /dev/null 2>&1")
+      puts "[+] #{ip} alive (ICMP ping)"
+      return 1
+    end
+
+    # Fallback: some hosts filter ICMP but have open TCP ports
+    [22, 80, 443, 445, 8080].each do |test_port|
+      begin
+        Timeout.timeout(5) { TCPSocket.new(ip, test_port).close }
+        puts "[+] #{ip}:#{test_port} reachable (direct)"
+        return 1
+      rescue Errno::ECONNREFUSED
+        puts "[+] #{ip}:#{test_port} refused — host is alive (direct)"
+        return 1
+      rescue => e
+        puts "[-] #{ip}:#{test_port}: #{e.message}"
+      end
+    end
+    puts "[-] #{ip} unreachable (direct)"
+    0
+  rescue => e
+    puts "Connect check error for #{ip}: #{e.message}"
+    0
   end
 
   def attack(exploit, target_ip, port, proxy = nil)
