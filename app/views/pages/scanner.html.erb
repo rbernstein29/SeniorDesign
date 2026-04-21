@@ -224,7 +224,7 @@
 
                 <!-- Live count -->
                 <div style="margin-top:12px;padding:10px 14px;background:var(--surface2);border-radius:6px;border:1px solid var(--border);display:inline-flex;align-items:center;gap:8px;">
-                    <span id="exploit-match-label" style="font-family:var(--mono);font-size:11px;color:var(--muted);">MATCHING EXPLOITS</span>
+                    <span id="exploit-match-label" style="font-family:var(--mono);font-size:11px;color:var(--muted);">MATCHING MODULES</span>
                     <span id="exploit-match-count" style="font-family:var(--mono);font-size:18px;font-weight:700;color:var(--accent);">—</span>
                 </div>
                 <div style="margin-top:8px;font-size:11px;color:var(--muted);">
@@ -379,18 +379,13 @@ function updateAssetCount() {
 function updateExploitCount() {
     var el = document.getElementById('exploit-match-count');
     var label = document.getElementById('exploit-match-label');
-    var safeMode = document.querySelector('input[name="safe_mode"]:checked')?.value === 'true';
+    var safeModeEl = document.querySelector('input[name="safe_mode"]:checked');
+    var safeMode = safeModeEl ? safeModeEl.value === 'true' : false;
 
-    if (safeMode) {
-        if (el) el.textContent = '—';
-        if (label) label.textContent = 'AUXILIARY MODULES (by asset OS)';
-        return;
-    }
-
-    if (label) label.textContent = 'MATCHING EXPLOITS';
+    if (label) label.textContent = safeMode ? 'AUXILIARY MODULES (by asset OS)' : 'MATCHING EXPLOITS';
 
     var profileSel = document.getElementById('profile-select');
-    if (profileSel && profileSel.value) {
+    if (profileSel && profileSel.value && !safeMode) {
         var opt = profileSel.options[profileSel.selectedIndex];
         if (el) el.textContent = opt.dataset.count || '?';
         return;
@@ -398,6 +393,7 @@ function updateExploitCount() {
     var severities = Array.from(document.querySelectorAll('.severity-checkbox:checked')).map(function(cb) { return cb.value; });
     var params = new URLSearchParams();
     severities.forEach(function(s) { params.append('severities[]', s); });
+    params.set('safe_mode', safeMode ? 'true' : 'false');
     fetch('<%= exploit_count_path %>?' + params.toString())
         .then(function(r) { return r.json(); })
         .then(function(data) {
@@ -418,6 +414,9 @@ function toggleScanOptions() {
 document.addEventListener('DOMContentLoaded', () => {
     document.querySelectorAll('.asset-checkbox').forEach(cb => {
         cb.addEventListener('change', updateAssetCount);
+    });
+    document.querySelectorAll('input[name="safe_mode"]').forEach(function(rb) {
+        rb.addEventListener('change', updateExploitCount);
     });
     updateExploitCount();
 });
