@@ -1,8 +1,38 @@
-<h1>Forgot your password?</h1>
+<% content_for :title, "Aegis - Forgot Password" %>
 
-<%= tag.div(flash[:alert], style: "color:red") if flash[:alert] %>
+<div class="login-wrap">
+  <div class="login-card">
+    <div class="login-head">
+      <div class="login-brand">
+        <%= image_tag 'logo_dark_mode.png',  alt: 'Aegis', class: 'login-logo logo-dark' %>
+        <%= image_tag 'logo_light_mode.png', alt: 'Aegis', class: 'login-logo logo-light' %>
+        <h1>Aegis</h1>
+      </div>
+      <div class="login-sub">Reset your password</div>
+    </div>
 
-<%= form_with url: passwords_path do |form| %>
-  <%= form.email_field :email_address, required: true, autofocus: true, autocomplete: "username", placeholder: "Enter your email address", value: params[:email_address] %><br>
-  <%= form.submit "Email reset instructions" %>
-<% end %>
+    <div class="login-body">
+      <% if flash[:alert] %>
+        <div class="alert-error"><%= flash[:alert] %></div>
+      <% end %>
+      <% if flash[:notice] %>
+        <div class="alert-success"><%= flash[:notice] %></div>
+      <% end %>
+
+      <%= form_with url: passwords_path do |form| %>
+        <div class="field">
+          <%= form.email_field :email_address, class: "input", placeholder: "Email",
+              required: true, autofocus: true, autocomplete: "username",
+              value: params[:email_address] %>
+        </div>
+        <div class="login-row">
+          <%= form.submit "Send reset instructions", class: "btn btn-primary" %>
+        </div>
+      <% end %>
+
+      <div class="login-row" style="justify-content:center;">
+        <%= link_to "Back to sign in", login_path, class: "login-hint" %>
+      </div>
+    </div>
+  </div>
+</div>
