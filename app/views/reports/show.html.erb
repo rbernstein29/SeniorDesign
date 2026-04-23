@@ -1,0 +1,367 @@
+<% content_for :title, "Aegis - #{@report.report_name}" %>
+
+<%= render 'shared/sidebar', current_page: 'reports' %>
+
+<div class="layout page-violet">
+
+  <!-- ═══ HEADER ═══ -->
+  <div class="page-header" style="flex-wrap:wrap;gap:12px;">
+    <div>
+      <div class="page-title"><%= @report.report_name %></div>
+      <div class="page-sub" style="display:flex;align-items:center;gap:8px;flex-wrap:wrap;">
+        <span style="font-family:var(--mono);font-size:11px;">
+          <%= @report.generated_at&.strftime('%Y-%m-%d %H:%M') %>
+        </span>
+        <span class="badge <%= @report.safe_mode? ? 'badge-green' : 'badge-red' %>">
+          <%= @report.display_type %>
+        </span>
+        <% if @scan&.retest? %>
+          <span class="badge badge-orange">RETEST</span>
+        <% end %>
+        <% if @report.user %>
+          <span style="font-size:11px;color:var(--muted);">by <%= @report.user.name.presence || @report.user.email_address.split('@').first %></span>
+        <% end %>
+      </div>
+    </div>
+    <div style="display:flex;gap:8px;flex-wrap:wrap;align-items:center;">
+      <%= link_to "JSON", download_json_report_path(@report), class: "btn btn-secondary", style: "font-size:12px;padding:6px 12px;" %>
+      <%= link_to "CSV",  download_csv_report_path(@report), class: "btn btn-secondary", style: "font-size:12px;padding:6px 12px;" %>
+      <%= link_to "XLSX", download_xlsx_report_path(@report), class: "btn btn-secondary", style: "font-size:12px;padding:6px 12px;" %>
+      <%= button_to "Retest", retest_report_path(@report), method: :post,
+            style: "background:var(--red);color:#fff;border:none;padding:6px 16px;border-radius:6px;font-family:var(--mono);font-size:12px;letter-spacing:1px;cursor:pointer;",
+            data: { confirm: "Queue a retest scan for all #{@findings.size} finding(s) in this report?" } %>
+      <%= link_to "← All Reports", reports_path, class: "btn btn-secondary", style: "font-size:12px;padding:6px 12px;" %>
+    </div>
+  </div>
+
+  <!-- ═══ SUMMARY CARDS ═══ -->
+  <%
+    critical_count = @findings.count { |f| f.severity == 'critical' }
+    high_count     = @findings.count { |f| f.severity == 'high' }
+    medium_count   = @findings.count { |f| f.severity == 'medium' }
+    low_count      = @findings.count { |f| f.severity == 'low' }
+    new_count      = @new_finding_ids.size
+    recurring_count = @recurring_finding_ids.size
+  %>
+  <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(110px,1fr));gap:10px;margin-bottom:16px;">
+    <div class="stat-card" style="border-color:var(--red);">
+      <div class="stat-value" style="color:var(--red);"><%= critical_count %></div>
+      <div class="stat-label">CRITICAL</div>
+    </div>
+    <div class="stat-card" style="border-color:var(--orange);">
+      <div class="stat-value" style="color:var(--orange);"><%= high_count %></div>
+      <div class="stat-label">HIGH</div>
+    </div>
+    <div class="stat-card" style="border-color:var(--yellow);">
+      <div class="stat-value" style="color:var(--yellow);"><%= medium_count %></div>
+      <div class="stat-label">MEDIUM</div>
+    </div>
+    <div class="stat-card" style="border-color:var(--teal);">
+      <div class="stat-value" style="color:var(--teal);"><%= low_count %></div>
+      <div class="stat-label">LOW</div>
+    </div>
+    <div class="stat-card" style="border-color:var(--accent);">
+      <div class="stat-value" style="color:var(--accent);"><%= @findings.size %></div>
+      <div class="stat-label">TOTAL</div>
+    </div>
+    <div class="stat-card" style="border-color:var(--blue);">
+      <div class="stat-value" style="color:var(--blue);"><%= new_count %></div>
+      <div class="stat-label">NEW</div>
+    </div>
+    <div class="stat-card" style="border-color:var(--muted);">
+      <div class="stat-value" style="color:var(--muted);"><%= recurring_count %></div>
+      <div class="stat-label">RECURRING</div>
+    </div>
+    <div class="stat-card" style="border-color:var(--green);">
+      <div class="stat-value" style="color:var(--green);"><%= @remediated_count %></div>
+      <div class="stat-label">REMEDIATED</div>
+    </div>
+  </div>
+
+  <% if @prev_scan %>
+    <div style="font-size:11px;color:var(--muted);margin-bottom:16px;font-family:var(--mono);">
+      COMPARED TO: <%= @prev_scan.scan_name %> &mdash; <%= @prev_scan.start_time&.strftime('%Y-%m-%d') %>
+    </div>
+  <% else %>
+    <div style="font-size:11px;color:var(--muted);margin-bottom:16px;font-family:var(--mono);">
+      NO PREVIOUS SCAN TO COMPARE
+    </div>
+  <% end %>
+
+  <!-- ═══ ASSET BREAKDOWN ═══ -->
+  <% if @findings_by_asset.any? %>
+    <div class="table-container" style="margin-bottom:16px;">
+      <div class="table-header">
+        <div class="table-title">Asset Breakdown</div>
+        <div class="table-subtitle"><%= @findings_by_asset.size %> ASSETS AFFECTED</div>
+      </div>
+      <table style="width:100%;">
+        <thead>
+          <tr>
+            <th>Asset</th>
+            <th>Hostname</th>
+            <th style="color:var(--red);">Critical</th>
+            <th style="color:var(--orange);">High</th>
+            <th style="color:var(--yellow);">Medium</th>
+            <th style="color:var(--teal);">Low</th>
+            <th>Total</th>
+          </tr>
+        </thead>
+        <tbody>
+          <% @findings_by_asset.sort_by { |_a, fs| -fs.count { |f| f.severity == 'critical' } }.each do |asset, fs| %>
+            <tr>
+              <td style="font-family:var(--mono);font-size:13px;"><%= asset&.ip_address || '—' %></td>
+              <td style="color:var(--muted);font-size:13px;"><%= asset&.hostname.presence || '—' %></td>
+              <td style="font-family:var(--mono);color:var(--red);"><%= fs.count { |f| f.severity == 'critical' } %></td>
+              <td style="font-family:var(--mono);color:var(--orange);"><%= fs.count { |f| f.severity == 'high' } %></td>
+              <td style="font-family:var(--mono);color:var(--yellow);"><%= fs.count { |f| f.severity == 'medium' } %></td>
+              <td style="font-family:var(--mono);color:var(--teal);"><%= fs.count { |f| f.severity == 'low' } %></td>
+              <td style="font-family:var(--mono);font-weight:700;"><%= fs.size %></td>
+            </tr>
+          <% end %>
+        </tbody>
+      </table>
+    </div>
+  <% end %>
+
+  <!-- ═══ FINDINGS TABLE ═══ -->
+  <div class="table-container">
+    <div class="table-header">
+      <div class="table-title">Findings</div>
+      <div class="table-subtitle">SORTED BY CRITICALITY — <%= @findings.size %> TOTAL</div>
+    </div>
+
+    <% if @findings.empty? %>
+      <div class="empty-state">
+        <h3>No Findings</h3>
+        <p>This scan produced no findings.</p>
+      </div>
+    <% else %>
+      <table style="width:100%;" id="findings-table">
+        <thead>
+          <tr>
+            <th style="width:16px;"></th>
+            <th>Severity</th>
+            <th>Status</th>
+            <th>Module / Exploit</th>
+            <th>CVE</th>
+            <th>CVSS</th>
+            <th>Asset</th>
+            <th>Port</th>
+            <th>Discovered</th>
+          </tr>
+        </thead>
+        <tbody>
+          <% @findings.each do |finding| %>
+            <%
+              exploit = finding.exploit
+              asset   = finding.asset
+              sev     = finding.severity&.downcase
+              sev_color = case sev
+                          when 'critical' then 'var(--red)'
+                          when 'high'     then 'var(--orange)'
+                          when 'medium'   then 'var(--yellow)'
+                          when 'low'      then 'var(--teal)'
+                          else                 'var(--muted)'
+                          end
+              comparison_tag = if @new_finding_ids.include?(finding.id)
+                                 ['NEW', 'var(--blue)']
+                               elsif @recurring_finding_ids.include?(finding.id)
+                                 ['RECURRING', 'var(--muted)']
+                               else
+                                 nil
+                               end
+              is_remediated = finding.status == 'remediated'
+            %>
+            <tr class="finding-row" style="cursor:pointer;<%= is_remediated ? 'opacity:0.6;' : '' %>"
+                onclick="toggleFinding(<%= finding.id %>)">
+              <td style="font-family:var(--mono);font-size:11px;color:var(--muted);" id="chevron-<%= finding.id %>">▶</td>
+              <td>
+                <span class="badge" style="background:none;border:1px solid <%= sev_color %>;color:<%= sev_color %>;font-size:11px;">
+                  <%= sev&.upcase %>
+                </span>
+              </td>
+              <td>
+                <% if is_remediated %>
+                  <span style="font-family:var(--mono);font-size:11px;color:var(--green);">REMEDIATED</span>
+                <% elsif comparison_tag %>
+                  <span style="font-family:var(--mono);font-size:11px;color:<%= comparison_tag[1] %>;">
+                    <%= comparison_tag[0] %>
+                  </span>
+                <% else %>
+                  <span style="font-family:var(--mono);font-size:11px;color:var(--muted);">—</span>
+                <% end %>
+              </td>
+              <td style="font-size:13px;max-width:280px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;">
+                <%= exploit&.name || exploit&.exploit_id || '—' %>
+              </td>
+              <td style="font-family:var(--mono);font-size:12px;">
+                <% if exploit&.cve_id.present? %>
+                  <span style="color:var(--accent);"><%= exploit.cve_id %></span>
+                <% else %>
+                  <span style="color:var(--muted);">—</span>
+                <% end %>
+              </td>
+              <td style="font-family:var(--mono);font-size:13px;font-weight:700;">
+                <% if exploit&.cvss_score.present? %>
+                  <span style="color:<%= sev_color %>;"><%= exploit.cvss_score %></span>
+                <% else %>
+                  <span style="color:var(--muted);">—</span>
+                <% end %>
+              </td>
+              <td style="font-family:var(--mono);font-size:12px;"><%= asset&.ip_address || '—' %></td>
+              <td style="font-family:var(--mono);font-size:12px;"><%= finding.port&.to_s || '—' %></td>
+              <td style="font-family:var(--mono);font-size:11px;color:var(--muted);">
+                <%= finding.discovered_at&.strftime('%b %d, %Y') %>
+              </td>
+            </tr>
+            <!-- Expanded detail panel -->
+            <tr id="detail-<%= finding.id %>" style="display:none;">
+              <td colspan="9" style="padding:0;">
+                <div style="padding:16px 24px;background:var(--surface2);border-top:1px solid var(--border);border-bottom:1px solid var(--border);">
+                  <div style="display:grid;grid-template-columns:1fr 1fr;gap:20px;">
+
+                    <!-- Left column -->
+                    <div>
+                      <div style="margin-bottom:12px;">
+                        <div style="font-family:var(--mono);font-size:10px;color:var(--muted);letter-spacing:1px;margin-bottom:4px;">DESCRIPTION</div>
+                        <div style="font-size:13px;line-height:1.5;"><%= exploit&.description || '—' %></div>
+                      </div>
+                      <% if finding.evidence.present? %>
+                        <div style="margin-bottom:12px;">
+                          <div style="font-family:var(--mono);font-size:10px;color:var(--muted);letter-spacing:1px;margin-bottom:4px;">EVIDENCE</div>
+                          <div style="font-family:var(--mono);font-size:12px;background:var(--card-bg);padding:8px;border-radius:4px;border:1px solid var(--border);word-break:break-all;">
+                            <%= finding.evidence %>
+                          </div>
+                        </div>
+                      <% end %>
+                      <% if exploit&.disclosure_date.present? %>
+                        <div style="margin-bottom:12px;">
+                          <div style="font-family:var(--mono);font-size:10px;color:var(--muted);letter-spacing:1px;margin-bottom:4px;">DISCLOSURE DATE</div>
+                          <div style="font-size:13px;"><%= exploit.disclosure_date %></div>
+                        </div>
+                      <% end %>
+                      <% refs = Array(exploit&.references).select { |r| r.is_a?(Hash) } %>
+                      <% if refs.any? %>
+                        <div>
+                          <div style="font-family:var(--mono);font-size:10px;color:var(--muted);letter-spacing:1px;margin-bottom:4px;">REFERENCES</div>
+                          <div style="display:flex;flex-wrap:wrap;gap:6px;">
+                            <% refs.each do |ref| %>
+                              <% val = ref['value'] || ref[:value] %>
+                              <% type = ref['type'] || ref[:type] %>
+                              <% href = type == 'URL' ? val : (type == 'CVE' ? "https://nvd.nist.gov/vuln/detail/CVE-#{val}" : nil) %>
+                              <% if href %>
+                                <a href="<%= href %>" target="_blank" rel="noopener"
+                                   style="font-family:var(--mono);font-size:11px;padding:2px 8px;border-radius:4px;border:1px solid var(--border);color:var(--accent);text-decoration:none;">
+                                  <%= type %>: <%= val %>
+                                </a>
+                              <% else %>
+                                <span style="font-family:var(--mono);font-size:11px;padding:2px 8px;border-radius:4px;border:1px solid var(--border);color:var(--muted);">
+                                  <%= type %>: <%= val %>
+                                </span>
+                              <% end %>
+                            <% end %>
+                          </div>
+                        </div>
+                      <% end %>
+                    </div>
+
+                    <!-- Right column -->
+                    <div>
+                      <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:12px;">
+                        <% if exploit&.cvss_score.present? %>
+                          <div style="padding:10px;background:var(--card-bg);border-radius:6px;border:1px solid var(--border);">
+                            <div style="font-family:var(--mono);font-size:10px;color:var(--muted);margin-bottom:2px;">CVSS SCORE</div>
+                            <div style="font-size:22px;font-weight:700;font-family:var(--mono);color:<%= sev_color %>;"><%= exploit.cvss_score %></div>
+                          </div>
+                        <% end %>
+                        <% if exploit&.cwe_id.present? %>
+                          <div style="padding:10px;background:var(--card-bg);border-radius:6px;border:1px solid var(--border);">
+                            <div style="font-family:var(--mono);font-size:10px;color:var(--muted);margin-bottom:2px;">CWE</div>
+                            <a href="https://cwe.mitre.org/data/definitions/<%= exploit.cwe_id.delete_prefix('CWE-') %>.html"
+                               target="_blank" rel="noopener"
+                               style="font-size:14px;font-weight:700;font-family:var(--mono);color:var(--accent);text-decoration:none;">
+                              <%= exploit.cwe_id %>
+                            </a>
+                          </div>
+                        <% end %>
+                      </div>
+                      <% if exploit&.cvss_vector.present? %>
+                        <div style="margin-bottom:12px;">
+                          <div style="font-family:var(--mono);font-size:10px;color:var(--muted);letter-spacing:1px;margin-bottom:4px;">CVSS VECTOR</div>
+                          <div style="font-family:var(--mono);font-size:11px;color:var(--muted);word-break:break-all;"><%= exploit.cvss_vector %></div>
+                        </div>
+                      <% end %>
+                      <% if exploit&.metasploit_module.present? %>
+                        <div style="margin-bottom:12px;">
+                          <div style="font-family:var(--mono);font-size:10px;color:var(--muted);letter-spacing:1px;margin-bottom:4px;">MODULE PATH</div>
+                          <div style="font-family:var(--mono);font-size:12px;color:var(--muted);"><%= exploit.metasploit_module %></div>
+                        </div>
+                      <% end %>
+                      <% if finding.port.present? %>
+                        <div style="margin-bottom:12px;">
+                          <div style="font-family:var(--mono);font-size:10px;color:var(--muted);letter-spacing:1px;margin-bottom:4px;">PORT</div>
+                          <div style="font-family:var(--mono);font-size:13px;"><%= finding.port %></div>
+                        </div>
+                      <% end %>
+
+                      <!-- AI Remediation -->
+                      <div style="margin-top:8px;padding:12px;background:var(--card-bg);border-radius:6px;border:1px solid var(--border);">
+                        <div style="font-family:var(--mono);font-size:10px;color:var(--muted);letter-spacing:1px;margin-bottom:8px;">AI REMEDIATION</div>
+                        <% if finding.ai_remediation.present? %>
+                          <div id="ai-text-<%= finding.id %>" style="font-size:13px;line-height:1.6;white-space:pre-wrap;"><%= finding.ai_remediation %></div>
+                        <% else %>
+                          <div id="ai-text-<%= finding.id %>" style="color:var(--muted);font-size:12px;font-style:italic;">
+                            Click to generate AI remediation guidance.
+                          </div>
+                          <button onclick="getAiRemediation(<%= finding.id %>)"
+                                  id="ai-btn-<%= finding.id %>"
+                                  style="margin-top:8px;padding:6px 14px;border-radius:6px;border:1px solid var(--accent);background:transparent;color:var(--accent);font-family:var(--mono);font-size:11px;cursor:pointer;letter-spacing:1px;">
+                            GET AI REMEDIATION
+                          </button>
+                        <% end %>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </td>
+            </tr>
+          <% end %>
+        </tbody>
+      </table>
+    <% end %>
+  </div>
+</div>
+
+<script>
+function toggleFinding(id) {
+  var detail  = document.getElementById('detail-' + id);
+  var chevron = document.getElementById('chevron-' + id);
+  var open = detail.style.display !== 'none';
+  detail.style.display  = open ? 'none' : 'table-row';
+  chevron.textContent   = open ? '▶' : '▼';
+}
+
+function getAiRemediation(id) {
+  var btn  = document.getElementById('ai-btn-'  + id);
+  var text = document.getElementById('ai-text-' + id);
+  if (btn) { btn.textContent = 'LOADING...'; btn.disabled = true; }
+  if (text) text.textContent = '';
+
+  fetch('/findings/' + id + '/ai_remediation', {
+    method: 'POST',
+    headers: { 'X-CSRF-Token': document.querySelector('meta[name="csrf-token"]').content,
+               'Accept': 'application/json' }
+  })
+  .then(function(r) { return r.json(); })
+  .then(function(data) {
+    if (text) text.style.cssText = 'font-size:13px;line-height:1.6;white-space:pre-wrap;';
+    if (text) text.textContent = data.text || data.error || 'No response.';
+    if (btn) btn.remove();
+  })
+  .catch(function() {
+    if (text) text.textContent = 'Request failed.';
+    if (btn) { btn.textContent = 'RETRY'; btn.disabled = false; }
+  });
+}
+</script>

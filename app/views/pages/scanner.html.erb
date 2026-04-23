@@ -188,15 +188,31 @@
 
                 </div>
 
+                <!-- Safe Mode -->
+                <div class="form-group" style="margin-top:8px;">
+                    <label class="form-label">Safe Mode</label>
+                    <div style="display:flex;gap:16px;margin-top:4px;">
+                        <label style="display:flex;align-items:center;gap:6px;cursor:pointer;font-size:13px;">
+                            <input type="radio" name="safe_mode" value="false" checked onchange="updateExploitCount(); filterProfilesBySafeMode(false)">
+                            <span>Off</span>
+                        </label>
+                        <label style="display:flex;align-items:center;gap:6px;cursor:pointer;font-size:13px;">
+                            <input type="radio" name="safe_mode" value="true" onchange="updateExploitCount(); filterProfilesBySafeMode(true)">
+                            <span>On — auxiliary only (no exploitation)</span>
+                        </label>
+                    </div>
+                </div>
+
                 <!-- Optional profile override -->
                 <div class="form-group" style="max-width:400px;margin-top:8px;">
-                    <label class="form-label">Profile Override <span style="font-weight:400;color:var(--muted);">(optional — limits to a curated exploit list)</span></label>
+                    <label class="form-label">Profile Override <span style="font-weight:400;color:var(--muted);">(optional — limits to a curated module list)</span></label>
                     <select name="profile_id" id="profile-select" onchange="updateExploitCount()">
                         <option value="">— use trait filters above —</option>
                         <% @profiles.each do |profile| %>
                             <option value="<%= profile.id %>"
-                                data-count="<%= profile.exploit_ids.size %>">
-                                <%= profile.name %> (<%= profile.exploit_ids.size %> exploits)
+                                data-count="<%= profile.exploit_ids.size %>"
+                                data-safe="<%= profile.safe_mode? %>">
+                                <%= profile.name %> (<%= profile.exploit_ids.size %> modules)
                             </option>
                         <% end %>
                     </select>
@@ -205,21 +221,6 @@
                             No profiles yet — <%= link_to "create one", new_scan_profile_path, style: "color:var(--accent);" %>
                         </div>
                     <% end %>
-                </div>
-
-                <!-- Safe Mode -->
-                <div class="form-group" style="margin-top:8px;">
-                    <label class="form-label">Safe Mode</label>
-                    <div style="display:flex;gap:16px;margin-top:4px;">
-                        <label style="display:flex;align-items:center;gap:6px;cursor:pointer;font-size:13px;">
-                            <input type="radio" name="safe_mode" value="false" checked onchange="updateExploitCount()">
-                            <span>Off</span>
-                        </label>
-                        <label style="display:flex;align-items:center;gap:6px;cursor:pointer;font-size:13px;">
-                            <input type="radio" name="safe_mode" value="true" onchange="updateExploitCount()">
-                            <span>On — auxiliary only (no exploitation)</span>
-                        </label>
-                    </div>
                 </div>
 
                 <!-- Live count -->
@@ -385,7 +386,7 @@ function updateExploitCount() {
     if (label) label.textContent = safeMode ? 'AUXILIARY MODULES (by asset OS)' : 'MATCHING EXPLOITS';
 
     var profileSel = document.getElementById('profile-select');
-    if (profileSel && profileSel.value && !safeMode) {
+    if (profileSel && profileSel.value) {
         var opt = profileSel.options[profileSel.selectedIndex];
         if (el) el.textContent = opt.dataset.count || '?';
         return;
@@ -400,6 +401,18 @@ function updateExploitCount() {
             if (el) el.textContent = data.count;
         })
         .catch(function() {});
+}
+
+function filterProfilesBySafeMode(safe) {
+    var sel = document.getElementById('profile-select');
+    if (!sel) return;
+    Array.from(sel.options).forEach(function(opt) {
+        if (!opt.value) return; // keep the blank option
+        opt.hidden = (opt.dataset.safe === 'true') !== safe;
+    });
+    // reset selection if current choice is now hidden
+    if (sel.selectedOptions[0] && sel.selectedOptions[0].hidden) sel.value = '';
+    updateExploitCount();
 }
 
 // Scan options toggle

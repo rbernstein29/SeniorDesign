@@ -22,7 +22,7 @@ class ScanReportPdf < Prawn::Document
   end
 
   def header
-    title = @safe ? "Reconnaissance / Safe Mode Scan Report" : "Vulnerability Scan Report"
+    title = @safe ? "Safe Mode Scan Report" : "Exploit Scan Report"
     text title, size: 24, style: :bold
     stroke_horizontal_rule
   end
@@ -36,7 +36,7 @@ class ScanReportPdf < Prawn::Document
   end
 
   def chart
-    text(@safe ? "Reconnaissance Summary" : "Vulnerability Summary", size: 18, style: :bold)
+    text(@safe ? "Safe Mode Summary" : "Exploit Summary", size: 18, style: :bold)
     move_down 15
 
     raw = @report.report_data || []
@@ -118,17 +118,20 @@ class ScanReportPdf < Prawn::Document
         end
       end
     else
-      data = [["Target", "Port", "Exploit Name", "CVE", "Severity", "Status", "Time"]]
+      data = [["Target", "Port", "Exploit Name", "CVE", "CVSS", "CWE", "Severity", "Status", "Time"]]
 
       results.each do |result|
         r = result.with_indifferent_access
-        status = r[:success] ? "VULNERABLE" : "Secure"
+        status          = r[:success] ? "VULNERABLE" : "Secure"
+        exploit_record  = Exploit.find_by(exploit_id: r[:exploit])
 
         data << [
           r[:target],
           r[:port].to_s,
           r[:exploit_name].presence || r[:exploit],
           r[:cve_id].presence || "—",
+          exploit_record&.cvss_score&.to_s || "—",
+          exploit_record&.cwe_id || "—",
           r[:severity]&.upcase || "—",
           status,
           (Time.parse(r[:timestamp].to_s).strftime("%H:%M:%S") rescue r[:timestamp].to_s)
@@ -138,11 +141,11 @@ class ScanReportPdf < Prawn::Document
       table(data, header: true, width: bounds.width) do
         row(0).font_style = :bold
         row(0).background_color = "F0F0F0"
-        cells.padding = 8
+        cells.padding = 6
         cells.borders = [:bottom]
         cells.border_width = 0.5
 
-        column(5).each do |cell|
+        column(7).each do |cell|
           if cell.content == "VULNERABLE"
             cell.text_color = "CC0000"
             cell.font_style = :bold

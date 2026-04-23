@@ -19,7 +19,7 @@ class ScanReportXlsx
 
     wb.add_worksheet(name: "Summary") do |sheet|
       if safe
-        sheet.add_row ["Reconnaissance Scan Report"], b: true
+        sheet.add_row ["Safe Mode Scan Report"], b: true
         sheet.add_row []
         sheet.add_row ["Report ID",      "##{@report.id}"]
         sheet.add_row ["Generated At",   @report.generated_at&.strftime("%Y-%m-%d %H:%M:%S")]
@@ -32,7 +32,7 @@ class ScanReportXlsx
       else
         vulnerable_count = detected_count
         secure_count     = undetected_count
-        sheet.add_row ["Vulnerability Scan Report"], b: true
+        sheet.add_row ["Exploit Scan Report"], b: true
         sheet.add_row []
         sheet.add_row ["Report ID",      "##{@report.id}"]
         sheet.add_row ["Generated At",   @report.generated_at&.strftime("%Y-%m-%d %H:%M:%S")]
@@ -60,18 +60,22 @@ class ScanReportXlsx
           ]
         end
       else
-        sheet.add_row ["Target", "Port", "Exploit Module", "Exploit Name", "CVE ID", "Severity",
-                       "Description", "Disclosure Date", "References", "Status", "Evidence", "Time"], b: true
+        sheet.add_row ["Target", "Port", "Exploit Module", "Exploit Name", "CVE ID", "CVSS Score",
+                       "CWE", "Severity", "Description", "Disclosure Date", "References",
+                       "Status", "Evidence", "Time"], b: true
         results.each do |r|
           status = r[:success] ? "VULNERABLE" : "Secure"
           time   = (Time.parse(r[:timestamp].to_s).strftime("%H:%M:%S") rescue r[:timestamp].to_s)
           refs   = Array(r[:references]).map { |ref| "#{ref['type']}: #{ref['value']}" }.join(" | ")
+          exploit_record = Exploit.find_by(exploit_id: r[:exploit])
           sheet.add_row [
             r[:target],
             r[:port].to_s,
             r[:exploit],
             r[:exploit_name],
             r[:cve_id],
+            exploit_record&.cvss_score,
+            exploit_record&.cwe_id,
             r[:severity],
             r[:description],
             r[:disclosure_date],

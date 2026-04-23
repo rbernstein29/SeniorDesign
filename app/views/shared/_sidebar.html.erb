@@ -65,6 +65,15 @@
         <span class="nav-label">Scan Profiles</span>
       </a>
 
+      <a href="<%= (code_analysis_path rescue '#') %>" class="sidebar-nav-item nav-red <%= current_page == 'code_analysis' ? 'active' : '' %>">
+        <span class="nav-icon">
+          <%= image_tag 'SDimagesWhite/snanerWhite.png', alt: '', class: 'nav-icon-img icon-white' %>
+          <%= image_tag 'SDimagesBlack/ScansBlack.png',  alt: '', class: 'nav-icon-img icon-black' %>
+        </span>
+        <span class="nav-dot red"></span>
+        <span class="nav-label">Code Analysis</span>
+      </a>
+
       <a href="<%= assets_path %>" class="sidebar-nav-item nav-cyan <%= current_page == 'assets' ? 'active' : '' %>">
         <span class="nav-icon">
           <%= image_tag 'SDimagesWhite/AssetMangerWhite.png', alt: '', class: 'nav-icon-img icon-white' %>

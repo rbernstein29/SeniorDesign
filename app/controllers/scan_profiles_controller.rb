@@ -6,7 +6,8 @@ class ScanProfilesController < ApplicationController
   end
 
   def new
-    @exploits = Exploit.order(:severity, :name)
+    @exploits_exploit   = Exploit.where("metasploit_module LIKE 'exploit/%'").order(:severity, :name)
+    @exploits_auxiliary = Exploit.where("metasploit_module LIKE 'auxiliary/%'").order(:severity, :name)
   end
 
   def create
@@ -14,6 +15,7 @@ class ScanProfilesController < ApplicationController
       organization_id: current_org_id,
       name:            params[:name].to_s.strip,
       description:     params[:description].presence,
+      safe_mode:       params[:safe_mode] == 'true',
       exploit_ids:     Array(params[:exploit_ids]).map(&:to_i).select { |id| id > 0 }
     )
     if profile.save

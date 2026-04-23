@@ -44,14 +44,24 @@ Rails.application.routes.draw do
   get '/verify_pending', to: 'accounts#verify_pending', as: :verify_pending
   resources :accounts, only: [:create, :destroy]
   resources :read_only_accounts, only: [:create]
-  resources :reports, only: [:destroy] do
+  resources :reports, only: [:show, :destroy] do
     member do
-      get :download_pdf
-      get :download_xlsx
-      get :download_csv
-      get :data
+      get  :download_json
+      get  :download_xlsx
+      get  :download_csv
+      get  :data
+      post :retest
     end
   end
+
+  resources :findings, only: [] do
+    member do
+      post :ai_remediation
+    end
+  end
+
+  get  '/code-analysis', to: 'code_analysis#index',   as: :code_analysis
+  post '/code-analysis', to: 'code_analysis#analyze', as: :code_analysis_submit
 
   # Api
   namespace :api do

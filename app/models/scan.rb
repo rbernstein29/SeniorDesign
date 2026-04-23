@@ -7,4 +7,7 @@ class Scan < ApplicationRecord
   scope :running,   -> { where(status: 'running') }
   scope :completed, -> { where(status: 'completed') }
   scope :failed,    -> { where(status: %w[failed cancelled]) }
+
+  def safe_mode? = safe_mode == true
+  def retest?    = is_retest == true
 end

@@ -14,12 +14,14 @@ class ScanJob < ApplicationJob
     )
 
     scan = Scan.create!(
-      scan_name:       "Scan #{Time.current.strftime('%Y-%m-%d %H:%M')}",
+      scan_name:       "#{scan_options[:retest_of] ? 'Retest' : 'Scan'} #{Time.current.strftime('%Y-%m-%d %H:%M')}",
       organization_id: org_id,
-      initiated_by: user_id,
-      status:       'running',
-      start_time:   Time.current,
-      total_assets: total
+      initiated_by:    user_id,
+      status:          'running',
+      start_time:      Time.current,
+      total_assets:    total,
+      is_retest:       scan_options[:retest_of].present?,
+      retest_of:       scan_options[:retest_of]
     )
 
     broadcast_progress(user_id, 0, "Initializing scan...")
@@ -32,6 +34,17 @@ class ScanJob < ApplicationJob
       pct = 10 + ((done.to_f / total) * 85).to_i
       broadcast_progress(user_id, pct, "Scanned #{ip} (#{done}/#{total} targets)")
     end.perform
+
+    # Auto-remediate findings from the original scan if this is a retest
+    if scan_options[:retest_of].present?
+      original_scan_id = scan_options[:retest_of].to_i
+      clean_results = ScanExploit.where(scan_id: scan.id, result: %w[not_detected failed])
+      clean_results.each do |re|
+        Finding.where(scan_id: original_scan_id, asset_id: re.asset_id,
+                      exploit_id: re.exploit_id, status: 'open')
+               .update_all(status: 'remediated', remediated_at: Time.current)
+      end
+    end
 
     broadcast_complete(user_id)
   rescue => e

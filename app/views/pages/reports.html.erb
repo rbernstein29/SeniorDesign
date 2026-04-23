@@ -4,293 +4,119 @@
 
 <div class="layout page-violet">
 
-    <div class="page-header">
-        <div>
-            <div class="page-title">Reports</div>
-            <div class="page-sub">Vulnerability findings and scan results</div>
-        </div>
+  <div class="page-header">
+    <div>
+      <div class="page-title">Reports</div>
+      <div class="page-sub">// one report per scan — click to view full findings</div>
     </div>
+  </div>
 
-    <div class="stats-grid">
-        <div class="stat-card violet">
-            <div class="stat-label">Total Reports</div>
-            <div class="stat-number"><%= @reports&.count || 0 %></div>
-        </div>
-        <div class="stat-card red">
-            <div class="stat-label">Critical</div>
-            <div class="stat-number"><%= @critical_findings || 0 %></div>
-        </div>
-        <div class="stat-card orange">
-            <div class="stat-label">High</div>
-            <div class="stat-number"><%= @high_findings || 0 %></div>
-        </div>
-        <div class="stat-card purple">
-            <div class="stat-label">Medium / Low</div>
-            <div class="stat-number"><%= @medium_low_findings || 0 %></div>
-        </div>
+  <!-- Summary stats -->
+  <div class="stats-grid">
+    <div class="stat-card violet">
+      <div class="stat-label">Total Reports</div>
+      <div class="stat-number"><%= @reports&.count || 0 %></div>
     </div>
+    <div class="stat-card red">
+      <div class="stat-label">Critical</div>
+      <div class="stat-number"><%= @critical_findings || 0 %></div>
+    </div>
+    <div class="stat-card orange">
+      <div class="stat-label">High</div>
+      <div class="stat-number"><%= @high_findings || 0 %></div>
+    </div>
+    <div class="stat-card purple">
+      <div class="stat-label">Medium / Low</div>
+      <div class="stat-number"><%= @medium_low_findings || 0 %></div>
+    </div>
+  </div>
 
-    <% if @findings&.any? %>
+  <!-- Report cards -->
+  <% if @reports.nil? || @reports.empty? %>
     <div class="main-card">
-        <div class="card-header">
-            <div class="card-title">Findings</div>
-            <div class="card-subtitle">VULNERABILITIES DISCOVERED ACROSS ALL SCANS</div>
+      <div class="empty-state">
+        <div style="opacity:0.4;margin-bottom:10px;">
+          <%= image_tag 'SDimagesWhite/VIewReportsWhite.png', alt: '', class: 'icon-white', style: 'width:40px;height:40px;' %>
+          <%= image_tag 'SDimagesBlack/ViewReportBlack.png', alt: '', class: 'icon-black', style: 'width:40px;height:40px;' %>
         </div>
-        <div style="overflow:auto;max-height:420px;">
-        <table style="width:100%;">
-            <thead>
-                <tr>
-                    <th>Severity</th>
-                    <th>Target</th>
-                    <th>Exploit</th>
-                    <th>CVE</th>
-                    <th>Description</th>
-                    <th>Evidence</th>
-                    <th>Discovered</th>
-                </tr>
-            </thead>
-            <tbody>
-                <% @findings.each do |finding| %>
-                <tr>
-                    <td>
-                        <span class="type-badge <%= finding.severity_badge_class %>">
-                            <%= finding.severity&.upcase || '—' %>
-                        </span>
-                    </td>
-                    <td style="font-family: var(--mono); font-size: 12px;">
-                        <%= finding.asset&.ip_address || finding.asset_id %>
-                    </td>
-                    <td style="font-family:var(--mono);font-size:12px;">
-                        <%= finding.exploit&.name || finding.exploit_id || '—' %>
-                    </td>
-                    <td style="font-family:var(--mono);font-size:12px;white-space:nowrap;">
-                        <% if finding.exploit&.cve_id.present? %>
-                            <span style="color:var(--accent);"><%= finding.exploit.cve_id %></span>
-                        <% else %>
-                            <span style="opacity:0.4;">—</span>
-                        <% end %>
-                    </td>
-                    <td style="max-width:260px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;font-size:12px;"
-                        title="<%= h finding.exploit&.description %>">
-                        <%= finding.exploit&.description.presence || '—' %>
-                    </td>
-                    <td style="max-width:240px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;"
-                        title="<%= h finding.evidence %>">
-                        <%= finding.evidence.presence || '—' %>
-                    </td>
-                    <td style="font-family: var(--mono); font-size: 12px;">
-                        <%= finding.discovered_at&.strftime("%b %d, %Y  %H:%M") || '—' %>
-                    </td>
-                </tr>
+        <h3>No Reports Yet</h3>
+        <p>Reports are generated automatically after scans complete.</p>
+      </div>
+    </div>
+  <% else %>
+    <div style="display:flex;flex-direction:column;gap:10px;">
+      <% @reports.each do |report| %>
+        <% scan = report.scan %>
+        <div class="main-card" style="padding:0;overflow:hidden;">
+          <div style="display:grid;grid-template-columns:1fr auto;gap:16px;padding:16px 20px;align-items:center;flex-wrap:wrap;">
+
+            <!-- Left: name + meta -->
+            <div>
+              <div style="display:flex;align-items:center;gap:8px;flex-wrap:wrap;margin-bottom:6px;">
+                <span style="font-size:15px;font-weight:600;"><%= report.report_name %></span>
+                <span class="badge <%= report.safe_mode? ? 'badge-green' : 'badge-red' %>" style="font-size:10px;">
+                  <%= report.display_type %>
+                </span>
+                <% if scan&.retest? %>
+                  <span class="badge badge-orange" style="font-size:10px;">RETEST</span>
                 <% end %>
-            </tbody>
-        </table>
-        </div>
-    </div>
-    <% end %>
-
-    <div class="main-card">
-        <div class="card-header">
-            <div class="card-title">JSON Reports</div>
-            <div class="card-subtitle">PREVIEW TO INSPECT &bull; DOWNLOAD TO SAVE</div>
-        </div>
-
-        <% if @reports.nil? || @reports.empty? %>
-            <div class="state-box">
-                <span class="state-icon"><%= image_tag 'SDimagesWhite/AssetMangerWhite.png', alt: '', class: 'icon-white', style: 'width:40px;height:40px;opacity:0.4;' %><%= image_tag 'SDimagesBlack/AssetMangerBLack.png', alt: '', class: 'icon-black', style: 'width:40px;height:40px;opacity:0.4;' %></span>
-                <div class="state-title">No Reports Yet</div>
-                <div class="state-sub">Reports are generated automatically after scans complete.</div>
-            </div>
-        <% else %>
-            <div style="overflow:auto;max-height:520px;">
-            <table style="width:100%;">
-                <thead>
-                    <tr>
-                        <th>File</th>
-                        <th>Type</th>
-                        <th>Mode</th>
-                        <th>Generated</th>
-                        <th>Actions</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    <% @reports.each do |report| %>
-                    <tr id="report-<%= report.id %>">
-                        <td>
-                            <div class="file-icon">
-                                <div class="file-icon-glyph">{ }</div>
-                                <div>
-                                    <div class="file-name"><%= report.report_name %>.json</div>
-                                    <div class="file-meta"><%= report.scan&.scan_name || '—' %></div>
-                                </div>
-                            </div>
-                        </td>
-                        <td>
-                            <span class="type-badge"><%= report.report_type || 'report' %></span>
-                        </td>
-                        <td>
-                            <% if report.report_type == 'reconnaissance' %>
-                                <span class="type-badge" style="background:rgba(234,179,8,0.15);color:#ca8a04;border-color:rgba(234,179,8,0.3);">Recon</span>
-                            <% else %>
-                                <span class="type-badge" style="background:rgba(239,68,68,0.12);color:#dc2626;border-color:rgba(239,68,68,0.25);">Exploit</span>
-                            <% end %>
-                        </td>
-                        <td style="font-family: var(--mono); font-size: 12px;">
-                            <%= report.generated_at&.strftime("%b %d, %Y  %H:%M") || '&mdash;' %>
-                        </td>
-                        <td>
-                            <div class="actions">
-                                <button class="btn btn-preview"
-                                        onclick="openPreview(<%= report.id %>, '<%= j report.report_name %>')">
-                                    <%= image_tag 'SDimagesWhite/previewWhite.png', alt: '', class: 'icon-white', style: 'width:14px;height:14px;' %>
-                                    <%= image_tag 'SDimagesBlack/previewBlack.png', alt: '', class: 'icon-black', style: 'width:14px;height:14px;' %>
-                                    Preview
-                                </button>
-                                <button class="btn btn-download"
-                                        onclick="downloadReport(<%= report.id %>, '<%= j report.report_name %>')">
-                                    JSON
-                                </button>
-                                <%= link_to download_pdf_report_path(report), class: "btn btn-download" do %>
-                                    <%= image_tag 'SDimagesWhite/PDFWhite.png', alt: '', class: 'icon-white', style: 'width:14px;height:14px;' %>
-                                    <%= image_tag 'SDimagesBlack/PDFBlack.png', alt: '', class: 'icon-black', style: 'width:14px;height:14px;' %>
-                                    PDF
-                                <% end %>
-                                <%= link_to download_xlsx_report_path(report), class: "btn btn-download" do %>
-                                    <%= image_tag 'SDimagesWhite/xlxsWhite.png', alt: '', class: 'icon-white', style: 'width:14px;height:14px;' %>
-                                    <%= image_tag 'SDimagesBlack/xlxsBlack.png', alt: '', class: 'icon-black', style: 'width:14px;height:14px;' %>
-                                    XLSX
-                                <% end %>
-                                <%= link_to download_csv_report_path(report), class: "btn btn-download" do %>
-                                    <%= image_tag 'SDimagesWhite/csvWhite.png', alt: '', class: 'icon-white', style: 'width:14px;height:14px;' %>
-                                    <%= image_tag 'SDimagesBlack/csvBlack.png', alt: '', class: 'icon-black', style: 'width:14px;height:14px;' %>
-                                    CSV
-                                <% end %>
-                                <%= button_to report_path(report), method: :delete,
-                                    data: { turbo_confirm: "Delete this report? This cannot be undone." },
-                                    class: "btn btn-delete" do %>
-                                    <%= image_tag 'SDimagesWhite/trashWhite.png', alt: '', class: 'icon-white', style: 'width:14px;height:14px;' %>
-                                    <%= image_tag 'SDimagesBlack/trashBlack.png', alt: '', class: 'icon-black', style: 'width:14px;height:14px;' %>
-                                    Delete
-                                <% end %>
-                            </div>
-                        </td>
-                    </tr>
+              </div>
+              <div style="display:flex;align-items:center;gap:16px;flex-wrap:wrap;">
+                <span style="font-family:var(--mono);font-size:11px;color:var(--muted);">
+                  <%= report.generated_at&.strftime('%Y-%m-%d %H:%M') || '—' %>
+                </span>
+                <% if scan %>
+                  <span style="font-size:11px;color:var(--muted);"><%= scan.scan_name %></span>
+                <% end %>
+                <!-- Per-report severity counts from scan record -->
+                <% if scan %>
+                  <div style="display:flex;gap:8px;align-items:center;">
+                    <% if scan.critical_findings.to_i > 0 %>
+                      <span style="font-family:var(--mono);font-size:11px;color:var(--red);">
+                        C: <%= scan.critical_findings %>
+                      </span>
                     <% end %>
-                </tbody>
-            </table>
+                    <% if scan.high_findings.to_i > 0 %>
+                      <span style="font-family:var(--mono);font-size:11px;color:var(--orange);">
+                        H: <%= scan.high_findings %>
+                      </span>
+                    <% end %>
+                    <% if scan.medium_findings.to_i > 0 %>
+                      <span style="font-family:var(--mono);font-size:11px;color:var(--yellow);">
+                        M: <%= scan.medium_findings %>
+                      </span>
+                    <% end %>
+                    <% if scan.low_findings.to_i > 0 %>
+                      <span style="font-family:var(--mono);font-size:11px;color:var(--teal);">
+                        L: <%= scan.low_findings %>
+                      </span>
+                    <% end %>
+                    <% if scan.findings_count.to_i == 0 %>
+                      <span style="font-family:var(--mono);font-size:11px;color:var(--muted);">No findings</span>
+                    <% end %>
+                  </div>
+                <% end %>
+              </div>
             </div>
-        <% end %>
+
+            <!-- Right: actions -->
+            <div style="display:flex;gap:6px;align-items:center;flex-wrap:wrap;">
+              <%= link_to "View Report", report_path(report),
+                    style: "padding:5px 12px;border-radius:6px;background:var(--accent);color:#000;font-family:var(--mono);font-size:11px;letter-spacing:1px;text-decoration:none;white-space:nowrap;" %>
+              <%= link_to "JSON", download_json_report_path(report),
+                    style: "padding:5px 10px;border-radius:6px;border:1px solid var(--border);color:var(--text);font-family:var(--mono);font-size:11px;text-decoration:none;" %>
+              <%= link_to "CSV",  download_csv_report_path(report),
+                    style: "padding:5px 10px;border-radius:6px;border:1px solid var(--border);color:var(--text);font-family:var(--mono);font-size:11px;text-decoration:none;" %>
+              <%= link_to "XLSX", download_xlsx_report_path(report),
+                    style: "padding:5px 10px;border-radius:6px;border:1px solid var(--border);color:var(--text);font-family:var(--mono);font-size:11px;text-decoration:none;" %>
+              <%= button_to "✕", report_path(report), method: :delete,
+                    data: { turbo_confirm: "Delete report '#{report.report_name}'? This cannot be undone." },
+                    style: "padding:5px 10px;border-radius:6px;border:1px solid rgba(239,68,68,0.3);background:none;color:var(--red);font-family:var(--mono);font-size:11px;cursor:pointer;" %>
+            </div>
+          </div>
+        </div>
+      <% end %>
     </div>
+  <% end %>
 
 </div>
-
-<!-- Preview Modal -->
-<div class="modal-backdrop" id="previewModal">
-    <div class="modal">
-        <div class="modal-header">
-            <div class="modal-title" id="modalTitle">report.json</div>
-            <div class="modal-actions">
-                <button class="btn btn-download" onclick="downloadFromModal()">&#x2B73; Download</button>
-                <button class="modal-close" onclick="closePreview()">&#x2715;</button>
-            </div>
-        </div>
-        <div class="modal-body">
-            <div class="json-viewer" id="jsonViewer"></div>
-        </div>
-    </div>
-</div>
-
-<script>
-    let activeId = null;
-
-    function openPreview(id, name) {
-        activeId = id;
-        document.getElementById('modalTitle').textContent = name + '.json';
-        document.getElementById('previewModal').classList.add('open');
-        document.getElementById('jsonViewer').textContent = 'Loading\u2026';
-        fetch('/reports/' + id + '/data', { headers: { 'Accept': 'application/json' } })
-            .then(r => r.json())
-            .then(data => {
-                document.getElementById('jsonViewer').innerHTML = syntaxHighlight(
-                    JSON.stringify(data.report_data, null, 2)
-                );
-            })
-            .catch(() => { document.getElementById('jsonViewer').textContent = 'Failed to load report data.'; });
-    }
-
-    function closePreview() {
-        document.getElementById('previewModal').classList.remove('open');
-        activeId = null;
-    }
-
-    function downloadReport(id, name) {
-        fetch('/reports/' + id + '/data', { headers: { 'Accept': 'application/json' } })
-            .then(r => r.json())
-            .then(data => {
-                const blob = new Blob([JSON.stringify(data.report_data, null, 2)], { type: 'application/json' });
-                const url  = URL.createObjectURL(blob);
-                const a    = document.createElement('a');
-                a.href = url; a.download = name + '.json'; a.click();
-                URL.revokeObjectURL(url);
-            });
-    }
-
-    function downloadFromModal() {
-        const name = document.getElementById('modalTitle').textContent.replace(/\.json$/, '');
-        downloadReport(activeId, name);
-    }
-
-    function syntaxHighlight(json) {
-        const esc = json
-            .replace(/&/g, '&amp;')
-            .replace(/</g, '&lt;')
-            .replace(/>/g, '&gt;');
-        return esc.replace(
-            /("(\\u[a-zA-Z0-9]{4}|\\[^u]|[^\\"])*"(\s*:)?|\b(true|false|null)\b|-?\d+(?:\.\d*)?(?:[eE][+\-]?\d+)?)/g,
-            function(m) {
-                let c = 'json-number';
-                if (/^"/.test(m)) c = /:$/.test(m) ? 'json-key' : 'json-string';
-                else if (/true|false/.test(m)) c = 'json-bool';
-                else if (/null/.test(m))       c = 'json-null';
-                return '<span class="' + c + '">' + m + '</span>';
-            }
-        );
-    }
-
-    document.getElementById('previewModal').addEventListener('click', function(e) {
-        if (e.target === this) closePreview();
-    });
-    document.addEventListener('keydown', function(e) {
-        if (e.key === 'Escape') closePreview();
-    });
-
-    function initResizableColumns() {
-        const table = document.querySelector('table');
-        if (!table) return;
-        const ths = Array.from(table.querySelectorAll('th'));
-        ths.forEach(th => { th.style.width = th.offsetWidth + 'px'; });
-        table.style.tableLayout = 'fixed';
-        table.style.width = Math.max(table.offsetWidth, ths.reduce((s, th) => s + th.offsetWidth, 0)) + 'px';
-        ths.forEach(th => {
-            const handle = document.createElement('div');
-            handle.className = 'resize-handle';
-            th.appendChild(handle);
-            let startX, startW, startTableW;
-            handle.addEventListener('mousedown', e => {
-                startX = e.clientX; startW = th.offsetWidth;
-                startTableW = parseInt(table.style.width, 10);
-                handle.classList.add('active');
-                const onMove = e => {
-                    const newW = Math.max(40, startW + (e.clientX - startX));
-                    th.style.width = newW + 'px';
-                    table.style.width = (startTableW + (newW - startW)) + 'px';
-                };
-                const onUp = () => { handle.classList.remove('active'); document.removeEventListener('mousemove', onMove); document.removeEventListener('mouseup', onUp); };
-                document.addEventListener('mousemove', onMove);
-                document.addEventListener('mouseup', onUp);
-                e.preventDefault();
-            });
-        });
-    }
-    initResizableColumns();
-</script>

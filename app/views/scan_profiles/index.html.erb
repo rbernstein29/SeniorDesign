@@ -35,7 +35,12 @@
                         <tr>
                             <td><strong><%= profile.name %></strong></td>
                             <td style="color:var(--muted);"><%= profile.description.presence || '—' %></td>
-                            <td><span class="badge badge-cyan"><%= profile.exploit_ids.size %> exploits</span></td>
+                            <td>
+                                <% if profile.safe_mode? %>
+                                    <span class="badge badge-green">SAFE MODE</span>
+                                <% end %>
+                                <span class="badge badge-cyan"><%= profile.exploit_ids.size %> modules</span>
+                            </td>
                             <td style="font-family:var(--mono);font-size:12px;"><%= profile.created_at.strftime('%Y-%m-%d') %></td>
                             <td>
                                 <%= button_to "✕", scan_profile_path(profile), method: :delete,

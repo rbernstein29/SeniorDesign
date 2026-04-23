@@ -70,6 +70,7 @@ class PagesController < ApplicationController
       severities: Array(params[:severities]).presence
     }.compact
 
+    profile = nil
     if params[:profile_id].present?
       profile = ScanProfile.find_by(id: params[:profile_id], organization_id: org_id)
       if profile&.exploit_ids&.any?
@@ -78,11 +79,12 @@ class PagesController < ApplicationController
       end
     end
 
+    safe_mode = params[:safe_mode] == 'true' || profile&.safe_mode? || false
     scan_options = {
       port_override: params[:port_override].presence,
       timeout:       params[:timeout].presence&.to_i,
       use_agent:     params[:use_agent] == 'true',
-      safe_mode:     params[:safe_mode] == 'true'
+      safe_mode:     safe_mode
     }.compact
 
     ScanJob.perform_later(org_id, filter_params, Current.user.id, asset_ids, scan_options)
@@ -122,13 +124,14 @@ class PagesController < ApplicationController
   end
 
   def reports
-    @reports = Report.where(user_id: User.where(organization_id: current_org_id).select(:id)).order(generated_at: :desc)
+    @reports = Report.where(user_id: User.where(organization_id: current_org_id).select(:id))
+                     .includes(:scan)
+                     .order(generated_at: :desc)
     scan_ids = @reports.map(&:scan_id).compact
     scans = Scan.where(id: scan_ids)
     @critical_findings   = scans.sum(:critical_findings)
     @high_findings       = scans.sum(:high_findings)
     @medium_low_findings = scans.sum(:medium_findings) + scans.sum(:low_findings)
-    @findings = Finding.where(scan_id: scan_ids).includes(:exploit, :asset).order(discovered_at: :desc).limit(200) rescue []
   end
 
   def settings
