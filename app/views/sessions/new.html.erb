@@ -12,6 +12,9 @@
     </div>
 
     <div class="login-body">
+      <% if flash[:notice] %>
+        <div class="alert-success"><%= flash[:notice] %></div>
+      <% end %>
       <% if flash[:alert] %>
         <div class="alert-error"><%= flash[:alert] %></div>
       <% end %>
