@@ -127,6 +127,16 @@
                         disabled: false,
                         style: "opacity:1;" %>
                 </div>
+                <div class="settings-body" style="flex-direction:row;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:16px;">
+                    <div>
+                        <div style="font-size:13px;font-weight:600;color:var(--text);margin-bottom:4px;">Delete Account</div>
+                        <div style="font-size:12px;color:var(--muted);">Permanently delete your user account. This cannot be undone.</div>
+                    </div>
+                    <%= button_to "Delete Account", account_path(Current.user),
+                        method: :delete,
+                        data: { confirm: "This will permanently delete your account. This cannot be undone." },
+                        class: "btn btn-danger btn-sm" %>
+                </div>
             </div>
         <% end %>
 

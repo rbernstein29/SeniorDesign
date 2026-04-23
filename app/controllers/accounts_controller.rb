@@ -33,6 +33,17 @@ class AccountsController < ApplicationController
     end
   end
 
+  def destroy
+    user = Current.user
+    terminate_session
+    if user.access_level == "admin"
+      user.organization.destroy!
+    else
+      user.destroy!
+    end
+    redirect_to login_path, notice: "Your account has been deleted."
+  end
+
   def generate_api_key
     Current.user.update(api_key: SecureRandom.urlsafe_base64(32))
     redirect_back_or_to root_path
