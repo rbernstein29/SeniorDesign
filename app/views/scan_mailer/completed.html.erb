@@ -1,0 +1,13 @@
+<p>Hi <%= @user.name %>,</p>
+
+<p>Your scan <strong><%= @scan.scan_name %></strong> completed at <%= @scan.end_time&.strftime('%Y-%m-%d %H:%M') %>.</p>
+
+<p><strong>Results:</strong></p>
+<ul>
+  <li>Exploits tested: <%= @scan.total_exploits_tested %></li>
+  <li>Findings: <%= @scan.findings_count %></li>
+  <li>Critical: <%= @scan.critical_findings %></li>
+  <li>High: <%= @scan.high_findings %></li>
+  <li>Medium: <%= @scan.medium_findings %></li>
+  <li>Low: <%= @scan.low_findings %></li>
+</ul>

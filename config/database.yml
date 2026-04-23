@@ -85,6 +85,7 @@ test:
 production:
   primary: &primary_production
     <<: *default
+    host: localhost
     database: vulnerability_scanner
     username: aegis
     password: goodyear

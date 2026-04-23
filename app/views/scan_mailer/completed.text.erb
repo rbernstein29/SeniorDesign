@@ -1,0 +1,11 @@
+Hi <%= @user.name %>,
+
+Your scan "<%= @scan.scan_name %>" completed at <%= @scan.end_time&.strftime('%Y-%m-%d %H:%M') %>.
+
+Results:
+  Exploits tested: <%= @scan.total_exploits_tested %>
+  Findings:        <%= @scan.findings_count %>
+  Critical:        <%= @scan.critical_findings %>
+  High:            <%= @scan.high_findings %>
+  Medium:          <%= @scan.medium_findings %>
+  Low:             <%= @scan.low_findings %>

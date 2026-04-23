@@ -190,13 +190,15 @@ class ScanService
     cleanup_old_logs(7)
 
     user = User.find_by(id: @user_id)
-    if user&.email_address
-      send_email(user.email_address, "Scan Report for Org #{@org_id}", report_json)
-    else
-      puts "No email found for user #{@user_id}"
-    end
+    ScanMailer.completed(user, @scan).deliver_now if user && @scan
 
     puts "Scan complete."
+  rescue => e
+    puts "Scan failed: #{e.message}"
+    @scan&.update!(status: 'failed', end_time: Time.current)
+    user = User.find_by(id: @user_id)
+    ScanMailer.failed(user, @scan).deliver_now if user && @scan
+    raise
   end
 
   private
