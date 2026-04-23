@@ -9,6 +9,7 @@ bootsnap/
 # Logs
 /log/*.log
 /log/*.pid
+/logs/
 
 # gem dependencies (if installed locally)
 /.bundle/
