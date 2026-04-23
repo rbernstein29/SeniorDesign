@@ -20,10 +20,11 @@
 
     <!-- Sign in -->
     <div class="login-body <%= active_signin ? '' : 'hidden' %>" id="view-signin">
+      <% if flash[:notice] %>
+        <div class="alert-success"><%= flash[:notice] %></div>
+      <% end %>
       <% if flash[:alert] %>
-        <div class="alert-error" id="err-signin"><%= flash[:alert] %></div>
-      <% else %>
-        <div class="alert-error hidden" id="err-signin"></div>
+        <div class="alert-error"><%= flash[:alert] %></div>
       <% end %>
 
       <%= form_with url: session_path, method: :post, id: "form-signin" do |f| %>
@@ -36,7 +37,7 @@
               required: true, autocomplete: "current-password", maxlength: 72 %>
         </div>
         <div class="login-row">
-          <a class="login-hint login-hint-right" href="#" id="lnk-forgot">Forgot password?</a>
+          <%= link_to "Forgot password?", new_password_path, class: "login-hint login-hint-right" %>
         </div>
         <div class="login-row">
           <%= f.submit "Sign In", class: "btn btn-primary", id: "btn-signin" %>
