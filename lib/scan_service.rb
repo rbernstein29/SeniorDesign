@@ -191,14 +191,14 @@ class ScanService
     cleanup_old_logs(7)
 
     user = User.find_by(id: @user_id)
-    ScanMailer.completed(user, @scan).deliver_now if user && @scan
+    ScanMailer.completed(user, @scan).deliver_now if user && @scan rescue nil
 
     puts "Scan complete."
   rescue => e
     puts "Scan failed: #{e.message}"
     @scan&.update!(status: 'failed', end_time: Time.current)
     user = User.find_by(id: @user_id)
-    ScanMailer.failed(user, @scan).deliver_now if user && @scan
+    ScanMailer.failed(user, @scan).deliver_now if user && @scan rescue nil
     raise
   end
 
