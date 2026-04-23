@@ -41,6 +41,7 @@ Rails.application.routes.draw do
 
   # Accounts
   get '/verify_email/:token', to: 'accounts#verify_email', as: :verify_email
+  get '/verify_pending', to: 'accounts#verify_pending', as: :verify_pending
   resources :accounts, only: [:create]
   resources :read_only_accounts, only: [:create]
   resources :reports, only: [:destroy] do
