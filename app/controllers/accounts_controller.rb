@@ -1,6 +1,6 @@
 class AccountsController < ApplicationController
   skip_before_action :verify_authenticity_token, only: [:create]
-  allow_unauthenticated_access only: [:create, :verify_email, :verify_pending]
+  allow_unauthenticated_access only: [:create, :verify_email, :verify_pending, :resend_verification]
 
   def create
     ActiveRecord::Base.transaction do
@@ -20,6 +20,15 @@ class AccountsController < ApplicationController
   end
 
   def verify_pending
+  end
+
+  def resend_verification
+    user = User.find_by(email_address: params[:email_address]&.strip&.downcase, email_verified_at: nil)
+    EmailVerifyMailer.verify(user).deliver_now if user
+    redirect_to verify_pending_path, notice: "If that email is registered and unverified, a new link has been sent."
+  rescue => e
+    Rails.logger.error "Resend verification failed: #{e.message}"
+    redirect_to verify_pending_path, notice: "If that email is registered and unverified, a new link has been sent."
   end
 
   def verify_email

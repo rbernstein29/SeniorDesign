@@ -1,4 +1,4 @@
 class ApplicationMailer < ActionMailer::Base
-  default from: "noreply@scanaegis.com"
+  default from: "Aegis <noreply@scanaegis.com>"
   layout "mailer"
 end

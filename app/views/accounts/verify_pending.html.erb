@@ -12,9 +12,18 @@
     </div>
 
     <div class="login-body" style="text-align:center;">
+      <% if flash[:notice] %>
+        <div class="alert-success"><%= flash[:notice] %></div>
+      <% end %>
       <p>We sent a verification link to your email address. Click the link to activate your account.</p>
       <p style="font-size:13px;opacity:0.6;">The link expires in 30 minutes. Check your spam folder if you don't see it.</p>
-      <%= link_to "Back to sign in", login_path, class: "btn btn-primary", style: "margin-top:8px;" %>
+
+      <%= form_with url: resend_verification_path, method: :post, style: "margin-top:16px;" do |f| %>
+        <%= f.email_field :email_address, class: "input", placeholder: "Enter your email to resend", required: true %>
+        <%= f.submit "Resend verification email", class: "btn btn-secondary btn-sm", style: "margin-top:8px;width:100%;" %>
+      <% end %>
+
+      <%= link_to "Back to sign in", login_path, class: "btn btn-primary", style: "margin-top:8px;width:100%;display:block;" %>
     </div>
   </div>
 </div>
