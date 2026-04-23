@@ -39,8 +39,12 @@ module Authentication
     end
 
     def request_authentication
-      session[:return_to_after_authenticating] = request.url
-      redirect_to login_path
+      if request.format.json?
+        render json: { error: 'Unauthenticated' }, status: :unauthorized
+      else
+        session[:return_to_after_authenticating] = request.url
+        redirect_to login_path
+      end
     end
 
     def after_authentication_url
