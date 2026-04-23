@@ -8,6 +8,8 @@ require 'thread'
 require 'set'
 require 'shellwords'
 require 'pty'
+require 'fileutils'
+require 'securerandom'
 require 'msfrpc-client'
 
 class ScanService
@@ -301,7 +303,9 @@ class ScanService
     {
       host: ENV.fetch('MSF_RPC_HOST', '127.0.0.1'),
       port: ENV.fetch('MSF_RPC_PORT', '55553').to_i,
-      ssl:  ENV.fetch('MSF_RPC_SSL', 'true') =~ /\A(t|y|1)/i ? true : false,
+      # Our local msfrpcd runs without SSL (plain HTTP on 55553). Override with
+      # MSF_RPC_SSL=true if you later run msfrpcd with -S/SSL enabled.
+      ssl:  ENV.fetch('MSF_RPC_SSL', 'false') =~ /\A(t|y|1)/i ? true : false,
       uri:  '/api/'
     }
   end
@@ -389,12 +393,15 @@ class ScanService
         evidence  = "Session #{sid}: #{info['tunnel_local']} -> #{info['tunnel_peer']} " \
                     "[#{info['session_type']} via #{mod_name}]"
         puts "[+] #{evidence}"
+        dump_msf_debug(exploit, target_ip, port, nil, '', "(RPC exploit) payload=#{payload} job_id=#{job_id} -> #{evidence}", true, []) if ENV.fetch('AEGIS_MSF_DEBUG', '1') == '1'
         return { success: true, evidence: evidence }
       end
       jobs = client.call('job.list') rescue {}
       break unless jobs.key?(job_id)
     end
 
+    puts "[-] #{mod_name} — no session opened on #{target_ip} (exploit completed, target likely not vulnerable or service unreachable)"
+    dump_msf_debug(exploit, target_ip, port, nil, '', "(RPC exploit) payload=#{payload} job_id=#{job_id} -> no session", false, []) if ENV.fetch('AEGIS_MSF_DEBUG', '1') == '1'
     { success: false, evidence: nil }
   rescue Msf::RPC::ServerException => e
     puts "RPC ServerException [#{mod_name}]: #{e.message}"
@@ -414,45 +421,55 @@ class ScanService
     cid = shared_cid || own_cid
 
     begin
+      # Drain any leftover output from previous modules on the shared console so
+      # we only look at output produced by THIS module's run.
+      begin
+        2.times { client.call('console.read', cid) rescue nil }
+      end
+
       cmds = [
         "use auxiliary/#{mod_name}",
         "set RHOSTS #{target_ip}",
         (port ? "set RPORT #{port}" : nil),
-        "set ConnectTimeout 15",
         (proxy ? "set Proxies #{proxy}" : nil),
-        "run",
-        "echo ===AEGIS_DONE==="
+        "run"
       ].compact.join("\n") + "\n"
 
       client.call('console.write', cid, cmds)
-      sleep 4  # give MSF time to load the module before first read
+      sleep 3  # give MSF time to start the module before first read
 
       deadline         = Time.now + timeout_secs
       output           = ''
       consecutive_idle = 0
+      completion_re    = /Auxiliary module execution completed|Exploit completed|Post module execution completed/i
 
       while Time.now < deadline
         sleep 2
         res     = client.call('console.read', cid) rescue {}
         chunk   = res['data'].to_s
         output += chunk
-        # Sentinel wins immediately if echo command is supported
-        break if output.include?('===AEGIS_DONE===')
-        # Fallback: two consecutive idle (busy:false) reads means module is done
+        # Primary completion signal: msfconsole's own "execution completed" line.
+        # (The old `echo ===AEGIS_DONE===` sentinel was broken — msfconsole echoes
+        # every command BEFORE running it, so the marker appeared in the buffer
+        # almost immediately and we exited before `run` produced any output.)
+        break if output.match?(completion_re)
+        # Fallback: require 3 consecutive idle reads AND a minimum elapsed
+        # window, so we don't exit during the brief gap before msfconsole
+        # starts executing the module.
         if res['busy']
           consecutive_idle = 0
         else
           consecutive_idle += 1
-          break if consecutive_idle >= 2
+          break if consecutive_idle >= 3
         end
       end
 
-      output = output.sub('===AEGIS_DONE===', '').rstrip
       ip_pat  = Regexp.escape(target_ip)
       meaningful_ip_lines = output.scan(/\[\*\] #{ip_pat}.+/i)
                                   .reject { |l| l.match?(/Scanned \d+ of \d+ hosts/i) }
       success  = output.match?(/\[\+\]/i) || meaningful_ip_lines.any?
       evidence = (output.scan(/\[\+\].+/i) + meaningful_ip_lines).map(&:strip).join("\n").first(500)
+      dump_msf_debug(exploit, target_ip, port, nil, output, output, success, meaningful_ip_lines) if ENV.fetch('AEGIS_MSF_DEBUG', '1') == '1'
       puts success ? "[+] #{mod_name} detected on #{target_ip}" : "[-] #{mod_name} — nothing detected on #{target_ip}"
       { success: success, evidence: evidence.presence }
     ensure
@@ -477,7 +494,12 @@ class ScanService
 
       puts "Launching msfconsole for #{target_ip}:#{port} [#{exploit['name']}]#{proxy ? " via #{proxy}" : " (direct)"}"
 
-      master, slave, pid = PTY.spawn('msfconsole', '-q', '--no-readline', '-r', rc_file.path)
+      # msfconsole must run OUTSIDE the Rails app's Bundler context — otherwise it
+      # inherits BUNDLE_GEMFILE/RUBYOPT/GEM_HOME from the Rails parent and tries to
+      # resolve itself against this app's Gemfile, which fails instantly (no run).
+      master, slave, pid = with_clean_bundler_env do
+        PTY.spawn('msfconsole', '-q', '--no-readline', '-r', rc_file.path)
+      end
       slave.close rescue nil  # parent doesn't need the slave end
 
       begin
@@ -516,6 +538,7 @@ class ScanService
         clean.scan(/\[\+\].*|.*session \d+ opened.*/i).join("\n")
       end
       evidence = evidence_lines.length > 500 ? evidence_lines[0, 500] : evidence_lines
+      dump_msf_debug(exploit, target_ip, port, rc_file.path, output, clean, success, meaningful_ip_lines) if ENV.fetch('AEGIS_MSF_DEBUG', '1') == '1'
       { success: success, evidence: evidence.presence || (success ? 'Detected' : nil) }
     rescue => e
       puts "Attack failed: #{e.message}"
@@ -523,6 +546,53 @@ class ScanService
     ensure
       rc_file.close! rescue nil
     end
+  end
+
+  def with_clean_bundler_env
+    if defined?(Bundler)
+      Bundler.with_unbundled_env { yield }
+    else
+      saved = {}
+      %w[BUNDLE_GEMFILE BUNDLE_BIN_PATH BUNDLER_SETUP BUNDLER_VERSION
+         BUNDLER_ORIG_BUNDLER_VERSION RUBYOPT RUBYLIB GEM_HOME GEM_PATH GEM_ROOT].each do |k|
+        saved[k] = ENV.delete(k)
+      end
+      begin
+        yield
+      ensure
+        saved.each { |k, v| ENV[k] = v if v }
+      end
+    end
+  end
+
+  def dump_msf_debug(exploit, target_ip, port, rc_path, raw, clean, success, meaningful_ip_lines)
+    dir = Rails.root.join('logs', 'msf_debug')
+    FileUtils.mkdir_p(dir)
+    slug = exploit['metasploit_module'].to_s.gsub(/[^A-Za-z0-9]+/, '_')[0, 80]
+    path = dir.join("scan_#{@scan&.id}_#{target_ip.gsub('.', '_')}_#{slug}_#{Time.now.to_i}_#{SecureRandom.hex(3)}.log")
+    rc_contents = rc_path ? (File.read(rc_path) rescue '(unavailable)') : '(rpc path — no rc file)'
+    File.write(path, <<~LOG)
+      === AEGIS MSF DEBUG DUMP ===
+      scan_id:    #{@scan&.id}
+      module:     #{exploit['metasploit_module']}
+      name:       #{exploit['name']}
+      target:     #{target_ip}:#{port || '(default)'}
+      safe_mode:  #{@scan_options[:safe_mode]}
+      success:    #{success}
+      meaningful_ip_lines: #{meaningful_ip_lines.size}
+      timestamp:  #{Time.now.iso8601}
+
+      === RC FILE ===
+      #{rc_contents}
+      === RAW PTY OUTPUT (with ANSI) ===
+      #{raw}
+      === CLEANED OUTPUT ===
+      #{clean}
+      === END ===
+    LOG
+    puts "[msf_debug] wrote #{path}"
+  rescue => e
+    puts "[msf_debug] failed: #{e.message}"
   end
 
   def build_resource_file(exploit, target_ip, port, proxy)
@@ -557,9 +627,9 @@ class ScanService
       "use #{exploit['metasploit_module']}",
       "set RHOSTS #{target_ip}",
       (port ? "set RPORT #{port}" : nil),
-      "set ConnectTimeout 15",
       (proxy ? "set Proxies #{proxy}" : nil),
       "run",
+      "sleep 3",
       "exit -y"
     ].compact
     lines.join("\n") + "\n"
