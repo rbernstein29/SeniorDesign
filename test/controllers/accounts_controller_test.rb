@@ -8,7 +8,7 @@ class AccountsControllerTest < ActionDispatch::IntegrationTest
         user: { name: "Founder", email_address: "founder@brandnew.com", password: "password", password_confirmation: "password" }
       }
     end
-    assert_redirected_to root_path
+    assert_redirected_to verify_pending_path
   end
 
   test "POST /accounts with duplicate org_name redirects with alert" do

