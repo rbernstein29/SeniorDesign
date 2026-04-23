@@ -114,7 +114,7 @@ class ScanService
                 end
 
                 mutex.synchronize do
-                  results << {
+                  entry = {
                     target:          target_ip,
                     port:            port,
                     exploit:         mod[:path],
@@ -129,6 +129,13 @@ class ScanService
                     references:      exploit_record.references,
                     evidence:        result[:evidence]
                   }
+
+                  if @scan_options[:use_agent]
+                    entry[:isVulnerable] = result[:success]
+                    entry[:exploit_code] = (File.read(mod[:file]) rescue nil) if result[:success]
+                  end
+
+                  results << entry
                 end
               end
             end
@@ -183,7 +190,7 @@ class ScanService
       generated_by:    @user_id,
       scan_id:         @scan&.id,
       report_name:     "Scan #{Time.current.strftime('%Y-%m-%d %H:%M')}",
-      report_type:     @scan_options[:safe_mode] ? 'reconnaissance' : 'vulnerability',
+      report_type:     @scan_options[:use_agent] ? 'whitebox' : (@scan_options[:safe_mode] ? 'reconnaissance' : 'vulnerability'),
       report_format:   'json',
       report_data:     successful_results,
       generated_at:    Time.current

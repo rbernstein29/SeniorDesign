@@ -99,6 +99,44 @@ class ReportsController < ApplicationController
     redirect_to reports_path, alert: 'Report not found'
   end
 
+  def download_whitebox_json
+    report = org_reports.find(params[:id])
+    unless report.whitebox?
+      redirect_to report_path(report), alert: 'This report is not a whitebox report.'
+      return
+    end
+
+    findings = Array(report.report_data)
+      .select { |r| r['isVulnerable'] == true || r[:isVulnerable] == true }
+      .map do |r|
+        {
+          target:        r['target']        || r[:target],
+          port:          r['port']          || r[:port],
+          isVulnerable:  true,
+          exploit:       r['exploit']       || r[:exploit],
+          exploit_name:  r['exploit_name']  || r[:exploit_name],
+          severity:      r['severity']      || r[:severity],
+          cve_id:        r['cve_id']        || r[:cve_id],
+          evidence:      r['evidence']      || r[:evidence],
+          exploit_code:  r['exploit_code']  || r[:exploit_code]
+        }
+      end
+
+    payload = {
+      report_name:  report.report_name,
+      scan_type:    'whitebox',
+      generated_at: report.generated_at,
+      findings:     findings
+    }
+
+    send_data payload.to_json,
+      filename:    "#{report.report_name.parameterize}-whitebox.json",
+      type:        'application/json',
+      disposition: 'attachment'
+  rescue ActiveRecord::RecordNotFound
+    redirect_to reports_path, alert: 'Report not found'
+  end
+
   def download_xlsx
     report = org_reports.find(params[:id])
     xlsx = ScanReportXlsx.new(report)

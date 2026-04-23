@@ -50,6 +50,7 @@ Rails.application.routes.draw do
       get  :download_json
       get  :download_xlsx
       get  :download_csv
+      get  :download_whitebox_json
       get  :data
       post :retest
     end

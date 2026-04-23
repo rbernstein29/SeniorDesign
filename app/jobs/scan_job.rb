@@ -21,7 +21,8 @@ class ScanJob < ApplicationJob
       start_time:      Time.current,
       total_assets:    total,
       is_retest:       scan_options[:retest_of].present?,
-      retest_of:       scan_options[:retest_of]
+      retest_of:       scan_options[:retest_of],
+      use_agent:       scan_options[:use_agent] || false
     )
 
     broadcast_progress(user_id, 0, "Initializing scan...")

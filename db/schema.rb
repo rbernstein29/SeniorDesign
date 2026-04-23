@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.0].define(version: 2026_04_08_000002) do
+ActiveRecord::Schema[8.0].define(version: 2026_04_23_000001) do
   create_schema "vuln_scanner"
 
   # These are extensions that must be enabled in order to support this database
@@ -100,6 +100,9 @@ ActiveRecord::Schema[8.0].define(version: 2026_04_08_000002) do
     t.date "disclosure_date"
     t.jsonb "references", default: []
     t.text "authors"
+    t.decimal "cvss_score", precision: 4, scale: 1
+    t.string "cvss_vector", limit: 100
+    t.string "cwe_id", limit: 50
     t.index ["cve_id"], name: "idx_exploit_cve", where: "(cve_id IS NOT NULL)"
     t.index ["severity"], name: "idx_exploit_severity"
     t.unique_constraint ["exploit_id"], name: "exploits_exploit_id_key"
@@ -118,6 +121,8 @@ ActiveRecord::Schema[8.0].define(version: 2026_04_08_000002) do
     t.integer "remediated_by"
     t.datetime "discovered_at", precision: nil, default: -> { "CURRENT_TIMESTAMP" }
     t.datetime "updated_at", precision: nil, default: -> { "CURRENT_TIMESTAMP" }
+    t.text "ai_remediation"
+    t.integer "port"
     t.index ["asset_id"], name: "idx_finding_asset"
     t.index ["exploit_id"], name: "idx_finding_exploit"
     t.index ["scan_id"], name: "idx_finding_scan"
@@ -178,6 +183,7 @@ ActiveRecord::Schema[8.0].define(version: 2026_04_08_000002) do
     t.integer "exploit_ids", default: [], array: true
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
+    t.boolean "safe_mode", default: false, null: false
     t.index ["organization_id"], name: "index_scan_profiles_on_organization_id"
   end
 
@@ -211,6 +217,9 @@ ActiveRecord::Schema[8.0].define(version: 2026_04_08_000002) do
     t.integer "low_findings", default: 0
     t.datetime "created_at", precision: nil, default: -> { "CURRENT_TIMESTAMP" }
     t.boolean "safe_mode", default: false, null: false
+    t.boolean "is_retest", default: false, null: false
+    t.integer "retest_of"
+    t.boolean "use_agent", default: false, null: false
     t.index ["organization_id"], name: "idx_scan_org"
     t.index ["start_time", "end_time"], name: "idx_scan_times"
     t.index ["status"], name: "idx_scan_status"
