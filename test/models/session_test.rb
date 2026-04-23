@@ -7,9 +7,9 @@ class SessionTest < ActiveSupport::TestCase
     assert_not session.expired?
   end
 
-  test "expired when last_active_at is over 1 hour ago" do
+  test "expired when last_active_at is over 8 hours ago" do
     session = sessions(:admin_session)
-    session.last_active_at = 2.hours.ago
+    session.last_active_at = 9.hours.ago
     assert session.expired?
   end
 
