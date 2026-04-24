@@ -45,25 +45,25 @@
   </div>
 
   <!-- Results -->
-  <% if defined?(result) && result %>
-    <% if result[:error] %>
-      <div class="alert alert-error"><%= result[:error] %></div>
-    <% elsif result[:clear] %>
+  <% if @result %>
+    <% if @result[:error] %>
+      <div class="alert alert-error"><%= @result[:error] %></div>
+    <% elsif @result[:clear] %>
       <div class="main-card" style="margin-bottom:16px;">
         <div style="padding:32px;text-align:center;">
           <div style="font-size:48px;margin-bottom:12px;">✓</div>
           <div style="font-size:20px;font-weight:700;color:var(--green);font-family:var(--mono);">CLEAR</div>
-          <div style="color:var(--muted);margin-top:8px;">No vulnerabilities detected in <strong><%= defined?(filename) ? filename : 'the uploaded file' %></strong></div>
+          <div style="color:var(--muted);margin-top:8px;">No vulnerabilities detected in <strong><%= @filename || 'the uploaded file' %></strong></div>
         </div>
       </div>
     <% else %>
       <div class="main-card">
         <div class="card-header">
           <div class="card-title">Analysis Results</div>
-          <div class="card-subtitle"><%= defined?(filename) ? filename : '' %></div>
+          <div class="card-subtitle"><%= @filename || '' %></div>
         </div>
         <div class="card-body">
-          <div id="analysis-output" style="white-space:pre-wrap;font-size:13px;line-height:1.7;"><%= h(result[:text]) %></div>
+          <div id="analysis-output" style="white-space:pre-wrap;font-size:13px;line-height:1.7;"><%= h(@result[:text]) %></div>
         </div>
       </div>
     <% end %>
