@@ -35,57 +35,57 @@
     <div class="stat-card magenta">
       <div class="stat-label">Offline Agents</div>
       <% offline = (@agents&.count || 0) - connected %>
-      <div class="stat-value"><%= offline %></div>
+      <div class="stat-value" data-stat="offline_agents"><%= offline %></div>
       <div class="stat-delta <%= offline > 0 ? 'bad' : '' %>"><%= offline > 0 ? 'Not reachable' : 'All online' %></div>
     </div>
     <div class="stat-card magenta">
       <div class="stat-label">Total Agents</div>
-      <div class="stat-value"><%= @agents&.count || 0 %></div>
+      <div class="stat-value" data-stat="total_agents"><%= @agents&.count || 0 %></div>
       <div class="stat-delta">Registered agents</div>
     </div>
     <div class="stat-card magenta">
       <div class="stat-label">Connected Agents</div>
-      <div class="stat-value"><%= connected %></div>
+      <div class="stat-value" data-stat="connected_agents"><%= connected %></div>
       <div class="stat-delta <%= connected > 0 ? 'up' : '' %>"><%= connected > 0 ? 'Online now' : 'None online' %></div>
     </div>
     <div class="stat-card orange">
       <div class="stat-label">Active Scans</div>
-      <div class="stat-value"><%= @active_scans %></div>
+      <div class="stat-value" data-stat="active_scans"><%= @active_scans %></div>
       <div class="stat-delta"><%= @active_scans.to_i > 0 ? 'Currently running' : 'No scans running' %></div>
     </div>
     <div class="stat-card orange">
       <div class="stat-label">Last Scan</div>
       <% if @last_scan %>
-        <div class="stat-value" style="font-size:16px;line-height:1.3;margin-top:4px;"><%= time_ago_in_words(@last_scan) %> ago</div>
+        <div class="stat-value" data-stat="last_scan" style="font-size:16px;line-height:1.3;margin-top:4px;"><%= time_ago_in_words(@last_scan) %> ago</div>
       <% else %>
-        <div class="stat-value" style="font-size:20px;">Never</div>
+        <div class="stat-value" data-stat="last_scan" style="font-size:20px;">Never</div>
       <% end %>
       <div class="stat-delta">Most recent scan</div>
     </div>
     <div class="stat-card cyan">
       <div class="stat-label">Total Assets</div>
-      <div class="stat-value"><%= @assets&.count || 0 %></div>
+      <div class="stat-value" data-stat="total_assets"><%= @assets&.count || 0 %></div>
       <div class="stat-delta up">Configured targets</div>
     </div>
     <div class="stat-card cyan">
       <div class="stat-label">Scan-Ready Assets</div>
       <% scan_ready = @assets&.count { |a| a.scan_config.present? } || 0 %>
-      <div class="stat-value"><%= scan_ready %></div>
+      <div class="stat-value" data-stat="scan_ready_assets"><%= scan_ready %></div>
       <div class="stat-delta">With scan config</div>
     </div>
     <div class="stat-card teal">
       <div class="stat-label">Total Sites</div>
-      <div class="stat-value"><%= @sites&.count || 0 %></div>
+      <div class="stat-value" data-stat="total_sites"><%= @sites&.count || 0 %></div>
       <div class="stat-delta">Network sites</div>
     </div>
     <div class="stat-card green">
       <div class="stat-label">Org Users</div>
-      <div class="stat-value"><%= @users_count || 0 %></div>
+      <div class="stat-value" data-stat="users_count"><%= @users_count || 0 %></div>
       <div class="stat-delta">Team members</div>
     </div>
     <div class="stat-card violet">
       <div class="stat-label">Total Reports</div>
-      <div class="stat-value"><%= @reports&.count || 0 %></div>
+      <div class="stat-value" data-stat="total_reports"><%= @reports&.count || 0 %></div>
       <div class="stat-delta">Scan reports</div>
     </div>
   </div>
@@ -224,33 +224,35 @@
         <div class="panel-title">Recent Activity</div>
         <div class="panel-sub">LAST 24 HRS</div>
       </div>
-      <% if @recent_activity.any? %>
-        <% @recent_activity.each do |item| %>
+      <div id="activity-list">
+        <% if @recent_activity.any? %>
+          <% @recent_activity.each do |item| %>
+            <div class="activity-item">
+              <div class="activity-dot dot-<%= item[:color] %>"></div>
+              <div>
+                <% if item[:scan] %>
+                  <div class="activity-text">Scan <strong><%= item[:scan].scan_name %></strong> <%= item[:scan].status %></div>
+                  <div class="activity-time"><%= item[:scan].start_time ? time_ago_in_words(item[:scan].start_time) + ' ago' : '—' %></div>
+                <% elsif item[:agent] %>
+                  <div class="activity-text">Agent <strong><%= item[:agent].agent_id.first(8) %>&hellip;</strong> last heartbeat</div>
+                  <div class="activity-time"><%= time_ago_in_words(item[:agent].last_seen) %> ago</div>
+                <% elsif item[:session] %>
+                  <div class="activity-text">User <strong><%= item[:session].user.name %></strong> signed in</div>
+                  <div class="activity-time"><%= time_ago_in_words(item[:session].created_at) %> ago</div>
+                <% end %>
+              </div>
+            </div>
+          <% end %>
+        <% else %>
           <div class="activity-item">
-            <div class="activity-dot dot-<%= item[:color] %>"></div>
+            <div class="activity-dot dot-gray"></div>
             <div>
-              <% if item[:scan] %>
-                <div class="activity-text">Scan <strong><%= item[:scan].scan_name %></strong> <%= item[:scan].status %></div>
-                <div class="activity-time"><%= item[:scan].start_time ? time_ago_in_words(item[:scan].start_time) + ' ago' : '—' %></div>
-              <% elsif item[:agent] %>
-                <div class="activity-text">Agent <strong><%= item[:agent].agent_id.first(8) %>&hellip;</strong> last heartbeat</div>
-                <div class="activity-time"><%= time_ago_in_words(item[:agent].last_seen) %> ago</div>
-              <% elsif item[:session] %>
-                <div class="activity-text">User <strong><%= item[:session].user.name %></strong> signed in</div>
-                <div class="activity-time"><%= time_ago_in_words(item[:session].created_at) %> ago</div>
-              <% end %>
+              <div class="activity-text">No activity yet</div>
+              <div class="activity-time">—</div>
             </div>
           </div>
         <% end %>
-      <% else %>
-        <div class="activity-item">
-          <div class="activity-dot dot-gray"></div>
-          <div>
-            <div class="activity-text">No activity yet</div>
-            <div class="activity-time">—</div>
-          </div>
-        </div>
-      <% end %>
+      </div>
     </div>
 
     <!-- Quick Actions -->
@@ -317,4 +319,38 @@
         .then(function(html) { el.innerHTML = html; });
     }, parseInt(el.dataset.refreshInterval));
   })();
+
+  function renderActivity(items) {
+    const list = document.getElementById('activity-list');
+    if (!list) return;
+    if (!items || !items.length) {
+      list.innerHTML = '<div class="activity-item"><div class="activity-dot dot-gray"></div><div><div class="activity-text">No activity yet</div><div class="activity-time">—</div></div></div>';
+      return;
+    }
+    list.innerHTML = items.map(function(i) {
+      return '<div class="activity-item">' +
+               '<div class="activity-dot dot-' + i.color + '"></div>' +
+               '<div>' +
+                 '<div class="activity-text">' + i.text + '</div>' +
+                 '<div class="activity-time">' + i.time + '</div>' +
+               '</div>' +
+             '</div>';
+    }).join('');
+  }
+
+  function pollHomeStats() {
+    fetch('/home/stats', { headers: { 'Accept': 'application/json' } })
+      .then(function(r) { return r.json(); })
+      .then(function(data) {
+        if (data.stats) {
+          Object.keys(data.stats).forEach(function(k) {
+            const el = document.querySelector('[data-stat="' + k + '"]');
+            if (el) el.textContent = data.stats[k];
+          });
+        }
+        if (data.activity) renderActivity(data.activity);
+      })
+      .catch(function(err) { console.error('Home stats poll failed:', err); });
+  }
+  setInterval(pollHomeStats, 10000);
 </script>

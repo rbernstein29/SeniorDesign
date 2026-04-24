@@ -26,19 +26,19 @@
     <div class="stats-grid">
         <div class="stat-card orange">
             <div class="stat-label">Total Scans</div>
-            <div class="stat-number"><%= @total_scans %></div>
+            <div class="stat-number" data-stat="total"><%= @total_scans %></div>
         </div>
         <div class="stat-card cyan">
             <div class="stat-label">Running</div>
-            <div class="stat-number"><%= @running_scans %></div>
+            <div class="stat-number" data-stat="running"><%= @running_scans %></div>
         </div>
         <div class="stat-card green">
             <div class="stat-label">Completed</div>
-            <div class="stat-number"><%= @completed_scans %></div>
+            <div class="stat-number" data-stat="completed"><%= @completed_scans %></div>
         </div>
         <div class="stat-card red">
             <div class="stat-label">Failed / Cancelled</div>
-            <div class="stat-number"><%= @failed_scans %></div>
+            <div class="stat-number" data-stat="failed"><%= @failed_scans %></div>
         </div>
     </div>
 
@@ -154,9 +154,15 @@
 
 </div>
 
-<% if @running_scans > 0 %>
 <script>
   const REPORTS_PATH = "<%= reports_path %>";
+
+  function updateScanStats(stats) {
+    ['total', 'running', 'completed', 'failed'].forEach(key => {
+      const el = document.querySelector(`[data-stat="${key}"]`);
+      if (el && stats[key] !== undefined) el.textContent = stats[key];
+    });
+  }
 
   function updateScanRow(scan) {
     const row = document.querySelector(`tr[data-scan-id="${scan.id}"]`);
@@ -201,21 +207,17 @@
     }
   }
 
-  function pollRunningScans() {
-    const runningRows = Array.from(document.querySelectorAll('tr[data-scan-id]')).filter(row => {
-      return row.querySelector('.status-running') !== null;
-    });
-    if (runningRows.length === 0) return;
-
-    const ids = runningRows.map(r => r.dataset.scanId);
-    const url = `/scans/status?${ids.map(id => `ids[]=${id}`).join('&')}`;
-
-    fetch(url, { headers: { 'Accept': 'application/json' } })
+  function pollScans() {
+    const ids = Array.from(document.querySelectorAll('tr[data-scan-id]')).map(r => r.dataset.scanId);
+    const qs  = ids.length ? '?' + ids.map(id => `ids[]=${id}`).join('&') : '';
+    fetch(`/scans/status${qs}`, { headers: { 'Accept': 'application/json' } })
       .then(r => r.json())
-      .then(scans => scans.forEach(updateScanRow))
+      .then(data => {
+        if (data.stats) updateScanStats(data.stats);
+        (data.scans || []).forEach(updateScanRow);
+      })
       .catch(err => console.error('Scan status poll failed:', err));
   }
 
-  setInterval(pollRunningScans, 5000);
+  setInterval(pollScans, 5000);
 </script>
-<% end %>

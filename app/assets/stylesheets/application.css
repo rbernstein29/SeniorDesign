@@ -1525,7 +1525,6 @@ tbody tr:hover { background: var(--surface2); }
 
 .dot-green {
   background: var(--green);
-  animation: pulse 2s infinite;
 }
 
 .dot-gray { background: var(--muted); }
