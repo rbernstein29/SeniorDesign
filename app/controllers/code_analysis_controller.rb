@@ -17,7 +17,7 @@ class CodeAnalysisController < ApplicationController
     @filename = file.original_filename
     ext       = File.extname(@filename).delete_prefix('.')
 
-    @result = GeminiService.analyze_code(content, ext, @filename)
+    @result = OllamaService.analyze_code(content, ext, @filename)
     render :index
   end
 end

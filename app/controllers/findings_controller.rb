@@ -6,7 +6,7 @@ class FindingsController < ApplicationController
                      .find(params[:id])
 
     if finding.ai_remediation.blank?
-      text = GeminiService.remediation_for(finding.exploit, finding)
+      text = OllamaService.remediation_for(finding.exploit, finding)
       finding.update_column(:ai_remediation, text)
     end
 
