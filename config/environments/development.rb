@@ -65,6 +65,8 @@ Rails.application.configure do
   # config.generators.apply_rubocop_autocorrect_after_generate!
   config.importmap.cache_sweepers = [Rails.root.join("app/javascript")]
 
+  config.web_console.whitelisted_ips = []
+
   config.hosts << "aegis.sec"
   config.hosts << "scanaegis.com"
   config.hosts << "www.scanaegis.com"
