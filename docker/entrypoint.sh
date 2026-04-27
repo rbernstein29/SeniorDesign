@@ -28,13 +28,17 @@ echo "  PostgreSQL: OK"
 echo "Running migrations..."
 bundle exec rails db:migrate
 
-# ── 4. Pull Ollama model on first run (no-op if already present) ───────────────
+# ── 4. Pull Ollama model on first run (skipped if already present) ────────────
 if [ -n "${OLLAMA_HOST}" ]; then
-  echo "Ensuring Ollama model is available..."
-  curl -s "${OLLAMA_HOST}/api/pull" \
-    -d '{"name":"qwen2.5-coder:7b"}' \
-    --max-time 600 \
-    -o /dev/null || echo "  Ollama pull skipped (model may already be present)"
+  if curl -s "${OLLAMA_HOST}/api/tags" | grep -q "qwen2.5-coder:7b"; then
+    echo "  Ollama model already present, skipping pull."
+  else
+    echo "Pulling Ollama model..."
+    curl -s "${OLLAMA_HOST}/api/pull" \
+      -d '{"name":"qwen2.5-coder:7b"}' \
+      --max-time 600 \
+      -o /dev/null
+  fi
 fi
 
 exec "$@"
