@@ -11,7 +11,7 @@ if ! timeout 5 bash -c "echo > /dev/tcp/${MSF_HOST}/${MSF_PORT}" 2>/dev/null; th
   echo "ERROR: Metasploit RPC daemon is not reachable at ${MSF_HOST}:${MSF_PORT}"
   echo ""
   echo "  Start it on the host with:"
-  echo "    msfrpcd -U msf -P goodyear -p ${MSF_PORT} -S -a 127.0.0.1 -f"
+  echo "    msfrpcd -U \$MSF_RPC_USER -P \$MSF_RPC_PASS -p ${MSF_PORT} -S -a 172.20.0.1 -f"
   echo ""
   exit 1
 fi

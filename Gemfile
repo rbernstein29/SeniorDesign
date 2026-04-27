@@ -50,6 +50,7 @@ gem "bcrypt", "~> 3.1.7"
 
 # Report generation
 gem "caxlsx"
+gem "rubyzip", ">= 2.4", "< 4"
 gem "csv"
 
 # Metasploit RPC client for vulnerability scanning
