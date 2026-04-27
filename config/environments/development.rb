@@ -66,6 +66,8 @@ Rails.application.configure do
   config.importmap.cache_sweepers = [Rails.root.join("app/javascript")]
 
   config.hosts << "aegis.sec"
+  config.hosts << "scanaegis.com"
+  config.hosts << "www.scanaegis.com"
 
   # Mailer host — default to the Tailscale server IP; override locally with APP_HOST=localhost
   config.action_mailer.default_url_options = {
