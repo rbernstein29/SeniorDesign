@@ -66,4 +66,26 @@ Rails.application.configure do
   config.importmap.cache_sweepers = [Rails.root.join("app/javascript")]
 
   config.hosts << "aegis.sec"
+
+  # Mailer host — default to the Tailscale server IP; override locally with APP_HOST=localhost
+  config.action_mailer.default_url_options = {
+    host: ENV.fetch("APP_HOST", "100.69.88.107"),
+    port: ENV.fetch("APP_PORT", "3000").to_i
+  }
+
+  # Use Resend for real delivery when API key is present; fall back to :letter_opener_web or :test
+  if ENV["RESEND_API_KEY"].present?
+    config.action_mailer.delivery_method = :smtp
+    config.action_mailer.perform_deliveries = true
+    config.action_mailer.smtp_settings = {
+      address:  "smtp.resend.com",
+      port:     465,
+      user_name: "resend",
+      password:  ENV["RESEND_API_KEY"],
+      ssl:       true
+    }
+  else
+    config.action_mailer.delivery_method   = :test
+    config.action_mailer.perform_deliveries = true
+  end
 end
