@@ -71,11 +71,10 @@ Rails.application.configure do
   config.hosts << "scanaegis.com"
   config.hosts << "www.scanaegis.com"
 
-  # Mailer host — default to the Tailscale server IP; override locally with APP_HOST=localhost
-  config.action_mailer.default_url_options = {
-    host: ENV.fetch("APP_HOST", "100.69.88.107"),
-    port: ENV.fetch("APP_PORT", "3000").to_i
-  }
+  # Mailer host — set APP_HOST in .env to control email link domain
+  _mailer_opts = { host: ENV.fetch("APP_HOST", "100.69.88.107") }
+  _mailer_opts[:port] = ENV["APP_PORT"].to_i if ENV["APP_PORT"].present?
+  config.action_mailer.default_url_options = _mailer_opts
 
   # Resend SMTP — key loaded from .env by dotenv-rails
   config.action_mailer.delivery_method    = :smtp
