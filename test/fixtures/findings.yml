@@ -1,1 +1,21 @@
-# No test fixtures — table is cleared by inclusion here
+finding_one:
+  scan_id: <%= ActiveRecord::FixtureSet.identify(:completed_scan) %>
+  asset_id: <%= ActiveRecord::FixtureSet.identify(:asset_one) %>
+  exploit_id: <%= ActiveRecord::FixtureSet.identify(:exploit_one) %>
+  severity: critical
+  status: open
+  confidence: high
+  port: "445"
+  evidence: "Session opened on target"
+  discovered_at: <%= 30.minutes.ago %>
+
+finding_two:
+  scan_id: <%= ActiveRecord::FixtureSet.identify(:completed_scan) %>
+  asset_id: <%= ActiveRecord::FixtureSet.identify(:asset_two) %>
+  exploit_id: <%= ActiveRecord::FixtureSet.identify(:exploit_two) %>
+  severity: high
+  status: open
+  confidence: medium
+  port: "22"
+  evidence: "Credentials accepted"
+  discovered_at: <%= 28.minutes.ago %>

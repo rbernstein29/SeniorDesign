@@ -139,4 +139,23 @@ class PagesControllerTest < ActionDispatch::IntegrationTest
     get read_only_accounts_path
     assert_response :success
   end
+
+  # ── GET /api-docs ──────────────────────────────────────────────────────────────
+
+  test "GET /api-docs redirects unauthenticated to login" do
+    get api_docs_path
+    assert_redirected_to login_path
+  end
+
+  test "GET /api-docs returns 200 for admin" do
+    sign_in_as(users(:admin_user))
+    get api_docs_path
+    assert_response :success
+  end
+
+  test "GET /api-docs returns 200 for readonly user" do
+    sign_in_as(users(:readonly_user))
+    get api_docs_path
+    assert_response :success
+  end
 end

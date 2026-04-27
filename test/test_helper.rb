@@ -1,6 +1,7 @@
 ENV["RAILS_ENV"] ||= "test"
 require_relative "../config/environment"
 require "rails/test_help"
+require "minitest/mock"
 
 # Wrap entire test run in a transaction so dev data is preserved.
 # fixtures :all truncates tables — this rollback undoes that at the end.

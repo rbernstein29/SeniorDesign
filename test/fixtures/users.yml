@@ -15,6 +15,7 @@ readonly_user:
   password_digest: <%= password_digest %>
   organization_id: <%= ActiveRecord::FixtureSet.identify(:acme) %>
   access_level: read_only
+  api_key: test_api_key_readonly_xyz789
   email_verified_at: <%= Time.current %>
 
 other_org_user:
