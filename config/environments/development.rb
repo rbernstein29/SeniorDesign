@@ -72,9 +72,8 @@ Rails.application.configure do
   config.hosts << "www.scanaegis.com"
 
   # Mailer host — set APP_HOST in .env to control email link domain
-  _mailer_opts = { host: ENV.fetch("APP_HOST", "100.69.88.107") }
-  _mailer_opts[:port] = ENV["APP_PORT"].to_i if ENV["APP_PORT"].present?
-  config.action_mailer.default_url_options = _mailer_opts
+  # APP_PORT is intentionally excluded — scanaegis.com is served on standard ports via reverse proxy
+  config.action_mailer.default_url_options = { host: ENV.fetch("APP_HOST", "100.69.88.107") }
 
   # Resend SMTP — key loaded from .env by dotenv-rails
   config.action_mailer.delivery_method    = :smtp
