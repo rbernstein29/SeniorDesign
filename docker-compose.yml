@@ -1,0 +1,55 @@
+services:
+
+  db:
+    image: postgres:16-alpine
+    environment:
+      POSTGRES_DB:       vulnerability_scanner
+      POSTGRES_USER:     aegis
+      POSTGRES_PASSWORD: goodyear
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+      - ./docker/init.sql:/docker-entrypoint-initdb.d/init.sql:ro
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U aegis -d vulnerability_scanner"]
+      interval: 5s
+      timeout: 5s
+      retries: 10
+
+  ollama:
+    image: ollama/ollama:latest
+    volumes:
+      - ollama_models:/root/.ollama
+    healthcheck:
+      test: ["CMD", "curl", "-sf", "http://localhost:11434/api/version"]
+      interval: 10s
+      timeout: 5s
+      retries: 6
+      start_period: 20s
+
+  rails:
+    build: .
+    ports:
+      - "3000:3000"
+    env_file: .env
+    environment:
+      RAILS_ENV:    development
+      DB_HOST:      db
+      DB_PORT:      "5432"
+      DB_USER:      aegis
+      OLLAMA_HOST:  http://ollama:11434
+      MSF_RPC_HOST: host.docker.internal
+      MSF_RPC_PORT: "55553"
+      MSF_RPC_SSL:  "false"
+      MSF_RPC_USER: msf
+      APP_PORT:     "3000"
+    depends_on:
+      db:
+        condition: service_healthy
+      ollama:
+        condition: service_healthy
+    extra_hosts:
+      - "host.docker.internal:host-gateway"  # lets container reach host services
+
+volumes:
+  postgres_data:
+  ollama_models:

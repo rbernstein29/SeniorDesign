@@ -1,0 +1,11 @@
+.git
+.env
+log/
+tmp/
+vendor/bundle/
+node_modules/
+.DS_Store
+.vscode/
+.idea/
+*.swp
+storage/

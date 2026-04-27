@@ -20,9 +20,9 @@ default: &default
   pool: <%= ENV.fetch("RAILS_MAX_THREADS") { 5 } %>
   database: vulnerability_scanner
   username: aegis
-  password: goodyear
-  host: 100.69.88.107
-  port: 5432
+  password: <%= ENV.fetch("DB_PASSWORD", "goodyear") %>
+  host: <%= ENV.fetch("DB_HOST", "100.69.88.107") %>
+  port: <%= ENV.fetch("DB_PORT", "5432").to_i %>
   schema_search_path: "vuln_scanner"
 
 
