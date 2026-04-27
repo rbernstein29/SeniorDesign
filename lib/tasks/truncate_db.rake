@@ -3,27 +3,13 @@ namespace :db do
   task truncate: :environment do
     raise "Refusing to truncate in production!" if Rails.env.production?
 
-    tables = %w[
-      findings
-      scan_exploits
-      scan_targets
-      scans
-      reports
-      assets
-      sites
-      agents
-      sessions
-      scan_profiles
-      users
-      organizations
-      exploits
-      operating_systems
-      exploit_os_compatibility
-      asset_use_cases
-      exploit_use_case_relevance
-    ]
-
     conn = ActiveRecord::Base.connection
+
+    skip = %w[schema_migrations ar_internal_metadata]
+
+    tables = conn.execute(
+      "SELECT tablename FROM pg_tables WHERE schemaname = 'vuln_scanner' ORDER BY tablename"
+    ).map { |r| r["tablename"] }.reject { |t| skip.include?(t) }
 
     tables.each do |table|
       full = "vuln_scanner.#{table}"
@@ -33,6 +19,6 @@ namespace :db do
       puts "  skipped #{full}: #{e.message.split("\n").first}"
     end
 
-    puts "\nDone. All vuln_scanner tables cleared."
+    puts "\nDone. #{tables.size} tables cleared."
   end
 end
