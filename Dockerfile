@@ -1,18 +1,26 @@
-FROM ruby:3.3.8-slim
+FROM ruby:3.3-slim
 
 RUN apt-get update && apt-get install -y --no-install-recommends \
       build-essential \
       libpq-dev \
       postgresql-client \
+      libxml2-dev \
+      libxslt1-dev \
+      libyaml-dev \
+      zlib1g-dev \
       curl \
       git \
     && rm -rf /var/lib/apt/lists/*
 
 WORKDIR /app
 
+ENV BUNDLE_PATH=/usr/local/bundle \
+    BUNDLE_JOBS=4 \
+    BUNDLE_RETRY=3
+
 # Gems layer cached separately — only rebuilds when Gemfile changes
 COPY Gemfile Gemfile.lock ./
-RUN bundle install --jobs 4 --retry 3
+RUN bundle install
 
 COPY . .
 
