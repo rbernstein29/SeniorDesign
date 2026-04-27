@@ -48,9 +48,7 @@ gem "psych", "~> 5.1"
 # password hashing
 gem "bcrypt", "~> 3.1.7"
 
-# PDF report generation
-gem "prawn"
-gem "prawn-table"
+# Report generation
 gem "caxlsx"
 gem "csv"
 

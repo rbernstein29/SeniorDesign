@@ -34,11 +34,6 @@ class ReadOnlyAccountsController < ApplicationController
     redirect_to read_only_accounts_path, alert: "User not found."
   end
 
-  def generate_api_key
-    Current.user.update(api_key: SecureRandom.urlsafe_base64(32))
-    redirect_back_or_to root_path
-  end
-
   private
 
   def user_params
