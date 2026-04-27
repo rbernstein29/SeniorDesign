@@ -53,3 +53,10 @@ services:
 volumes:
   postgres_data:
   ollama_models:
+
+networks:
+  default:
+    ipam:
+      config:
+        - subnet: 172.20.0.0/16
+          gateway: 172.20.0.1
