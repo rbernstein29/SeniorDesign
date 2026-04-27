@@ -68,4 +68,27 @@ class AgentsControllerTest < ActionDispatch::IntegrationTest
       delete agent_path(agents(:agent_offline))
     end
   end
+
+  # ── GET /agents/:id/download ──────────────────────────────────────────────────
+
+  test "GET /agents/:id/download redirects unauthenticated to login" do
+    get download_agent_path(agents(:agent_connected))
+    assert_redirected_to login_path
+  end
+
+  test "GET /agents/:id/download redirects readonly user to root" do
+    sign_in_as(users(:readonly_user))
+    get download_agent_path(agents(:agent_connected))
+    assert_redirected_to root_path
+  end
+
+  test "GET /agents/:id/download returns zip attachment for admin" do
+    sign_in_as(users(:admin_user))
+    agent = agents(:agent_connected)
+    get download_agent_path(agent)
+    assert_response :success
+    assert_equal "application/zip", response.content_type
+    assert_includes response.headers["Content-Disposition"], "attachment"
+    assert_includes response.headers["Content-Disposition"], agent.agent_id
+  end
 end

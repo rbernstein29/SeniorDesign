@@ -45,4 +45,9 @@ Rails.application.configure do
 
   # Raise error when a before_action's only/except options reference missing actions.
   config.action_controller.raise_on_missing_callback_actions = true
+
+  # Trap all mail in the test deliveries array; never hit real SMTP
+  config.action_mailer.delivery_method   = :test
+  config.action_mailer.perform_deliveries = true
+  config.action_mailer.default_url_options = { host: "localhost", port: 3000 }
 end
