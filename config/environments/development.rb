@@ -73,19 +73,14 @@ Rails.application.configure do
     port: ENV.fetch("APP_PORT", "3000").to_i
   }
 
-  # Use Resend for real delivery when API key is present; fall back to :letter_opener_web or :test
-  if ENV["RESEND_API_KEY"].present?
-    config.action_mailer.delivery_method = :smtp
-    config.action_mailer.perform_deliveries = true
-    config.action_mailer.smtp_settings = {
-      address:  "smtp.resend.com",
-      port:     465,
-      user_name: "resend",
-      password:  ENV["RESEND_API_KEY"],
-      ssl:       true
-    }
-  else
-    config.action_mailer.delivery_method   = :test
-    config.action_mailer.perform_deliveries = true
-  end
+  # Resend SMTP — key can be overridden by RESEND_API_KEY env var
+  config.action_mailer.delivery_method    = :smtp
+  config.action_mailer.perform_deliveries = true
+  config.action_mailer.smtp_settings = {
+    address:   "smtp.resend.com",
+    port:      465,
+    user_name: "resend",
+    password:  ENV.fetch("RESEND_API_KEY", "re_5bNLS1rJ_8LFC8jf2y7dmBj3iZpjgXKzT"),
+    ssl:       true
+  }
 end
