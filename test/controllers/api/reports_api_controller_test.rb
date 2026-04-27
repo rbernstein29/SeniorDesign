@@ -10,7 +10,7 @@ class Api::ReportsApiControllerTest < ActionDispatch::IntegrationTest
     get "/api/#{@api_key}/reports"
     assert_response :success
     json = JSON.parse(response.body)
-    assert_kind_of Array, json
+    assert_kind_of Array, json["reports"]
   end
 
   test "GET /api/:api_key/reports with invalid key returns 401" do
@@ -25,7 +25,7 @@ class Api::ReportsApiControllerTest < ActionDispatch::IntegrationTest
     get "/api/#{@api_key}/reports/#{report.id}"
     assert_response :success
     json = JSON.parse(response.body)
-    assert_equal report.id, json["id"]
+    assert_equal report.id, json["report"]["id"]
   end
 
   test "GET /api/:api_key/reports/:id with wrong id returns 404" do

@@ -124,6 +124,17 @@
       </a>
     <% end %>
 
+    <a href="<%= (api_docs_path rescue '#') %>" class="sidebar-nav-item nav-teal <%= current_page == 'api_docs' ? 'active' : '' %>">
+      <span class="nav-icon" style="display:flex;align-items:center;justify-content:center;">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="opacity:0.85;">
+          <polyline points="16 18 22 12 16 6"></polyline>
+          <polyline points="8 6 2 12 8 18"></polyline>
+        </svg>
+      </span>
+      <span class="nav-dot teal"></span>
+      <span class="nav-label">API Docs</span>
+    </a>
+
     <a href="<%= (settings_path rescue '#') %>" class="sidebar-nav-item nav-blue <%= current_page == 'settings' ? 'active' : '' %>">
       <span class="nav-icon">
         <%= image_tag 'SDimagesWhite/SettingsWhite.png', alt: '', class: 'nav-icon-img icon-white' %>

@@ -15,7 +15,8 @@ Rails.application.routes.draw do
   get "/scans/status", to: "pages#scans_status", as: :scans_status
   post "/scans/stop",  to: "pages#stop_scan",    as: :stop_scan
   get "/reports",  to: "pages#reports",  as: :reports
-  get "/settings", to: "pages#settings", as: :settings
+  get "/settings",  to: "pages#settings",  as: :settings
+  get "/api-docs",  to: "pages#api_docs",  as: :api_docs
   get "/read_only_accounts", to: "pages#read_only_accounts", as: :read_only_accounts
   get "/create_ro_account", to: "pages#create_ro_account", as: :create_ro_account
   delete "/read_only_accounts/:id", to: "read_only_accounts#destroy", as: :delete_read_only_account
@@ -69,8 +70,52 @@ Rails.application.routes.draw do
   # Api
   namespace :api do
     scope ':api_key' do
-      # Reports endpoint: /api/{key}/reports
-      resources :reports_api, only: [:index, :show], path: 'reports'
+      resources :reports_api, only: [:index, :show, :destroy], path: 'reports' do
+        member do
+          get  :download_json
+          get  :download_xlsx
+          get  :download_csv
+          get  :download_whitebox_json
+          get  :data
+          post :retest
+        end
+      end
+
+      resources :assets_api,        only: [:index, :show, :create, :destroy], path: 'assets'
+      resources :sites_api,         only: [:index, :create, :destroy],        path: 'sites'
+      resources :scan_profiles_api, only: [:index, :create, :destroy],        path: 'scan-profiles'
+
+      resources :scans_api, only: [:index, :show], path: 'scans' do
+        collection do
+          post :trigger
+          post :stop
+        end
+      end
+
+      resources :findings_api, only: [:index, :show], path: 'findings' do
+        member do
+          post :ai_remediation
+        end
+      end
+
+      resources :exploits_api, only: [:index, :show], path: 'exploits' do
+        collection do
+          get :count
+        end
+      end
+
+      post 'code-analysis', to: 'code_analysis_api#analyze', as: :api_code_analysis
+
+      resources :agents_api, only: [:index, :create, :destroy], path: 'agents' do
+        member do
+          get :download
+        end
+        collection do
+          get :status
+        end
+      end
+
+      get 'account', to: 'account_api#show'
     end
   end
   patch '/accounts/generate_api_key', to: 'accounts#generate_api_key', as: :generate_api_key

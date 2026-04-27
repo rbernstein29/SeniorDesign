@@ -1,0 +1,921 @@
+<% content_for :title, "Aegis - API Docs" %>
+
+<% content_for :head do %>
+<style>
+  .api-docs-wrap {
+    display: flex;
+    gap: 0;
+    min-height: 100vh;
+    align-items: flex-start;
+  }
+  .api-toc {
+    width: 220px;
+    flex-shrink: 0;
+    position: sticky;
+    top: 24px;
+    align-self: flex-start;
+    padding: 0 0 40px 0;
+  }
+  .api-toc-title {
+    font-size: 10px;
+    font-weight: 700;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: var(--muted);
+    margin-bottom: 8px;
+    padding: 0 8px;
+  }
+  .api-toc a {
+    display: block;
+    padding: 5px 8px;
+    border-radius: 6px;
+    font-size: 12px;
+    color: var(--muted);
+    text-decoration: none;
+    transition: color 0.15s, background 0.15s;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+  .api-toc a:hover { color: var(--text); background: var(--surface2); }
+  .api-toc a.active { color: var(--cyan); background: rgba(34,211,238,0.08); }
+  .api-toc-section {
+    font-size: 10px;
+    font-weight: 700;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: var(--muted);
+    padding: 12px 8px 4px;
+  }
+  .api-content {
+    flex: 1;
+    min-width: 0;
+    padding: 0 0 80px 32px;
+  }
+  .api-section {
+    margin-bottom: 56px;
+    scroll-margin-top: 24px;
+  }
+  .api-section-title {
+    font-size: 18px;
+    font-weight: 700;
+    color: var(--text);
+    margin-bottom: 4px;
+    border-bottom: 1px solid var(--border);
+    padding-bottom: 10px;
+  }
+  .api-section-sub {
+    font-size: 12px;
+    color: var(--muted);
+    margin-bottom: 20px;
+  }
+  .api-endpoint {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    margin-bottom: 16px;
+    overflow: hidden;
+    transition: border-color 0.2s;
+  }
+  .api-endpoint:hover { border-color: rgba(255,255,255,0.18); }
+  .api-endpoint-header {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 14px 18px;
+    cursor: pointer;
+    user-select: none;
+  }
+  .api-endpoint-header:hover { background: var(--surface2); }
+  .method-badge {
+    font-family: var(--mono);
+    font-size: 11px;
+    font-weight: 700;
+    padding: 3px 8px;
+    border-radius: 4px;
+    letter-spacing: 0.05em;
+    min-width: 52px;
+    text-align: center;
+  }
+  .method-get    { background: rgba(34,197,94,0.18);  color: #4ade80; }
+  .method-post   { background: rgba(79,134,247,0.18); color: #7cabfa; }
+  .method-delete { background: rgba(239,68,68,0.18);  color: #f87171; }
+  .method-patch  { background: rgba(245,158,11,0.18); color: #fbbf24; }
+  .endpoint-path {
+    font-family: var(--mono);
+    font-size: 13px;
+    color: var(--text);
+    flex: 1;
+  }
+  .endpoint-path .path-param { color: var(--cyan); }
+  .endpoint-desc {
+    font-size: 12px;
+    color: var(--muted);
+    white-space: nowrap;
+  }
+  .api-endpoint-body {
+    border-top: 1px solid var(--border);
+    padding: 18px;
+    display: none;
+  }
+  .api-endpoint-body.open { display: block; }
+  .ep-desc {
+    font-size: 13px;
+    color: var(--muted);
+    margin-bottom: 16px;
+    line-height: 1.5;
+  }
+  .param-table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 12px;
+    margin-bottom: 16px;
+  }
+  .param-table th {
+    text-align: left;
+    padding: 6px 10px;
+    background: var(--surface2);
+    color: var(--muted);
+    font-weight: 600;
+    letter-spacing: 0.04em;
+    font-size: 11px;
+    text-transform: uppercase;
+    border-bottom: 1px solid var(--border);
+  }
+  .param-table td {
+    padding: 7px 10px;
+    border-bottom: 1px solid rgba(255,255,255,0.05);
+    color: var(--text);
+    vertical-align: top;
+  }
+  .param-table tr:last-child td { border-bottom: none; }
+  .param-name { font-family: var(--mono); color: var(--cyan); }
+  .param-type { font-family: var(--mono); color: var(--muted); font-size: 11px; }
+  .param-required {
+    font-size: 10px;
+    font-weight: 700;
+    padding: 2px 5px;
+    border-radius: 3px;
+    letter-spacing: 0.04em;
+  }
+  .req  { background: rgba(239,68,68,0.18);  color: #f87171; }
+  .opt  { background: rgba(136,136,136,0.15); color: var(--muted); }
+  .code-block {
+    background: var(--surface2);
+    border: 1px solid var(--border);
+    border-radius: 6px;
+    padding: 12px 14px;
+    font-family: var(--mono);
+    font-size: 12px;
+    color: #a8d8a8;
+    overflow-x: auto;
+    white-space: pre;
+    margin-bottom: 12px;
+  }
+  .code-block-label {
+    font-size: 10px;
+    font-weight: 700;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: var(--muted);
+    margin-bottom: 6px;
+  }
+  .auth-box {
+    background: rgba(34,211,238,0.06);
+    border: 1px solid rgba(34,211,238,0.2);
+    border-radius: 10px;
+    padding: 20px;
+    margin-bottom: 32px;
+  }
+  .auth-box-title {
+    font-size: 14px;
+    font-weight: 700;
+    color: var(--cyan);
+    margin-bottom: 8px;
+  }
+  .auth-box p {
+    font-size: 13px;
+    color: var(--muted);
+    line-height: 1.6;
+    margin: 0 0 10px;
+  }
+  .access-badge {
+    font-size: 10px;
+    font-weight: 700;
+    padding: 2px 6px;
+    border-radius: 3px;
+    letter-spacing: 0.04em;
+    vertical-align: middle;
+  }
+  .access-admin    { background: rgba(239,68,68,0.18);  color: #f87171; }
+  .access-all      { background: rgba(34,197,94,0.18);  color: #4ade80; }
+</style>
+<% end %>
+
+<%= render 'shared/sidebar', current_page: 'api_docs' %>
+
+<div class="layout page-teal">
+  <div class="page-header">
+    <div>
+      <div class="page-title">API Reference</div>
+      <div class="page-sub">Full REST API — authenticate with your API key in the URL path</div>
+    </div>
+  </div>
+
+  <div class="api-docs-wrap">
+
+    <!-- Table of Contents -->
+    <nav class="api-toc" id="api-toc">
+      <div class="api-toc-title">Contents</div>
+      <a href="#auth">Authentication</a>
+      <div class="api-toc-section">Resources</div>
+      <a href="#account">Account</a>
+      <a href="#assets">Assets</a>
+      <a href="#sites">Sites</a>
+      <a href="#scan-profiles">Scan Profiles</a>
+      <a href="#scans">Scans</a>
+      <a href="#reports">Reports</a>
+      <a href="#findings">Findings</a>
+      <a href="#exploits">Exploits</a>
+      <a href="#code-analysis">Code Analysis</a>
+      <a href="#agents">Agents</a>
+    </nav>
+
+    <!-- Content -->
+    <div class="api-content">
+
+      <!-- Authentication -->
+      <div class="api-section" id="auth">
+        <div class="api-section-title">Authentication</div>
+        <div class="auth-box">
+          <div class="auth-box-title">API Key Authentication</div>
+          <p>Every request must include your API key as the second path segment:</p>
+          <div class="code-block">https://your-server/api/<span style="color:var(--cyan)">{api_key}</span>/resource</div>
+          <p>Generate or regenerate your API key in <a href="<%= settings_path %>" style="color:var(--cyan);">Settings → Account</a>. Keys are unique per user and scoped to your organization.</p>
+          <p>Invalid keys return <code style="font-family:var(--mono);color:#f87171;">401 Unauthorized</code>. Write operations (POST/DELETE) require an <span class="access-badge access-admin">admin</span> account. Read operations are available to all <span class="access-badge access-all">all users</span>.</p>
+        </div>
+      </div>
+
+      <!-- Account -->
+      <div class="api-section" id="account">
+        <div class="api-section-title">Account</div>
+        <div class="api-section-sub">Read current user and organization info. <span class="access-badge access-all">all users</span></div>
+
+        <div class="api-endpoint">
+          <div class="api-endpoint-header" onclick="toggleEndpoint(this)">
+            <span class="method-badge method-get">GET</span>
+            <span class="endpoint-path">/api/<span class="path-param">{api_key}</span>/account</span>
+            <span class="endpoint-desc">Current user &amp; org</span>
+          </div>
+          <div class="api-endpoint-body">
+            <div class="ep-desc">Returns the authenticated user's profile and organization details.</div>
+            <div class="code-block-label">Example Request</div>
+            <div class="code-block">curl https://your-server/api/YOUR_KEY/account</div>
+            <div class="code-block-label">Example Response</div>
+            <div class="code-block">{
+  "account": {
+    "id": 1,
+    "name": "Jane Smith",
+    "email": "jane@example.com",
+    "access_level": "admin",
+    "organization": {
+      "id": 1,
+      "name": "Acme Corp",
+      "domain": "acme.com"
+    }
+  }
+}</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Assets -->
+      <div class="api-section" id="assets">
+        <div class="api-section-title">Assets</div>
+        <div class="api-section-sub">Manage network targets. Read: <span class="access-badge access-all">all users</span> &nbsp; Write: <span class="access-badge access-admin">admin</span></div>
+
+        <div class="api-endpoint">
+          <div class="api-endpoint-header" onclick="toggleEndpoint(this)">
+            <span class="method-badge method-get">GET</span>
+            <span class="endpoint-path">/api/<span class="path-param">{api_key}</span>/assets</span>
+            <span class="endpoint-desc">List all assets</span>
+          </div>
+          <div class="api-endpoint-body">
+            <div class="ep-desc">Returns all assets in your organization. Optionally filter by CIDR range — returns a count instead of full list.</div>
+            <table class="param-table">
+              <tr><th>Parameter</th><th>Type</th><th>Required</th><th>Description</th></tr>
+              <tr><td class="param-name">cidr</td><td class="param-type">string</td><td><span class="param-required opt">optional</span></td><td>Filter to assets in range — returns <code style="font-family:var(--mono);">{ count: N }</code></td></tr>
+            </table>
+            <div class="code-block-label">Example Request</div>
+            <div class="code-block">curl https://your-server/api/YOUR_KEY/assets
+curl https://your-server/api/YOUR_KEY/assets?cidr=10.0.0.0/24</div>
+          </div>
+        </div>
+
+        <div class="api-endpoint">
+          <div class="api-endpoint-header" onclick="toggleEndpoint(this)">
+            <span class="method-badge method-get">GET</span>
+            <span class="endpoint-path">/api/<span class="path-param">{api_key}</span>/assets/<span class="path-param">{id}</span></span>
+            <span class="endpoint-desc">Get asset detail</span>
+          </div>
+          <div class="api-endpoint-body">
+            <div class="ep-desc">Returns a single asset with its last scan summary and finding count.</div>
+          </div>
+        </div>
+
+        <div class="api-endpoint">
+          <div class="api-endpoint-header" onclick="toggleEndpoint(this)">
+            <span class="method-badge method-post">POST</span>
+            <span class="endpoint-path">/api/<span class="path-param">{api_key}</span>/assets</span>
+            <span class="endpoint-desc">Create asset(s)</span>
+          </div>
+          <div class="api-endpoint-body">
+            <div class="ep-desc">Create one or more assets. Provide a single IP, a CIDR range (minimum /24), or a hostname. DNS lookup fires automatically when hostname is not provided.</div>
+            <table class="param-table">
+              <tr><th>Parameter</th><th>Type</th><th>Required</th><th>Description</th></tr>
+              <tr><td class="param-name">network</td><td class="param-type">string</td><td><span class="param-required req">required</span></td><td>IP address, CIDR (e.g. 10.0.0.0/24), or hostname</td></tr>
+              <tr><td class="param-name">hostname</td><td class="param-type">string</td><td><span class="param-required opt">optional</span></td><td>Override hostname (skips DNS lookup)</td></tr>
+              <tr><td class="param-name">site_id</td><td class="param-type">integer</td><td><span class="param-required opt">optional</span></td><td>Associate with a site</td></tr>
+              <tr><td class="param-name">port</td><td class="param-type">string</td><td><span class="param-required opt">optional</span></td><td>Default port for scanning</td></tr>
+              <tr><td class="param-name">os</td><td class="param-type">string</td><td><span class="param-required opt">optional</span></td><td>Operating system hint</td></tr>
+              <tr><td class="param-name">asset_type</td><td class="param-type">string</td><td><span class="param-required opt">optional</span></td><td>Asset classification</td></tr>
+              <tr><td class="param-name">criticality</td><td class="param-type">string</td><td><span class="param-required opt">optional</span></td><td>Criticality level (default: unknown)</td></tr>
+              <tr><td class="param-name">notes</td><td class="param-type">string</td><td><span class="param-required opt">optional</span></td><td>Free-text notes</td></tr>
+            </table>
+            <div class="code-block-label">Example Request</div>
+            <div class="code-block">curl -X POST https://your-server/api/YOUR_KEY/assets \
+  -d "network=10.0.0.1&criticality=high&notes=web+server"
+
+# Add a full /24 subnet
+curl -X POST https://your-server/api/YOUR_KEY/assets \
+  -d "network=192.168.1.0/24"</div>
+            <div class="code-block-label">Example Response</div>
+            <div class="code-block">{
+  "created": 1,
+  "assets": [{ "id": 42, "ip_address": "10.0.0.1", ... }]
+}</div>
+          </div>
+        </div>
+
+        <div class="api-endpoint">
+          <div class="api-endpoint-header" onclick="toggleEndpoint(this)">
+            <span class="method-badge method-delete">DELETE</span>
+            <span class="endpoint-path">/api/<span class="path-param">{api_key}</span>/assets/<span class="path-param">{id}</span></span>
+            <span class="endpoint-desc">Delete asset</span>
+          </div>
+          <div class="api-endpoint-body">
+            <div class="ep-desc">Permanently deletes an asset and its associated findings.</div>
+            <div class="code-block-label">Example Response</div>
+            <div class="code-block">{ "deleted": true, "id": 42 }</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Sites -->
+      <div class="api-section" id="sites">
+        <div class="api-section-title">Sites</div>
+        <div class="api-section-sub">Network segments grouping assets and agents. Read: <span class="access-badge access-all">all users</span> &nbsp; Write: <span class="access-badge access-admin">admin</span></div>
+
+        <div class="api-endpoint">
+          <div class="api-endpoint-header" onclick="toggleEndpoint(this)">
+            <span class="method-badge method-get">GET</span>
+            <span class="endpoint-path">/api/<span class="path-param">{api_key}</span>/sites</span>
+            <span class="endpoint-desc">List sites</span>
+          </div>
+          <div class="api-endpoint-body">
+            <div class="ep-desc">Returns all sites for your organization with agent and asset counts.</div>
+          </div>
+        </div>
+
+        <div class="api-endpoint">
+          <div class="api-endpoint-header" onclick="toggleEndpoint(this)">
+            <span class="method-badge method-post">POST</span>
+            <span class="endpoint-path">/api/<span class="path-param">{api_key}</span>/sites</span>
+            <span class="endpoint-desc">Create site</span>
+          </div>
+          <div class="api-endpoint-body">
+            <table class="param-table">
+              <tr><th>Parameter</th><th>Type</th><th>Required</th><th>Description</th></tr>
+              <tr><td class="param-name">name</td><td class="param-type">string</td><td><span class="param-required req">required</span></td><td>Site name</td></tr>
+              <tr><td class="param-name">network_range</td><td class="param-type">string</td><td><span class="param-required opt">optional</span></td><td>CIDR range (e.g. 10.0.0.0/24)</td></tr>
+            </table>
+          </div>
+        </div>
+
+        <div class="api-endpoint">
+          <div class="api-endpoint-header" onclick="toggleEndpoint(this)">
+            <span class="method-badge method-delete">DELETE</span>
+            <span class="endpoint-path">/api/<span class="path-param">{api_key}</span>/sites/<span class="path-param">{id}</span></span>
+            <span class="endpoint-desc">Delete site</span>
+          </div>
+          <div class="api-endpoint-body">
+            <div class="ep-desc">Deletes a site. Cascades to associated agents and assets.</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Scan Profiles -->
+      <div class="api-section" id="scan-profiles">
+        <div class="api-section-title">Scan Profiles</div>
+        <div class="api-section-sub">Reusable exploit module sets. <span class="access-badge access-admin">admin</span></div>
+
+        <div class="api-endpoint">
+          <div class="api-endpoint-header" onclick="toggleEndpoint(this)">
+            <span class="method-badge method-get">GET</span>
+            <span class="endpoint-path">/api/<span class="path-param">{api_key}</span>/scan-profiles</span>
+            <span class="endpoint-desc">List profiles</span>
+          </div>
+          <div class="api-endpoint-body">
+            <div class="ep-desc">Returns all scan profiles for your organization.</div>
+            <div class="code-block-label">Example Response</div>
+            <div class="code-block">{
+  "scan_profiles": [{
+    "id": 3,
+    "name": "Linux Critical",
+    "description": "High-severity Linux exploits",
+    "safe_mode": false,
+    "exploit_ids": [12, 45, 67],
+    "created_at": "2026-01-15T10:00:00Z"
+  }]
+}</div>
+          </div>
+        </div>
+
+        <div class="api-endpoint">
+          <div class="api-endpoint-header" onclick="toggleEndpoint(this)">
+            <span class="method-badge method-post">POST</span>
+            <span class="endpoint-path">/api/<span class="path-param">{api_key}</span>/scan-profiles</span>
+            <span class="endpoint-desc">Create profile</span>
+          </div>
+          <div class="api-endpoint-body">
+            <table class="param-table">
+              <tr><th>Parameter</th><th>Type</th><th>Required</th><th>Description</th></tr>
+              <tr><td class="param-name">name</td><td class="param-type">string</td><td><span class="param-required req">required</span></td><td>Profile name</td></tr>
+              <tr><td class="param-name">description</td><td class="param-type">string</td><td><span class="param-required opt">optional</span></td><td>Description</td></tr>
+              <tr><td class="param-name">safe_mode</td><td class="param-type">boolean</td><td><span class="param-required opt">optional</span></td><td>true = reconnaissance only (default: false)</td></tr>
+              <tr><td class="param-name">exploit_ids[]</td><td class="param-type">integer[]</td><td><span class="param-required opt">optional</span></td><td>Array of exploit IDs to include</td></tr>
+            </table>
+            <div class="code-block-label">Example Request</div>
+            <div class="code-block">curl -X POST https://your-server/api/YOUR_KEY/scan-profiles \
+  -d "name=Linux+Critical&safe_mode=false&exploit_ids[]=12&exploit_ids[]=45"</div>
+          </div>
+        </div>
+
+        <div class="api-endpoint">
+          <div class="api-endpoint-header" onclick="toggleEndpoint(this)">
+            <span class="method-badge method-delete">DELETE</span>
+            <span class="endpoint-path">/api/<span class="path-param">{api_key}</span>/scan-profiles/<span class="path-param">{id}</span></span>
+            <span class="endpoint-desc">Delete profile</span>
+          </div>
+          <div class="api-endpoint-body"></div>
+        </div>
+      </div>
+
+      <!-- Scans -->
+      <div class="api-section" id="scans">
+        <div class="api-section-title">Scans</div>
+        <div class="api-section-sub">Execute and monitor vulnerability scans. Read: <span class="access-badge access-all">all users</span> &nbsp; Trigger/Stop: <span class="access-badge access-admin">admin</span></div>
+
+        <div class="api-endpoint">
+          <div class="api-endpoint-header" onclick="toggleEndpoint(this)">
+            <span class="method-badge method-get">GET</span>
+            <span class="endpoint-path">/api/<span class="path-param">{api_key}</span>/scans</span>
+            <span class="endpoint-desc">List scans + stats</span>
+          </div>
+          <div class="api-endpoint-body">
+            <div class="ep-desc">Returns all scans for your organization with aggregate stats and per-scan progress.</div>
+            <div class="code-block-label">Example Response</div>
+            <div class="code-block">{
+  "stats": { "total": 12, "running": 1, "completed": 10, "failed": 1 },
+  "scans": [{
+    "id": 7,
+    "scan_name": "Scan-2026-04-27",
+    "status": "completed",
+    "safe_mode": false,
+    "total_assets": 5,
+    "scanned_assets": 5,
+    "findings_count": 3,
+    "critical_findings": 1,
+    "high_findings": 2,
+    "start_time": "2026-04-27T10:00:00Z",
+    "end_time": "2026-04-27T10:08:34Z",
+    "report_id": 15
+  }]
+}</div>
+          </div>
+        </div>
+
+        <div class="api-endpoint">
+          <div class="api-endpoint-header" onclick="toggleEndpoint(this)">
+            <span class="method-badge method-get">GET</span>
+            <span class="endpoint-path">/api/<span class="path-param">{api_key}</span>/scans/<span class="path-param">{id}</span></span>
+            <span class="endpoint-desc">Get scan status</span>
+          </div>
+          <div class="api-endpoint-body">
+            <div class="ep-desc">Poll this endpoint to track progress of a running scan.</div>
+          </div>
+        </div>
+
+        <div class="api-endpoint">
+          <div class="api-endpoint-header" onclick="toggleEndpoint(this)">
+            <span class="method-badge method-post">POST</span>
+            <span class="endpoint-path">/api/<span class="path-param">{api_key}</span>/scans/trigger</span>
+            <span class="endpoint-desc">Start a scan</span>
+          </div>
+          <div class="api-endpoint-body">
+            <div class="ep-desc">Queues a new scan job. Returns immediately with <code style="font-family:var(--mono);">202 Accepted</code> — poll <code style="font-family:var(--mono);">GET /scans</code> for progress. Safe mode runs auxiliary/reconnaissance modules only (non-destructive).</div>
+            <table class="param-table">
+              <tr><th>Parameter</th><th>Type</th><th>Required</th><th>Description</th></tr>
+              <tr><td class="param-name">asset_ids[]</td><td class="param-type">integer[]</td><td><span class="param-required req">required</span></td><td>IDs of assets to scan</td></tr>
+              <tr><td class="param-name">profile_id</td><td class="param-type">integer</td><td><span class="param-required opt">optional</span></td><td>Scan profile to use (sets exploit list and safe_mode)</td></tr>
+              <tr><td class="param-name">safe_mode</td><td class="param-type">boolean</td><td><span class="param-required opt">optional</span></td><td>true = recon only (default: false)</td></tr>
+              <tr><td class="param-name">platform</td><td class="param-type">string</td><td><span class="param-required opt">optional</span></td><td>linux, windows, macos, any (default: any)</td></tr>
+              <tr><td class="param-name">severities[]</td><td class="param-type">string[]</td><td><span class="param-required opt">optional</span></td><td>critical, high, medium, low</td></tr>
+              <tr><td class="param-name">port_override</td><td class="param-type">string</td><td><span class="param-required opt">optional</span></td><td>Override default port</td></tr>
+              <tr><td class="param-name">timeout</td><td class="param-type">integer</td><td><span class="param-required opt">optional</span></td><td>Per-exploit timeout in seconds</td></tr>
+              <tr><td class="param-name">use_agent</td><td class="param-type">boolean</td><td><span class="param-required opt">optional</span></td><td>Route scan through a network agent</td></tr>
+            </table>
+            <div class="code-block-label">Example Request</div>
+            <div class="code-block">curl -X POST https://your-server/api/YOUR_KEY/scans/trigger \
+  -d "asset_ids[]=1&asset_ids[]=2&safe_mode=false&platform=linux"</div>
+            <div class="code-block-label">Example Response</div>
+            <div class="code-block">{ "queued": true, "asset_count": 2 }  // HTTP 202</div>
+          </div>
+        </div>
+
+        <div class="api-endpoint">
+          <div class="api-endpoint-header" onclick="toggleEndpoint(this)">
+            <span class="method-badge method-post">POST</span>
+            <span class="endpoint-path">/api/<span class="path-param">{api_key}</span>/scans/stop</span>
+            <span class="endpoint-desc">Cancel running scan</span>
+          </div>
+          <div class="api-endpoint-body">
+            <table class="param-table">
+              <tr><th>Parameter</th><th>Type</th><th>Required</th><th>Description</th></tr>
+              <tr><td class="param-name">scan_id</td><td class="param-type">integer</td><td><span class="param-required req">required</span></td><td>ID of the running scan to cancel</td></tr>
+            </table>
+            <div class="code-block-label">Example Request</div>
+            <div class="code-block">curl -X POST https://your-server/api/YOUR_KEY/scans/stop \
+  -d "scan_id=7"</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Reports -->
+      <div class="api-section" id="reports">
+        <div class="api-section-title">Reports</div>
+        <div class="api-section-sub">Access, download, and retest scan results. Read/Download: <span class="access-badge access-all">all users</span> &nbsp; Retest: <span class="access-badge access-admin">admin</span></div>
+
+        <div class="api-endpoint">
+          <div class="api-endpoint-header" onclick="toggleEndpoint(this)">
+            <span class="method-badge method-get">GET</span>
+            <span class="endpoint-path">/api/<span class="path-param">{api_key}</span>/reports</span>
+            <span class="endpoint-desc">List reports</span>
+          </div>
+          <div class="api-endpoint-body">
+            <div class="ep-desc">Returns all reports for your organization ordered by date descending.</div>
+          </div>
+        </div>
+
+        <div class="api-endpoint">
+          <div class="api-endpoint-header" onclick="toggleEndpoint(this)">
+            <span class="method-badge method-get">GET</span>
+            <span class="endpoint-path">/api/<span class="path-param">{api_key}</span>/reports/<span class="path-param">{id}</span></span>
+            <span class="endpoint-desc">Get report</span>
+          </div>
+          <div class="api-endpoint-body"></div>
+        </div>
+
+        <div class="api-endpoint">
+          <div class="api-endpoint-header" onclick="toggleEndpoint(this)">
+            <span class="method-badge method-get">GET</span>
+            <span class="endpoint-path">/api/<span class="path-param">{api_key}</span>/reports/<span class="path-param">{id}</span>/data</span>
+            <span class="endpoint-desc">Raw report JSON data</span>
+          </div>
+          <div class="api-endpoint-body">
+            <div class="ep-desc">Returns the full <code style="font-family:var(--mono);">report_data</code> JSON payload (findings, asset details, module output).</div>
+          </div>
+        </div>
+
+        <div class="api-endpoint">
+          <div class="api-endpoint-header" onclick="toggleEndpoint(this)">
+            <span class="method-badge method-get">GET</span>
+            <span class="endpoint-path">/api/<span class="path-param">{api_key}</span>/reports/<span class="path-param">{id}</span>/download_json</span>
+            <span class="endpoint-desc">Download as JSON</span>
+          </div>
+          <div class="api-endpoint-body">
+            <div class="code-block-label">Example Request</div>
+            <div class="code-block">curl https://your-server/api/YOUR_KEY/reports/15/download_json \
+  -o report.json</div>
+          </div>
+        </div>
+
+        <div class="api-endpoint">
+          <div class="api-endpoint-header" onclick="toggleEndpoint(this)">
+            <span class="method-badge method-get">GET</span>
+            <span class="endpoint-path">/api/<span class="path-param">{api_key}</span>/reports/<span class="path-param">{id}</span>/download_xlsx</span>
+            <span class="endpoint-desc">Download as Excel</span>
+          </div>
+          <div class="api-endpoint-body">
+            <div class="ep-desc">Returns an XLSX workbook with a summary sheet and a detailed findings sheet.</div>
+            <div class="code-block-label">Example Request</div>
+            <div class="code-block">curl https://your-server/api/YOUR_KEY/reports/15/download_xlsx \
+  -o report.xlsx</div>
+          </div>
+        </div>
+
+        <div class="api-endpoint">
+          <div class="api-endpoint-header" onclick="toggleEndpoint(this)">
+            <span class="method-badge method-get">GET</span>
+            <span class="endpoint-path">/api/<span class="path-param">{api_key}</span>/reports/<span class="path-param">{id}</span>/download_csv</span>
+            <span class="endpoint-desc">Download as CSV</span>
+          </div>
+          <div class="api-endpoint-body"></div>
+        </div>
+
+        <div class="api-endpoint">
+          <div class="api-endpoint-header" onclick="toggleEndpoint(this)">
+            <span class="method-badge method-get">GET</span>
+            <span class="endpoint-path">/api/<span class="path-param">{api_key}</span>/reports/<span class="path-param">{id}</span>/download_whitebox_json</span>
+            <span class="endpoint-desc">Download whitebox JSON</span>
+          </div>
+          <div class="api-endpoint-body">
+            <div class="ep-desc">Only available for whitebox (code analysis) reports. Returns only vulnerable findings with PoC exploit code.</div>
+          </div>
+        </div>
+
+        <div class="api-endpoint">
+          <div class="api-endpoint-header" onclick="toggleEndpoint(this)">
+            <span class="method-badge method-post">POST</span>
+            <span class="endpoint-path">/api/<span class="path-param">{api_key}</span>/reports/<span class="path-param">{id}</span>/retest</span>
+            <span class="endpoint-desc">Queue retest</span>
+          </div>
+          <div class="api-endpoint-body">
+            <div class="ep-desc">Queues a new scan targeting only the assets and modules that produced findings in this report. Returns <code style="font-family:var(--mono);">202 Accepted</code>.</div>
+            <div class="code-block-label">Example Response</div>
+            <div class="code-block">{ "queued": true, "asset_count": 3, "module_count": 5 }</div>
+          </div>
+        </div>
+
+        <div class="api-endpoint">
+          <div class="api-endpoint-header" onclick="toggleEndpoint(this)">
+            <span class="method-badge method-delete">DELETE</span>
+            <span class="endpoint-path">/api/<span class="path-param">{api_key}</span>/reports/<span class="path-param">{id}</span></span>
+            <span class="endpoint-desc">Delete report</span>
+          </div>
+          <div class="api-endpoint-body"></div>
+        </div>
+      </div>
+
+      <!-- Findings -->
+      <div class="api-section" id="findings">
+        <div class="api-section-title">Findings</div>
+        <div class="api-section-sub">Individual vulnerability findings from scans. <span class="access-badge access-all">all users</span></div>
+
+        <div class="api-endpoint">
+          <div class="api-endpoint-header" onclick="toggleEndpoint(this)">
+            <span class="method-badge method-get">GET</span>
+            <span class="endpoint-path">/api/<span class="path-param">{api_key}</span>/findings</span>
+            <span class="endpoint-desc">List findings</span>
+          </div>
+          <div class="api-endpoint-body">
+            <div class="ep-desc">Returns all findings for your organization. Supports filtering.</div>
+            <table class="param-table">
+              <tr><th>Parameter</th><th>Type</th><th>Required</th><th>Description</th></tr>
+              <tr><td class="param-name">scan_id</td><td class="param-type">integer</td><td><span class="param-required opt">optional</span></td><td>Filter to a specific scan</td></tr>
+              <tr><td class="param-name">severity</td><td class="param-type">string</td><td><span class="param-required opt">optional</span></td><td>critical, high, medium, low</td></tr>
+              <tr><td class="param-name">status</td><td class="param-type">string</td><td><span class="param-required opt">optional</span></td><td>open, remediated</td></tr>
+            </table>
+            <div class="code-block-label">Example Request</div>
+            <div class="code-block">curl "https://your-server/api/YOUR_KEY/findings?scan_id=7&severity=critical"</div>
+            <div class="code-block-label">Example Response</div>
+            <div class="code-block">{
+  "findings": [{
+    "id": 88,
+    "scan_id": 7,
+    "asset_id": 2,
+    "asset_ip": "10.0.0.5",
+    "exploit_name": "MS17-010 EternalBlue",
+    "cve_id": "CVE-2017-0144",
+    "severity": "critical",
+    "status": "open",
+    "port": "445",
+    "evidence": "Session opened on target",
+    "discovered_at": "2026-04-27T10:04:12Z"
+  }]
+}</div>
+          </div>
+        </div>
+
+        <div class="api-endpoint">
+          <div class="api-endpoint-header" onclick="toggleEndpoint(this)">
+            <span class="method-badge method-get">GET</span>
+            <span class="endpoint-path">/api/<span class="path-param">{api_key}</span>/findings/<span class="path-param">{id}</span></span>
+            <span class="endpoint-desc">Get finding</span>
+          </div>
+          <div class="api-endpoint-body"></div>
+        </div>
+
+        <div class="api-endpoint">
+          <div class="api-endpoint-header" onclick="toggleEndpoint(this)">
+            <span class="method-badge method-post">POST</span>
+            <span class="endpoint-path">/api/<span class="path-param">{api_key}</span>/findings/<span class="path-param">{id}</span>/ai_remediation</span>
+            <span class="endpoint-desc">Get AI remediation</span>
+          </div>
+          <div class="api-endpoint-body">
+            <div class="ep-desc">Returns AI-generated remediation guidance for a finding. Result is cached after the first call. Powered by Ollama (qwen2.5-coder).</div>
+            <div class="code-block-label">Example Response</div>
+            <div class="code-block">{
+  "text": "**Root Cause:** ...\n**Immediate Steps:** ...\n**Long-Term Fix:** ..."
+}</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Exploits -->
+      <div class="api-section" id="exploits">
+        <div class="api-section-title">Exploits</div>
+        <div class="api-section-sub">Browse the Metasploit module catalog. <span class="access-badge access-admin">admin</span></div>
+
+        <div class="api-endpoint">
+          <div class="api-endpoint-header" onclick="toggleEndpoint(this)">
+            <span class="method-badge method-get">GET</span>
+            <span class="endpoint-path">/api/<span class="path-param">{api_key}</span>/exploits</span>
+            <span class="endpoint-desc">List exploits (paginated)</span>
+          </div>
+          <div class="api-endpoint-body">
+            <table class="param-table">
+              <tr><th>Parameter</th><th>Type</th><th>Required</th><th>Description</th></tr>
+              <tr><td class="param-name">page</td><td class="param-type">integer</td><td><span class="param-required opt">optional</span></td><td>Page number (default: 1)</td></tr>
+              <tr><td class="param-name">per_page</td><td class="param-type">integer</td><td><span class="param-required opt">optional</span></td><td>Results per page, max 100 (default: 100)</td></tr>
+              <tr><td class="param-name">safe_mode</td><td class="param-type">boolean</td><td><span class="param-required opt">optional</span></td><td>true = auxiliary/recon modules only</td></tr>
+            </table>
+          </div>
+        </div>
+
+        <div class="api-endpoint">
+          <div class="api-endpoint-header" onclick="toggleEndpoint(this)">
+            <span class="method-badge method-get">GET</span>
+            <span class="endpoint-path">/api/<span class="path-param">{api_key}</span>/exploits/<span class="path-param">{id}</span></span>
+            <span class="endpoint-desc">Get exploit</span>
+          </div>
+          <div class="api-endpoint-body">
+            <div class="ep-desc">Returns full metadata for one exploit including CVE, CVSS score, and Metasploit module path.</div>
+          </div>
+        </div>
+
+        <div class="api-endpoint">
+          <div class="api-endpoint-header" onclick="toggleEndpoint(this)">
+            <span class="method-badge method-get">GET</span>
+            <span class="endpoint-path">/api/<span class="path-param">{api_key}</span>/exploits/count</span>
+            <span class="endpoint-desc">Count available modules</span>
+          </div>
+          <div class="api-endpoint-body">
+            <div class="ep-desc">Returns the count of Metasploit module files on disk. Useful for verifying the Metasploit installation.</div>
+            <table class="param-table">
+              <tr><th>Parameter</th><th>Type</th><th>Required</th><th>Description</th></tr>
+              <tr><td class="param-name">safe_mode</td><td class="param-type">boolean</td><td><span class="param-required opt">optional</span></td><td>true = count auxiliary modules</td></tr>
+              <tr><td class="param-name">platform</td><td class="param-type">string</td><td><span class="param-required opt">optional</span></td><td>linux, windows, macos</td></tr>
+            </table>
+          </div>
+        </div>
+      </div>
+
+      <!-- Code Analysis -->
+      <div class="api-section" id="code-analysis">
+        <div class="api-section-title">Code Analysis</div>
+        <div class="api-section-sub">AI-powered static analysis for source code. <span class="access-badge access-admin">admin</span></div>
+
+        <div class="api-endpoint">
+          <div class="api-endpoint-header" onclick="toggleEndpoint(this)">
+            <span class="method-badge method-post">POST</span>
+            <span class="endpoint-path">/api/<span class="path-param">{api_key}</span>/code-analysis</span>
+            <span class="endpoint-desc">Analyze source file</span>
+          </div>
+          <div class="api-endpoint-body">
+            <div class="ep-desc">Analyzes source code for security vulnerabilities using the local LLM (Ollama qwen2.5-coder). Returns structured findings or <code style="font-family:var(--mono);">CLEAR</code> if no issues found.<br><br>⚠ This request may take up to 15 minutes to respond. Set your HTTP client timeout accordingly.</div>
+            <table class="param-table">
+              <tr><th>Parameter</th><th>Type</th><th>Required</th><th>Description</th></tr>
+              <tr><td class="param-name">source_file</td><td class="param-type">file</td><td><span class="param-required opt">option A</span></td><td>Multipart file upload (max 1 MB)</td></tr>
+              <tr><td class="param-name">content</td><td class="param-type">string</td><td><span class="param-required opt">option B</span></td><td>Raw source code as string</td></tr>
+              <tr><td class="param-name">filename</td><td class="param-type">string</td><td><span class="param-required opt">with B</span></td><td>Filename with extension (used to detect language)</td></tr>
+            </table>
+            <div class="code-block-label">Example — File Upload</div>
+            <div class="code-block">curl -X POST https://your-server/api/YOUR_KEY/code-analysis \
+  -F "source_file=@app.rb"</div>
+            <div class="code-block-label">Example — Raw Content</div>
+            <div class="code-block">curl -X POST https://your-server/api/YOUR_KEY/code-analysis \
+  -d "filename=login.py" \
+  --data-urlencode "content=$(cat login.py)"</div>
+            <div class="code-block-label">Example Response</div>
+            <div class="code-block">{
+  "result": {
+    "text": "---\n**Vulnerability:** SQL Injection\n**Severity:** Critical\n**Lines:** 42-44\n..."
+  }
+}</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Agents -->
+      <div class="api-section" id="agents">
+        <div class="api-section-title">Agents</div>
+        <div class="api-section-sub">Network tunnel agents for scanning internal subnets. <span class="access-badge access-admin">admin</span></div>
+
+        <div class="api-endpoint">
+          <div class="api-endpoint-header" onclick="toggleEndpoint(this)">
+            <span class="method-badge method-get">GET</span>
+            <span class="endpoint-path">/api/<span class="path-param">{api_key}</span>/agents</span>
+            <span class="endpoint-desc">List agents</span>
+          </div>
+          <div class="api-endpoint-body">
+            <div class="ep-desc">Returns all agents with connection status and last heartbeat timestamp.</div>
+          </div>
+        </div>
+
+        <div class="api-endpoint">
+          <div class="api-endpoint-header" onclick="toggleEndpoint(this)">
+            <span class="method-badge method-get">GET</span>
+            <span class="endpoint-path">/api/<span class="path-param">{api_key}</span>/agents/status</span>
+            <span class="endpoint-desc">Connection stats</span>
+          </div>
+          <div class="api-endpoint-body">
+            <div class="ep-desc">Returns aggregate stats: total, connected, offline agents and active site count.</div>
+            <div class="code-block-label">Example Response</div>
+            <div class="code-block">{
+  "stats": { "total": 3, "connected": 2, "offline": 1, "sites_active": 2 },
+  "agents": [...]
+}</div>
+          </div>
+        </div>
+
+        <div class="api-endpoint">
+          <div class="api-endpoint-header" onclick="toggleEndpoint(this)">
+            <span class="method-badge method-post">POST</span>
+            <span class="endpoint-path">/api/<span class="path-param">{api_key}</span>/agents</span>
+            <span class="endpoint-desc">Create agent</span>
+          </div>
+          <div class="api-endpoint-body">
+            <div class="ep-desc">Provisions a new agent with SSH keys and a reserved tunnel port.</div>
+            <table class="param-table">
+              <tr><th>Parameter</th><th>Type</th><th>Required</th><th>Description</th></tr>
+              <tr><td class="param-name">site_id</td><td class="param-type">integer</td><td><span class="param-required opt">optional</span></td><td>Site to associate with</td></tr>
+              <tr><td class="param-name">network_range</td><td class="param-type">string</td><td><span class="param-required opt">optional</span></td><td>CIDR of the network this agent will scan</td></tr>
+            </table>
+          </div>
+        </div>
+
+        <div class="api-endpoint">
+          <div class="api-endpoint-header" onclick="toggleEndpoint(this)">
+            <span class="method-badge method-get">GET</span>
+            <span class="endpoint-path">/api/<span class="path-param">{api_key}</span>/agents/<span class="path-param">{id}</span>/download</span>
+            <span class="endpoint-desc">Download agent package</span>
+          </div>
+          <div class="api-endpoint-body">
+            <div class="ep-desc">Returns a ZIP file containing the Python agent script, SSH keys, install script, and README.</div>
+            <div class="code-block-label">Example Request</div>
+            <div class="code-block">curl https://your-server/api/YOUR_KEY/agents/5/download \
+  -o scanner-agent.zip</div>
+          </div>
+        </div>
+
+        <div class="api-endpoint">
+          <div class="api-endpoint-header" onclick="toggleEndpoint(this)">
+            <span class="method-badge method-delete">DELETE</span>
+            <span class="endpoint-path">/api/<span class="path-param">{api_key}</span>/agents/<span class="path-param">{id}</span></span>
+            <span class="endpoint-desc">Delete agent</span>
+          </div>
+          <div class="api-endpoint-body"></div>
+        </div>
+      </div>
+
+    </div><!-- /.api-content -->
+  </div><!-- /.api-docs-wrap -->
+</div><!-- /.layout -->
+
+<script>
+  function toggleEndpoint(header) {
+    var body = header.nextElementSibling;
+    body.classList.toggle('open');
+  }
+
+  // TOC active state on scroll
+  (function() {
+    var sections = document.querySelectorAll('.api-section');
+    var tocLinks = document.querySelectorAll('.api-toc a');
+
+    function onScroll() {
+      var scrollY = window.scrollY + 80;
+      var current = '';
+      sections.forEach(function(s) {
+        if (s.offsetTop <= scrollY) current = s.id;
+      });
+      tocLinks.forEach(function(a) {
+        a.classList.toggle('active', a.getAttribute('href') === '#' + current);
+      });
+    }
+
+    window.addEventListener('scroll', onScroll, { passive: true });
+    onScroll();
+  })();
+</script>

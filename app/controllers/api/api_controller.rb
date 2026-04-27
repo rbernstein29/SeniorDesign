@@ -12,5 +12,11 @@ module Api
         render json: { error: "Invalid API key" }, status: :unauthorized
       end
     end
+
+    def require_api_admin!
+      unless @current_user.access_level == "admin"
+        render json: { error: "Admin access required" }, status: :forbidden
+      end
+    end
   end
 end

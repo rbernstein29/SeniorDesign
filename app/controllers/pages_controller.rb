@@ -206,6 +206,9 @@ class PagesController < ApplicationController
     @org = nil
   end
 
+  def api_docs
+  end
+
   def read_only_accounts
     @read_only_users = User.where(
       organization_id: Current.user.organization_id,
