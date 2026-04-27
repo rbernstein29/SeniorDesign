@@ -36,7 +36,7 @@ if [ -n "${OLLAMA_HOST}" ]; then
     echo "Pulling Ollama model..."
     curl -s "${OLLAMA_HOST}/api/pull" \
       -d '{"name":"qwen2.5-coder:7b"}' \
-      --max-time 600 \
+      --max-time 1800 \
       -o /dev/null
   fi
 fi
