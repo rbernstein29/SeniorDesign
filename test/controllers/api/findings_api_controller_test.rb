@@ -2,8 +2,8 @@ require "test_helper"
 
 class Api::FindingsApiControllerTest < ActionDispatch::IntegrationTest
   def setup
-    @admin_key    = "test_api_key_admin_abc123xyz"
-    @readonly_key = "test_api_key_readonly_xyz789"
+    @admin_key    = users(:admin_user).api_key
+    @readonly_key = users(:readonly_user).api_key
   end
 
   test "GET /api/:key/findings returns list" do

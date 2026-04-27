@@ -1,4 +1,4 @@
-<% password_digest = BCrypt::Password.create("password") %>
+<% password_digest = BCrypt::Password.create(ENV.fetch("TEST_FIXTURE_PASSWORD", "Aegis!TestOnly!NotForProduction!2026")) %>
 
 admin_user:
   name: Admin User
@@ -6,7 +6,7 @@ admin_user:
   password_digest: <%= password_digest %>
   organization_id: <%= ActiveRecord::FixtureSet.identify(:acme) %>
   access_level: admin
-  api_key: test_api_key_admin_abc123xyz
+  api_key: <%= SecureRandom.urlsafe_base64(32) %>
   email_verified_at: <%= Time.current %>
 
 readonly_user:
@@ -15,7 +15,7 @@ readonly_user:
   password_digest: <%= password_digest %>
   organization_id: <%= ActiveRecord::FixtureSet.identify(:acme) %>
   access_level: read_only
-  api_key: test_api_key_readonly_xyz789
+  api_key: <%= SecureRandom.urlsafe_base64(32) %>
   email_verified_at: <%= Time.current %>
 
 other_org_user:

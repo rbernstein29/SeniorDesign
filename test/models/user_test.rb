@@ -47,7 +47,7 @@ class UserTest < ActiveSupport::TestCase
 
   test "password authentication works" do
     user = users(:admin_user)
-    assert user.authenticate("password")
+    assert user.authenticate(TEST_FIXTURE_PASSWORD)
     assert_not user.authenticate("wrongpassword")
   end
 end

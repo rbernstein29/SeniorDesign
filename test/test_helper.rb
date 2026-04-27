@@ -34,9 +34,16 @@ module ActiveSupport
   end
 end
 
+# Single source of truth for the test fixture password.
+# Override via TEST_FIXTURE_PASSWORD env var in CI.
+TEST_FIXTURE_PASSWORD = ENV.fetch("TEST_FIXTURE_PASSWORD", "Aegis!TestOnly!NotForProduction!2026")
+
 # Sign-in helper available in all controller/integration tests
 class ActionDispatch::IntegrationTest
   def sign_in_as(user)
-    post session_path, params: { email_address: user.email_address, password: "password" }
+    post session_path, params: {
+      email_address: user.email_address,
+      password: TEST_FIXTURE_PASSWORD
+    }
   end
 end

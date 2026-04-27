@@ -9,7 +9,7 @@ class SessionsControllerTest < ActionDispatch::IntegrationTest
   test "POST /session with valid credentials creates session and redirects" do
     user = users(:admin_user)
     assert_difference "Session.count", 1 do
-      post session_path, params: { email_address: user.email_address, password: "password" }
+      post session_path, params: { email_address: user.email_address, password: TEST_FIXTURE_PASSWORD }
     end
     assert_redirected_to root_path
   end
