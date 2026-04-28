@@ -732,6 +732,22 @@ body {
 .settings-card.full-width { grid-column: 1 / -1; }
 .settings-body { padding: 18px 22px; display: flex; flex-direction: column; gap: 16px; }
 
+.msf-dir-group { border-bottom: 1px solid var(--border); }
+.msf-dir-group:last-child { border-bottom: none; }
+.msf-dir-toggle {
+  width: 100%; display: flex; align-items: center; gap: 8px;
+  padding: 9px 4px; background: none; border: none; cursor: pointer;
+  color: var(--text); font-size: 13px; font-weight: 500; text-align: left;
+}
+.msf-dir-toggle:hover { color: var(--accent); }
+.msf-dir-arrow { font-size: 10px; color: var(--muted); width: 12px; flex-shrink: 0; transition: transform 0.15s; }
+.msf-dir-toggle.open .msf-dir-arrow { transform: rotate(90deg); }
+.msf-dir-name { flex: 1; font-family: var(--mono); }
+.msf-dir-count { font-size: 11px; color: var(--muted); font-family: var(--mono); background: var(--surface2); padding: 1px 6px; border-radius: 4px; }
+.msf-dir-body { padding: 4px 0 10px 20px; display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: 2px; }
+.msf-module-name { font-family: var(--mono); font-size: 11px; color: var(--muted); padding: 2px 4px; border-radius: 3px; }
+.msf-module-name:hover { background: var(--surface2); color: var(--text); }
+
 .danger-zone { border-color: rgba(239,68,68,0.18); }
 .danger-zone .card-header { border-bottom-color: rgba(239,68,68,0.1); }
 .danger-zone .card-header-icon { background: rgba(239,68,68,0.08); border-color: rgba(239,68,68,0.18); }

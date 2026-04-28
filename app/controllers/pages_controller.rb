@@ -53,7 +53,7 @@ class PagesController < ApplicationController
         total_agents:      total_agents,
         connected_agents:  connected,
         active_scans:      active_count,
-        last_scan:         last_scan_at ? "#{time_ago_in_words(last_scan_at)} ago" : 'Never',
+        last_scan:         last_scan_at ? "#{helpers.time_ago_in_words(last_scan_at)} ago" : 'Never',
         total_assets:      assets.count,
         scan_ready_assets: scan_ready,
         total_sites:       Site.where(organization_id: org_id).count,
@@ -200,16 +200,21 @@ class PagesController < ApplicationController
     events       = []
 
     begin
-      Session.joins(:user)
-             .where(users: { organization_id: org_id })
-             .where('vuln_scanner.sessions.created_at > ?', cutoff)
-             .order(Arel.sql('vuln_scanner.sessions.created_at DESC')).limit(10).each do |s|
-        events << { at: s.created_at, color: 'blue',
-                    text: "User <strong>#{ERB::Util.h(s.user.name)}</strong> signed in",
-                    time: "#{time_ago_in_words(s.created_at)} ago" }
+      user_ids = User.where(organization_id: org_id).pluck(:id)
+      if user_ids.any?
+        Session.where(user_id: user_ids)
+               .where('vuln_scanner.sessions.created_at > ?', cutoff)
+               .includes(:user)
+               .order(Arel.sql('vuln_scanner.sessions.created_at DESC'))
+               .limit(10).each do |s|
+          next unless s.user
+          events << { at: s.created_at, color: 'blue',
+                      text: "User <strong>#{ERB::Util.h(s.user.name)}</strong> signed in",
+                      time: "#{helpers.time_ago_in_words(s.created_at)} ago" }
+        end
       end
     rescue => e
-      Rails.logger.warn "activity_sessions: #{e.message}"
+      Rails.logger.warn "activity_sessions: #{e.message} — #{e.backtrace.first}"
     end
 
     begin
@@ -220,13 +225,13 @@ class PagesController < ApplicationController
         if s.created_at > cutoff
           events << { at: s.created_at, color: 'cyan',
                       text: "Scan <strong>#{ERB::Util.h(s.scan_name)}</strong> started",
-                      time: "#{time_ago_in_words(s.created_at)} ago" }
+                      time: "#{helpers.time_ago_in_words(s.created_at)} ago" }
         end
         if s.end_time && s.end_time > cutoff && %w[completed failed cancelled].include?(s.status)
           color = s.status == 'completed' ? 'green' : s.status == 'failed' ? 'red' : 'orange'
           events << { at: s.end_time, color: color,
                       text: "Scan <strong>#{ERB::Util.h(s.scan_name)}</strong> #{ERB::Util.h(s.status)}",
-                      time: "#{time_ago_in_words(s.end_time)} ago" }
+                      time: "#{helpers.time_ago_in_words(s.end_time)} ago" }
         end
       end
     rescue => e
@@ -240,7 +245,7 @@ class PagesController < ApplicationController
             .order(generated_at: :desc).limit(5).each do |r|
         events << { at: r.generated_at, color: 'violet',
                     text: "Report for <strong>#{ERB::Util.h(r.scan&.scan_name || 'scan')}</strong> generated",
-                    time: "#{time_ago_in_words(r.generated_at)} ago" }
+                    time: "#{helpers.time_ago_in_words(r.generated_at)} ago" }
       end
     rescue => e
       Rails.logger.warn "activity_reports: #{e.message}"
@@ -253,7 +258,7 @@ class PagesController < ApplicationController
         label = a.hostname.presence || a.ip_address.to_s
         events << { at: a.created_at, color: 'teal',
                     text: "Asset <strong>#{ERB::Util.h(label)}</strong> added",
-                    time: "#{time_ago_in_words(a.created_at)} ago" }
+                    time: "#{helpers.time_ago_in_words(a.created_at)} ago" }
       end
     rescue => e
       Rails.logger.warn "activity_assets: #{e.message}"
@@ -265,7 +270,7 @@ class PagesController < ApplicationController
                  .order(created_at: :desc).limit(5).each do |p|
         events << { at: p.created_at, color: 'yellow',
                     text: "Scan profile <strong>#{ERB::Util.h(p.name)}</strong> created",
-                    time: "#{time_ago_in_words(p.created_at)} ago" }
+                    time: "#{helpers.time_ago_in_words(p.created_at)} ago" }
       end
     rescue => e
       Rails.logger.warn "activity_profiles: #{e.message}"
@@ -277,7 +282,7 @@ class PagesController < ApplicationController
            .order(last_seen: :desc).limit(3).each do |a|
         events << { at: a.last_seen, color: a.connected? ? 'green' : 'orange',
                     text: "Agent <strong>#{ERB::Util.h(a.agent_id.first(8))}&hellip;</strong> heartbeat",
-                    time: "#{time_ago_in_words(a.last_seen)} ago" }
+                    time: "#{helpers.time_ago_in_words(a.last_seen)} ago" }
       end
     rescue => e
       Rails.logger.warn "activity_agents: #{e.message}"

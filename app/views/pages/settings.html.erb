@@ -76,34 +76,105 @@
         </div>
 
         <% if admin? %>
-            <!-- Metasploit Modules -->
-            <% msf_base  = ENV.fetch('MSF_MODULES_PATH', '/opt/metasploit-framework/embedded/framework/modules/exploits') %>
-            <% msf_count = Dir.exist?(msf_base) ? Dir.glob("#{msf_base}/**/*.rb").size : nil %>
+            <!-- Exploit Database -->
+            <%
+              msf_exploit_base = ENV.fetch('MSF_MODULES_PATH',    '/opt/metasploit-framework/embedded/framework/modules/exploits')
+              msf_aux_base     = ENV.fetch('MSF_AUXILIARY_PATH',  '/opt/metasploit-framework/embedded/framework/modules/auxiliary')
+              msf_available    = Dir.exist?(msf_exploit_base) && Dir.exist?(msf_aux_base)
+
+              if msf_available
+                exploit_dirs = {}
+                Dir.glob("#{msf_exploit_base}/*/").sort.each do |dir|
+                  key = File.basename(dir)
+                  next if key.start_with?('example')
+                  files = Dir.glob("#{dir}/**/*.rb").map { |f|
+                    f.sub("#{dir}", '').sub(/\.rb$/, '').sub(/^\//, '')
+                  }.sort
+                  exploit_dirs[key] = files if files.any?
+                end
+
+                aux_dirs = {}
+                Dir.glob("#{msf_aux_base}/*/").sort.each do |dir|
+                  key = File.basename(dir)
+                  next if key.start_with?('example')
+                  files = Dir.glob("#{dir}/**/*.rb").map { |f|
+                    f.sub("#{dir}", '').sub(/\.rb$/, '').sub(/^\//, '')
+                  }.sort
+                  aux_dirs[key] = files if files.any?
+                end
+
+                exploit_total = exploit_dirs.values.sum(&:length)
+                aux_total     = aux_dirs.values.sum(&:length)
+              end
+            %>
             <div class="settings-card full-width">
                 <div class="card-header">
-                    <div class="card-header-icon"><%= image_tag 'SDimagesWhite/snanerWhite.png', alt: '', class: 'hdr-icon-img icon-white' %><%= image_tag 'SDimagesBlack/ScansBlack.png', alt: '', class: 'hdr-icon-img icon-black' %></div>
+                    <div class="card-header-icon" style="display:flex;align-items:center;justify-content:center;width:36px;height:36px;">
+                        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><ellipse cx="12" cy="5" rx="9" ry="3"/><path d="M21 12c0 1.66-4.03 3-9 3S3 13.66 3 12"/><path d="M3 5v14c0 1.66 4.03 3 9 3s9-1.34 9-3V5"/></svg>
+                    </div>
                     <div>
-                        <div class="card-title">Metasploit Modules</div>
-                        <div class="card-subtitle">EXPLOIT SOURCE</div>
+                        <div class="card-title">Exploit Database</div>
+                        <div class="card-subtitle">METASPLOIT MODULE LIBRARY</div>
                     </div>
                 </div>
-                <div class="settings-body">
-                    <div>
-                        <div style="font-size:13px;font-weight:600;color:var(--text);margin-bottom:4px;">Filesystem-based exploit discovery</div>
-                        <div style="font-size:12px;color:var(--muted);">Exploits are read directly from the Metasploit installation at scan time — no sync needed, always up to date.</div>
-                        <div style="font-size:12px;color:var(--muted);margin-top:8px;">
-                            Path: <code style="font-family:var(--mono);font-size:11px;color:var(--accent);"><%= msf_base %></code>
+
+                <% if !msf_available %>
+                    <div class="settings-body">
+                        <div style="color:var(--red);font-size:13px;">Metasploit modules not found. Ensure the Docker volume is mounted: <code style="font-family:var(--mono);">/opt/metasploit-framework:/opt/metasploit-framework:ro</code></div>
+                    </div>
+                <% else %>
+                    <!-- Summary counts -->
+                    <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;padding:16px 20px;border-bottom:1px solid var(--border);">
+                        <div style="background:rgba(132,204,22,0.08);border:1px solid rgba(132,204,22,0.25);border-radius:8px;padding:14px 18px;">
+                            <div style="font-size:11px;font-weight:600;letter-spacing:0.5px;color:#84cc16;margin-bottom:4px;">SAFE MODE — AUXILIARY</div>
+                            <div style="font-size:28px;font-weight:700;color:var(--text);font-family:var(--mono);"><%= number_with_delimiter(aux_total) %></div>
+                            <div style="font-size:12px;color:var(--muted);margin-top:2px;"><%= aux_dirs.keys.count %> categories</div>
                         </div>
-                        <div style="font-size:12px;color:var(--muted);margin-top:4px;">
-                            Available exploit modules:&nbsp;
-                            <% if msf_count %>
-                                <strong style="color:var(--accent);"><%= msf_count %></strong>
-                            <% else %>
-                                <strong style="color:var(--red);">Not found — set MSF_MODULES_PATH env var</strong>
-                            <% end %>
+                        <div style="background:rgba(239,68,68,0.08);border:1px solid rgba(239,68,68,0.25);border-radius:8px;padding:14px 18px;">
+                            <div style="font-size:11px;font-weight:600;letter-spacing:0.5px;color:var(--red);margin-bottom:4px;">EXPLOIT MODULES</div>
+                            <div style="font-size:28px;font-weight:700;color:var(--text);font-family:var(--mono);"><%= number_with_delimiter(exploit_total) %></div>
+                            <div style="font-size:12px;color:var(--muted);margin-top:2px;"><%= exploit_dirs.keys.count %> platforms</div>
                         </div>
                     </div>
-                </div>
+
+                    <!-- Safe Mode / Auxiliary section -->
+                    <div style="padding:16px 20px;border-bottom:1px solid var(--border);">
+                        <div style="font-size:12px;font-weight:600;letter-spacing:0.5px;color:#84cc16;margin-bottom:12px;">SAFE MODE — AUXILIARY MODULES</div>
+                        <% aux_dirs.each do |dir_name, files| %>
+                            <div class="msf-dir-group">
+                                <button class="msf-dir-toggle" onclick="toggleMsfDir(this)" type="button">
+                                    <span class="msf-dir-arrow">▶</span>
+                                    <span class="msf-dir-name"><%= dir_name %></span>
+                                    <span class="msf-dir-count"><%= files.count %></span>
+                                </button>
+                                <div class="msf-dir-body" style="display:none;">
+                                    <% files.each do |f| %>
+                                        <div class="msf-module-name"><%= f %></div>
+                                    <% end %>
+                                </div>
+                            </div>
+                        <% end %>
+                    </div>
+
+                    <!-- Exploit Modules section -->
+                    <div style="padding:16px 20px;">
+                        <div style="font-size:12px;font-weight:600;letter-spacing:0.5px;color:var(--red);margin-bottom:12px;">EXPLOIT MODULES BY PLATFORM</div>
+                        <% exploit_dirs.each do |dir_name, files| %>
+                            <div class="msf-dir-group">
+                                <button class="msf-dir-toggle" onclick="toggleMsfDir(this)" type="button">
+                                    <span class="msf-dir-arrow">▶</span>
+                                    <span class="msf-dir-name"><%= dir_name %></span>
+                                    <span class="msf-dir-count"><%= files.count %></span>
+                                </button>
+                                <div class="msf-dir-body" style="display:none;">
+                                    <% files.each do |f| %>
+                                        <div class="msf-module-name"><%= f %></div>
+                                    <% end %>
+                                </div>
+                            </div>
+                        <% end %>
+                    </div>
+                <% end %>
             </div>
 
             <!-- Danger Zone -->
@@ -142,3 +213,11 @@
 
     </div>
 </div>
+
+<script>
+function toggleMsfDir(btn) {
+  btn.classList.toggle('open');
+  var body = btn.nextElementSibling;
+  body.style.display = body.style.display === 'none' ? '' : 'none';
+}
+</script>
