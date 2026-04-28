@@ -3,6 +3,9 @@ Rails.application.routes.draw do
   resource :session, only: [:new, :create, :destroy]
   resources :passwords, param: :token
 
+  # Silence browser auto-requests
+  get '/favicon.ico', to: proc { [204, {}, []] }
+
   # Pages
   root "pages#home"
   get "/login",    to: "pages#login"

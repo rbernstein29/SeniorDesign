@@ -946,15 +946,21 @@ curl -X POST https://your-server/api/YOUR_KEY/assets \
     function onScroll() {
       if (Date.now() < suppressUntil) return;
 
-      // Threshold: generous so sections near the bottom of the page (Code Analysis,
-      // Agents) can become active even when the page can't scroll them to the very top.
+      // If we're at (or within 50px of) the very bottom of the page, the last
+      // section can never scroll into the threshold — just pin it active.
+      if (sections.length &&
+          window.scrollY + window.innerHeight >= document.documentElement.scrollHeight - 50) {
+        setActive(sections[sections.length - 1].id);
+        return;
+      }
+
       var threshold = Math.max(160, window.innerHeight * 0.30);
 
       // Selection rule when multiple sections satisfy top <= threshold:
-      //   • Positive tops (section header still below viewport top): smallest wins
-      //     (the section whose header is closest to the viewport top = being read now).
+      //   • Positive tops (header still visible below threshold): smallest wins
+      //     (section closest to viewport top = being read now).
       //   • Negative tops (header scrolled above viewport): largest wins
-      //     (most recently scrolled past = what you just read).
+      //     (most recently scrolled past).
       //   • A positive top always beats a negative top.
       var current    = '';
       var currentTop = null;
@@ -968,16 +974,12 @@ curl -X POST https://your-server/api/YOUR_KEY/assets \
         }
 
         if (top >= 0 && currentTop < 0) {
-          // prefer positive over negative
           current = s.id; currentTop = top;
         } else if (top >= 0 && currentTop >= 0) {
-          // both positive: prefer smaller (closer to viewport top)
           if (top < currentTop) { current = s.id; currentTop = top; }
         } else if (top < 0 && currentTop < 0) {
-          // both negative: prefer larger (most recently scrolled past)
           if (top > currentTop) { current = s.id; currentTop = top; }
         }
-        // current positive, new negative → keep current
       });
 
       setActive(current);
