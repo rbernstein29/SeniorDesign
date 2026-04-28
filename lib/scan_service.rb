@@ -13,14 +13,10 @@ require 'securerandom'
 require 'msfrpc-client'
 
 class ScanService
-  MSF_BASE = begin
-    opt = '/opt/metasploit-framework/embedded/framework/modules/exploits'
-    apt = '/usr/share/metasploit-framework/modules/exploits'
-    ENV['MSF_MODULES_PATH'] || (Dir.exist?(opt) ? opt : apt)
-  end
-
-  MSF_AUXILIARY_BASE = ENV['MSF_AUXILIARY_PATH'] ||
-    MSF_BASE.sub('/modules/exploits', '/modules/auxiliary')
+  def self.msf_base          = Aegis.config.msf.modules_path
+  def self.msf_auxiliary_base = Aegis.config.msf.auxiliary_path
+  MSF_BASE           = msf_base
+  MSF_AUXILIARY_BASE = msf_auxiliary_base
 
   puts "[ScanService] MSF_BASE=#{MSF_BASE} MSF_AUXILIARY_BASE=#{MSF_AUXILIARY_BASE}"
 
@@ -197,7 +193,7 @@ class ScanService
     )
 
     log_results_to_file(report_json, @org_id)
-    cleanup_old_logs(7)
+    cleanup_old_logs(Aegis.config.scan.log_retention_days)
 
     user = User.find_by(id: @user_id)
     ScanMailer.completed(user, @scan).deliver_now if user && @scan rescue nil
@@ -293,7 +289,7 @@ class ScanService
   end
 
   def attack(exploit, target_ip, port, proxy = nil)
-    timeout_secs = (@scan_options[:timeout].presence || 120).to_i
+    timeout_secs = (@scan_options[:timeout].presence || Aegis.config.scan.default_timeout).to_i
     client       = rpc_client
 
     unless client
@@ -311,21 +307,16 @@ class ScanService
   end
 
   def rpc_config
-    {
-      host: ENV.fetch('MSF_RPC_HOST', '127.0.0.1'),
-      port: ENV.fetch('MSF_RPC_PORT', '55553').to_i,
-      # Our local msfrpcd runs without SSL (plain HTTP on 55553). Override with
-      # MSF_RPC_SSL=true if you later run msfrpcd with -S/SSL enabled.
-      ssl:  ENV.fetch('MSF_RPC_SSL', 'false') =~ /\A(t|y|1)/i ? true : false,
-      uri:  '/api/'
-    }
+    msf = Aegis.config.msf
+    { host: msf.rpc_host, port: msf.rpc_port, ssl: msf.rpc_ssl, uri: '/api/' }
   end
 
   def outbound_ip_for(target_ip)
     # MSF_LHOST overrides auto-detection — required in Docker where the
     # container's internal IP is returned by socket routing but is unreachable
     # by scan targets. Set MSF_LHOST to the host's Tailscale/LAN IP.
-    return ENV['MSF_LHOST'] if ENV['MSF_LHOST'].present?
+    explicit = Aegis.config.msf.lhost
+    return explicit if explicit.present?
     UDPSocket.open { |s| s.connect(target_ip, 1); s.addr.last }
   rescue
     '127.0.0.1'
@@ -333,13 +324,13 @@ class ScanService
 
   def rpc_client
     return Thread.current[:msf_rpc] if Thread.current[:msf_rpc]
-    pass = ENV['MSF_RPC_PASS']
+    pass = Aegis.config.msf.rpc_pass
     unless pass
       puts "WARNING: MSF_RPC_PASS not set — falling back to msfconsole subprocess (slow)"
       return nil
     end
     client = Msf::RPC::Client.new(rpc_config)
-    client.login(ENV.fetch('MSF_RPC_USER', 'msf'), pass)
+    client.login(Aegis.config.msf.rpc_user, pass)
     Thread.current[:msf_rpc] = client
   rescue => e
     puts "msfrpcd connection failed: #{e.message} — falling back to msfconsole subprocess (slow)"
@@ -380,7 +371,7 @@ class ScanService
       'RHOSTS'         => target_ip,
       'PAYLOAD'        => payload,
       'LHOST'          => outbound_ip_for(target_ip),
-      'LPORT'          => ENV.fetch('MSF_LPORT', '4444'),
+      'LPORT'          => Aegis.config.msf.lport,
       'ConnectTimeout' => '15',
       'ExitOnSession'  => 'false'
     }
@@ -408,7 +399,7 @@ class ScanService
         evidence  = "Session #{sid}: #{info['tunnel_local']} -> #{info['tunnel_peer']} " \
                     "[#{info['session_type']} via #{mod_name}]"
         puts "[+] #{evidence}"
-        dump_msf_debug(exploit, target_ip, port, nil, '', "(RPC exploit) payload=#{payload} job_id=#{job_id} -> #{evidence}", true, []) if ENV.fetch('AEGIS_MSF_DEBUG', '1') == '1'
+        dump_msf_debug(exploit, target_ip, port, nil, '', "(RPC exploit) payload=#{payload} job_id=#{job_id} -> #{evidence}", true, []) if Aegis.config.msf.debug
         return { success: true, evidence: evidence }
       end
       jobs = client.call('job.list') rescue {}
@@ -416,7 +407,7 @@ class ScanService
     end
 
     puts "[-] #{mod_name} — no session opened on #{target_ip} (exploit completed, target likely not vulnerable or service unreachable)"
-    dump_msf_debug(exploit, target_ip, port, nil, '', "(RPC exploit) payload=#{payload} job_id=#{job_id} -> no session", false, []) if ENV.fetch('AEGIS_MSF_DEBUG', '1') == '1'
+    dump_msf_debug(exploit, target_ip, port, nil, '', "(RPC exploit) payload=#{payload} job_id=#{job_id} -> no session", false, []) if Aegis.config.msf.debug
     { success: false, evidence: nil }
   rescue Msf::RPC::ServerException => e
     puts "RPC ServerException [#{mod_name}]: #{e.message}"
@@ -484,7 +475,7 @@ class ScanService
                                   .reject { |l| l.match?(/Scanned \d+ of \d+ hosts/i) }
       success  = output.match?(/\[\+\]/i) || meaningful_ip_lines.any?
       evidence = (output.scan(/\[\+\].+/i) + meaningful_ip_lines).map(&:strip).join("\n").first(500)
-      dump_msf_debug(exploit, target_ip, port, nil, output, output, success, meaningful_ip_lines) if ENV.fetch('AEGIS_MSF_DEBUG', '1') == '1'
+      dump_msf_debug(exploit, target_ip, port, nil, output, output, success, meaningful_ip_lines) if Aegis.config.msf.debug
       puts success ? "[+] #{mod_name} detected on #{target_ip}" : "[-] #{mod_name} — nothing detected on #{target_ip}"
       { success: success, evidence: evidence.presence }
     ensure
@@ -497,19 +488,7 @@ class ScanService
   end
 
   # Fallback used when msfrpcd is unavailable (MSF_RPC_PASS not set or connection refused).
-  MSF_CONSOLE = begin
-    e = ENV['MSFCONSOLE_PATH']
-    if e && File.executable?(e)
-      e
-    else
-      candidates = [
-        '/opt/metasploit-framework/bin/msfconsole',
-        '/usr/bin/msfconsole',
-        '/usr/local/bin/msfconsole'
-      ]
-      candidates.find { |p| File.executable?(p) } || 'msfconsole'
-    end
-  end
+  MSF_CONSOLE = Aegis.config.msf.console_path
 
   # Uses PTY.spawn so msfconsole sees a terminal and outputs [+] / [*] lines in full.
   def attack_subprocess(exploit, target_ip, port, proxy, timeout_secs)
@@ -567,7 +546,7 @@ class ScanService
         clean.scan(/\[\+\].*|.*session \d+ opened.*/i).join("\n")
       end
       evidence = evidence_lines.length > 500 ? evidence_lines[0, 500] : evidence_lines
-      dump_msf_debug(exploit, target_ip, port, rc_file.path, output, clean, success, meaningful_ip_lines) if ENV.fetch('AEGIS_MSF_DEBUG', '1') == '1'
+      dump_msf_debug(exploit, target_ip, port, rc_file.path, output, clean, success, meaningful_ip_lines) if Aegis.config.msf.debug
       { success: success, evidence: evidence.presence || (success ? 'Detected' : nil) }
     rescue => e
       puts "Attack failed: #{e.message}"
@@ -631,7 +610,7 @@ class ScanService
 
   def build_exploit_rc(exploit, target_ip, port, proxy)
     lhost   = outbound_ip_for(target_ip)
-    lport   = ENV.fetch('MSF_LPORT', '4444')
+    lport   = Aegis.config.msf.lport
     payload = exploit['default_payload'].presence
 
     lines = [
@@ -905,9 +884,9 @@ class ScanService
   def parse_port(port_str) = parse_ports(port_str).first
 
   def send_email(to_email, subject, body)
-    from_email = ENV.fetch('SMTP_FROM', 'scanner@example.com')
-    smtp_host  = ENV.fetch('SMTP_HOST', 'localhost')
-    smtp_port  = ENV.fetch('SMTP_PORT', '25').to_i
+    from_email = Aegis.config.smtp.from
+    smtp_host  = Aegis.config.smtp.host
+    smtp_port  = Aegis.config.smtp.port
 
     msg = <<~END_OF_MESSAGE
       From: #{from_email}

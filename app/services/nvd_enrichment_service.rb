@@ -2,7 +2,7 @@ require 'net/http'
 require 'json'
 
 class NvdEnrichmentService
-  NVD_URL = 'https://services.nvd.nist.gov/rest/json/cves/2.0'
+  NVD_URL = Aegis.config.nvd.url
 
   def self.enrich(exploit)
     return if exploit.cve_id.blank? || exploit.cvss_score.present?

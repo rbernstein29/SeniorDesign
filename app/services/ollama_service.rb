@@ -2,9 +2,9 @@ require 'net/http'
 require 'json'
 
 class OllamaService
-  MODEL         = 'qwen2.5-coder:7b'
-  OLLAMA_HOST   = ENV.fetch('OLLAMA_HOST', 'http://localhost:11434')
-  SYSTEM_PROMPT = 'You are a professional security auditor. Provide accurate, educational remediation and PoC exploits.'
+  MODEL         = Aegis.config.ollama.model
+  OLLAMA_HOST   = Aegis.config.ollama.host
+  SYSTEM_PROMPT = Aegis.config.ollama.system_prompt
 
   # Feature 2: Whitebox Exploit Generator
   # Drop-in replacement for GeminiService.analyze_code
@@ -32,7 +32,7 @@ class OllamaService
       Analyze only what is present in the code.
 
       ```#{lang}
-      #{content.first(30_000)}
+      #{content.first(Aegis.config.ollama.code_max_chars)}
       ```
     PROMPT
 
@@ -91,7 +91,7 @@ class OllamaService
 
       Vulnerable code:
       ```#{language}
-      #{code.first(20_000)}
+      #{code.first(Aegis.config.ollama.secure_code_max_chars)}
       ```
     PROMPT
 
@@ -117,7 +117,7 @@ class OllamaService
         stream: false
       }.to_json
       http              = Net::HTTP.new(uri.host, uri.port)
-      http.read_timeout = 900
+      http.read_timeout = Aegis.config.ollama.read_timeout
       request           = Net::HTTP::Post.new(uri.path, 'Content-Type' => 'application/json')
       request.body      = body
       resp              = http.request(request)

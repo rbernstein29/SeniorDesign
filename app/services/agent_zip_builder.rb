@@ -58,7 +58,8 @@ class AgentZipBuilder
     zip_path
   end
 
-  def self.generate_agent_script(agent, server_ip, server_port = 3000)
+  def self.generate_agent_script(agent, server_ip, server_port = Aegis.config.agent.server_port)
+    cfg = Aegis.config.agent
     <<~PYTHON
 #!/usr/bin/env python3
 import subprocess
@@ -75,8 +76,10 @@ TUNNEL_SERVER   = "#{server_ip}"
 RAILS_SERVER    = "#{server_ip}:#{server_port}"
 TUNNEL_PORT     = #{agent.tunnel_port}
 SSH_KEY_FILE    = "./agent_key"
-SOCKS_PORT      = 1080
-HEARTBEAT_INTERVAL = 30
+SOCKS_PORT      = #{cfg.socks_port}
+HEARTBEAT_INTERVAL = #{cfg.heartbeat_interval}
+HTTP_TIMEOUT    = #{cfg.http_timeout}
+RECONNECT_BACKOFF = #{cfg.reconnect_backoff}
 
 class SimpleSocks5Server:
     """Minimal SOCKS5 proxy server for network scanning"""
@@ -177,7 +180,7 @@ def send_heartbeat():
     }).encode()
     req = urllib.request.Request(url, data=data, headers={"Content-Type": "application/json"})
     try:
-        urllib.request.urlopen(req, timeout=10)
+        urllib.request.urlopen(req, timeout=HTTP_TIMEOUT)
     except Exception:
         pass
 
@@ -240,8 +243,8 @@ def main():
         except Exception as e:
             print(f"Error: {e}")
 
-        print("Reconnecting in 10 seconds...")
-        time.sleep(10)
+        print(f"Reconnecting in {RECONNECT_BACKOFF} seconds...")
+        time.sleep(RECONNECT_BACKOFF)
 
 if __name__ == "__main__":
     main()

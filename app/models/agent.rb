@@ -19,9 +19,9 @@ class Agent < ApplicationRecord
     site.assets.pluck(:ip_address).map(&:to_s)
   end
 
-  # Check if connected (last heartbeat within 30 seconds — matches heartbeat interval)
+  # Connected if last heartbeat within Aegis.config.agent.heartbeat_interval seconds.
   def connected?
-    last_seen.present? && last_seen > 30.seconds.ago
+    last_seen.present? && last_seen > Aegis.config.agent.heartbeat_window.ago
   end
   
   # Update heartbeat
@@ -33,7 +33,7 @@ class Agent < ApplicationRecord
   def package_config
     {
       agent_id: agent_id,
-      scanner_server: ENV.fetch('SCANNER_SERVER_IP', 'localhost'),
+      scanner_server: Aegis.config.agent.server_ip,
       tunnel_port: tunnel_port,
       ssh_private_key: ssh_private_key
     }
@@ -47,7 +47,8 @@ class Agent < ApplicationRecord
     
     # Assign random port
     used_ports = Agent.pluck(:tunnel_port).compact
-    self.tunnel_port = (9000..9999).to_a.sample(100).find { |p| !used_ports.include?(p) } || 9000
+    range      = Aegis.config.agent.tunnel_port_range
+    self.tunnel_port = range.to_a.sample(100).find { |p| !used_ports.include?(p) } || range.first
     
     # Generate SSH keys
     keys = generate_ssh_keys

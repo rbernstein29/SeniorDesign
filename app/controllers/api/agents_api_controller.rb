@@ -33,7 +33,7 @@ module Api
 
     def download
       agent    = Agent.where(organization_id: @current_user.organization_id).find(params[:id])
-      zip_path = AgentZipBuilder.build(agent, "100.69.88.107", 3000)
+      zip_path = AgentZipBuilder.build(agent, Aegis.config.app.host, Aegis.config.agent.server_port)
       send_data File.binread(zip_path),
                 filename:    "scanner-agent-#{agent.agent_id}.zip",
                 type:        "application/zip",

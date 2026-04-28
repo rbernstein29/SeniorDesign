@@ -37,7 +37,7 @@ class AgentsController < ApplicationController
   # GET /agents/:id/download
   def download
     agent       = Agent.find(params[:id])
-    server_ip   = "100.69.88.107"
+    server_ip   = Aegis.config.app.host
     server_port = request.port
     zip_path    = AgentZipBuilder.build(agent, server_ip, server_port)
     send_file zip_path,
