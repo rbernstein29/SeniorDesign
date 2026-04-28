@@ -28,6 +28,8 @@ module Server
     # Common ones are `templates`, `generators`, or `middleware`, for example.
     config.autoload_lib(ignore: %w[assets tasks])
 
+    config.action_controller.always_permitted_parameters = %w(controller action format authenticity_token commit)
+
     # Configuration for the application, engines, and railties goes here.
     #
     # These settings can be overridden in specific environments using the files
