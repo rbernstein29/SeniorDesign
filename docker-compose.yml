@@ -47,6 +47,8 @@ services:
         condition: service_healthy
       ollama:
         condition: service_healthy
+    volumes:
+      - /opt/metasploit-framework:/opt/metasploit-framework:ro
     extra_hosts:
       - "host.docker.internal:host-gateway"  # lets container reach host services
 

@@ -203,7 +203,7 @@ class PagesController < ApplicationController
       Session.joins(:user)
              .where(users: { organization_id: org_id })
              .where('vuln_scanner.sessions.created_at > ?', cutoff)
-             .order(created_at: :desc).limit(10).each do |s|
+             .order(Arel.sql('vuln_scanner.sessions.created_at DESC')).limit(10).each do |s|
         events << { at: s.created_at, color: 'blue',
                     text: "User <strong>#{ERB::Util.h(s.user.name)}</strong> signed in",
                     time: "#{time_ago_in_words(s.created_at)} ago" }
