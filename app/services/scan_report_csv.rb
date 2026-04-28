@@ -6,52 +6,10 @@ class ScanReportCsv
   end
 
   def render
-    raw     = @report.report_data || []
-    raw     = JSON.parse(raw) if raw.is_a?(String)
-    results = raw.map { |r| r.is_a?(Hash) ? r.with_indifferent_access : {} }
-    safe    = @report.report_type == 'reconnaissance'
-
+    serializer = Aegis::ReportRowSerializer.new(@report)
     CSV.generate do |csv|
-      if safe
-        csv << ["Target", "Port", "Module", "Detected", "Evidence", "Time"]
-        results.each do |r|
-          time = (Time.parse(r[:timestamp].to_s).strftime("%H:%M:%S") rescue r[:timestamp].to_s)
-          csv << [
-            r[:target],
-            r[:port].to_s,
-            r[:exploit_name].presence || r[:exploit],
-            r[:success] ? "Yes" : "No",
-            r[:evidence],
-            time
-          ]
-        end
-      else
-        csv << ["Target", "Port", "Exploit Module", "Exploit Name", "CVE ID", "CVSS Score",
-                "CWE", "Severity", "Description", "Disclosure Date", "References",
-                "Status", "Evidence", "Time"]
-        results.each do |r|
-          status = r[:success] ? "VULNERABLE" : "Secure"
-          time   = (Time.parse(r[:timestamp].to_s).strftime("%H:%M:%S") rescue r[:timestamp].to_s)
-          refs   = Array(r[:references]).map { |ref| "#{ref['type']}: #{ref['value']}" }.join(" | ")
-          exploit_record = Exploit.find_by(exploit_id: r[:exploit])
-          csv << [
-            r[:target],
-            r[:port].to_s,
-            r[:exploit],
-            r[:exploit_name],
-            r[:cve_id],
-            exploit_record&.cvss_score,
-            exploit_record&.cwe_id,
-            r[:severity],
-            r[:description],
-            r[:disclosure_date],
-            refs,
-            status,
-            r[:evidence],
-            time
-          ]
-        end
-      end
+      csv << serializer.headers
+      serializer.rows.each { |row| csv << row }
     end
   end
 end

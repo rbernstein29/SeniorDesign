@@ -778,14 +778,7 @@ class ScanService
   end
 
   def read_module_rank(file_path)
-    content = File.read(file_path) rescue ''
-    rank    = content.match(/\bRank\s*=\s*(\w+)/i)&.[](1).to_s.downcase
-    case rank
-    when /excellent|great/ then 'critical'
-    when /good/            then 'high'
-    when /normal|average/  then 'medium'
-    else                        'low'
-    end
+    Aegis::MsfModuleParser.severity_from_file(file_path)
   end
 
   def get_or_create_exploit_record(module_path, file_path)
@@ -809,35 +802,7 @@ class ScanService
   end
 
   def parse_module_metadata(file_path)
-    content = File.read(file_path) rescue ''
-
-    # Real module name
-    name = content.match(/'Name'\s*=>\s*['"]([^'"]+)['"]/m)&.[](1)&.strip
-
-    # Description — handles %q{}, %q(), or plain string
-    desc = content.match(/'Description'\s*=>\s*%q[{(](.+?)[})]/m)&.[](1)
-    desc ||= content.match(/'Description'\s*=>\s*["'](.+?)["']/m)&.[](1)
-    desc = desc&.gsub(/\s+/, ' ')&.strip
-
-    # CVE — first match, normalise to CVE-YYYY-NNNN
-    raw_cve = content.match(/\[\s*['"]CVE['"]\s*,\s*['"]([^'"]+)['"]\s*\]/)&.[](1)
-    cve_id  = raw_cve ? (raw_cve.start_with?('CVE') ? raw_cve : "CVE-#{raw_cve}") : nil
-
-    # All references as [{type, value}] pairs
-    refs = content.scan(/\[\s*['"](\w+)['"]\s*,\s*['"]([^'"]+)['"]\s*\]/)
-                  .map { |type, val| { 'type' => type, 'value' => val } }
-
-    # Disclosure date
-    raw_date       = content.match(/'DisclosureDate'\s*=>\s*['"]([^'"]+)['"]/m)&.[](1)
-    disclosure_date = raw_date ? (Date.parse(raw_date) rescue nil) : nil
-
-    # Author(s)
-    authors_block = content.match(/'Authors?'\s*=>\s*\[([^\]]+)\]/m)&.[](1)
-    authors = authors_block&.scan(/['"]([^'"]+)['"]/)&.flatten&.join(', ')
-    authors ||= content.match(/'Authors?'\s*=>\s*['"]([^'"]+)['"]/m)&.[](1)
-
-    { name: name, description: desc, cve_id: cve_id, references: refs,
-      disclosure_date: disclosure_date, authors: authors }
+    Aegis::MsfModuleParser.metadata_full(file_path)
   end
 
   def get_targets(org_id)
