@@ -290,7 +290,9 @@ class ScanService
       return nil
     end
     client = Msf::RPC::Client.new(rpc_config)
-    client.login(Aegis.config.msf.rpc_user, pass)
+    # Hard cap on login. msfrpc-client has no built-in read timeout, so a sick
+    # msfrpcd would otherwise stall the worker for ~60s before falling back.
+    Timeout.timeout(10) { client.login(Aegis.config.msf.rpc_user, pass) }
     Thread.current[:msf_rpc] = client
   rescue => e
     puts "msfrpcd connection failed: #{e.message} — falling back to msfconsole subprocess (slow)"
@@ -340,62 +342,75 @@ class ScanService
 
     puts "RPC exploit: #{target_ip}:#{port} [#{mod_name}] payload=#{payload}#{proxy ? " via #{proxy}" : ""}"
 
-    existing = (client.call('session.list') rescue {}).keys.to_set
-    result   = client.call('module.execute', 'exploit', mod_name, options)
-    job_id   = result['job_id']&.to_s
+    existing        = (client.call('session.list') rescue {}).keys.to_set
+    new_session_ids = []  # filled by check_sessions; cleaned up in ensure
 
-    if result['error']
-      puts "module.execute error for #{mod_name}: #{result['error']}"
-      return { success: false, evidence: nil }
-    end
+    result      = client.call('module.execute', 'exploit', mod_name, options)
+    raw_job_id  = result['job_id']            # MSF returns Integer; preserve for job.stop
+    job_id      = raw_job_id&.to_s
 
-    # MSF 6.4+ runs exploits synchronously inside module.execute (job_id is nil,
-    # no background job). The exploit has already completed by the time we get here.
-    # For legacy MSF that returns a real job_id, we poll until the job finishes.
-    # In both cases we check for new sessions right after execute, then do a short
-    # additional poll window to catch any delayed session registrations.
-    check_sessions = lambda do
-      sessions    = client.call('session.list') rescue {}
-      new_entries = sessions.reject { |id, _| existing.include?(id) }
-      if new_entries.any?
-        sid, info = new_entries.first
-        evidence  = "Session #{sid}: #{info['tunnel_local']} -> #{info['tunnel_peer']} " \
-                    "[#{info['session_type']} via #{mod_name}]"
-        puts "[+] #{evidence}"
-        dump_msf_debug(exploit, target_ip, port, nil, '', "(RPC exploit) payload=#{payload} job_id=#{job_id} -> #{evidence}", true, []) if Aegis.config.msf.debug
-        { success: true, evidence: evidence }
+    begin
+      if result['error']
+        puts "module.execute error for #{mod_name}: #{result['error']}"
+        return { success: false, evidence: nil }
       end
-    end
 
-    # Immediate check — covers synchronous MSF 6.4+ execution.
-    found = check_sessions.call
-    return found if found
-
-    if job_id
-      # Legacy async path: poll until the background job disappears or timeout.
-      deadline = Time.now + timeout_secs
-      while Time.now < deadline
-        sleep 2
-        found = check_sessions.call
-        return found if found
-        jobs = client.call('job.list') rescue {}
-        break unless jobs.key?(job_id)
+      # MSF 6.4+ runs exploits synchronously inside module.execute (job_id is nil,
+      # no background job). The exploit has already completed by the time we get here.
+      # For legacy MSF that returns a real job_id, we poll until the job finishes.
+      # In both cases we check for new sessions right after execute, then do a short
+      # additional poll window to catch any delayed session registrations.
+      check_sessions = lambda do
+        sessions    = client.call('session.list') rescue {}
+        new_entries = sessions.reject { |id, _| existing.include?(id) }
+        new_session_ids.concat(new_entries.keys - new_session_ids)
+        if new_entries.any?
+          sid, info = new_entries.first
+          evidence  = "Session #{sid}: #{info['tunnel_local']} -> #{info['tunnel_peer']} " \
+                      "[#{info['session_type']} via #{mod_name}]"
+          puts "[+] #{evidence}"
+          dump_msf_debug(exploit, target_ip, port, nil, '', "(RPC exploit) payload=#{payload} job_id=#{job_id} -> #{evidence}", true, []) if Aegis.config.msf.debug
+          { success: true, evidence: evidence }
+        end
       end
-    else
-      # Synchronous path: poll for up to 30s in case the session callback is
-      # still in flight after module.execute returns. Bounded by timeout_secs
-      # so callers can shorten it for fast scans.
-      sync_deadline = Time.now + [30, timeout_secs].min
-      while Time.now < sync_deadline
-        sleep 2
-        found = check_sessions.call
-        return found if found
-      end
-    end
 
-    puts "[-] #{mod_name} — no session opened on #{target_ip} (exploit completed, target likely not vulnerable or service unreachable)"
-    dump_msf_debug(exploit, target_ip, port, nil, '', "(RPC exploit) payload=#{payload} job_id=#{job_id} -> no session", false, []) if Aegis.config.msf.debug
-    { success: false, evidence: nil }
+      # Immediate check — covers synchronous MSF 6.4+ execution.
+      found = check_sessions.call
+      return found if found
+
+      if job_id
+        # Legacy async path: poll until the background job disappears or timeout.
+        deadline = Time.now + timeout_secs
+        while Time.now < deadline
+          sleep 2
+          found = check_sessions.call
+          return found if found
+          jobs = client.call('job.list') rescue {}
+          break unless jobs.key?(job_id)
+        end
+      else
+        # Synchronous path: poll for up to 30s in case the session callback is
+        # still in flight after module.execute returns. Bounded by timeout_secs
+        # so callers can shorten it for fast scans.
+        sync_deadline = Time.now + [30, timeout_secs].min
+        while Time.now < sync_deadline
+          sleep 2
+          found = check_sessions.call
+          return found if found
+        end
+      end
+
+      puts "[-] #{mod_name} — no session opened on #{target_ip} (exploit completed, target likely not vulnerable or service unreachable)"
+      dump_msf_debug(exploit, target_ip, port, nil, '', "(RPC exploit) payload=#{payload} job_id=#{job_id} -> no session", false, []) if Aegis.config.msf.debug
+      { success: false, evidence: nil }
+    ensure
+      # Bounded cleanup: stop only what THIS exploit created. Without this,
+      # background handlers and sessions accumulate inside msfrpcd until login
+      # itself starts timing out. We only need the evidence line for findings —
+      # persistent shells aren't part of a vuln scan's deliverable.
+      client.call('job.stop', raw_job_id) rescue nil if raw_job_id
+      new_session_ids.each { |sid| client.call('session.stop', sid.to_s) rescue nil }
+    end
   rescue Msf::RPC::ServerException => e
     puts "RPC ServerException [#{mod_name}]: #{e.message}"
     { success: false, evidence: nil }
