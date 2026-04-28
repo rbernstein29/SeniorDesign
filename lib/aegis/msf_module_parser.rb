@@ -11,6 +11,17 @@ module Aegis
   module MsfModuleParser
     module_function
 
+    # Match a Ruby-quoted string body, tracking the outer quote so embedded
+    # quotes of the other style (e.g. 'Samba "username map script" Cmd Exec')
+    # don't cut the capture short. Returns the inner body or nil.
+    QUOTED_VALUE = /(?:'((?:\\.|[^'\\])*)'|"((?:\\.|[^"\\])*)")/.freeze
+
+    def extract_quoted_value(content, key)
+      m = content.match(/['"]#{Regexp.escape(key)}['"]\s*=>\s*#{QUOTED_VALUE}/m)
+      return nil unless m
+      (m[1] || m[2])&.gsub(/\\(['"\\])/, '\1')
+    end
+
     SEVERITY_BY_RANK = {
       /excellent|great/ => 'critical',
       /good/            => 'high',
@@ -34,10 +45,10 @@ module Aegis
     def metadata_full(path)
       content = File.read(path) rescue ''
 
-      name = content.match(/'Name'\s*=>\s*['"]([^'"]+)['"]/m)&.[](1)&.strip
+      name = extract_quoted_value(content, 'Name')&.strip
 
       desc = content.match(/'Description'\s*=>\s*%q[{(](.+?)[})]/m)&.[](1)
-      desc ||= content.match(/'Description'\s*=>\s*["'](.+?)["']/m)&.[](1)
+      desc ||= extract_quoted_value(content, 'Description')
       desc = desc&.gsub(/\s+/, ' ')&.strip
 
       raw_cve = content.match(/\[\s*['"]CVE['"]\s*,\s*['"]([^'"]+)['"]\s*\]/)&.[](1)
@@ -46,12 +57,12 @@ module Aegis
       refs = content.scan(/\[\s*['"](\w+)['"]\s*,\s*['"]([^'"]+)['"]\s*\]/)
                     .map { |type, val| { 'type' => type, 'value' => val } }
 
-      raw_date        = content.match(/'DisclosureDate'\s*=>\s*['"]([^'"]+)['"]/m)&.[](1)
+      raw_date        = extract_quoted_value(content, 'DisclosureDate')
       disclosure_date = raw_date ? (Date.parse(raw_date) rescue nil) : nil
 
       authors_block = content.match(/'Authors?'\s*=>\s*\[([^\]]+)\]/m)&.[](1)
       authors = authors_block&.scan(/['"]([^'"]+)['"]/)&.flatten&.join(', ')
-      authors ||= content.match(/'Authors?'\s*=>\s*['"]([^'"]+)['"]/m)&.[](1)
+      authors ||= extract_quoted_value(content, 'Author') || extract_quoted_value(content, 'Authors')
 
       { name: name, description: desc, cve_id: cve_id, references: refs,
         disclosure_date: disclosure_date, authors: authors }
@@ -62,16 +73,14 @@ module Aegis
     def metadata_lite(path, content: nil)
       content ||= File.read(path, encoding: 'utf-8', invalid: :replace, undef: :replace) rescue ''
 
-      name_m = content.match(/'Name'\s*=>\s*["'](.+?)["']/) ||
-               content.match(/"Name"\s*=>\s*["'](.+?)["']/)
-      name   = name_m&.[](1)&.strip
+      name = extract_quoted_value(content, 'Name')&.strip
 
       cve_m  = content.match(/\['CVE',\s*['"](\d{4}-\d+)['"]\]/)
       cve_id = cve_m ? "CVE-#{cve_m[1]}" : nil
 
-      desc_m      = content.match(/'Description'\s*=>\s*%q(?:\{|\[|<)(.+?)(?:\}|\]|>)/m) ||
-                    content.match(/'Description'\s*=>\s*["'](.+?)["']/m)
-      description = desc_m ? desc_m[1].gsub(/\s+/, ' ').strip.truncate(500) : nil
+      desc_m      = content.match(/'Description'\s*=>\s*%q(?:\{|\[|<)(.+?)(?:\}|\]|>)/m)
+      description = desc_m ? desc_m[1].gsub(/\s+/, ' ').strip.truncate(500)
+                            : extract_quoted_value(content, 'Description')&.gsub(/\s+/, ' ')&.strip&.truncate(500)
 
       rank_m   = content.match(/\bRank\s*=\s*(\w+)/i)
       severity = severity_from_rank(rank_m&.[](1))
