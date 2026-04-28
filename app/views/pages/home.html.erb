@@ -65,7 +65,7 @@
     <div class="stat-card cyan">
       <div class="stat-label">Total Assets</div>
       <div class="stat-value" data-stat="total_assets"><%= @assets&.count || 0 %></div>
-      <div class="stat-delta up">Configured targets</div>
+      <div class="stat-delta">Configured targets</div>
     </div>
     <div class="stat-card teal">
       <div class="stat-label">Scan-Ready Assets</div>
@@ -246,119 +246,31 @@
     <%= render 'recent_findings', recent_findings: @recent_findings %>
   </div>
 
-  <!-- Bottom Row -->
-  <div class="bottom-row">
-    <!-- Recent Activity -->
-    <div class="panel">
-      <div class="panel-header">
-        <div class="panel-title">Recent Activity</div>
-        <div class="panel-sub">LAST 24 HRS</div>
-      </div>
-      <div id="activity-list">
-        <% if @recent_activity.any? %>
-          <% @recent_activity.each do |item| %>
-            <div class="activity-item">
-              <div class="activity-dot dot-<%= item.color %>"></div>
-              <div>
-                <div class="activity-text"><%= raw item.text %></div>
-                <div class="activity-time"><%= time_ago_in_words(item.created_at) %> ago</div>
-              </div>
-            </div>
-          <% end %>
-        <% else %>
+  <!-- Recent Activity (full width, 2-column) -->
+  <div class="panel" style="margin-bottom:24px;">
+    <div class="panel-header">
+      <div class="panel-title">Recent Activity</div>
+    </div>
+    <div id="activity-list" style="display:grid;grid-template-columns:1fr 1fr;gap:0;">
+      <% if @recent_activity.any? %>
+        <% @recent_activity.each do |item| %>
           <div class="activity-item">
-            <div class="activity-dot dot-gray"></div>
+            <div class="activity-dot dot-<%= item.color %>"></div>
             <div>
-              <div class="activity-text">No activity yet</div>
-              <div class="activity-time">—</div>
+              <div class="activity-text"><%= raw item.text %></div>
+              <div class="activity-time"><%= time_ago_in_words(item.created_at) %> ago</div>
             </div>
           </div>
         <% end %>
-      </div>
-    </div>
-
-    <!-- Quick Actions -->
-    <div class="panel">
-      <div class="panel-header">
-        <div class="panel-title">Quick Actions</div>
-        <div class="panel-sub">SHORTCUTS</div>
-      </div>
-
-      <div class="quick-btn-grid">
-        <% if admin? %>
-          <a href="<%= new_asset_path %>" class="quick-btn">
-            <div class="quick-btn-icon"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg></div>
-            <span class="quick-btn-label">Add New Asset</span>
-            <span class="quick-btn-arrow">→</span>
-          </a>
-          <a href="<%= scanner_path rescue '#' %>" class="quick-btn">
-            <div class="quick-btn-icon"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="12" cy="12" r="10"/><circle cx="12" cy="12" r="3"/><line x1="12" y1="2" x2="12" y2="5"/><line x1="12" y1="19" x2="12" y2="22"/><line x1="2" y1="12" x2="5" y2="12"/><line x1="19" y1="12" x2="22" y2="12"/></svg></div>
-            <span class="quick-btn-label">Launch Scanner</span>
-            <span class="quick-btn-arrow">→</span>
-          </a>
-          <a href="<%= agents_path rescue '#' %>" class="quick-btn">
-            <div class="quick-btn-icon"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><rect x="2" y="3" width="20" height="14" rx="2"/><line x1="8" y1="21" x2="16" y2="21"/><line x1="12" y1="17" x2="12" y2="21"/></svg></div>
-            <span class="quick-btn-label">Agent Status</span>
-            <span class="quick-btn-arrow">→</span>
-          </a>
-          <a href="<%= sites_path rescue '#' %>" class="quick-btn">
-            <div class="quick-btn-icon"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="14" y="14" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/></svg></div>
-            <span class="quick-btn-label">Network Sites</span>
-            <span class="quick-btn-arrow">→</span>
-          </a>
-          <a href="<%= scan_profiles_path rescue '#' %>" class="quick-btn">
-            <div class="quick-btn-icon"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><line x1="8" y1="6" x2="21" y2="6"/><line x1="8" y1="12" x2="21" y2="12"/><line x1="8" y1="18" x2="21" y2="18"/><line x1="3" y1="6" x2="3.01" y2="6"/><line x1="3" y1="12" x2="3.01" y2="12"/><line x1="3" y1="18" x2="3.01" y2="18"/></svg></div>
-            <span class="quick-btn-label">Scan Profiles</span>
-            <span class="quick-btn-arrow">→</span>
-          </a>
-          <a href="<%= assets_path %>" class="quick-btn">
-            <div class="quick-btn-icon"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><ellipse cx="12" cy="5" rx="9" ry="3"/><path d="M21 12c0 1.66-4.03 3-9 3S3 13.66 3 12"/><path d="M3 5v14c0 1.66 4.03 3 9 3s9-1.34 9-3V5"/></svg></div>
-            <span class="quick-btn-label">Manage Assets</span>
-            <span class="quick-btn-arrow">→</span>
-          </a>
-          <a href="<%= reports_path rescue '#' %>" class="quick-btn">
-            <div class="quick-btn-icon"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/><polyline points="10 9 9 9 8 9"/></svg></div>
-            <span class="quick-btn-label">View Reports</span>
-            <span class="quick-btn-arrow">→</span>
-          </a>
-          <a href="<%= read_only_accounts_path rescue '#' %>" class="quick-btn">
-            <div class="quick-btn-icon"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg></div>
-            <span class="quick-btn-label">Manage Accounts</span>
-            <span class="quick-btn-arrow">→</span>
-          </a>
-          <a href="<%= code_analysis_path rescue '#' %>" class="quick-btn">
-            <div class="quick-btn-icon"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><polyline points="16 18 22 12 16 6"/><polyline points="8 6 2 12 8 18"/></svg></div>
-            <span class="quick-btn-label">Code Analysis</span>
-            <span class="quick-btn-arrow">→</span>
-          </a>
-          <a href="<%= settings_path rescue '#' %>" class="quick-btn">
-            <div class="quick-btn-icon"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06A1.65 1.65 0 0 0 4.68 15a1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06A1.65 1.65 0 0 0 9 4.68a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06A1.65 1.65 0 0 0 19.4 9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg></div>
-            <span class="quick-btn-label">Settings</span>
-            <span class="quick-btn-arrow">→</span>
-          </a>
-        <% else %>
-          <a href="<%= reports_path rescue '#' %>" class="quick-btn">
-            <div class="quick-btn-icon"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/></svg></div>
-            <span class="quick-btn-label">View Reports</span>
-            <span class="quick-btn-arrow">→</span>
-          </a>
-          <a href="<%= assets_path %>" class="quick-btn">
-            <div class="quick-btn-icon"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><ellipse cx="12" cy="5" rx="9" ry="3"/><path d="M21 12c0 1.66-4.03 3-9 3S3 13.66 3 12"/><path d="M3 5v14c0 1.66 4.03 3 9 3s9-1.34 9-3V5"/></svg></div>
-            <span class="quick-btn-label">View Assets</span>
-            <span class="quick-btn-arrow">→</span>
-          </a>
-          <a href="<%= api_docs_path rescue '#' %>" class="quick-btn">
-            <div class="quick-btn-icon"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><polyline points="16 18 22 12 16 6"/><polyline points="8 6 2 12 8 18"/></svg></div>
-            <span class="quick-btn-label">API Docs</span>
-            <span class="quick-btn-arrow">→</span>
-          </a>
-          <a href="<%= settings_path rescue '#' %>" class="quick-btn">
-            <div class="quick-btn-icon"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06A1.65 1.65 0 0 0 4.68 15a1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06A1.65 1.65 0 0 0 9 4.68a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06A1.65 1.65 0 0 0 19.4 9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg></div>
-            <span class="quick-btn-label">Settings</span>
-            <span class="quick-btn-arrow">→</span>
-          </a>
-        <% end %>
-      </div>
+      <% else %>
+        <div class="activity-item">
+          <div class="activity-dot dot-gray"></div>
+          <div>
+            <div class="activity-text">No activity yet</div>
+            <div class="activity-time">—</div>
+          </div>
+        </div>
+      <% end %>
     </div>
   </div>
 </div>
@@ -398,6 +310,8 @@
                '</div>' +
              '</div>';
     }).join('');
+    list.style.display = 'grid';
+    list.style.gridTemplateColumns = '1fr 1fr';
   }
 
   function pollHomeStats() {

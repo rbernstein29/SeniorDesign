@@ -195,9 +195,6 @@ class ScanService
     log_results_to_file(report_json, @org_id)
     cleanup_old_logs(Aegis.config.scan.log_retention_days)
 
-    user = User.find_by(id: @user_id)
-    ScanMailer.completed(user, @scan).deliver_now if user && @scan rescue nil
-
     ActivityLog.create!(organization_id: @org_id, user_id: @user_id, color: 'green',
       text: "Scan <strong>#{ERB::Util.h(@scan.scan_name)}</strong> completed — #{findings_count} finding(s)") rescue nil
     puts "Scan complete."
@@ -206,8 +203,6 @@ class ScanService
     @scan&.update!(status: 'failed', end_time: Time.current)
     ActivityLog.create!(organization_id: @org_id, user_id: @user_id, color: 'red',
       text: "Scan <strong>#{ERB::Util.h(@scan&.scan_name || 'scan')}</strong> failed") rescue nil
-    user = User.find_by(id: @user_id)
-    ScanMailer.failed(user, @scan).deliver_now if user && @scan rescue nil
     raise
   end
 

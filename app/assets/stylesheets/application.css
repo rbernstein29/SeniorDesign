@@ -417,6 +417,20 @@ body {
 
 [data-theme="light"] .card-tag { border-color: rgba(37,99,235,0.15); }
 
+/* Nav card tag colors — match each card's accent */
+.nav-card.nav-orange .card-tag  { color: var(--orange);  background: rgba(245,158,11,0.1);  border-color: rgba(245,158,11,0.2); }
+.nav-card.nav-red    .card-tag  { color: var(--red);     background: rgba(239,68,68,0.1);   border-color: rgba(239,68,68,0.2); }
+.nav-card.nav-cyan   .card-tag  { color: var(--cyan);    background: rgba(34,211,238,0.1);  border-color: rgba(34,211,238,0.2); }
+.nav-card.nav-magenta .card-tag { color: #d946ef;        background: rgba(217,70,239,0.1);  border-color: rgba(217,70,239,0.2); }
+.nav-card.nav-teal   .card-tag  { color: #2dd4bf;        background: rgba(45,212,191,0.1);  border-color: rgba(45,212,191,0.2); }
+.nav-card.nav-yellow .card-tag  { color: #fbbf24;        background: rgba(251,191,36,0.1);  border-color: rgba(251,191,36,0.2); }
+.nav-card.nav-violet .card-tag  { color: var(--purple);  background: rgba(167,139,250,0.1); border-color: rgba(167,139,250,0.2); }
+.nav-card.nav-green  .card-tag  { color: var(--green);   background: rgba(34,197,94,0.1);   border-color: rgba(34,197,94,0.2); }
+.nav-card.nav-lime   .card-tag  { color: #84cc16;        background: rgba(132,204,22,0.1);  border-color: rgba(132,204,22,0.2); }
+.nav-card.nav-pink   .card-tag  { color: #ec4899;        background: rgba(236,72,153,0.1);  border-color: rgba(236,72,153,0.2); }
+.nav-card.nav-blue   .card-tag  { color: var(--accent);  background: var(--accent-dim);     border-color: rgba(79,134,247,0.2); }
+.nav-card.nav-white  .card-tag  { color: var(--muted);   background: rgba(255,255,255,0.06); border-color: rgba(255,255,255,0.15); }
+
 /* ── Bottom Row / Panels ── */
 .bottom-row {
   display: grid;
