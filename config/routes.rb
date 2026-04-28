@@ -65,6 +65,7 @@ Rails.application.routes.draw do
   resources :findings, only: [] do
     member do
       post :ai_remediation
+      get  :ai_remediation_status
     end
   end
 

@@ -3,7 +3,6 @@ class ReportsController < ApplicationController
   def show
     @report = org_reports.includes(:scan).find(params[:id])
     @scan   = @report.scan
-    log_activity(text: "Report <strong>#{ERB::Util.h(@report.report_name)}</strong> viewed", color: 'violet')
 
     severity_order = Arel.sql(
       "CASE severity WHEN 'critical' THEN 1 WHEN 'high' THEN 2 WHEN 'medium' THEN 3 WHEN 'low' THEN 4 ELSE 5 END"

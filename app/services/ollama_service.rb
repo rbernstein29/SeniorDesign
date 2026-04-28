@@ -46,24 +46,39 @@ class OllamaService
   # Drop-in replacement for GeminiService.remediation_for
   # Takes exploit/finding ActiveRecord objects, returns plain text
   def self.remediation_for(exploit, finding)
-    prompt = <<~PROMPT
-      A vulnerability was detected during a penetration test. Provide clear, actionable remediation.
+    prompt = if exploit
+      <<~PROMPT
+        A vulnerability was detected during a penetration test. Provide clear, actionable remediation.
 
-      Vulnerability: #{exploit.name}
-      Severity: #{exploit.severity}
-      CVE: #{exploit.cve_id.presence || 'N/A'}
-      CVSS Score: #{exploit.cvss_score.presence || 'N/A'}
-      CWE: #{exploit.cwe_id.presence || 'N/A'}
-      Description: #{exploit.description}
-      Evidence: #{finding.evidence}
+        Vulnerability: #{exploit.name}
+        Severity: #{exploit.severity}
+        CVE: #{exploit.cve_id.presence || 'N/A'}
+        CVSS Score: #{exploit.cvss_score.presence || 'N/A'}
+        CWE: #{exploit.cwe_id.presence || 'N/A'}
+        Description: #{exploit.description}
+        Evidence: #{finding.evidence}
 
-      Respond with exactly these three sections:
-      **Root Cause:** (1-2 sentences)
-      **Immediate Steps:** (numbered list)
-      **Long-Term Fix:** (1-2 sentences)
+        Respond with exactly these three sections:
+        **Root Cause:** (1-2 sentences)
+        **Immediate Steps:** (numbered list)
+        **Long-Term Fix:** (1-2 sentences)
 
-      Keep the total response under 300 words.
-    PROMPT
+        Keep the total response under 300 words.
+      PROMPT
+    else
+      <<~PROMPT
+        A code vulnerability was detected during static analysis. Provide clear, actionable remediation.
+
+        Evidence: #{finding.evidence}
+
+        Respond with exactly these three sections:
+        **Root Cause:** (1-2 sentences)
+        **Immediate Steps:** (numbered list)
+        **Long-Term Fix:** (1-2 sentences)
+
+        Keep the total response under 300 words.
+      PROMPT
+    end
 
     call_api(prompt)
   rescue => e

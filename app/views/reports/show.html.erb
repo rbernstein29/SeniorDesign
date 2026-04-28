@@ -305,22 +305,28 @@
                         </div>
                       <% end %>
 
-                      <!-- AI Remediation -->
-                      <div style="margin-top:8px;padding:12px;background:var(--card-bg);border-radius:6px;border:1px solid var(--border);">
-                        <div style="font-family:var(--mono);font-size:10px;color:var(--muted);letter-spacing:1px;margin-bottom:8px;">AI REMEDIATION</div>
-                        <% if finding.ai_remediation.present? %>
-                          <div id="ai-text-<%= finding.id %>" style="font-size:13px;line-height:1.6;white-space:pre-wrap;"><%= finding.ai_remediation %></div>
-                        <% else %>
-                          <div id="ai-text-<%= finding.id %>" style="color:var(--muted);font-size:12px;font-style:italic;">
-                            Click to generate AI remediation guidance.
-                          </div>
-                          <button onclick="getAiRemediation(<%= finding.id %>)"
-                                  id="ai-btn-<%= finding.id %>"
-                                  style="margin-top:8px;padding:6px 14px;border-radius:6px;border:1px solid var(--accent);background:transparent;color:var(--accent);font-family:var(--mono);font-size:11px;cursor:pointer;letter-spacing:1px;">
-                            GET AI REMEDIATION
-                          </button>
-                        <% end %>
-                      </div>
+                    </div>
+                  </div>
+                  <!-- AI Remediation: full width -->
+                  <div style="margin-top:16px;padding:12px;background:var(--card-bg);border-radius:6px;border:1px solid var(--border);">
+                    <div style="font-family:var(--mono);font-size:10px;color:var(--muted);letter-spacing:1px;margin-bottom:8px;">AI REMEDIATION</div>
+                    <div id="ai-wrap-<%= finding.id %>">
+                      <% if finding.ai_remediation.present? %>
+                        <div style="font-size:13px;line-height:1.6;white-space:pre-wrap;"><%= finding.ai_remediation %></div>
+                      <% elsif finding.ai_remediation_pending? %>
+                        <button disabled data-ai-pending="<%= finding.id %>"
+                                id="ai-btn-<%= finding.id %>"
+                                style="padding:6px 14px;border-radius:6px;border:1px solid var(--muted);background:transparent;color:var(--muted);font-family:var(--mono);font-size:11px;cursor:not-allowed;letter-spacing:1px;">
+                          GENERATING...
+                        </button>
+                      <% else %>
+                        <div style="color:var(--muted);font-size:12px;font-style:italic;margin-bottom:8px;">Click to generate AI remediation guidance.</div>
+                        <button onclick="getAiRemediation(<%= finding.id %>)"
+                                id="ai-btn-<%= finding.id %>"
+                                style="padding:6px 14px;border-radius:6px;border:1px solid var(--accent);background:transparent;color:var(--accent);font-family:var(--mono);font-size:11px;cursor:pointer;letter-spacing:1px;">
+                          GET AI REMEDIATION
+                        </button>
+                      <% end %>
                     </div>
                   </div>
                 </div>
@@ -342,26 +348,66 @@ function toggleFinding(id) {
   chevron.textContent   = open ? '▶' : '▼';
 }
 
+function showAiText(id, text) {
+  var wrap = document.getElementById('ai-wrap-' + id);
+  if (!wrap) return;
+  var div = document.createElement('div');
+  div.style.cssText = 'font-size:13px;line-height:1.6;white-space:pre-wrap;';
+  div.textContent = text;
+  wrap.innerHTML = '';
+  wrap.appendChild(div);
+}
+
 function getAiRemediation(id) {
-  var btn  = document.getElementById('ai-btn-'  + id);
-  var text = document.getElementById('ai-text-' + id);
-  if (btn) { btn.textContent = 'LOADING...'; btn.disabled = true; }
-  if (text) text.textContent = '';
+  var btn = document.getElementById('ai-btn-' + id);
+  if (btn) { btn.textContent = 'REQUESTING...'; btn.disabled = true; }
 
   fetch('/findings/' + id + '/ai_remediation', {
     method: 'POST',
-    headers: { 'X-CSRF-Token': document.querySelector('meta[name="csrf-token"]').content,
-               'Accept': 'application/json' }
+    headers: {
+      'X-CSRF-Token': document.querySelector('meta[name="csrf-token"]').content,
+      'Accept': 'application/json'
+    }
   })
   .then(function(r) { return r.json(); })
   .then(function(data) {
-    if (text) text.style.cssText = 'font-size:13px;line-height:1.6;white-space:pre-wrap;';
-    if (text) text.textContent = data.text || data.error || 'No response.';
-    if (btn) btn.remove();
+    if (data.text) {
+      showAiText(id, data.text);
+    } else if (data.pending) {
+      if (btn) { btn.textContent = 'GENERATING...'; btn.disabled = true; }
+      pollAiStatus(id);
+    } else {
+      if (btn) { btn.textContent = 'GET AI REMEDIATION'; btn.disabled = false; }
+    }
   })
   .catch(function() {
-    if (text) text.textContent = 'Request failed.';
     if (btn) { btn.textContent = 'RETRY'; btn.disabled = false; }
   });
 }
+
+function pollAiStatus(id) {
+  setTimeout(function() {
+    fetch('/findings/' + id + '/ai_remediation_status', {
+      headers: { 'Accept': 'application/json' }
+    })
+    .then(function(r) { return r.json(); })
+    .then(function(data) {
+      if (data.done && data.text) {
+        showAiText(id, data.text);
+      } else if (data.pending) {
+        pollAiStatus(id);
+      } else {
+        var btn = document.getElementById('ai-btn-' + id);
+        if (btn) { btn.textContent = 'GET AI REMEDIATION'; btn.disabled = false; }
+      }
+    })
+    .catch(function() { pollAiStatus(id); });
+  }, 5000);
+}
+
+document.addEventListener('DOMContentLoaded', function() {
+  document.querySelectorAll('[data-ai-pending]').forEach(function(el) {
+    pollAiStatus(el.dataset.aiPending);
+  });
+});
 </script>
