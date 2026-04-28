@@ -374,6 +374,7 @@ function updateAssetCount() {
     const count = document.querySelectorAll('.asset-checkbox:checked').length;
     const el = document.getElementById('asset-selected-count');
     if (el) el.textContent = count;
+    updateExploitCount();
 }
 
 // Live exploit count via AJAX
@@ -392,8 +393,10 @@ function updateExploitCount() {
         return;
     }
     var severities = Array.from(document.querySelectorAll('.severity-checkbox:checked')).map(function(cb) { return cb.value; });
+    var assetIds = Array.from(document.querySelectorAll('.asset-checkbox:checked')).map(function(cb) { return cb.value; });
     var params = new URLSearchParams();
     severities.forEach(function(s) { params.append('severities[]', s); });
+    assetIds.forEach(function(id) { params.append('asset_ids[]', id); });
     params.set('safe_mode', safeMode ? 'true' : 'false');
     fetch('<%= exploit_count_path %>?' + params.toString())
         .then(function(r) { return r.json(); })
