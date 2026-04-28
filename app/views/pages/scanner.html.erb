@@ -431,6 +431,9 @@ document.addEventListener('DOMContentLoaded', () => {
     document.querySelectorAll('input[name="safe_mode"]').forEach(function(rb) {
         rb.addEventListener('change', updateExploitCount);
     });
+    // Filter profiles to match whichever mode is checked on load (exploit by default)
+    var checkedMode = document.querySelector('input[name="safe_mode"]:checked');
+    filterProfilesBySafeMode(checkedMode ? checkedMode.value === 'true' : false);
     updateExploitCount();
 });
 </script>

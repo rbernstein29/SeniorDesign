@@ -193,11 +193,11 @@ class PagesController < ApplicationController
   private
 
   def build_activity_events(org_id)
-    ActivityLog.for_org(org_id).last_day.order(created_at: :desc).limit(20).to_a
+    ActivityLog.for_org(org_id).order(created_at: :desc).limit(ActivityLog::LIMIT_PER_ORG).to_a
   end
 
   def build_activity_events_json(org_id)
-    ActivityLog.for_org(org_id).last_day.order(created_at: :desc).limit(20).map do |l|
+    ActivityLog.for_org(org_id).order(created_at: :desc).limit(ActivityLog::LIMIT_PER_ORG).map do |l|
       { color: l.color, text: l.text, time: "#{helpers.time_ago_in_words(l.created_at)} ago" }
     end
   end
