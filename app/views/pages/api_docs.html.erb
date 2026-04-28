@@ -253,8 +253,38 @@
           <div class="auth-box-title">API Key Authentication</div>
           <p>Every request must include your API key as the second path segment:</p>
           <div class="code-block">https://your-server/api/<span style="color:#ec4899">{api_key}</span>/resource</div>
-          <p>Generate or regenerate your API key in <a href="<%= settings_path %>" style="color:#ec4899;">Settings → Account</a>. Keys are unique per user and scoped to your organization.</p>
+          <p>You can retrieve your key programmatically via the auth endpoint below, or view/regenerate it in <a href="<%= settings_path %>" style="color:#ec4899;">Settings → Account</a>. Keys are unique per user and scoped to your organization.</p>
           <p>Invalid keys return <code style="font-family:var(--mono);color:#f87171;">401 Unauthorized</code>. Write operations (POST/DELETE) require an <span class="access-badge access-admin">admin</span> account. Read operations are available to all <span class="access-badge access-all">all users</span>.</p>
+        </div>
+
+        <div class="api-section-sub" style="margin-top:24px;">Exchange email + password for an API key. <span class="access-badge access-all">all users</span></div>
+
+        <div class="api-endpoint">
+          <div class="api-endpoint-header" onclick="toggleEndpoint(this)">
+            <span class="method-badge method-post">POST</span>
+            <span class="endpoint-path">/api/auth</span>
+            <span class="endpoint-desc">Get or create API key</span>
+          </div>
+          <div class="api-endpoint-body">
+            <div class="ep-desc">Authenticate with email and password to retrieve your API key. If the account has no key yet, one is generated automatically. No existing API key is required — this is the bootstrap endpoint.</div>
+            <div class="code-block-label">Request Body (JSON or form)</div>
+            <div class="code-block">{
+  "email_address": "you@example.com",
+  "password": "your-password"
+}</div>
+            <div class="code-block-label">Example Request</div>
+            <div class="code-block">curl -X POST https://your-server/api/auth \
+  -H "Content-Type: application/json" \
+  -d '{"email_address":"you@example.com","password":"your-password"}'</div>
+            <div class="code-block-label">Example Response</div>
+            <div class="code-block">{
+  "api_key": "aBcDeFgH...",
+  "name": "Jane Smith",
+  "email": "you@example.com",
+  "access_level": "admin"
+}</div>
+            <div class="ep-desc" style="margin-top:8px;">Returns <code style="font-family:var(--mono);color:#f87171;">400</code> if fields are missing, <code style="font-family:var(--mono);color:#f87171;">401</code> if credentials are invalid, <code style="font-family:var(--mono);color:#f87171;">403</code> if email is unverified.</div>
+          </div>
         </div>
       </div>
 
@@ -903,15 +933,28 @@ curl -X POST https://your-server/api/YOUR_KEY/assets \
 
   // TOC active state on scroll
   (function() {
-    var sections = document.querySelectorAll('.api-section');
+    var sections = Array.from(document.querySelectorAll('.api-section'));
     var tocLinks = document.querySelectorAll('.api-toc a');
 
     function onScroll() {
-      var scrollY = window.scrollY + 80;
-      var current = '';
-      sections.forEach(function(s) {
-        if (s.offsetTop <= scrollY) current = s.id;
-      });
+      var atBottom = (window.scrollY + window.innerHeight) >= (document.documentElement.scrollHeight - 40);
+      var current  = '';
+
+      if (atBottom && sections.length) {
+        // Highlight whichever section is tallest in the viewport right now
+        var viewportMid = window.scrollY + window.innerHeight * 0.5;
+        sections.forEach(function(s) {
+          if (s.offsetTop <= viewportMid) current = s.id;
+        });
+        // Fallback: last section
+        if (!current) current = sections[sections.length - 1].id;
+      } else {
+        var threshold = window.scrollY + Math.min(160, window.innerHeight * 0.25);
+        sections.forEach(function(s) {
+          if (s.offsetTop <= threshold) current = s.id;
+        });
+      }
+
       tocLinks.forEach(function(a) {
         a.classList.toggle('active', a.getAttribute('href') === '#' + current);
       });
