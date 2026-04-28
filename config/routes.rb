@@ -15,7 +15,8 @@ Rails.application.routes.draw do
   get "/scans/status", to: "pages#scans_status", as: :scans_status
   post "/scans/stop",  to: "pages#stop_scan",    as: :stop_scan
   get "/reports",  to: "pages#reports",  as: :reports
-  get "/settings",  to: "pages#settings",  as: :settings
+  get  "/settings",      to: "pages#settings",      as: :settings
+  post "/exploits/sync", to: "exploits#sync",       as: :exploit_sync
   get "/api-docs",  to: "pages#api_docs",  as: :api_docs
   get "/read_only_accounts", to: "pages#read_only_accounts", as: :read_only_accounts
   get "/create_ro_account", to: "pages#create_ro_account", as: :create_ro_account

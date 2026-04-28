@@ -38,7 +38,7 @@
                     <label class="form-label">Scan Mode</label>
                     <div style="display:flex;gap:8px;margin-top:4px;">
                         <button type="button" id="mode-exploit" onclick="setScanMode(false)"
-                            style="padding:6px 16px;border-radius:6px;font-family:var(--mono);font-size:12px;letter-spacing:1px;text-transform:uppercase;cursor:pointer;border:1px solid var(--accent);background:var(--accent);color:#000;">
+                            style="padding:6px 16px;border-radius:6px;font-family:var(--mono);font-size:12px;letter-spacing:1px;text-transform:uppercase;cursor:pointer;border:1px solid #fbbf24;background:#fbbf24;color:#000;">
                             Exploit
                         </button>
                         <button type="button" id="mode-safe" onclick="setScanMode(true)"
@@ -58,12 +58,12 @@
                     <script>
                         function setScanMode(safe) {
                             document.getElementById('safe-mode-value').value = safe ? 'true' : 'false';
-                            document.getElementById('mode-exploit').style.background = safe ? 'transparent' : 'var(--accent)';
+                            document.getElementById('mode-exploit').style.background = safe ? 'transparent' : '#fbbf24';
                             document.getElementById('mode-exploit').style.color = safe ? 'var(--muted)' : '#000';
-                            document.getElementById('mode-exploit').style.borderColor = safe ? 'var(--border)' : 'var(--accent)';
-                            document.getElementById('mode-safe').style.background = safe ? 'var(--accent)' : 'transparent';
+                            document.getElementById('mode-exploit').style.borderColor = safe ? 'var(--border)' : '#fbbf24';
+                            document.getElementById('mode-safe').style.background = safe ? '#fbbf24' : 'transparent';
                             document.getElementById('mode-safe').style.color = safe ? '#000' : 'var(--muted)';
-                            document.getElementById('mode-safe').style.borderColor = safe ? 'var(--accent)' : 'var(--border)';
+                            document.getElementById('mode-safe').style.borderColor = safe ? '#fbbf24' : 'var(--border)';
                             document.getElementById('modules-label').textContent = safe ? 'Auxiliary Scanner Modules' : 'Exploits';
                             document.getElementById('mode-desc').textContent = safe
                                 ? 'Safe mode runs passive scanner modules only — no exploitation.'
