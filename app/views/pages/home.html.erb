@@ -36,7 +36,7 @@
       <div class="stat-label">Offline Agents</div>
       <% offline = (@agents&.count || 0) - connected %>
       <div class="stat-value" data-stat="offline_agents"><%= offline %></div>
-      <div class="stat-delta <%= offline > 0 ? 'bad' : '' %>"><%= offline > 0 ? 'Not reachable' : 'All online' %></div>
+      <div class="stat-delta <%= offline > 0 ? 'bad' : '' %>" data-stat-delta="offline_agents"><%= offline > 0 ? 'Not reachable' : 'All online' %></div>
     </div>
     <div class="stat-card magenta">
       <div class="stat-label">Total Agents</div>
@@ -46,12 +46,12 @@
     <div class="stat-card magenta">
       <div class="stat-label">Connected Agents</div>
       <div class="stat-value" data-stat="connected_agents"><%= connected %></div>
-      <div class="stat-delta <%= connected > 0 ? 'up' : '' %>"><%= connected > 0 ? 'Online now' : 'None online' %></div>
+      <div class="stat-delta <%= connected > 0 ? 'up' : '' %>" data-stat-delta="connected_agents"><%= connected > 0 ? 'Online now' : 'None online' %></div>
     </div>
     <div class="stat-card orange">
       <div class="stat-label">Active Scans</div>
       <div class="stat-value" data-stat="active_scans"><%= @active_scans %></div>
-      <div class="stat-delta"><%= @active_scans.to_i > 0 ? 'Currently running' : 'No scans running' %></div>
+      <div class="stat-delta" data-stat-delta="active_scans"><%= @active_scans.to_i > 0 ? 'Currently running' : 'No scans running' %></div>
     </div>
     <div class="stat-card orange">
       <div class="stat-label">Last Scan</div>
@@ -71,7 +71,7 @@
       <div class="stat-label">Scan-Ready Assets</div>
       <% scan_ready = @assets&.count { |a| a.scan_config.present? } || 0 %>
       <div class="stat-value" data-stat="scan_ready_assets"><%= scan_ready %></div>
-      <div class="stat-delta">With scan config</div>
+      <div class="stat-delta" data-stat-delta="scan_ready_assets">With scan config</div>
     </div>
     <div class="stat-card teal">
       <div class="stat-label">Total Sites</div>
@@ -97,8 +97,7 @@
       <a href="<%= scans_path rescue '#' %>" class="nav-card nav-orange">
         <div class="card-arrow">→</div>
         <div class="card-icon-wrap">
-          <%= image_tag 'SDimagesWhite/snanerWhite.png', alt: '', class: 'card-icon-img icon-white' %>
-          <%= image_tag 'SDimagesBlack/ScansBlack.png', alt: '', class: 'card-icon-img icon-black' %>
+          <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
         </div>
         <div>
           <div class="card-title">Scan History</div>
@@ -109,8 +108,7 @@
       <a href="<%= scanner_path rescue '#' %>" class="nav-card nav-red">
         <div class="card-arrow">→</div>
         <div class="card-icon-wrap">
-          <%= image_tag 'SDimagesWhite/snanerWhite.png', alt: '', class: 'card-icon-img icon-white' %>
-          <%= image_tag 'SDimagesBlack/ScansBlack.png', alt: '', class: 'card-icon-img icon-black' %>
+          <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><circle cx="12" cy="12" r="3"/><line x1="12" y1="2" x2="12" y2="5"/><line x1="12" y1="19" x2="12" y2="22"/><line x1="2" y1="12" x2="5" y2="12"/><line x1="19" y1="12" x2="22" y2="12"/></svg>
         </div>
         <div>
           <div class="card-title">Scanner</div>
@@ -157,8 +155,7 @@
       <a href="<%= scan_profiles_path rescue '#' %>" class="nav-card nav-yellow">
         <div class="card-arrow">→</div>
         <div class="card-icon-wrap">
-          <%= image_tag 'SDimagesWhite/snanerWhite.png', alt: '', class: 'card-icon-img icon-white' %>
-          <%= image_tag 'SDimagesBlack/ScansBlack.png', alt: '', class: 'card-icon-img icon-black' %>
+          <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="8" y1="6" x2="21" y2="6"/><line x1="8" y1="12" x2="21" y2="12"/><line x1="8" y1="18" x2="21" y2="18"/><line x1="3" y1="6" x2="3.01" y2="6"/><line x1="3" y1="12" x2="3.01" y2="12"/><line x1="3" y1="18" x2="3.01" y2="18"/></svg>
         </div>
         <div>
           <div class="card-title">Scan Profiles</div>
@@ -230,16 +227,8 @@
             <div class="activity-item">
               <div class="activity-dot dot-<%= item[:color] %>"></div>
               <div>
-                <% if item[:scan] %>
-                  <div class="activity-text">Scan <strong><%= item[:scan].scan_name %></strong> <%= item[:scan].status %></div>
-                  <div class="activity-time"><%= item[:scan].start_time ? time_ago_in_words(item[:scan].start_time) + ' ago' : '—' %></div>
-                <% elsif item[:agent] %>
-                  <div class="activity-text">Agent <strong><%= item[:agent].agent_id.first(8) %>&hellip;</strong> last heartbeat</div>
-                  <div class="activity-time"><%= time_ago_in_words(item[:agent].last_seen) %> ago</div>
-                <% elsif item[:session] %>
-                  <div class="activity-text">User <strong><%= item[:session].user.name %></strong> signed in</div>
-                  <div class="activity-time"><%= time_ago_in_words(item[:session].created_at) %> ago</div>
-                <% end %>
+                <div class="activity-text"><%= raw item[:text] %></div>
+                <div class="activity-time"><%= item[:time] %></div>
               </div>
             </div>
           <% end %>
@@ -262,40 +251,70 @@
         <div class="panel-sub">SHORTCUTS</div>
       </div>
 
-      <div style="padding: 8px 0;">
+      <div class="quick-btn-grid">
         <% if admin? %>
           <a href="<%= new_asset_path %>" class="quick-btn">
-            <div class="quick-btn-icon">+</div>
+            <div class="quick-btn-icon"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg></div>
             <span class="quick-btn-label">Add New Asset</span>
             <span class="quick-btn-arrow">→</span>
           </a>
-
-          <a href="<%= scans_path rescue '#' %>" class="quick-btn">
-            <div class="quick-btn-icon">
-              <%= image_tag 'SDimagesWhite/PlayWhite.png', alt: '', class: 'quick-icon-img icon-white' %>
-              <%= image_tag 'SDimagesBlack/PlayBlack.png', alt: '', class: 'quick-icon-img icon-black' %>
-            </div>
-            <span class="quick-btn-label">Start New Scan</span>
+          <a href="<%= scanner_path rescue '#' %>" class="quick-btn">
+            <div class="quick-btn-icon"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="12" cy="12" r="10"/><circle cx="12" cy="12" r="3"/><line x1="12" y1="2" x2="12" y2="5"/><line x1="12" y1="19" x2="12" y2="22"/><line x1="2" y1="12" x2="5" y2="12"/><line x1="19" y1="12" x2="22" y2="12"/></svg></div>
+            <span class="quick-btn-label">Launch Scanner</span>
             <span class="quick-btn-arrow">→</span>
           </a>
-
           <a href="<%= agents_path rescue '#' %>" class="quick-btn">
-            <div class="quick-btn-icon">
-              <%= image_tag 'SDimagesWhite/Agent.png', alt: '', class: 'quick-icon-img icon-white' %>
-              <%= image_tag 'SDimagesBlack/AgentsBlack.png', alt: '', class: 'quick-icon-img icon-black' %>
-            </div>
-            <span class="quick-btn-label">View Agents Status</span>
+            <div class="quick-btn-icon"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><rect x="2" y="3" width="20" height="14" rx="2"/><line x1="8" y1="21" x2="16" y2="21"/><line x1="12" y1="17" x2="12" y2="21"/></svg></div>
+            <span class="quick-btn-label">Agent Status</span>
+            <span class="quick-btn-arrow">→</span>
+          </a>
+          <a href="<%= sites_path rescue '#' %>" class="quick-btn">
+            <div class="quick-btn-icon"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="14" y="14" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/></svg></div>
+            <span class="quick-btn-label">Network Sites</span>
+            <span class="quick-btn-arrow">→</span>
+          </a>
+          <a href="<%= scan_profiles_path rescue '#' %>" class="quick-btn">
+            <div class="quick-btn-icon"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><line x1="8" y1="6" x2="21" y2="6"/><line x1="8" y1="12" x2="21" y2="12"/><line x1="8" y1="18" x2="21" y2="18"/><line x1="3" y1="6" x2="3.01" y2="6"/><line x1="3" y1="12" x2="3.01" y2="12"/><line x1="3" y1="18" x2="3.01" y2="18"/></svg></div>
+            <span class="quick-btn-label">Scan Profiles</span>
+            <span class="quick-btn-arrow">→</span>
+          </a>
+          <a href="<%= assets_path %>" class="quick-btn">
+            <div class="quick-btn-icon"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><ellipse cx="12" cy="5" rx="9" ry="3"/><path d="M21 12c0 1.66-4.03 3-9 3S3 13.66 3 12"/><path d="M3 5v14c0 1.66 4.03 3 9 3s9-1.34 9-3V5"/></svg></div>
+            <span class="quick-btn-label">Manage Assets</span>
+            <span class="quick-btn-arrow">→</span>
+          </a>
+          <a href="<%= reports_path rescue '#' %>" class="quick-btn">
+            <div class="quick-btn-icon"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/><polyline points="10 9 9 9 8 9"/></svg></div>
+            <span class="quick-btn-label">View Reports</span>
+            <span class="quick-btn-arrow">→</span>
+          </a>
+          <a href="<%= read_only_accounts_path rescue '#' %>" class="quick-btn">
+            <div class="quick-btn-icon"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg></div>
+            <span class="quick-btn-label">Manage Accounts</span>
+            <span class="quick-btn-arrow">→</span>
+          </a>
+        <% else %>
+          <a href="<%= reports_path rescue '#' %>" class="quick-btn">
+            <div class="quick-btn-icon"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/></svg></div>
+            <span class="quick-btn-label">View Reports</span>
+            <span class="quick-btn-arrow">→</span>
+          </a>
+          <a href="<%= assets_path %>" class="quick-btn">
+            <div class="quick-btn-icon"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><ellipse cx="12" cy="5" rx="9" ry="3"/><path d="M21 12c0 1.66-4.03 3-9 3S3 13.66 3 12"/><path d="M3 5v14c0 1.66 4.03 3 9 3s9-1.34 9-3V5"/></svg></div>
+            <span class="quick-btn-label">View Assets</span>
+            <span class="quick-btn-arrow">→</span>
+          </a>
+          <a href="<%= api_docs_path rescue '#' %>" class="quick-btn">
+            <div class="quick-btn-icon"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><polyline points="16 18 22 12 16 6"/><polyline points="8 6 2 12 8 18"/></svg></div>
+            <span class="quick-btn-label">API Docs</span>
+            <span class="quick-btn-arrow">→</span>
+          </a>
+          <a href="<%= settings_path rescue '#' %>" class="quick-btn">
+            <div class="quick-btn-icon"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06A1.65 1.65 0 0 0 4.68 15a1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06A1.65 1.65 0 0 0 9 4.68a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06A1.65 1.65 0 0 0 19.4 9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg></div>
+            <span class="quick-btn-label">Settings</span>
             <span class="quick-btn-arrow">→</span>
           </a>
         <% end %>
-        <a href="<%= reports_path rescue '#' %>" class="quick-btn">
-          <div class="quick-btn-icon">
-            <%= image_tag 'SDimagesWhite/VIewReportsWhite.png', alt: '', class: 'quick-icon-img icon-white' %>
-            <%= image_tag 'SDimagesBlack/ViewReportBlack.png', alt: '', class: 'quick-icon-img icon-black' %>
-          </div>
-          <span class="quick-btn-label">Latest Report</span>
-          <span class="quick-btn-arrow">→</span>
-        </a>
       </div>
     </div>
   </div>
@@ -344,13 +363,20 @@
       .then(function(data) {
         if (data.stats) {
           Object.keys(data.stats).forEach(function(k) {
-            const el = document.querySelector('[data-stat="' + k + '"]');
+            var el = document.querySelector('[data-stat="' + k + '"]');
             if (el) el.textContent = data.stats[k];
+          });
+        }
+        if (data.stat_deltas) {
+          Object.keys(data.stat_deltas).forEach(function(k) {
+            var el = document.querySelector('[data-stat-delta="' + k + '"]');
+            if (el) el.textContent = data.stat_deltas[k];
           });
         }
         if (data.activity) renderActivity(data.activity);
       })
       .catch(function(err) { console.error('Home stats poll failed:', err); });
   }
+  pollHomeStats();
   setInterval(pollHomeStats, 10000);
 </script>

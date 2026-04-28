@@ -456,10 +456,15 @@ body {
   flex-shrink: 0;
 }
 
-.dot-green  { background: var(--green); }
-.dot-orange { background: var(--orange); }
-.dot-red    { background: var(--red); }
-.dot-blue   { background: var(--accent); }
+.dot-green   { background: var(--green); }
+.dot-orange  { background: var(--orange); }
+.dot-red     { background: var(--red); }
+.dot-blue    { background: var(--accent); }
+.dot-violet  { background: var(--purple); }
+.dot-teal    { background: #2dd4bf; }
+.dot-yellow  { background: #fbbf24; }
+.dot-gray    { background: var(--muted); }
+.dot-magenta { background: #d946ef; }
 
 .activity-text { font-size: 13px; color: var(--muted); line-height: 1.5; flex: 1; }
 .activity-text strong { color: var(--text); font-weight: 500; }
@@ -485,6 +490,20 @@ body {
 .quick-btn-icon  { width: 26px; height: 26px; border-radius: 6px; background: var(--accent-dim); display: flex; align-items: center; justify-content: center; font-size: 12px; flex-shrink: 0; }
 .quick-btn-label { flex: 1; }
 .quick-btn-arrow { color: var(--muted); font-size: 12px; }
+
+.quick-btn-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 4px;
+  padding: 8px;
+}
+.quick-btn-grid .quick-btn {
+  margin: 0;
+  font-size: 12px;
+  padding: 10px 10px;
+}
+.quick-btn-grid .quick-btn-label { font-size: 12px; }
+@media (max-width: 900px) { .quick-btn-grid { grid-template-columns: 1fr; } }
 
 /* ── Buttons ── */
 .btn {
@@ -1211,6 +1230,8 @@ tbody tr:hover { background: var(--surface2); }
 .sidebar-nav-item.nav-red:hover     { box-shadow: 0 0 8px 1px rgba(239,68,68,0.45);  border-color: rgba(239,68,68,0.3); }
 .sidebar-nav-item.nav-yellow:hover  { box-shadow: 0 0 8px 1px rgba(251,191,36,0.45); border-color: rgba(251,191,36,0.3); }
 .sidebar-nav-item.nav-white:hover   { box-shadow: 0 0 8px 1px rgba(255,255,255,0.35); border-color: rgba(255,255,255,0.25); }
+.sidebar-nav-item.nav-lime:hover    { box-shadow: 0 0 8px 1px rgba(132,204,22,0.45);  border-color: rgba(132,204,22,0.3); }
+.sidebar-nav-item.nav-pink:hover    { box-shadow: 0 0 8px 1px rgba(236,72,153,0.45);  border-color: rgba(236,72,153,0.3); }
 
 .sidebar-nav-item.active {
   background: rgba(255,255,255,0.08);
@@ -1238,6 +1259,8 @@ tbody tr:hover { background: var(--surface2); }
 .nav-dot.red     { background: var(--red); }
 .nav-dot.yellow  { background: #fbbf24; }
 .nav-dot.white   { background: #ffffff; }
+.nav-dot.lime    { background: #84cc16; }
+.nav-dot.pink    { background: #ec4899; }
 
 .nav-badge {
   background: var(--accent-dim);

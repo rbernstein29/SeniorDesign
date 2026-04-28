@@ -39,38 +39,34 @@
 
     <% if admin? %>
       <a href="<%= (scans_path rescue '#') %>" class="sidebar-nav-item nav-orange <%= current_page == 'scans' ? 'active' : '' %>">
-        <span class="nav-icon">
-          <%= image_tag 'SDimagesWhite/snanerWhite.png', alt: '', class: 'nav-icon-img icon-white' %>
-          <%= image_tag 'SDimagesBlack/ScansBlack.png', alt: '', class: 'nav-icon-img icon-black' %>
+        <span class="nav-icon" style="display:flex;align-items:center;justify-content:center;">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
         </span>
         <span class="nav-dot orange"></span>
         <span class="nav-label">Scan History</span>
       </a>
 
       <a href="<%= (scanner_path rescue '#') %>" class="sidebar-nav-item nav-red <%= current_page == 'scanner' ? 'active' : '' %>">
-        <span class="nav-icon">
-          <%= image_tag 'SDimagesWhite/snanerWhite.png', alt: '', class: 'nav-icon-img icon-white' %>
-          <%= image_tag 'SDimagesBlack/ScansBlack.png',  alt: '', class: 'nav-icon-img icon-black' %>
+        <span class="nav-icon" style="display:flex;align-items:center;justify-content:center;">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><circle cx="12" cy="12" r="3"/><line x1="12" y1="2" x2="12" y2="5"/><line x1="12" y1="19" x2="12" y2="22"/><line x1="2" y1="12" x2="5" y2="12"/><line x1="19" y1="12" x2="22" y2="12"/></svg>
         </span>
         <span class="nav-dot red"></span>
         <span class="nav-label">Scanner</span>
       </a>
 
       <a href="<%= (scan_profiles_path rescue '#') %>" class="sidebar-nav-item nav-yellow <%= current_page == 'scan_profiles' ? 'active' : '' %>">
-        <span class="nav-icon">
-          <%= image_tag 'SDimagesWhite/snanerWhite.png', alt: '', class: 'nav-icon-img icon-white' %>
-          <%= image_tag 'SDimagesBlack/ScansBlack.png',  alt: '', class: 'nav-icon-img icon-black' %>
+        <span class="nav-icon" style="display:flex;align-items:center;justify-content:center;">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="8" y1="6" x2="21" y2="6"/><line x1="8" y1="12" x2="21" y2="12"/><line x1="8" y1="18" x2="21" y2="18"/><line x1="3" y1="6" x2="3.01" y2="6"/><line x1="3" y1="12" x2="3.01" y2="12"/><line x1="3" y1="18" x2="3.01" y2="18"/></svg>
         </span>
         <span class="nav-dot yellow"></span>
         <span class="nav-label">Scan Profiles</span>
       </a>
 
-      <a href="<%= (code_analysis_path rescue '#') %>" class="sidebar-nav-item nav-red <%= current_page == 'code_analysis' ? 'active' : '' %>">
-        <span class="nav-icon">
-          <%= image_tag 'SDimagesWhite/snanerWhite.png', alt: '', class: 'nav-icon-img icon-white' %>
-          <%= image_tag 'SDimagesBlack/ScansBlack.png',  alt: '', class: 'nav-icon-img icon-black' %>
+      <a href="<%= (code_analysis_path rescue '#') %>" class="sidebar-nav-item nav-lime <%= current_page == 'code_analysis' ? 'active' : '' %>">
+        <span class="nav-icon" style="display:flex;align-items:center;justify-content:center;">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="16 18 22 12 16 6"/><polyline points="8 6 2 12 8 18"/></svg>
         </span>
-        <span class="nav-dot red"></span>
+        <span class="nav-dot lime"></span>
         <span class="nav-label">Code Analysis</span>
       </a>
 
@@ -124,14 +120,14 @@
       </a>
     <% end %>
 
-    <a href="<%= (api_docs_path rescue '#') %>" class="sidebar-nav-item nav-teal <%= current_page == 'api_docs' ? 'active' : '' %>">
+    <a href="<%= (api_docs_path rescue '#') %>" class="sidebar-nav-item nav-pink <%= current_page == 'api_docs' ? 'active' : '' %>">
       <span class="nav-icon" style="display:flex;align-items:center;justify-content:center;">
         <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="opacity:0.85;">
           <polyline points="16 18 22 12 16 6"></polyline>
           <polyline points="8 6 2 12 8 18"></polyline>
         </svg>
       </span>
-      <span class="nav-dot teal"></span>
+      <span class="nav-dot pink"></span>
       <span class="nav-label">API Docs</span>
     </a>
 
