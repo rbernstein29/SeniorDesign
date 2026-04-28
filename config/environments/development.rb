@@ -71,9 +71,10 @@ Rails.application.configure do
   config.hosts << "scanaegis.com"
   config.hosts << "www.scanaegis.com"
 
-  # Mailer host — set APP_HOST in .env to control email link domain
-  # APP_PORT is intentionally excluded — scanaegis.com is served on standard ports via reverse proxy
-  config.action_mailer.default_url_options = { host: ENV.fetch("APP_HOST", "100.69.88.107") }
+  # Mailer host — set APP_HOST in .env to control email link domain.
+  # APP_PORT is intentionally excluded — scanaegis.com is served on standard ports via reverse proxy.
+  # Read directly from ENV (not Aegis.config) since environment files load before initializers.
+  config.action_mailer.default_url_options = { host: ENV.fetch("APP_HOST", "localhost") }
 
   # Resend SMTP — key loaded from .env by dotenv-rails
   config.action_mailer.delivery_method    = :smtp

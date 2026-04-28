@@ -17,8 +17,8 @@ namespace :agents do
     File.write(temp_file, keys_content)
 
     # Deploy via scp + ssh (will prompt for trevor's password)
-    server = "100.69.88.107"
-    user   = "trevor"
+    server = Aegis.config.app.host
+    user   = ENV.fetch('AGENT_DEPLOY_USER', 'trevor')
 
     puts "📤 Copying keys to #{server}... (you may be prompted for your password)"
     system("scp #{temp_file} #{user}@#{server}:/tmp/agent_authorized_keys")

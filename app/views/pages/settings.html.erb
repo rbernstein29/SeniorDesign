@@ -78,8 +78,8 @@
         <% if admin? %>
             <!-- Exploit Database -->
             <%
-              msf_exploit_base = ENV.fetch('MSF_MODULES_PATH',    '/opt/metasploit-framework/embedded/framework/modules/exploits')
-              msf_aux_base     = ENV.fetch('MSF_AUXILIARY_PATH',  '/opt/metasploit-framework/embedded/framework/modules/auxiliary')
+              msf_exploit_base = Aegis.config.msf.modules_path
+              msf_aux_base     = Aegis.config.msf.auxiliary_path
               msf_available    = Dir.exist?(msf_exploit_base) && Dir.exist?(msf_aux_base)
 
               if msf_available
