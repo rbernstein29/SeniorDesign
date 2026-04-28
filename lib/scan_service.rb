@@ -448,8 +448,11 @@ class ScanService
         break unless jobs.key?(job_id)
       end
     else
-      # Synchronous path: give a short grace window for delayed session registration.
-      3.times do
+      # Synchronous path: poll for up to 30s in case the session callback is
+      # still in flight after module.execute returns. Bounded by timeout_secs
+      # so callers can shorten it for fast scans.
+      sync_deadline = Time.now + [30, timeout_secs].min
+      while Time.now < sync_deadline
         sleep 2
         found = check_sessions.call
         return found if found
