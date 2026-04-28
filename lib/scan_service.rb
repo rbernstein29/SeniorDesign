@@ -322,9 +322,13 @@ class ScanService
   end
 
   def outbound_ip_for(target_ip)
+    # MSF_LHOST overrides auto-detection — required in Docker where the
+    # container's internal IP is returned by socket routing but is unreachable
+    # by scan targets. Set MSF_LHOST to the host's Tailscale/LAN IP.
+    return ENV['MSF_LHOST'] if ENV['MSF_LHOST'].present?
     UDPSocket.open { |s| s.connect(target_ip, 1); s.addr.last }
   rescue
-    ENV.fetch('MSF_LHOST', '127.0.0.1')
+    '127.0.0.1'
   end
 
   def rpc_client
