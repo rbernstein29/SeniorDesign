@@ -77,7 +77,7 @@
 
         <% if admin? %>
             <!-- Metasploit Modules -->
-            <% msf_base  = ENV.fetch('MSF_MODULES_PATH', '/usr/share/metasploit-framework/modules/exploits') %>
+            <% msf_base  = ENV.fetch('MSF_MODULES_PATH', '/opt/metasploit-framework/embedded/framework/modules/exploits') %>
             <% msf_count = Dir.exist?(msf_base) ? Dir.glob("#{msf_base}/**/*.rb").size : nil %>
             <div class="settings-card full-width">
                 <div class="card-header">
