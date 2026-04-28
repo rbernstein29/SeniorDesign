@@ -933,9 +933,9 @@ curl -X POST https://your-server/api/YOUR_KEY/assets \
 
   // TOC active state — click + scroll
   (function() {
-    var sections     = Array.from(document.querySelectorAll('.api-section'));
-    var tocLinks     = Array.from(document.querySelectorAll('.api-toc a'));
-    var suppressUntil = 0; // timestamp: ignore scroll events while page is settling after a click
+    var sections      = Array.from(document.querySelectorAll('.api-section'));
+    var tocLinks      = Array.from(document.querySelectorAll('.api-toc a'));
+    var suppressUntil = 0;
 
     function setActive(id) {
       tocLinks.forEach(function(a) {
@@ -945,22 +945,49 @@ curl -X POST https://your-server/api/YOUR_KEY/assets \
 
     function onScroll() {
       if (Date.now() < suppressUntil) return;
-      // 80px threshold: a section becomes active once its top edge is within
-      // 80px of the viewport top. Small enough that adjacent short sections
-      // (Code Analysis, Agents) don't both qualify simultaneously.
-      var current = '';
+
+      // Threshold: generous so sections near the bottom of the page (Code Analysis,
+      // Agents) can become active even when the page can't scroll them to the very top.
+      var threshold = Math.max(160, window.innerHeight * 0.30);
+
+      // Selection rule when multiple sections satisfy top <= threshold:
+      //   • Positive tops (section header still below viewport top): smallest wins
+      //     (the section whose header is closest to the viewport top = being read now).
+      //   • Negative tops (header scrolled above viewport): largest wins
+      //     (most recently scrolled past = what you just read).
+      //   • A positive top always beats a negative top.
+      var current    = '';
+      var currentTop = null;
+
       sections.forEach(function(s) {
-        if (s.getBoundingClientRect().top <= 80) current = s.id;
+        var top = s.getBoundingClientRect().top;
+        if (top > threshold) return;
+
+        if (currentTop === null) {
+          current = s.id; currentTop = top; return;
+        }
+
+        if (top >= 0 && currentTop < 0) {
+          // prefer positive over negative
+          current = s.id; currentTop = top;
+        } else if (top >= 0 && currentTop >= 0) {
+          // both positive: prefer smaller (closer to viewport top)
+          if (top < currentTop) { current = s.id; currentTop = top; }
+        } else if (top < 0 && currentTop < 0) {
+          // both negative: prefer larger (most recently scrolled past)
+          if (top > currentTop) { current = s.id; currentTop = top; }
+        }
+        // current positive, new negative → keep current
       });
+
       setActive(current);
     }
 
-    // On click: highlight immediately and freeze scroll-based updates for 1s
-    // so the scroll animation can't override the selection.
+    // On click: highlight immediately and suppress scroll events for 1 s
+    // so the page-settle animation can't override the selection.
     tocLinks.forEach(function(link) {
       link.addEventListener('click', function() {
-        var id = this.getAttribute('href').slice(1);
-        setActive(id);
+        setActive(this.getAttribute('href').slice(1));
         suppressUntil = Date.now() + 1000;
       });
     });
