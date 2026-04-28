@@ -25,8 +25,8 @@ class ScanJob < ApplicationJob
       use_agent:       scan_options[:use_agent] || false
     )
 
-    ActivityLog.create!(organization_id: org_id, user_id: user_id, color: 'cyan',
-      text: "Scan <strong>#{ERB::Util.h(scan.scan_name)}</strong> started on #{total} target(s)") rescue nil
+    Aegis::Notifications::ScanLifecycle.started(scan, total,
+      organization_id: org_id, user_id: user_id)
 
     broadcast_progress(user_id, 0, "Initializing scan...")
 
@@ -53,8 +53,8 @@ class ScanJob < ApplicationJob
     broadcast_complete(user_id)
   rescue => e
     scan&.update!(status: 'failed', end_time: Time.current)
-    ActivityLog.create!(organization_id: org_id, user_id: user_id, color: 'red',
-      text: "Scan <strong>#{ERB::Util.h(scan&.scan_name || 'unknown')}</strong> failed: #{ERB::Util.h(e.message.truncate(80))}") rescue nil
+    Aegis::Notifications::ScanLifecycle.failed(scan,
+      organization_id: org_id, user_id: user_id, message: e.message)
     broadcast_progress(user_id, 0, "Scan failed: #{e.message}", error: true)
     raise
   end

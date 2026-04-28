@@ -3,7 +3,6 @@ require 'socket'
 require 'open3'
 require 'tempfile'
 require 'timeout'
-require 'net/smtp'
 require 'thread'
 require 'set'
 require 'shellwords'
@@ -195,14 +194,14 @@ class ScanService
     log_results_to_file(report_json, @org_id)
     cleanup_old_logs(Aegis.config.scan.log_retention_days)
 
-    ActivityLog.create!(organization_id: @org_id, user_id: @user_id, color: 'green',
-      text: "Scan <strong>#{ERB::Util.h(@scan.scan_name)}</strong> completed — #{findings_count} finding(s)") rescue nil
+    Aegis::Notifications::ScanLifecycle.completed(@scan, findings_count,
+      organization_id: @org_id, user_id: @user_id)
     puts "Scan complete."
   rescue => e
     puts "Scan failed: #{e.message}"
     @scan&.update!(status: 'failed', end_time: Time.current)
-    ActivityLog.create!(organization_id: @org_id, user_id: @user_id, color: 'red',
-      text: "Scan <strong>#{ERB::Util.h(@scan&.scan_name || 'scan')}</strong> failed") rescue nil
+    Aegis::Notifications::ScanLifecycle.failed(@scan,
+      organization_id: @org_id, user_id: @user_id)
     raise
   end
 
@@ -210,77 +209,12 @@ class ScanService
 
   def connect_network(ip, proxy = nil)
     puts "Checking connectivity to #{ip}#{proxy ? " via #{proxy}" : " (direct)"}..."
-    proxy ? socks5_alive_check(ip, proxy) : direct_alive_check(ip)
+    Aegis::Network::TcpProbe.alive?(ip, proxy: proxy)
   end
 
   def disconnect_network
     puts "Disconnecting from network..."
     return 1
-  end
-
-  def socks5_alive_check(target_ip, proxy)
-    parts      = proxy.sub(/\Asocks5:\/?\/?/, '').split(':')
-    socks_host = parts[0]
-    socks_port = parts[1].to_i
-    return 0 unless socks_host.present? && socks_port > 0
-
-    [22, 80, 443, 445].each do |test_port|
-      begin
-        Timeout.timeout(5) do
-          sock = TCPSocket.new(socks_host, socks_port)
-          sock.write("\x05\x01\x00")
-          unless sock.read(2) == "\x05\x00"
-            sock.close
-            next
-          end
-          addr_bytes = target_ip.split('.').map(&:to_i).pack('C4')
-          sock.write("\x05\x01\x00\x01" + addr_bytes + [test_port].pack('n'))
-          resp = sock.read(10)
-          sock.close
-          if resp && resp.bytesize >= 2 && resp.getbyte(1) == 0
-            puts "[+] #{target_ip}:#{test_port} reachable via agent proxy"
-            return 1
-          end
-        end
-      rescue Errno::ECONNREFUSED
-        puts "[+] #{target_ip}:#{test_port} refused via proxy — host is alive"
-        return 1
-      rescue => e
-        puts "[-] #{target_ip}:#{test_port} via proxy: #{e.message}"
-      end
-    end
-    puts "[-] #{target_ip} unreachable via agent proxy"
-    0
-  rescue => e
-    puts "Connect check error for #{target_ip}: #{e.message}"
-    0
-  end
-
-  def direct_alive_check(ip)
-    # ICMP ping — fast single-packet probe
-    if system("ping -c 1 -W 1 #{Shellwords.escape(ip)} > /dev/null 2>&1")
-      puts "[+] #{ip} alive (ICMP ping)"
-      return 1
-    end
-
-    # Fallback: some hosts filter ICMP but have open TCP ports
-    [22, 80, 443, 445, 8080].each do |test_port|
-      begin
-        Timeout.timeout(5) { TCPSocket.new(ip, test_port).close }
-        puts "[+] #{ip}:#{test_port} reachable (direct)"
-        return 1
-      rescue Errno::ECONNREFUSED
-        puts "[+] #{ip}:#{test_port} refused — host is alive (direct)"
-        return 1
-      rescue => e
-        puts "[-] #{ip}:#{test_port}: #{e.message}"
-      end
-    end
-    puts "[-] #{ip} unreachable (direct)"
-    0
-  rescue => e
-    puts "Connect check error for #{ip}: #{e.message}"
-    0
   end
 
   def attack(exploit, target_ip, port, proxy = nil)
@@ -523,14 +457,10 @@ class ScanService
         end
       end
 
-      ip_pat  = Regexp.escape(target_ip)
-      meaningful_ip_lines = output.scan(/\[\*\] #{ip_pat}.+/i)
-                                  .reject { |l| l.match?(/Scanned \d+ of \d+ hosts/i) }
-      success  = output.match?(/\[\+\]/i) || meaningful_ip_lines.any?
-      evidence = (output.scan(/\[\+\].+/i) + meaningful_ip_lines).map(&:strip).join("\n").first(500)
-      dump_msf_debug(exploit, target_ip, port, nil, output, output, success, meaningful_ip_lines) if Aegis.config.msf.debug
-      puts success ? "[+] #{mod_name} detected on #{target_ip}" : "[-] #{mod_name} — nothing detected on #{target_ip}"
-      { success: success, evidence: evidence.presence }
+      parsed = Aegis::Msf::OutputParser.parse_safe_mode(output, target_ip)
+      dump_msf_debug(exploit, target_ip, port, nil, output, output, parsed[:success], parsed[:meaningful_ip_lines]) if Aegis.config.msf.debug
+      puts parsed[:success] ? "[+] #{mod_name} detected on #{target_ip}" : "[-] #{mod_name} — nothing detected on #{target_ip}"
+      { success: parsed[:success], evidence: parsed[:evidence] }
     ensure
       client.call('console.destroy', own_cid) rescue nil if own_cid
     end
@@ -579,28 +509,15 @@ class ScanService
       end
 
       # Strip ANSI colour codes produced by msfconsole in TTY mode
-      clean  = output.gsub(/\e\[[\d;]*[A-Za-z]/, '').gsub(/\r\n?/, "\n")
-      ip_pat = Regexp.escape(target_ip)
+      clean = output.gsub(/\e\[[\d;]*[A-Za-z]/, '').gsub(/\r\n?/, "\n")
 
-      # For safe mode: [+] lines are explicit hits; [*] ip:port lines with actual content
-      # (not the generic "Scanned X of Y hosts" completion line) count as informational detections.
-      meaningful_ip_lines = clean.scan(/\[\*\] #{ip_pat}.+/i)
-                                 .reject { |l| l.match?(/Scanned \d+ of \d+ hosts/i) }
-
-      success = if @scan_options[:safe_mode]
-        clean.match?(/\[\+\]/i) || meaningful_ip_lines.any?
+      parsed = if @scan_options[:safe_mode]
+        Aegis::Msf::OutputParser.parse_safe_mode(clean, target_ip)
       else
-        clean.match?(/session \d+ opened|Meterpreter session|Command shell session/i)
+        Aegis::Msf::OutputParser.parse_exploit_mode(clean).merge(meaningful_ip_lines: [])
       end
-
-      evidence_lines = if @scan_options[:safe_mode]
-        (clean.scan(/\[\+\].*/i) + meaningful_ip_lines).join("\n")
-      else
-        clean.scan(/\[\+\].*|.*session \d+ opened.*/i).join("\n")
-      end
-      evidence = evidence_lines.length > 500 ? evidence_lines[0, 500] : evidence_lines
-      dump_msf_debug(exploit, target_ip, port, rc_file.path, output, clean, success, meaningful_ip_lines) if Aegis.config.msf.debug
-      { success: success, evidence: evidence.presence || (success ? 'Detected' : nil) }
+      dump_msf_debug(exploit, target_ip, port, rc_file.path, output, clean, parsed[:success], parsed[:meaningful_ip_lines]) if Aegis.config.msf.debug
+      { success: parsed[:success], evidence: parsed[:evidence] || (parsed[:success] ? 'Detected' : nil) }
     rescue => e
       puts "Attack failed: #{e.message}"
       { success: false, evidence: nil }
@@ -885,29 +802,4 @@ class ScanService
   end
 
   def parse_port(port_str) = parse_ports(port_str).first
-
-  def send_email(to_email, subject, body)
-    from_email = Aegis.config.smtp.from
-    smtp_host  = Aegis.config.smtp.host
-    smtp_port  = Aegis.config.smtp.port
-
-    msg = <<~END_OF_MESSAGE
-      From: #{from_email}
-      To: #{to_email}
-      Subject: #{subject}
-      MIME-Version: 1.0
-      Content-Type: text/plain; charset=utf-8
-
-      #{body}
-    END_OF_MESSAGE
-
-    begin
-      Net::SMTP.start(smtp_host, smtp_port) do |smtp|
-        smtp.send_message msg, from_email, to_email
-      end
-      puts "Email sent to #{to_email}"
-    rescue => e
-      puts "Failed to send email: #{e.message}"
-    end
-  end
 end
