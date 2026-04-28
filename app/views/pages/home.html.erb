@@ -189,6 +189,39 @@
         </div>
         <div class="card-tag">CONFIG</div>
       </a>
+      <a href="<%= code_analysis_path rescue '#' %>" class="nav-card nav-lime">
+        <div class="card-arrow">→</div>
+        <div class="card-icon-wrap">
+          <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="16 18 22 12 16 6"/><polyline points="8 6 2 12 8 18"/></svg>
+        </div>
+        <div>
+          <div class="card-title">Code Analysis</div>
+          <div class="card-desc">Analyze source code for security vulnerabilities and insecure patterns.</div>
+        </div>
+        <div class="card-tag">ANALYSIS</div>
+      </a>
+      <a href="<%= api_docs_path rescue '#' %>" class="nav-card nav-pink">
+        <div class="card-arrow">→</div>
+        <div class="card-icon-wrap">
+          <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/><polyline points="10 9 9 9 8 9"/></svg>
+        </div>
+        <div>
+          <div class="card-title">API Documentation</div>
+          <div class="card-desc">Explore the Aegis REST API reference and integration guides.</div>
+        </div>
+        <div class="card-tag">DOCS</div>
+      </a>
+      <a href="<%= settings_path rescue '#' %>" class="nav-card nav-white">
+        <div class="card-arrow">→</div>
+        <div class="card-icon-wrap">
+          <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><ellipse cx="12" cy="5" rx="9" ry="3"/><path d="M21 12c0 1.66-4.03 3-9 3S3 13.66 3 12"/><path d="M3 5v14c0 1.66 4.03 3 9 3s9-1.34 9-3V5"/></svg>
+        </div>
+        <div>
+          <div class="card-title">Exploit Database</div>
+          <div class="card-desc">Browse synced Metasploit modules and refresh the exploit library.</div>
+        </div>
+        <div class="card-tag">EXPLOITS</div>
+      </a>
     <% end %>
     <a href="<%= settings_path rescue '#' %>" class="nav-card nav-blue">
       <div class="card-arrow">→</div>
