@@ -61,24 +61,14 @@ class ReportsController < ApplicationController
 
   def retest
     report = org_reports.includes(:scan).find(params[:id])
-    scan   = report.scan
+    result = Aegis::Reports::Retester.new(report, organization_id: current_org_id, user_id: Current.user.id).call
 
-    findings         = Finding.where(scan_id: report.scan_id).includes(:exploit, :asset)
-    asset_ids        = findings.map(&:asset_id).uniq.compact
-    module_allowlist = findings.map { |f| f.exploit&.metasploit_module }.uniq.compact
-
-    if asset_ids.empty? || module_allowlist.empty?
-      redirect_to report_path(report), alert: 'No findings to retest.'
-      return
+    if result.queued?
+      redirect_to scans_path,
+        notice: "Retest queued — #{result.asset_count} asset(s), #{result.module_count} module(s)."
+    else
+      redirect_to report_path(report), alert: "#{result.error}."
     end
-
-    filter_params = { 'module_allowlist' => module_allowlist }
-    scan_options  = { safe_mode: scan&.safe_mode?, retest_of: scan&.id }
-
-    ScanJob.perform_later(current_org_id, filter_params, Current.user.id, asset_ids, scan_options)
-    redirect_to scans_path,
-      notice: "Retest queued — #{asset_ids.size} asset(s), #{module_allowlist.size} module(s)."
-
   rescue ActiveRecord::RecordNotFound
     redirect_to reports_path, alert: 'Report not found.'
   end
@@ -111,30 +101,7 @@ class ReportsController < ApplicationController
       return
     end
 
-    findings = Array(report.report_data)
-      .select { |r| r['isVulnerable'] == true || r[:isVulnerable] == true }
-      .map do |r|
-        {
-          target:        r['target']        || r[:target],
-          port:          r['port']          || r[:port],
-          isVulnerable:  true,
-          exploit:       r['exploit']       || r[:exploit],
-          exploit_name:  r['exploit_name']  || r[:exploit_name],
-          severity:      r['severity']      || r[:severity],
-          cve_id:        r['cve_id']        || r[:cve_id],
-          evidence:      r['evidence']      || r[:evidence],
-          exploit_code:  r['exploit_code']  || r[:exploit_code]
-        }
-      end
-
-    payload = {
-      report_name:  report.report_name,
-      scan_type:    'whitebox',
-      generated_at: report.generated_at,
-      findings:     findings
-    }
-
-    send_data payload.to_json,
+    send_data Aegis::Reports::WhiteboxPayload.new(report).to_json,
       filename:    "#{report.report_name.parameterize}-whitebox.json",
       type:        'application/json',
       disposition: 'attachment'

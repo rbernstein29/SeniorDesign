@@ -70,29 +70,7 @@ module Api
         return
       end
 
-      findings = Array(report.report_data)
-        .select { |r| r["isVulnerable"] == true || r[:isVulnerable] == true }
-        .map do |r|
-          {
-            target:       r["target"]       || r[:target],
-            port:         r["port"]         || r[:port],
-            isVulnerable: true,
-            exploit:      r["exploit"]      || r[:exploit],
-            exploit_name: r["exploit_name"] || r[:exploit_name],
-            severity:     r["severity"]     || r[:severity],
-            cve_id:       r["cve_id"]       || r[:cve_id],
-            evidence:     r["evidence"]     || r[:evidence],
-            exploit_code: r["exploit_code"] || r[:exploit_code]
-          }
-        end
-
-      payload = {
-        report_name:  report.report_name,
-        scan_type:    "whitebox",
-        generated_at: report.generated_at,
-        findings:     findings
-      }
-      send_data payload.to_json,
+      send_data Aegis::Reports::WhiteboxPayload.new(report).to_json,
         filename:    "#{report.report_name.parameterize}-whitebox.json",
         type:        "application/json",
         disposition: "attachment"
@@ -108,28 +86,22 @@ module Api
     end
 
     def retest
-      report   = org_reports.includes(:scan).find(params[:id])
-      scan     = report.scan
-      findings = Finding.where(scan_id: report.scan_id).includes(:exploit, :asset)
+      report = org_reports.includes(:scan).find(params[:id])
+      result = Aegis::Reports::Retester.new(
+        report,
+        organization_id: @current_user.organization_id,
+        user_id:         @current_user.id
+      ).call
 
-      asset_ids        = findings.map(&:asset_id).uniq.compact
-      module_allowlist = findings.map { |f| f.exploit&.metasploit_module }.uniq.compact
-
-      if asset_ids.empty? || module_allowlist.empty?
-        render json: { error: "No findings to retest" }, status: :unprocessable_entity
-        return
+      if result.queued?
+        render json: {
+          queued:       true,
+          asset_count:  result.asset_count,
+          module_count: result.module_count
+        }, status: :accepted
+      else
+        render json: { error: result.error }, status: :unprocessable_entity
       end
-
-      filter_params = { "module_allowlist" => module_allowlist }
-      scan_options  = { safe_mode: scan&.safe_mode?, retest_of: scan&.id }
-
-      ScanJob.perform_later(@current_user.organization_id, filter_params,
-                            @current_user.id, asset_ids, scan_options)
-      render json: {
-        queued:       true,
-        asset_count:  asset_ids.size,
-        module_count: module_allowlist.size
-      }, status: :accepted
     rescue ActiveRecord::RecordNotFound
       render json: { error: "Report not found" }, status: :not_found
     end

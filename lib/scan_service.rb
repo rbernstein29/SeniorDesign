@@ -754,23 +754,8 @@ class ScanService
     allowlist.present? ? mods.select { |m| allowlist.include?(m[:path]) } : mods
   end
 
-  def platform_dirs(platform)
-    case platform&.downcase
-    when 'windows' then %w[windows multi]
-    when 'linux'   then %w[linux unix multi]
-    when 'macos'   then %w[osx apple_ios multi]
-    else []
-    end
-  end
-
-  def auxiliary_scanner_dirs(platform)
-    case platform&.downcase
-    when 'windows' then %w[scanner/smb scanner/http scanner/ssh scanner/vnc]
-    when 'linux'   then %w[scanner/ssh scanner/ftp scanner/http scanner/mysql scanner/postgres]
-    when 'macos'   then %w[scanner/ssh scanner/http scanner/vnc]
-    else                %w[scanner/ssh scanner/ftp scanner/http]
-    end
-  end
+  def platform_dirs(platform)          = Aegis::Msf::PlatformDirs.for_exploits(platform)
+  def auxiliary_scanner_dirs(platform) = Aegis::Msf::PlatformDirs.for_auxiliary_scanners(platform)
 
   def read_module_rank(file_path)
     Aegis::MsfModuleParser.severity_from_file(file_path)
