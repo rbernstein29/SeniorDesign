@@ -937,23 +937,14 @@ curl -X POST https://your-server/api/YOUR_KEY/assets \
     var tocLinks = document.querySelectorAll('.api-toc a');
 
     function onScroll() {
-      var atBottom = (window.scrollY + window.innerHeight) >= (document.documentElement.scrollHeight - 40);
-      var current  = '';
-
-      if (atBottom && sections.length) {
-        // Highlight whichever section is tallest in the viewport right now
-        var viewportMid = window.scrollY + window.innerHeight * 0.5;
-        sections.forEach(function(s) {
-          if (s.offsetTop <= viewportMid) current = s.id;
-        });
-        // Fallback: last section
-        if (!current) current = sections[sections.length - 1].id;
-      } else {
-        var threshold = window.scrollY + Math.min(160, window.innerHeight * 0.25);
-        sections.forEach(function(s) {
-          if (s.offsetTop <= threshold) current = s.id;
-        });
-      }
+      var viewH   = window.innerHeight;
+      // A section is "active" when its top edge has crossed the upper 55% of the viewport.
+      // Using getBoundingClientRect() avoids all scroll-position arithmetic and works
+      // correctly at the bottom of the page where offsetTop-based thresholds fall short.
+      var current = '';
+      sections.forEach(function(s) {
+        if (s.getBoundingClientRect().top <= viewH * 0.55) current = s.id;
+      });
 
       tocLinks.forEach(function(a) {
         a.classList.toggle('active', a.getAttribute('href') === '#' + current);
