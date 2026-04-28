@@ -277,6 +277,18 @@ class PagesController < ApplicationController
     end
 
     begin
+      Site.where(organization_id: org_id)
+          .where('created_at > ?', cutoff)
+          .order(created_at: :desc).limit(5).each do |s|
+        events << { at: s.created_at, color: 'magenta',
+                    text: "Site <strong>#{ERB::Util.h(s.name)}</strong> added",
+                    time: "#{helpers.time_ago_in_words(s.created_at)} ago" }
+      end
+    rescue => e
+      Rails.logger.warn "activity_sites: #{e.message} — #{e.backtrace.first}"
+    end
+
+    begin
       Agent.where(organization_id: org_id)
            .where('last_seen > ?', cutoff)
            .order(last_seen: :desc).limit(3).each do |a|

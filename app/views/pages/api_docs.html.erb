@@ -38,7 +38,7 @@
     text-overflow: ellipsis;
   }
   .api-toc a:hover { color: var(--text); background: var(--surface2); }
-  .api-toc a.active { color: var(--cyan); background: rgba(34,211,238,0.08); }
+  .api-toc a.active { color: #ec4899; background: rgba(236,72,153,0.08); }
   .api-toc-section {
     font-size: 10px;
     font-weight: 700;
@@ -107,7 +107,7 @@
     color: var(--text);
     flex: 1;
   }
-  .endpoint-path .path-param { color: var(--cyan); }
+  .endpoint-path .path-param { color: #ec4899; }
   .endpoint-desc {
     font-size: 12px;
     color: var(--muted);
@@ -149,7 +149,7 @@
     vertical-align: top;
   }
   .param-table tr:last-child td { border-bottom: none; }
-  .param-name { font-family: var(--mono); color: var(--cyan); }
+  .param-name { font-family: var(--mono); color: #ec4899; }
   .param-type { font-family: var(--mono); color: var(--muted); font-size: 11px; }
   .param-required {
     font-size: 10px;
@@ -181,8 +181,8 @@
     margin-bottom: 6px;
   }
   .auth-box {
-    background: rgba(34,211,238,0.06);
-    border: 1px solid rgba(34,211,238,0.2);
+    background: rgba(236,72,153,0.06);
+    border: 1px solid rgba(236,72,153,0.2);
     border-radius: 10px;
     padding: 20px;
     margin-bottom: 32px;
@@ -190,7 +190,7 @@
   .auth-box-title {
     font-size: 14px;
     font-weight: 700;
-    color: var(--cyan);
+    color: #ec4899;
     margin-bottom: 8px;
   }
   .auth-box p {
@@ -250,8 +250,8 @@
         <div class="auth-box">
           <div class="auth-box-title">API Key Authentication</div>
           <p>Every request must include your API key as the second path segment:</p>
-          <div class="code-block">https://your-server/api/<span style="color:var(--cyan)">{api_key}</span>/resource</div>
-          <p>Generate or regenerate your API key in <a href="<%= settings_path %>" style="color:var(--cyan);">Settings → Account</a>. Keys are unique per user and scoped to your organization.</p>
+          <div class="code-block">https://your-server/api/<span style="color:#ec4899">{api_key}</span>/resource</div>
+          <p>Generate or regenerate your API key in <a href="<%= settings_path %>" style="color:#ec4899;">Settings → Account</a>. Keys are unique per user and scoped to your organization.</p>
           <p>Invalid keys return <code style="font-family:var(--mono);color:#f87171;">401 Unauthorized</code>. Write operations (POST/DELETE) require an <span class="access-badge access-admin">admin</span> account. Read operations are available to all <span class="access-badge access-all">all users</span>.</p>
         </div>
       </div>
