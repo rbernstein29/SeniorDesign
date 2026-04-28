@@ -307,14 +307,45 @@ class ScanService
   end
 
   def outbound_ip_for(target_ip)
-    # MSF_LHOST overrides auto-detection — required in Docker where the
-    # container's internal IP is returned by socket routing but is unreachable
-    # by scan targets. Set MSF_LHOST to the host's Tailscale/LAN IP.
     explicit = Aegis.config.msf.lhost
     return explicit if explicit.present?
-    UDPSocket.open { |s| s.connect(target_ip, 1); s.addr.last }
-  rescue
-    '127.0.0.1'
+
+    detected = UDPSocket.open { |s| s.connect(target_ip, 1); s.addr.last } rescue nil
+
+    # Inside Docker, UDPSocket returns the container's IP (172.x / 10.x), which
+    # is not a host interface and unreachable by scan targets. Ask msfrpcd —
+    # running on the host — to do the same routing lookup from the host's side.
+    if detected.nil? || (ENV['RUNNING_IN_DOCKER'] == '1' && detected =~ /\A(172\.|10\.)/)
+      @lhost_cache ||= {}
+      @lhost_cache[target_ip] ||= detect_lhost_via_msfrpc(target_ip)
+      return @lhost_cache[target_ip] if @lhost_cache[target_ip].present?
+    end
+
+    detected || '127.0.0.1'
+  end
+
+  def detect_lhost_via_msfrpc(target_ip)
+    client = rpc_client
+    return nil unless client
+
+    con = client.call('console.create') rescue nil
+    return nil unless con
+
+    cid = con['id'].to_s
+    safe_ip = Shellwords.escape(target_ip)
+    cmd = "ruby -e \"require 'socket'; puts UDPSocket.open { |s| s.connect('#{safe_ip}', 1); s.addr.last }\"\n"
+    client.call('console.write', cid, cmd)
+    sleep 2
+    output = (client.call('console.read', cid) rescue {})['data'].to_s
+    client.call('console.destroy', cid) rescue nil
+
+    ip = output.scan(/\b(\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3})\b/).flatten
+              .reject { |a| a == '127.0.0.1' }.first
+    puts "[LHOST] msfrpcd on host reports #{ip.inspect} as outbound IP for #{target_ip}"
+    ip
+  rescue => e
+    puts "[LHOST] msfrpcd detection failed: #{e.message}"
+    nil
   end
 
   def rpc_client
@@ -379,14 +410,17 @@ class ScanService
     result   = client.call('module.execute', 'exploit', mod_name, options)
     job_id   = result['job_id']&.to_s
 
-    unless job_id
-      puts "module.execute returned no job_id for #{mod_name}"
+    if result['error']
+      puts "module.execute error for #{mod_name}: #{result['error']}"
       return { success: false, evidence: nil }
     end
 
-    deadline = Time.now + timeout_secs
-    while Time.now < deadline
-      sleep 2
+    # MSF 6.4+ runs exploits synchronously inside module.execute (job_id is nil,
+    # no background job). The exploit has already completed by the time we get here.
+    # For legacy MSF that returns a real job_id, we poll until the job finishes.
+    # In both cases we check for new sessions right after execute, then do a short
+    # additional poll window to catch any delayed session registrations.
+    check_sessions = lambda do
       sessions    = client.call('session.list') rescue {}
       new_entries = sessions.reject { |id, _| existing.include?(id) }
       if new_entries.any?
@@ -395,10 +429,31 @@ class ScanService
                     "[#{info['session_type']} via #{mod_name}]"
         puts "[+] #{evidence}"
         dump_msf_debug(exploit, target_ip, port, nil, '', "(RPC exploit) payload=#{payload} job_id=#{job_id} -> #{evidence}", true, []) if Aegis.config.msf.debug
-        return { success: true, evidence: evidence }
+        { success: true, evidence: evidence }
       end
-      jobs = client.call('job.list') rescue {}
-      break unless jobs.key?(job_id)
+    end
+
+    # Immediate check — covers synchronous MSF 6.4+ execution.
+    found = check_sessions.call
+    return found if found
+
+    if job_id
+      # Legacy async path: poll until the background job disappears or timeout.
+      deadline = Time.now + timeout_secs
+      while Time.now < deadline
+        sleep 2
+        found = check_sessions.call
+        return found if found
+        jobs = client.call('job.list') rescue {}
+        break unless jobs.key?(job_id)
+      end
+    else
+      # Synchronous path: give a short grace window for delayed session registration.
+      3.times do
+        sleep 2
+        found = check_sessions.call
+        return found if found
+      end
     end
 
     puts "[-] #{mod_name} — no session opened on #{target_ip} (exploit completed, target likely not vulnerable or service unreachable)"
