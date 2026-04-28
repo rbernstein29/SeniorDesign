@@ -28,7 +28,17 @@ echo "  PostgreSQL: OK"
 echo "Running migrations..."
 bundle exec rails db:migrate
 
-# ── 4. Pull Ollama model on first run (skipped if already present) ────────────
+# ── 4. Sync exploit severity data from MSF filesystem ─────────────────────────
+MSF_EXPLOIT_PATH="${MSF_MODULES_PATH:-/opt/metasploit-framework/embedded/framework/modules/exploits}"
+if [ -d "$MSF_EXPLOIT_PATH" ]; then
+  echo "Syncing exploit database from Metasploit filesystem..."
+  bundle exec rails exploits:sync
+  echo "  Exploit sync: OK"
+else
+  echo "  Exploit sync: skipped (MSF path not mounted)"
+fi
+
+# ── 5. Pull Ollama model on first run (skipped if already present) ────────────
 if [ -n "${OLLAMA_HOST}" ]; then
   if curl -s "${OLLAMA_HOST}/api/tags" | grep -q "qwen2.5-coder:7b"; then
     echo "  Ollama model already present, skipping pull."
