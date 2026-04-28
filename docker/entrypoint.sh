@@ -4,17 +4,23 @@ set -e
 MSF_PORT="${MSF_RPC_PORT:-55553}"
 MSF_HOST="${MSF_RPC_HOST:-host.docker.internal}"
 
-# ── 1. Refuse to start if Metasploit RPC is not reachable ─────────────────────
-echo "Checking Metasploit RPC at ${MSF_HOST}:${MSF_PORT}..."
-if ! timeout 5 bash -c "echo > /dev/tcp/${MSF_HOST}/${MSF_PORT}" 2>/dev/null; then
-  echo ""
-  echo "ERROR: Metasploit RPC daemon is not reachable at ${MSF_HOST}:${MSF_PORT}"
-  echo ""
-  echo "  Start it on the host with:"
-  echo "    msfrpcd -U \$MSF_RPC_USER -P \$MSF_RPC_PASS -p ${MSF_PORT} -S -a 172.20.0.1 -f"
-  echo ""
-  exit 1
-fi
+# ── 1. Wait for Metasploit RPC ─ msfrpcd may still be starting on the host
+#       when compose brings us up; retry with backoff before giving up.
+MSF_WAIT_SECS="${MSF_RPC_WAIT_SECS:-120}"
+echo "Waiting for Metasploit RPC at ${MSF_HOST}:${MSF_PORT} (up to ${MSF_WAIT_SECS}s)..."
+deadline=$(( $(date +%s) + MSF_WAIT_SECS ))
+until timeout 2 bash -c "echo > /dev/tcp/${MSF_HOST}/${MSF_PORT}" 2>/dev/null; do
+  if [ "$(date +%s)" -ge "$deadline" ]; then
+    echo ""
+    echo "ERROR: Metasploit RPC daemon never came up at ${MSF_HOST}:${MSF_PORT}"
+    echo ""
+    echo "  Start it on the host with:"
+    echo "    msfrpcd -U \$MSF_RPC_USER -P \$MSF_RPC_PASS -p ${MSF_PORT} -S -a 172.20.0.1 -f"
+    echo ""
+    exit 1
+  fi
+  sleep 2
+done
 echo "  Metasploit RPC: OK"
 
 # ── 2. Wait for PostgreSQL ─────────────────────────────────────────────────────
