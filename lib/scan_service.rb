@@ -393,12 +393,14 @@ class ScanService
           end
         end
 
-        # If the exploit's job exited without us seeing a session, give a short
-        # grace window — the reverse callback is often still in flight when
-        # MSF marks the exploit job done. Without this we exit at ~6s and miss
-        # legitimately-vulnerable targets like vsftpd_234_backdoor.
+        # If the exploit's job exited without us seeing a session, give a grace
+        # window — the reverse callback is often still in flight when MSF marks
+        # the exploit job done. Without this we exit at ~6s and miss
+        # legitimately-vulnerable targets. 30s covers slow two-phase exploits
+        # like java_rmi_server (JAR download + Java meterpreter bootstrap can
+        # take ~30s) while still bounding the cost for genuinely-failed runs.
         if job_ended
-          grace_deadline = Time.now + 10
+          grace_deadline = Time.now + 30
           while Time.now < grace_deadline
             sleep 2
             found = check_sessions.call
