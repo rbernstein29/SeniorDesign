@@ -69,6 +69,8 @@ module Api
         DnsLookupJob.perform_later(asset.id) unless hostname.present?
         created_assets << asset
       end
+      log_activity(text: "[API] <strong>#{created_assets.size}</strong> asset(s) added from <strong>#{ERB::Util.h(network)}</strong>",
+                   color: 'teal', org_id: @current_user.organization_id, uid: @current_user.id)
       render json: { created: created_assets.size, assets: created_assets.map { |a| asset_json(a) } },
              status: :created
     rescue => e
@@ -77,6 +79,8 @@ module Api
 
     def destroy
       asset = Asset.where(organization_id: @current_user.organization_id).find(params[:id])
+      log_activity(text: "[API] Asset <strong>#{ERB::Util.h(asset.ip_address.to_s)}</strong> deleted",
+                   color: 'red', org_id: @current_user.organization_id, uid: @current_user.id)
       asset.destroy
       render json: { deleted: true, id: params[:id].to_i }
     rescue ActiveRecord::RecordNotFound

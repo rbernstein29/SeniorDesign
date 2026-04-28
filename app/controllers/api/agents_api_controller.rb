@@ -14,6 +14,8 @@ module Api
         site_id:         params[:site_id].presence,
         network_range:   params[:network_range].presence
       )
+      log_activity(text: "[API] Agent <strong>#{ERB::Util.h(agent.agent_id.first(8))}&hellip;</strong> registered",
+                   color: 'cyan', org_id: @current_user.organization_id, uid: @current_user.id)
       render json: { agent: agent_json(agent) }, status: :created
     rescue => e
       render json: { error: e.message }, status: :unprocessable_entity
@@ -21,6 +23,8 @@ module Api
 
     def destroy
       agent = Agent.where(organization_id: @current_user.organization_id).find(params[:id])
+      log_activity(text: "[API] Agent <strong>#{ERB::Util.h(agent.agent_id.first(8))}&hellip;</strong> deleted",
+                   color: 'red', org_id: @current_user.organization_id, uid: @current_user.id)
       agent.destroy
       render json: { deleted: true, id: params[:id].to_i }
     rescue ActiveRecord::RecordNotFound

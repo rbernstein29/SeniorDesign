@@ -61,16 +61,18 @@ module Api
         safe_mode:     safe_mode
       }.compact
 
+      log_activity(text: "[API] Scan queued for <strong>#{valid_ids.size}</strong> target(s)", color: 'cyan',
+                   org_id: org_id, uid: @current_user.id)
       ScanJob.perform_later(org_id, filter_params, @current_user.id, valid_ids, scan_options)
       render json: { queued: true, asset_count: valid_ids.size }, status: :accepted
     end
 
-    # POST /api/:key/scans/stop
-    # Body: scan_id
     def stop
       scan = Scan.for_org(@current_user.organization_id).running.find_by(id: params[:scan_id])
       if scan
         scan.update!(status: "cancelled", end_time: Time.current)
+        log_activity(text: "[API] Scan <strong>#{ERB::Util.h(scan.scan_name)}</strong> stopped", color: 'orange',
+                     org_id: @current_user.organization_id, uid: @current_user.id)
         render json: { stopped: true, scan_id: scan.id }
       else
         render json: { error: "Running scan not found" }, status: :not_found

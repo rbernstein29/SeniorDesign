@@ -17,6 +17,8 @@ module Api
         exploit_ids:     Array(params[:exploit_ids]).map(&:to_i).select { |id| id > 0 }
       )
       if profile.save
+        log_activity(text: "[API] Scan profile <strong>#{ERB::Util.h(profile.name)}</strong> created",
+                     color: 'yellow', org_id: @current_user.organization_id, uid: @current_user.id)
         render json: { scan_profile: profile_json(profile) }, status: :created
       else
         render json: { error: profile.errors.full_messages.join(", ") }, status: :unprocessable_entity
@@ -25,6 +27,8 @@ module Api
 
     def destroy
       profile = ScanProfile.where(organization_id: @current_user.organization_id).find(params[:id])
+      log_activity(text: "[API] Scan profile <strong>#{ERB::Util.h(profile.name)}</strong> deleted",
+                   color: 'red', org_id: @current_user.organization_id, uid: @current_user.id)
       profile.destroy
       render json: { deleted: true, id: params[:id].to_i }
     rescue ActiveRecord::RecordNotFound

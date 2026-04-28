@@ -19,6 +19,7 @@ class ScanProfilesController < ApplicationController
       exploit_ids:     Array(params[:exploit_ids]).map(&:to_i).select { |id| id > 0 }
     )
     if profile.save
+      log_activity(text: "Scan profile <strong>#{ERB::Util.h(profile.name)}</strong> created", color: 'yellow')
       redirect_to scan_profiles_path, notice: "Profile '#{profile.name}' saved."
     else
       redirect_to new_scan_profile_path, alert: profile.errors.full_messages.join(', ')
@@ -26,7 +27,9 @@ class ScanProfilesController < ApplicationController
   end
 
   def destroy
-    ScanProfile.where(organization_id: current_org_id).find(params[:id]).destroy
+    profile = ScanProfile.where(organization_id: current_org_id).find(params[:id])
+    log_activity(text: "Scan profile <strong>#{ERB::Util.h(profile.name)}</strong> deleted", color: 'red')
+    profile.destroy
     redirect_to scan_profiles_path, notice: 'Profile deleted.'
   rescue ActiveRecord::RecordNotFound
     redirect_to scan_profiles_path, alert: 'Profile not found.'

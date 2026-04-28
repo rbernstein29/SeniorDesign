@@ -19,14 +19,15 @@ class AgentsController < ApplicationController
       site_id: params.dig(:agent, :site_id).presence,
       network_range: params.dig(:agent, :network_range).presence
     )
+    log_activity(text: "Agent <strong>#{ERB::Util.h(agent.agent_id.first(8))}&hellip;</strong> registered", color: 'cyan')
     redirect_to download_agent_path(agent)
   rescue => e
     redirect_to agents_path, alert: "Failed to create agent: #{e.message}"
   end
 
-  # DELETE /agents/:id
   def destroy
     agent = Agent.where(organization_id: current_org_id).find(params[:id])
+    log_activity(text: "Agent <strong>#{ERB::Util.h(agent.agent_id.first(8))}&hellip;</strong> deleted", color: 'red')
     agent.destroy
     redirect_to agents_path
   rescue => e

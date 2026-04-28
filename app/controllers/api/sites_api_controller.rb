@@ -16,6 +16,8 @@ module Api
         network_range:   params[:network_range].presence,
         organization_id: @current_user.organization_id
       )
+      log_activity(text: "[API] Site <strong>#{ERB::Util.h(site.name)}</strong> created",
+                   color: 'magenta', org_id: @current_user.organization_id, uid: @current_user.id)
       render json: { site: site_json(site) }, status: :created
     rescue ActiveRecord::RecordInvalid => e
       render json: { error: e.message }, status: :unprocessable_entity
@@ -23,6 +25,8 @@ module Api
 
     def destroy
       site = Site.where(organization_id: @current_user.organization_id).find(params[:id])
+      log_activity(text: "[API] Site <strong>#{ERB::Util.h(site.name)}</strong> deleted",
+                   color: 'red', org_id: @current_user.organization_id, uid: @current_user.id)
       site.destroy
       render json: { deleted: true, id: params[:id].to_i }
     rescue ActiveRecord::RecordNotFound

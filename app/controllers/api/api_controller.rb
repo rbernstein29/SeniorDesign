@@ -1,5 +1,6 @@
 module Api
   class ApiController < ActionController::API
+    include ActivityLogger
     before_action :authenticate_api_key!
 
     private

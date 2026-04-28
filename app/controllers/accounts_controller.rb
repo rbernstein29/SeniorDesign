@@ -8,6 +8,8 @@ class AccountsController < ApplicationController
       @user = User.create!(user_params.merge(organization_id: @organization.id, access_level: "admin"))
     end
 
+    log_activity(text: "New organization <strong>#{ERB::Util.h(@organization.org_name)}</strong> registered by <strong>#{ERB::Util.h(@user.email_address)}</strong>",
+                 color: 'green', org_id: @organization.id, uid: @user.id)
     EmailVerifyMailer.verify(@user).deliver_now
     redirect_to verify_pending_path
   rescue ActiveRecord::RecordInvalid => e
@@ -44,6 +46,8 @@ class AccountsController < ApplicationController
 
   def destroy
     user = Current.user
+    org_id = user.organization_id
+    log_activity(text: "Account <strong>#{ERB::Util.h(user.email_address)}</strong> deleted", color: 'red', org_id: org_id, uid: user.id)
     terminate_session
     if user.access_level == "admin"
       user.organization.destroy!
@@ -55,6 +59,7 @@ class AccountsController < ApplicationController
 
   def generate_api_key
     Current.user.update(api_key: SecureRandom.urlsafe_base64(32))
+    log_activity(text: "API key regenerated for <strong>#{ERB::Util.h(Current.user.email_address)}</strong>", color: 'yellow')
     redirect_back_or_to root_path
   end
 

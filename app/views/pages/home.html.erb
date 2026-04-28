@@ -258,10 +258,10 @@
         <% if @recent_activity.any? %>
           <% @recent_activity.each do |item| %>
             <div class="activity-item">
-              <div class="activity-dot dot-<%= item[:color] %>"></div>
+              <div class="activity-dot dot-<%= item.color %>"></div>
               <div>
-                <div class="activity-text"><%= raw item[:text] %></div>
-                <div class="activity-time"><%= item[:time] %></div>
+                <div class="activity-text"><%= raw item.text %></div>
+                <div class="activity-time"><%= time_ago_in_words(item.created_at) %> ago</div>
               </div>
             </div>
           <% end %>

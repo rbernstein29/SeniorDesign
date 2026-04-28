@@ -15,6 +15,8 @@ module Api
 
     def destroy
       report = org_reports.find(params[:id])
+      log_activity(text: "[API] Report <strong>#{ERB::Util.h(report.report_name)}</strong> deleted",
+                   color: 'red', org_id: @current_user.organization_id, uid: @current_user.id)
       report.destroy
       render json: { deleted: true, id: params[:id].to_i }
     rescue ActiveRecord::RecordNotFound
@@ -23,6 +25,8 @@ module Api
 
     def download_json
       report = org_reports.find(params[:id])
+      log_activity(text: "[API] Report <strong>#{ERB::Util.h(report.report_name)}</strong> downloaded (JSON)",
+                   color: 'violet', org_id: @current_user.organization_id, uid: @current_user.id)
       send_data report.report_data.to_json,
         filename:    "#{report.report_name.parameterize}.json",
         type:        "application/json",
@@ -33,6 +37,8 @@ module Api
 
     def download_xlsx
       report = org_reports.find(params[:id])
+      log_activity(text: "[API] Report <strong>#{ERB::Util.h(report.report_name)}</strong> downloaded (XLSX)",
+                   color: 'violet', org_id: @current_user.organization_id, uid: @current_user.id)
       xlsx = ScanReportXlsx.new(report)
       send_data xlsx.render,
         filename:    "#{report.report_name.parameterize}.xlsx",
@@ -44,6 +50,8 @@ module Api
 
     def download_csv
       report = org_reports.find(params[:id])
+      log_activity(text: "[API] Report <strong>#{ERB::Util.h(report.report_name)}</strong> downloaded (CSV)",
+                   color: 'violet', org_id: @current_user.organization_id, uid: @current_user.id)
       csv = ScanReportCsv.new(report)
       send_data csv.render,
         filename:    "#{report.report_name.parameterize}.csv",
@@ -55,6 +63,8 @@ module Api
 
     def download_whitebox_json
       report = org_reports.find(params[:id])
+      log_activity(text: "[API] Report <strong>#{ERB::Util.h(report.report_name)}</strong> downloaded (Whitebox JSON)",
+                   color: 'violet', org_id: @current_user.organization_id, uid: @current_user.id)
       unless report.whitebox?
         render json: { error: "Not a whitebox report" }, status: :unprocessable_entity
         return

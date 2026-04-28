@@ -3,9 +3,9 @@ class ReadOnlyAccountsController < ApplicationController
   skip_before_action :verify_authenticity_token, only: [:create]
   
   def create
-    ActiveRecord::Base.transaction do 
+    ActiveRecord::Base.transaction do
       @user = User.create!(user_params.merge(organization_id: Current.user&.organization_id, access_level: "read_only"))
-
+      log_activity(text: "Read-only user <strong>#{ERB::Util.h(@user.email_address)}</strong> created", color: 'green')
       redirect_to read_only_accounts_path, alert: "Read-only user created."
     end
   rescue ActiveRecord::RecordInvalid => e
@@ -23,8 +23,8 @@ class ReadOnlyAccountsController < ApplicationController
 
   def destroy
     user = User.find(params[:id])
-    
     if user.organization_id == Current.user.organization_id && user.access_level == "read_only"
+      log_activity(text: "Read-only user <strong>#{ERB::Util.h(user.email_address)}</strong> deleted", color: 'red')
       user.destroy
       redirect_to read_only_accounts_path, alert: "User deleted."
     else

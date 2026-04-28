@@ -3,6 +3,7 @@ class ReportsController < ApplicationController
   def show
     @report = org_reports.includes(:scan).find(params[:id])
     @scan   = @report.scan
+    log_activity(text: "Report <strong>#{ERB::Util.h(@report.report_name)}</strong> viewed", color: 'violet')
 
     severity_order = Arel.sql(
       "CASE severity WHEN 'critical' THEN 1 WHEN 'high' THEN 2 WHEN 'medium' THEN 3 WHEN 'low' THEN 4 ELSE 5 END"
@@ -83,6 +84,7 @@ class ReportsController < ApplicationController
 
   def destroy
     report = org_reports.find(params[:id])
+    log_activity(text: "Report <strong>#{ERB::Util.h(report.report_name)}</strong> deleted", color: 'red')
     report.destroy
     redirect_to reports_path, notice: 'Report deleted.'
   rescue ActiveRecord::RecordNotFound
@@ -91,6 +93,7 @@ class ReportsController < ApplicationController
 
   def download_json
     report = org_reports.find(params[:id])
+    log_activity(text: "Report <strong>#{ERB::Util.h(report.report_name)}</strong> downloaded (JSON)", color: 'violet')
     send_data report.report_data.to_json,
       filename:    "#{report.report_name.parameterize}.json",
       type:        'application/json',
@@ -101,6 +104,7 @@ class ReportsController < ApplicationController
 
   def download_whitebox_json
     report = org_reports.find(params[:id])
+    log_activity(text: "Report <strong>#{ERB::Util.h(report.report_name)}</strong> downloaded (Whitebox JSON)", color: 'violet')
     unless report.whitebox?
       redirect_to report_path(report), alert: 'This report is not a whitebox report.'
       return
@@ -139,6 +143,7 @@ class ReportsController < ApplicationController
 
   def download_xlsx
     report = org_reports.find(params[:id])
+    log_activity(text: "Report <strong>#{ERB::Util.h(report.report_name)}</strong> downloaded (XLSX)", color: 'violet')
     xlsx = ScanReportXlsx.new(report)
     send_data xlsx.render,
       filename:    "#{report.report_name.parameterize}.xlsx",
@@ -150,6 +155,7 @@ class ReportsController < ApplicationController
 
   def download_csv
     report = org_reports.find(params[:id])
+    log_activity(text: "Report <strong>#{ERB::Util.h(report.report_name)}</strong> downloaded (CSV)", color: 'violet')
     csv = ScanReportCsv.new(report)
     send_data csv.render,
       filename:    "#{report.report_name.parameterize}.csv",

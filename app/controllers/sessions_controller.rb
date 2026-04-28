@@ -11,6 +11,7 @@ class SessionsController < ApplicationController
         redirect_to verify_pending_path
       else
         start_new_session_for user
+        log_activity(text: "User <strong>#{ERB::Util.h(user.name)}</strong> signed in", color: 'blue', org_id: user.organization_id, uid: user.id)
         redirect_to after_authentication_url
       end
     else
@@ -19,6 +20,9 @@ class SessionsController < ApplicationController
   end
 
   def destroy
+    user = Current.user
+    org_id = user&.organization_id
+    log_activity(text: "User <strong>#{ERB::Util.h(user.name)}</strong> signed out", color: 'blue', org_id: org_id, uid: user&.id) if user
     terminate_session
     redirect_to login_path
   end

@@ -110,6 +110,7 @@ class PagesController < ApplicationController
       safe_mode:     safe_mode
     }.compact
 
+    log_activity(text: "Scan queued for <strong>#{asset_ids.size}</strong> target(s)", color: 'cyan')
     ScanJob.perform_later(org_id, filter_params, Current.user.id, asset_ids, scan_options)
     redirect_to scans_path, notice: "Scan queued for #{asset_ids.size} target(s)."
   end
@@ -151,7 +152,10 @@ class PagesController < ApplicationController
 
   def stop_scan
     scan = Scan.for_org(current_org_id).running.find_by(id: params[:scan_id])
-    scan&.update!(status: 'cancelled', end_time: Time.current)
+    if scan
+      scan.update!(status: 'cancelled', end_time: Time.current)
+      log_activity(text: "Scan <strong>#{ERB::Util.h(scan.scan_name)}</strong> stopped", color: 'orange')
+    end
     redirect_to scans_path, notice: "Scan stopped."
   end
 
@@ -189,118 +193,13 @@ class PagesController < ApplicationController
   private
 
   def build_activity_events(org_id)
-    build_activity_events_json(org_id).map do |e|
-      { color: e[:color], text: e[:text], time: e[:time] }
-    end
+    ActivityLog.for_org(org_id).last_day.order(created_at: :desc).limit(20).to_a
   end
 
   def build_activity_events_json(org_id)
-    cutoff       = 24.hours.ago
-    org_user_ids = User.where(organization_id: org_id).select(:id)
-    events       = []
-
-    begin
-      user_ids = User.where(organization_id: org_id).pluck(:id)
-      if user_ids.any?
-        Session.where(user_id: user_ids)
-               .where('vuln_scanner.sessions.created_at > ?', cutoff)
-               .includes(:user)
-               .order(Arel.sql('vuln_scanner.sessions.created_at DESC'))
-               .limit(10).each do |s|
-          next unless s.user
-          events << { at: s.created_at, color: 'blue',
-                      text: "User <strong>#{ERB::Util.h(s.user.name)}</strong> signed in",
-                      time: "#{helpers.time_ago_in_words(s.created_at)} ago" }
-        end
-      end
-    rescue => e
-      Rails.logger.warn "activity_sessions: #{e.message} — #{e.backtrace.first}"
+    ActivityLog.for_org(org_id).last_day.order(created_at: :desc).limit(20).map do |l|
+      { color: l.color, text: l.text, time: "#{helpers.time_ago_in_words(l.created_at)} ago" }
     end
-
-    begin
-      Scan.for_org(org_id)
-          .where('created_at > ? OR (end_time IS NOT NULL AND end_time > ?)', cutoff, cutoff)
-          .order(Arel.sql('GREATEST(created_at, COALESCE(end_time, created_at)) DESC'))
-          .limit(10).each do |s|
-        if s.created_at > cutoff
-          events << { at: s.created_at, color: 'cyan',
-                      text: "Scan <strong>#{ERB::Util.h(s.scan_name)}</strong> started",
-                      time: "#{helpers.time_ago_in_words(s.created_at)} ago" }
-        end
-        if s.end_time && s.end_time > cutoff && %w[completed failed cancelled].include?(s.status)
-          color = s.status == 'completed' ? 'green' : s.status == 'failed' ? 'red' : 'orange'
-          events << { at: s.end_time, color: color,
-                      text: "Scan <strong>#{ERB::Util.h(s.scan_name)}</strong> #{ERB::Util.h(s.status)}",
-                      time: "#{helpers.time_ago_in_words(s.end_time)} ago" }
-        end
-      end
-    rescue => e
-      Rails.logger.warn "activity_scans: #{e.message}"
-    end
-
-    begin
-      Report.where(user_id: org_user_ids)
-            .where('generated_at > ?', cutoff)
-            .includes(:scan)
-            .order(generated_at: :desc).limit(5).each do |r|
-        events << { at: r.generated_at, color: 'violet',
-                    text: "Report for <strong>#{ERB::Util.h(r.scan&.scan_name || 'scan')}</strong> generated",
-                    time: "#{helpers.time_ago_in_words(r.generated_at)} ago" }
-      end
-    rescue => e
-      Rails.logger.warn "activity_reports: #{e.message}"
-    end
-
-    begin
-      Asset.where(organization_id: org_id)
-           .where('created_at > ?', cutoff)
-           .order(created_at: :desc).limit(5).each do |a|
-        label = a.hostname.presence || a.ip_address.to_s
-        events << { at: a.created_at, color: 'teal',
-                    text: "Asset <strong>#{ERB::Util.h(label)}</strong> added",
-                    time: "#{helpers.time_ago_in_words(a.created_at)} ago" }
-      end
-    rescue => e
-      Rails.logger.warn "activity_assets: #{e.message}"
-    end
-
-    begin
-      ScanProfile.where(organization_id: org_id)
-                 .where('created_at > ?', cutoff)
-                 .order(created_at: :desc).limit(5).each do |p|
-        events << { at: p.created_at, color: 'yellow',
-                    text: "Scan profile <strong>#{ERB::Util.h(p.name)}</strong> created",
-                    time: "#{helpers.time_ago_in_words(p.created_at)} ago" }
-      end
-    rescue => e
-      Rails.logger.warn "activity_profiles: #{e.message}"
-    end
-
-    begin
-      Site.where(organization_id: org_id)
-          .where('created_at > ?', cutoff)
-          .order(created_at: :desc).limit(5).each do |s|
-        events << { at: s.created_at, color: 'magenta',
-                    text: "Site <strong>#{ERB::Util.h(s.name)}</strong> added",
-                    time: "#{helpers.time_ago_in_words(s.created_at)} ago" }
-      end
-    rescue => e
-      Rails.logger.warn "activity_sites: #{e.message} — #{e.backtrace.first}"
-    end
-
-    begin
-      Agent.where(organization_id: org_id)
-           .where('last_seen > ?', cutoff)
-           .order(last_seen: :desc).limit(3).each do |a|
-        events << { at: a.last_seen, color: a.connected? ? 'green' : 'orange',
-                    text: "Agent <strong>#{ERB::Util.h(a.agent_id.first(8))}&hellip;</strong> heartbeat",
-                    time: "#{helpers.time_ago_in_words(a.last_seen)} ago" }
-      end
-    rescue => e
-      Rails.logger.warn "activity_agents: #{e.message}"
-    end
-
-    events.sort_by { |e| e[:at] }.reverse.first(15).map { |e| e.except(:at) }
   end
 
 end

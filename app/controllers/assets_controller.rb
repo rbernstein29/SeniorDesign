@@ -60,6 +60,7 @@ class AssetsController < ApplicationController
       created += 1
     end
 
+    log_activity(text: "<strong>#{created}</strong> asset(s) added from <strong>#{ERB::Util.h(network)}</strong>", color: 'teal')
     redirect_to assets_path, notice: "#{created} asset(s) added."
   rescue => e
     redirect_to new_asset_path, alert: "Failed: #{e.message}"
@@ -76,6 +77,7 @@ class AssetsController < ApplicationController
 
   def destroy
     asset = Asset.where(organization_id: current_org_id).find(params[:id])
+    log_activity(text: "Asset <strong>#{ERB::Util.h(asset.hostname.presence || asset.ip_address.to_s)}</strong> deleted", color: 'red')
     asset.destroy
     redirect_to assets_path, notice: 'Asset deleted.'
   rescue ActiveRecord::RecordNotFound
