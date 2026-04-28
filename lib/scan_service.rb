@@ -493,6 +493,20 @@ class ScanService
   end
 
   # Fallback used when msfrpcd is unavailable (MSF_RPC_PASS not set or connection refused).
+  MSF_CONSOLE = begin
+    e = ENV['MSFCONSOLE_PATH']
+    if e && File.executable?(e)
+      e
+    else
+      candidates = [
+        '/opt/metasploit-framework/bin/msfconsole',
+        '/usr/bin/msfconsole',
+        '/usr/local/bin/msfconsole'
+      ]
+      candidates.find { |p| File.executable?(p) } || 'msfconsole'
+    end
+  end
+
   # Uses PTY.spawn so msfconsole sees a terminal and outputs [+] / [*] lines in full.
   def attack_subprocess(exploit, target_ip, port, proxy, timeout_secs)
     rc_file = Tempfile.new(['aegis_', '.rc'])
@@ -509,7 +523,7 @@ class ScanService
       # inherits BUNDLE_GEMFILE/RUBYOPT/GEM_HOME from the Rails parent and tries to
       # resolve itself against this app's Gemfile, which fails instantly (no run).
       master, slave, pid = with_clean_bundler_env do
-        PTY.spawn('msfconsole', '-q', '--no-readline', '-r', rc_file.path)
+        PTY.spawn(MSF_CONSOLE, '-q', '--no-readline', '-r', rc_file.path)
       end
       slave.close rescue nil  # parent doesn't need the slave end
 
