@@ -380,13 +380,30 @@ class ScanService
 
       if job_id
         # Legacy async path: poll until the background job disappears or timeout.
-        deadline = Time.now + timeout_secs
+        deadline  = Time.now + timeout_secs
+        job_ended = false
         while Time.now < deadline
           sleep 2
           found = check_sessions.call
           return found if found
           jobs = client.call('job.list') rescue {}
-          break unless jobs.key?(job_id)
+          unless jobs.key?(job_id)
+            job_ended = true
+            break
+          end
+        end
+
+        # If the exploit's job exited without us seeing a session, give a short
+        # grace window — the reverse callback is often still in flight when
+        # MSF marks the exploit job done. Without this we exit at ~6s and miss
+        # legitimately-vulnerable targets like vsftpd_234_backdoor.
+        if job_ended
+          grace_deadline = Time.now + 10
+          while Time.now < grace_deadline
+            sleep 2
+            found = check_sessions.call
+            return found if found
+          end
         end
       else
         # Synchronous path: poll for up to 30s in case the session callback is
