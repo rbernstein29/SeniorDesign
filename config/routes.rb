@@ -70,6 +70,8 @@ Rails.application.routes.draw do
 
   # Api
   namespace :api do
+    post 'auth', to: 'auth_api#create', as: :api_auth
+
     scope ':api_key' do
       resources :reports_api, only: [:index, :show, :destroy], path: 'reports' do
         member do
