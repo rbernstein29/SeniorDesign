@@ -1,9 +1,6 @@
 #!/usr/bin/env bash
 set -e
 
-# ── 0. Add Metasploit binaries to PATH so msfconsole is available to Rails ────
-export PATH="/opt/metasploit-framework/bin:/opt/metasploit-framework/embedded/bin:${PATH}"
-
 MSF_PORT="${MSF_RPC_PORT:-55553}"
 MSF_HOST="${MSF_RPC_HOST:-host.docker.internal}"
 

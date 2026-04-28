@@ -41,8 +41,9 @@ services:
       MSF_RPC_PORT: "55553"
       MSF_RPC_SSL:  "false"
       MSF_RPC_USER: msf
-      APP_PORT:         "3000"
+      APP_PORT:          "3000"
       RUNNING_IN_DOCKER: "1"
+      MSFCONSOLE_PATH:   "/opt/metasploit-framework/bin/msfconsole"
     depends_on:
       db:
         condition: service_healthy
