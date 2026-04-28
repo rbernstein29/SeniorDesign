@@ -32,7 +32,7 @@
   <!-- Stats -->
   <% connected = @agents&.count(&:connected?) || 0 %>
   <div class="stats-row">
-    <div class="stat-card magenta">
+    <div class="stat-card red">
       <div class="stat-label">Offline Agents</div>
       <% offline = (@agents&.count || 0) - connected %>
       <div class="stat-value" data-stat="offline_agents"><%= offline %></div>
@@ -43,7 +43,7 @@
       <div class="stat-value" data-stat="total_agents"><%= @agents&.count || 0 %></div>
       <div class="stat-delta">Registered agents</div>
     </div>
-    <div class="stat-card magenta">
+    <div class="stat-card green">
       <div class="stat-label">Connected Agents</div>
       <div class="stat-value" data-stat="connected_agents"><%= connected %></div>
       <div class="stat-delta <%= connected > 0 ? 'up' : '' %>" data-stat-delta="connected_agents"><%= connected > 0 ? 'Online now' : 'None online' %></div>
@@ -53,7 +53,7 @@
       <div class="stat-value" data-stat="active_scans"><%= @active_scans %></div>
       <div class="stat-delta" data-stat-delta="active_scans"><%= @active_scans.to_i > 0 ? 'Currently running' : 'No scans running' %></div>
     </div>
-    <div class="stat-card orange">
+    <div class="stat-card yellow">
       <div class="stat-label">Last Scan</div>
       <% if @last_scan %>
         <div class="stat-value" data-stat="last_scan" style="font-size:16px;line-height:1.3;margin-top:4px;"><%= time_ago_in_words(@last_scan) %> ago</div>
@@ -67,18 +67,18 @@
       <div class="stat-value" data-stat="total_assets"><%= @assets&.count || 0 %></div>
       <div class="stat-delta up">Configured targets</div>
     </div>
-    <div class="stat-card cyan">
+    <div class="stat-card teal">
       <div class="stat-label">Scan-Ready Assets</div>
       <% scan_ready = @assets&.count { |a| a.scan_config.present? } || 0 %>
       <div class="stat-value" data-stat="scan_ready_assets"><%= scan_ready %></div>
       <div class="stat-delta" data-stat-delta="scan_ready_assets">With scan config</div>
     </div>
-    <div class="stat-card teal">
+    <div class="stat-card blue">
       <div class="stat-label">Total Sites</div>
       <div class="stat-value" data-stat="total_sites"><%= @sites&.count || 0 %></div>
       <div class="stat-delta">Network sites</div>
     </div>
-    <div class="stat-card green">
+    <div class="stat-card purple">
       <div class="stat-label">Org Users</div>
       <div class="stat-value" data-stat="users_count"><%= @users_count || 0 %></div>
       <div class="stat-delta">Team members</div>
@@ -291,6 +291,16 @@
           <a href="<%= read_only_accounts_path rescue '#' %>" class="quick-btn">
             <div class="quick-btn-icon"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg></div>
             <span class="quick-btn-label">Manage Accounts</span>
+            <span class="quick-btn-arrow">→</span>
+          </a>
+          <a href="<%= code_analysis_path rescue '#' %>" class="quick-btn">
+            <div class="quick-btn-icon"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><polyline points="16 18 22 12 16 6"/><polyline points="8 6 2 12 8 18"/></svg></div>
+            <span class="quick-btn-label">Code Analysis</span>
+            <span class="quick-btn-arrow">→</span>
+          </a>
+          <a href="<%= settings_path rescue '#' %>" class="quick-btn">
+            <div class="quick-btn-icon"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06A1.65 1.65 0 0 0 4.68 15a1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06A1.65 1.65 0 0 0 9 4.68a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06A1.65 1.65 0 0 0 19.4 9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg></div>
+            <span class="quick-btn-label">Settings</span>
             <span class="quick-btn-arrow">→</span>
           </a>
         <% else %>
