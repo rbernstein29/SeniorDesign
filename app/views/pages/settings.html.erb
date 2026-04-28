@@ -123,22 +123,21 @@
                         <div style="color:var(--red);font-size:13px;">Metasploit modules not found. Ensure the Docker volume is mounted: <code style="font-family:var(--mono);">/opt/metasploit-framework:/opt/metasploit-framework:ro</code></div>
                     </div>
                 <% else %>
-                    <!-- Sync strip -->
+                    <!-- DB status strip -->
                     <div style="display:flex;align-items:center;justify-content:space-between;padding:12px 20px;border-bottom:1px solid var(--border);background:var(--surface2);">
-                        <div>
-                            <% db_count = Exploit.count %>
-                            <span style="font-size:13px;color:var(--text);">
-                                <strong style="font-family:var(--mono);"><%= number_with_delimiter(db_count) %></strong>
-                                modules indexed in database
-                            </span>
-                            <% if db_count == 0 %>
-                                <span style="font-size:12px;color:var(--red);margin-left:8px;">— sync required before scan profiles will show exploits</span>
+                        <% db_count = Exploit.count %>
+                        <span style="font-size:13px;color:var(--muted);">
+                            <strong style="font-family:var(--mono);color:var(--text);"><%= number_with_delimiter(db_count) %></strong>
+                            modules indexed
+                            <% if db_count.zero? %>
+                                <span style="color:var(--orange);"> — auto-sync queued on startup</span>
                             <% end %>
-                        </div>
-                        <%= button_to "↻ Sync Modules", exploit_sync_path,
+                        </span>
+                        <%= button_to "↻ Re-sync", exploit_sync_path,
                             method: :post,
-                            class: "btn btn-primary btn-sm",
-                            style: "flex-shrink:0;" %>
+                            class: "btn btn-secondary btn-sm",
+                            style: "flex-shrink:0;",
+                            title: "Force re-sync if Metasploit was updated" %>
                     </div>
 
                     <!-- Summary counts -->
