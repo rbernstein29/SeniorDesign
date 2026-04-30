@@ -220,12 +220,14 @@ class ScanServiceTest < ActiveSupport::TestCase
 
     silence_stdout do
       Thread.current[:msf_rpc] = nil
+      Thread.current[:msf_rpc_unavailable] = nil
       assert_nil build.send(:rpc_client)
     end
   ensure
     Aegis.singleton_class.send(:remove_method, :config)
     Aegis.singleton_class.alias_method(:config, :_orig_config)
     Aegis.singleton_class.send(:remove_method, :_orig_config)
+    Thread.current[:msf_rpc_unavailable] = nil
   end
 
   test "rpc_client returns cached client from Thread.current" do
@@ -234,6 +236,7 @@ class ScanServiceTest < ActiveSupport::TestCase
     assert_equal sentinel, build.send(:rpc_client)
   ensure
     Thread.current[:msf_rpc] = nil
+    Thread.current[:msf_rpc_unavailable] = nil
   end
 
   # ── attack ──────────────────────────────────────────────────────────────────
@@ -1161,6 +1164,7 @@ class ScanServiceTest < ActiveSupport::TestCase
 
   test "rpc_client logs in and caches the client on success" do
     Thread.current[:msf_rpc] = nil
+    Thread.current[:msf_rpc_unavailable] = nil
     msf = Aegis.config.msf
     overlay = Struct.new(*msf.members).new(*msf.members.map { |m| msf[m] })
     overlay.rpc_pass = "topsecret"
@@ -1183,10 +1187,12 @@ class ScanServiceTest < ActiveSupport::TestCase
     Aegis.singleton_class.alias_method(:config, :_orig_config)
     Aegis.singleton_class.send(:remove_method, :_orig_config)
     Thread.current[:msf_rpc] = nil
+    Thread.current[:msf_rpc_unavailable] = nil
   end
 
   test "rpc_client returns nil when login times out" do
     Thread.current[:msf_rpc] = nil
+    Thread.current[:msf_rpc_unavailable] = nil
     msf = Aegis.config.msf
     overlay = Struct.new(*msf.members).new(*msf.members.map { |m| msf[m] })
     overlay.rpc_pass = "whatever"
@@ -1206,6 +1212,7 @@ class ScanServiceTest < ActiveSupport::TestCase
     Aegis.singleton_class.alias_method(:config, :_orig_config)
     Aegis.singleton_class.send(:remove_method, :_orig_config)
     Thread.current[:msf_rpc] = nil
+    Thread.current[:msf_rpc_unavailable] = nil
   end
 
   # ── rpc_run_auxiliary busy-state path ──────────────────────────────────────

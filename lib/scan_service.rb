@@ -300,8 +300,12 @@ class ScanService
 
   def rpc_client
     return Thread.current[:msf_rpc] if Thread.current[:msf_rpc]
+    # Don't retry a connection that already failed in this thread — each attempt
+    # costs a full TCP timeout before returning nil.
+    return nil if Thread.current[:msf_rpc_unavailable]
     pass = Aegis.config.msf.rpc_pass
     unless pass
+      Thread.current[:msf_rpc_unavailable] = true
       puts "WARNING: MSF_RPC_PASS not set — falling back to msfconsole subprocess (slow)"
       return nil
     end
@@ -311,6 +315,7 @@ class ScanService
     Timeout.timeout(10) { client.login(Aegis.config.msf.rpc_user, pass) }
     Thread.current[:msf_rpc] = client
   rescue => e
+    Thread.current[:msf_rpc_unavailable] = true
     puts "msfrpcd connection failed: #{e.message} — falling back to msfconsole subprocess (slow)"
     nil
   end

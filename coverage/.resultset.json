@@ -1095,7 +1095,7 @@
           null,
           8,
           null,
-          334,
+          360,
           2,
           1,
           null,
@@ -1591,7 +1591,7 @@
           },
           "[:if, 283, 703, 8, 706, 11]": {
             "[:then, 284, 704, 10, 705, 41]": 2,
-            "[:else, 285, 703, 8, 706, 11]": 332
+            "[:else, 285, 703, 8, 706, 11]": 358
           },
           "[:if, 286, 716, 4, 724, 7]": {
             "[:then, 287, 717, 6, 719, 48]": 1,
@@ -1630,12 +1630,12 @@
             "[:else, 312, 787, 8, 788, 61]": 2
           },
           "[:if, 313, 788, 8, 788, 61]": {
-            "[:then, 314, 788, 16, 788, 55]": 2,
-            "[:else, 315, 788, 58, 788, 61]": 0
+            "[:then, 314, 788, 16, 788, 55]": 1,
+            "[:else, 315, 788, 58, 788, 61]": 1
           },
           "[:if, 316, 790, 11, 790, 98]": {
-            "[:then, 317, 790, 19, 790, 59]": 2,
-            "[:else, 318, 790, 62, 790, 98]": 1
+            "[:then, 317, 790, 19, 790, 59]": 1,
+            "[:else, 318, 790, 62, 790, 98]": 2
           },
           "[:if, 319, 800, 4, 800, 35]": {
             "[:then, 320, 800, 4, 800, 16]": 6,
@@ -1871,7 +1871,7 @@
           null,
           1,
           3,
-          5,
+          6,
           null,
           null,
           null,
@@ -1884,7 +1884,7 @@
           null,
           null,
           1,
-          61,
+          62,
           null,
           null,
           null,
@@ -1954,11 +1954,11 @@
         ],
         "branches": {
           "[:\"&.\", 0, 11, 26, 11, 44]": {
-            "[:then, 1, 11, 26, 11, 44]": 2,
+            "[:then, 1, 11, 26, 11, 44]": 1,
             "[:else, 2, 11, 26, 11, 44]": 0
           },
           "[:\"&.\", 3, 11, 26, 11, 76]": {
-            "[:then, 4, 11, 26, 11, 76]": 2,
+            "[:then, 4, 11, 26, 11, 76]": 1,
             "[:else, 5, 11, 26, 11, 76]": 0
           },
           "[:unless, 6, 18, 4, 18, 25]": {
@@ -2180,6 +2180,88 @@
         ],
         "branches": {}
       },
+      "/opt/scanaegis/app/jobs/exploit_sync_job.rb": {
+        "lines": [
+          1,
+          1,
+          null,
+          null,
+          1,
+          2,
+          null,
+          null,
+          1,
+          6,
+          6,
+          null,
+          6,
+          6,
+          null,
+          6,
+          12,
+          null,
+          10,
+          16,
+          16,
+          null,
+          11,
+          null,
+          null,
+          11,
+          11,
+          null,
+          11,
+          8,
+          null,
+          null,
+          null,
+          null,
+          null,
+          null,
+          8,
+          8,
+          null,
+          3,
+          3,
+          null,
+          null,
+          null,
+          null,
+          6,
+          2,
+          null,
+          null,
+          null,
+          null,
+          null,
+          null,
+          null,
+          6,
+          null,
+          null
+        ],
+        "branches": {
+          "[:unless, 0, 17, 6, 17, 34]": {
+            "[:else, 1, 17, 6, 17, 34]": 10,
+            "[:then, 2, 17, 6, 17, 10]": 2
+          },
+          "[:if, 3, 21, 8, 21, 47]": {
+            "[:then, 4, 21, 8, 21, 12]": 5,
+            "[:else, 5, 21, 8, 21, 47]": 11
+          },
+          "[:if, 6, 46, 4, 53, 7]": {
+            "[:then, 7, 47, 6, 52, 18]": 2,
+            "[:else, 8, 46, 4, 53, 7]": 4
+          }
+        }
+      },
+      "/opt/scanaegis/app/jobs/application_job.rb": {
+        "lines": [
+          1,
+          null
+        ],
+        "branches": {}
+      },
       "/opt/scanaegis/app/models/activity_log.rb": {
         "lines": [
           1,
@@ -2208,150 +2290,6 @@
           null
         ],
         "branches": {}
-      },
-      "/opt/scanaegis/lib/aegis/msf/output_parser.rb": {
-        "lines": [
-          null,
-          null,
-          null,
-          null,
-          null,
-          1,
-          1,
-          1,
-          1,
-          null,
-          null,
-          null,
-          null,
-          1,
-          9,
-          9,
-          3,
-          9,
-          9,
-          9,
-          null,
-          null,
-          null,
-          null,
-          1,
-          10,
-          10,
-          10,
-          10,
-          null,
-          null,
-          null,
-          null
-        ],
-        "branches": {
-          "[:if, 0, 28, 19, 28, 88]": {
-            "[:then, 1, 28, 49, 28, 71]": 1,
-            "[:else, 2, 28, 74, 28, 88]": 9
-          }
-        }
-      },
-      "/opt/scanaegis/app/controllers/api/account_api_controller.rb": {
-        "lines": [
-          1,
-          1,
-          null,
-          1,
-          2,
-          2,
-          null,
-          null,
-          null,
-          null,
-          null,
-          null,
-          null,
-          null,
-          null,
-          null,
-          null,
-          null,
-          null,
-          null,
-          null
-        ],
-        "branches": {}
-      },
-      "/opt/scanaegis/app/controllers/api/api_controller.rb": {
-        "lines": [
-          1,
-          1,
-          1,
-          1,
-          null,
-          1,
-          null,
-          1,
-          109,
-          109,
-          99,
-          null,
-          10,
-          null,
-          null,
-          null,
-          1,
-          60,
-          13,
-          null,
-          null,
-          null,
-          null
-        ],
-        "branches": {
-          "[:if, 0, 10, 6, 14, 9]": {
-            "[:then, 1, 11, 8, 11, 28]": 99,
-            "[:else, 2, 13, 8, 13, 72]": 10
-          },
-          "[:unless, 3, 18, 6, 20, 9]": {
-            "[:else, 4, 18, 6, 20, 9]": 47,
-            "[:then, 5, 19, 8, 19, 75]": 13
-          }
-        }
-      },
-      "/opt/scanaegis/app/controllers/concerns/activity_logger.rb": {
-        "lines": [
-          1,
-          1,
-          null,
-          1,
-          171,
-          171,
-          171,
-          171,
-          null,
-          1,
-          null,
-          null
-        ],
-        "branches": {
-          "[:\"&.\", 0, 5, 20, 5, 49]": {
-            "[:then, 1, 5, 20, 5, 49]": 25,
-            "[:else, 2, 5, 20, 5, 49]": 0
-          },
-          "[:\"&.\", 3, 5, 53, 5, 83]": {
-            "[:then, 4, 5, 53, 5, 83]": 0,
-            "[:else, 5, 5, 53, 5, 83]": 0
-          },
-          "[:\"&.\", 6, 6, 21, 6, 37]": {
-            "[:then, 7, 6, 21, 6, 37]": 25,
-            "[:else, 8, 6, 21, 6, 37]": 0
-          },
-          "[:\"&.\", 9, 6, 41, 6, 58]": {
-            "[:then, 10, 6, 41, 6, 58]": 0,
-            "[:else, 11, 6, 41, 6, 58]": 0
-          },
-          "[:unless, 12, 7, 4, 7, 21]": {
-            "[:else, 13, 7, 4, 7, 21]": 171,
-            "[:then, 14, 7, 4, 7, 10]": 0
-          }
-        }
       },
       "/opt/scanaegis/app/controllers/sessions_controller.rb": {
         "lines": [
@@ -2561,6 +2499,44 @@
           }
         }
       },
+      "/opt/scanaegis/app/controllers/concerns/activity_logger.rb": {
+        "lines": [
+          1,
+          1,
+          null,
+          1,
+          171,
+          171,
+          171,
+          171,
+          null,
+          1,
+          null,
+          null
+        ],
+        "branches": {
+          "[:\"&.\", 0, 5, 20, 5, 49]": {
+            "[:then, 1, 5, 20, 5, 49]": 25,
+            "[:else, 2, 5, 20, 5, 49]": 0
+          },
+          "[:\"&.\", 3, 5, 53, 5, 83]": {
+            "[:then, 4, 5, 53, 5, 83]": 0,
+            "[:else, 5, 5, 53, 5, 83]": 0
+          },
+          "[:\"&.\", 6, 6, 21, 6, 37]": {
+            "[:then, 7, 6, 21, 6, 37]": 25,
+            "[:else, 8, 6, 21, 6, 37]": 0
+          },
+          "[:\"&.\", 9, 6, 41, 6, 58]": {
+            "[:then, 10, 6, 41, 6, 58]": 0,
+            "[:else, 11, 6, 41, 6, 58]": 0
+          },
+          "[:unless, 12, 7, 4, 7, 21]": {
+            "[:else, 13, 7, 4, 7, 21]": 171,
+            "[:then, 14, 7, 4, 7, 10]": 0
+          }
+        }
+      },
       "/opt/scanaegis/app/models/current.rb": {
         "lines": [
           1,
@@ -2570,44 +2546,267 @@
         ],
         "branches": {}
       },
-      "/opt/scanaegis/app/controllers/sites_controller.rb": {
+      "/opt/scanaegis/app/mailers/passwords_mailer.rb": {
         "lines": [
           1,
           1,
-          null,
-          1,
-          1,
-          null,
-          null,
-          1,
-          2,
-          null,
-          null,
-          null,
-          null,
-          1,
-          1,
-          null,
-          1,
-          null,
-          null,
-          1,
-          2,
-          1,
-          1,
-          1,
-          null,
-          1,
+          8,
+          8,
           null,
           null
         ],
         "branches": {}
       },
-      "/opt/scanaegis/app/controllers/api/agents_api_controller.rb": {
+      "/opt/scanaegis/app/mailers/application_mailer.rb": {
         "lines": [
           1,
           1,
           1,
+          null
+        ],
+        "branches": {}
+      },
+      "/opt/scanaegis/app/services/ollama_service.rb": {
+        "lines": [
+          1,
+          1,
+          null,
+          1,
+          1,
+          1,
+          1,
+          null,
+          null,
+          null,
+          null,
+          1,
+          6,
+          6,
+          null,
+          null,
+          null,
+          null,
+          null,
+          null,
+          null,
+          null,
+          null,
+          null,
+          null,
+          null,
+          null,
+          null,
+          null,
+          null,
+          null,
+          null,
+          null,
+          null,
+          null,
+          null,
+          null,
+          null,
+          6,
+          5,
+          null,
+          1,
+          null,
+          null,
+          null,
+          null,
+          null,
+          1,
+          3,
+          2,
+          null,
+          null,
+          null,
+          null,
+          null,
+          null,
+          null,
+          null,
+          null,
+          null,
+          null,
+          null,
+          null,
+          null,
+          null,
+          null,
+          null,
+          null,
+          1,
+          null,
+          null,
+          null,
+          null,
+          null,
+          null,
+          null,
+          null,
+          null,
+          null,
+          null,
+          null,
+          null,
+          3,
+          null,
+          1,
+          1,
+          null,
+          null,
+          null,
+          null,
+          null,
+          1,
+          3,
+          null,
+          null,
+          null,
+          null,
+          null,
+          null,
+          null,
+          null,
+          null,
+          null,
+          null,
+          null,
+          null,
+          null,
+          null,
+          null,
+          null,
+          null,
+          null,
+          3,
+          2,
+          2,
+          2,
+          null,
+          1,
+          null,
+          null,
+          1,
+          1,
+          null,
+          1,
+          12,
+          null,
+          12,
+          null,
+          null,
+          null,
+          null,
+          null,
+          null,
+          12,
+          9,
+          9,
+          9,
+          9,
+          9,
+          null,
+          null,
+          null
+        ],
+        "branches": {
+          "[:if, 0, 49, 13, 81, 7]": {
+            "[:then, 1, 50, 6, 50, 15]": 2,
+            "[:else, 2, 69, 6, 69, 15]": 1
+          },
+          "[:\"&.\", 3, 114, 13, 114, 65]": {
+            "[:then, 4, 114, 13, 114, 65]": 1,
+            "[:else, 5, 114, 13, 114, 65]": 1
+          },
+          "[:\"&.\", 6, 115, 13, 115, 71]": {
+            "[:then, 7, 115, 13, 115, 71]": 1,
+            "[:else, 8, 115, 13, 115, 71]": 1
+          }
+        }
+      },
+      "/opt/scanaegis/app/services/scan_report_xlsx.rb": {
+        "lines": [
+          1,
+          null,
+          1,
+          1,
+          6,
+          null,
+          null,
+          1,
+          6,
+          6,
+          6,
+          6,
+          null,
+          16,
+          6,
+          null,
+          12,
+          null,
+          6,
+          6,
+          16,
+          null,
+          null,
+          6,
+          null,
+          null,
+          1,
+          null,
+          1,
+          6,
+          6,
+          6,
+          6,
+          6,
+          6,
+          6,
+          6,
+          null,
+          6,
+          1,
+          1,
+          1,
+          null,
+          5,
+          5,
+          5,
+          null,
+          null,
+          null
+        ],
+        "branches": {
+          "[:if, 0, 30, 12, 30, 66]": {
+            "[:then, 1, 30, 19, 30, 42]": 1,
+            "[:else, 2, 30, 45, 30, 66]": 5
+          },
+          "[:\"&.\", 3, 34, 38, 34, 89]": {
+            "[:then, 4, 34, 38, 34, 89]": 6,
+            "[:else, 5, 34, 38, 34, 89]": 0
+          },
+          "[:\"&.\", 6, 36, 38, 36, 65]": {
+            "[:then, 7, 36, 38, 36, 65]": 6,
+            "[:else, 8, 36, 38, 36, 65]": 0
+          },
+          "[:if, 9, 39, 4, 47, 7]": {
+            "[:then, 10, 40, 6, 42, 59]": 1,
+            "[:else, 11, 44, 6, 46, 55]": 5
+          }
+        }
+      },
+      "/opt/scanaegis/app/controllers/agents_controller.rb": {
+        "lines": [
+          1,
+          1,
+          1,
+          1,
+          null,
+          1,
+          1,
+          null,
           null,
           1,
           1,
@@ -2622,17 +2821,6 @@
           null,
           null,
           1,
-          null,
-          1,
-          null,
-          1,
-          null,
-          null,
-          1,
-          2,
-          1,
-          null,
-          1,
           1,
           null,
           1,
@@ -2642,11 +2830,22 @@
           2,
           1,
           1,
+          1,
           null,
+          1,
           null,
           null,
           null,
           1,
+          1,
+          1,
+          1,
+          1,
+          1,
+          null,
+          null,
+          null,
+          null,
           null,
           null,
           1,
@@ -2658,31 +2857,50 @@
           2,
           null,
           null,
+          null,
+          null,
+          2,
+          null,
           2,
           null,
           null,
           null,
+          null,
+          null,
+          null,
+          null,
+          null,
+          1,
+          3,
+          null,
+          1,
+          1,
           1,
           null,
           1,
           null,
-          5,
+          1,
           null,
+          1,
           null,
-          null,
-          null,
-          null,
-          null,
-          null,
-          null,
-          null,
-          null,
-          null,
-          null,
+          1,
           null,
           null
         ],
-        "branches": {}
+        "branches": {
+          "[:if, 0, 63, 21, 63, 84]": {
+            "[:then, 1, 63, 35, 63, 74]": 2,
+            "[:else, 2, 63, 77, 63, 84]": 0
+          },
+          "[:if, 3, 76, 4, 76, 78]": {
+            "[:then, 4, 76, 4, 76, 48]": 1,
+            "[:else, 5, 76, 4, 76, 78]": 0
+          },
+          "[:if, 6, 77, 4, 77, 78]": {
+            "[:then, 7, 77, 4, 77, 48]": 1,
+            "[:else, 8, 77, 4, 77, 78]": 0
+          }
+        }
       },
       "/opt/scanaegis/app/services/agent_zip_builder.rb": {
         "lines": [
@@ -2947,205 +3165,6 @@
           }
         }
       },
-      "/opt/scanaegis/app/services/scan_report_xlsx.rb": {
-        "lines": [
-          1,
-          null,
-          1,
-          1,
-          6,
-          null,
-          null,
-          1,
-          6,
-          6,
-          6,
-          6,
-          null,
-          16,
-          6,
-          null,
-          12,
-          null,
-          6,
-          6,
-          16,
-          null,
-          null,
-          6,
-          null,
-          null,
-          1,
-          null,
-          1,
-          6,
-          6,
-          6,
-          6,
-          6,
-          6,
-          6,
-          6,
-          null,
-          6,
-          1,
-          1,
-          1,
-          null,
-          5,
-          5,
-          5,
-          null,
-          null,
-          null
-        ],
-        "branches": {
-          "[:if, 0, 30, 12, 30, 66]": {
-            "[:then, 1, 30, 19, 30, 42]": 1,
-            "[:else, 2, 30, 45, 30, 66]": 5
-          },
-          "[:\"&.\", 3, 34, 38, 34, 89]": {
-            "[:then, 4, 34, 38, 34, 89]": 6,
-            "[:else, 5, 34, 38, 34, 89]": 0
-          },
-          "[:\"&.\", 6, 36, 38, 36, 65]": {
-            "[:then, 7, 36, 38, 36, 65]": 6,
-            "[:else, 8, 36, 38, 36, 65]": 0
-          },
-          "[:if, 9, 39, 4, 47, 7]": {
-            "[:then, 10, 40, 6, 42, 59]": 1,
-            "[:else, 11, 44, 6, 46, 55]": 5
-          }
-        }
-      },
-      "/opt/scanaegis/app/controllers/api/auth_api_controller.rb": {
-        "lines": [
-          1,
-          1,
-          null,
-          null,
-          null,
-          1,
-          7,
-          7,
-          null,
-          7,
-          2,
-          2,
-          null,
-          null,
-          5,
-          null,
-          5,
-          1,
-          1,
-          null,
-          null,
-          4,
-          1,
-          1,
-          null,
-          null,
-          3,
-          1,
-          null,
-          null,
-          3,
-          null,
-          null,
-          null,
-          null,
-          null,
-          null,
-          null,
-          null
-        ],
-        "branches": {
-          "[:if, 0, 10, 6, 13, 9]": {
-            "[:then, 1, 11, 8, 12, 14]": 2,
-            "[:else, 2, 10, 6, 13, 9]": 5
-          },
-          "[:if, 3, 17, 6, 20, 9]": {
-            "[:then, 4, 18, 8, 19, 14]": 1,
-            "[:else, 5, 17, 6, 20, 9]": 4
-          },
-          "[:unless, 6, 22, 6, 25, 9]": {
-            "[:else, 7, 22, 6, 25, 9]": 3,
-            "[:then, 8, 23, 8, 24, 14]": 1
-          },
-          "[:if, 9, 27, 6, 29, 9]": {
-            "[:then, 10, 28, 8, 28, 62]": 1,
-            "[:else, 11, 27, 6, 29, 9]": 2
-          }
-        }
-      },
-      "/opt/scanaegis/app/controllers/passwords_controller.rb": {
-        "lines": [
-          1,
-          1,
-          1,
-          null,
-          1,
-          null,
-          null,
-          1,
-          4,
-          2,
-          null,
-          null,
-          4,
-          null,
-          null,
-          1,
-          null,
-          null,
-          1,
-          2,
-          1,
-          null,
-          1,
-          null,
-          null,
-          null,
-          1,
-          1,
-          6,
-          null,
-          3,
-          null,
-          null
-        ],
-        "branches": {
-          "[:if, 0, 9, 4, 11, 7]": {
-            "[:then, 1, 10, 6, 10, 45]": 2,
-            "[:else, 2, 9, 4, 11, 7]": 2
-          },
-          "[:if, 3, 20, 4, 24, 7]": {
-            "[:then, 4, 21, 6, 21, 70]": 1,
-            "[:else, 5, 23, 6, 23, 87]": 1
-          }
-        }
-      },
-      "/opt/scanaegis/app/mailers/passwords_mailer.rb": {
-        "lines": [
-          1,
-          1,
-          8,
-          8,
-          null,
-          null
-        ],
-        "branches": {}
-      },
-      "/opt/scanaegis/app/mailers/application_mailer.rb": {
-        "lines": [
-          1,
-          1,
-          1,
-          null
-        ],
-        "branches": {}
-      },
       "/opt/scanaegis/app/jobs/scan_job.rb": {
         "lines": [
           1,
@@ -3275,8 +3294,8 @@
             "[:else, 11, 17, 64, 17, 70]": 5
           },
           "[:if, 12, 34, 16, 34, 130]": {
-            "[:then, 13, 34, 30, 34, 84]": 7,
-            "[:else, 14, 34, 87, 34, 130]": 0
+            "[:then, 13, 34, 30, 34, 84]": 0,
+            "[:else, 14, 34, 87, 34, 130]": 7
           },
           "[:if, 15, 43, 4, 51, 7]": {
             "[:then, 16, 44, 6, 50, 9]": 2,
@@ -3287,13 +3306,6 @@
             "[:else, 20, 65, 35, 65, 48]": 15
           }
         }
-      },
-      "/opt/scanaegis/app/jobs/application_job.rb": {
-        "lines": [
-          1,
-          null
-        ],
-        "branches": {}
       },
       "/opt/scanaegis/app/services/aegis/reports/retester.rb": {
         "lines": [
@@ -3356,27 +3368,253 @@
           }
         }
       },
-      "/opt/scanaegis/app/jobs/dns_lookup_job.rb": {
+      "/opt/scanaegis/app/controllers/reports_controller.rb": {
         "lines": [
           1,
-          1,
           null,
           1,
           4,
-          4,
+          3,
+          null,
+          3,
+          null,
+          null,
+          3,
+          null,
+          null,
+          null,
+          null,
+          3,
+          3,
+          3,
+          null,
+          3,
+          1,
+          1,
+          null,
+          null,
+          null,
+          3,
+          3,
+          3,
+          3,
+          null,
+          3,
+          2,
+          null,
+          null,
+          null,
+          null,
           null,
           2,
+          1,
+          null,
+          null,
+          3,
+          null,
+          1,
+          2,
+          1,
+          null,
+          1,
+          null,
+          null,
+          null,
+          3,
+          null,
+          null,
+          null,
+          3,
+          null,
+          null,
+          1,
+          null,
+          null,
+          1,
+          3,
+          2,
+          null,
+          2,
+          1,
+          null,
+          null,
+          1,
+          null,
+          null,
+          1,
+          null,
+          null,
+          1,
+          2,
+          1,
+          1,
+          1,
+          null,
+          1,
+          null,
+          null,
+          1,
+          3,
+          1,
+          1,
+          null,
+          null,
+          null,
+          null,
+          2,
+          null,
+          null,
+          1,
+          3,
           2,
           2,
+          1,
+          1,
+          null,
+          null,
+          1,
+          null,
+          null,
+          null,
+          null,
+          1,
+          null,
+          null,
+          1,
+          2,
+          1,
+          1,
+          1,
+          null,
+          null,
+          null,
+          null,
+          1,
+          null,
+          null,
+          1,
+          2,
+          1,
+          1,
+          1,
+          null,
+          null,
+          null,
+          null,
+          1,
+          null,
+          null,
+          1,
+          2,
+          1,
+          null,
+          1,
+          null,
+          null,
+          1,
+          null,
+          1,
+          21,
+          null,
           null,
           null
         ],
         "branches": {
-          "[:unless, 0, 6, 4, 6, 48]": {
-            "[:else, 1, 6, 4, 6, 48]": 2,
-            "[:then, 2, 6, 4, 6, 10]": 2
+          "[:if, 0, 21, 6, 21, 60]": {
+            "[:then, 1, 21, 6, 21, 33]": 0,
+            "[:else, 2, 21, 6, 21, 60]": 1
+          },
+          "[:if, 3, 30, 4, 53, 7]": {
+            "[:then, 4, 31, 6, 52, 9]": 2,
+            "[:else, 5, 30, 4, 53, 7]": 1
+          },
+          "[:if, 6, 37, 6, 52, 9]": {
+            "[:then, 7, 38, 8, 51, 82]": 1,
+            "[:else, 8, 37, 6, 52, 9]": 1
+          },
+          "[:if, 9, 44, 10, 48, 13]": {
+            "[:then, 10, 45, 12, 45, 42]": 1,
+            "[:else, 11, 47, 12, 47, 36]": 1
+          },
+          "[:if, 12, 65, 4, 70, 7]": {
+            "[:then, 13, 66, 6, 67, 101]": 1,
+            "[:else, 14, 69, 6, 69, 64]": 1
+          },
+          "[:unless, 15, 98, 4, 101, 7]": {
+            "[:else, 16, 98, 4, 101, 7]": 1,
+            "[:then, 17, 99, 6, 100, 12]": 1
           }
         }
+      },
+      "/opt/scanaegis/app/services/scan_report_csv.rb": {
+        "lines": [
+          1,
+          null,
+          1,
+          1,
+          8,
+          null,
+          null,
+          1,
+          8,
+          8,
+          8,
+          22,
+          null,
+          null,
+          null
+        ],
+        "branches": {}
+      },
+      "/opt/scanaegis/app/services/aegis/reports/whitebox_payload.rb": {
+        "lines": [
+          null,
+          1,
+          1,
+          1,
+          1,
+          6,
+          null,
+          null,
+          1,
+          null,
+          6,
+          null,
+          null,
+          null,
+          null,
+          null,
+          null,
+          1,
+          3,
+          null,
+          null,
+          1,
+          null,
+          1,
+          6,
+          6,
+          5,
+          null,
+          null,
+          1,
+          null,
+          5,
+          null,
+          null,
+          null,
+          null,
+          null,
+          null,
+          null,
+          null,
+          null,
+          null,
+          null,
+          null,
+          null
+        ],
+        "branches": {}
       },
       "/opt/scanaegis/app/services/nvd_enrichment_service.rb": {
         "lines": [
@@ -3447,66 +3685,39 @@
           }
         }
       },
-      "/opt/scanaegis/app/controllers/api/exploits_api_controller.rb": {
+      "/opt/scanaegis/app/controllers/api/auth_api_controller.rb": {
         "lines": [
           1,
           1,
-          1,
           null,
           null,
           null,
           1,
-          3,
-          3,
-          3,
-          3,
-          3,
-          3,
-          3,
+          7,
+          7,
           null,
-          null,
-          null,
-          3,
-          null,
-          null,
-          null,
-          1,
-          2,
-          1,
-          null,
-          1,
-          null,
-          null,
-          null,
-          null,
-          1,
+          7,
           2,
           2,
           null,
-          2,
+          null,
+          5,
+          null,
+          5,
           1,
           1,
           null,
-          null,
-          1,
-          null,
-          1,
-          1,
-          null,
-          null,
-          null,
-          1,
-          null,
-          1,
           null,
           4,
+          1,
+          1,
           null,
           null,
+          3,
+          1,
           null,
           null,
-          null,
-          null,
-          null,
+          3,
           null,
           null,
           null,
@@ -3517,413 +3728,23 @@
           null
         ],
         "branches": {
-          "[:if, 0, 9, 6, 9, 106]": {
-            "[:then, 1, 9, 6, 9, 74]": 1,
-            "[:else, 2, 9, 6, 9, 106]": 2
+          "[:if, 0, 10, 6, 13, 9]": {
+            "[:then, 1, 11, 8, 12, 14]": 2,
+            "[:else, 2, 10, 6, 13, 9]": 5
           },
-          "[:if, 3, 35, 6, 44, 9]": {
-            "[:then, 4, 36, 8, 40, 33]": 1,
-            "[:else, 5, 42, 8, 43, 45]": 1
+          "[:if, 3, 17, 6, 20, 9]": {
+            "[:then, 4, 18, 8, 19, 14]": 1,
+            "[:else, 5, 17, 6, 20, 9]": 4
           },
-          "[:if, 6, 36, 17, 36, 51]": {
-            "[:then, 7, 36, 24, 36, 37]": 0,
-            "[:else, 8, 36, 40, 36, 51]": 1
+          "[:unless, 6, 22, 6, 25, 9]": {
+            "[:else, 7, 22, 6, 25, 9]": 3,
+            "[:then, 8, 23, 8, 24, 14]": 1
+          },
+          "[:if, 9, 27, 6, 29, 9]": {
+            "[:then, 10, 28, 8, 28, 62]": 1,
+            "[:else, 11, 27, 6, 29, 9]": 2
           }
         }
-      },
-      "/opt/scanaegis/app/services/aegis/exploits/module_counter.rb": {
-        "lines": [
-          null,
-          null,
-          null,
-          1,
-          1,
-          1,
-          1,
-          5,
-          5,
-          null,
-          null,
-          1,
-          3,
-          3,
-          null,
-          null,
-          null,
-          null,
-          null,
-          1,
-          2,
-          2,
-          2620,
-          null,
-          null,
-          1,
-          null,
-          1,
-          2634,
-          null,
-          null,
-          1,
-          8,
-          null,
-          null,
-          null,
-          1,
-          5,
-          12,
-          null,
-          2,
-          null,
-          null,
-          null,
-          null,
-          null
-        ],
-        "branches": {
-          "[:unless, 0, 13, 8, 13, 40]": {
-            "[:else, 1, 13, 8, 13, 40]": 3,
-            "[:then, 2, 13, 8, 13, 16]": 0
-          },
-          "[:unless, 3, 21, 8, 21, 41]": {
-            "[:else, 4, 21, 8, 21, 41]": 2,
-            "[:then, 5, 21, 8, 21, 17]": 0
-          },
-          "[:if, 6, 22, 17, 22, 55]": {
-            "[:then, 7, 22, 30, 22, 42]": 0,
-            "[:else, 8, 22, 45, 22, 55]": 2
-          },
-          "[:if, 9, 29, 18, 29, 94]": {
-            "[:then, 10, 29, 31, 29, 62]": 1,
-            "[:else, 11, 29, 65, 29, 94]": 4
-          },
-          "[:if, 12, 33, 18, 34, 79]": {
-            "[:then, 13, 33, 31, 33, 89]": 1,
-            "[:else, 14, 34, 31, 34, 79]": 4
-          },
-          "[:if, 15, 38, 8, 42, 11]": {
-            "[:then, 16, 39, 10, 39, 64]": 3,
-            "[:else, 17, 41, 10, 41, 37]": 2
-          }
-        }
-      },
-      "/opt/scanaegis/app/controllers/scan_profiles_controller.rb": {
-        "lines": [
-          1,
-          1,
-          null,
-          1,
-          1,
-          null,
-          null,
-          1,
-          1,
-          1,
-          null,
-          null,
-          1,
-          3,
-          null,
-          null,
-          null,
-          null,
-          1,
-          null,
-          3,
-          2,
-          2,
-          null,
-          1,
-          null,
-          null,
-          null,
-          1,
-          3,
-          1,
-          1,
-          1,
-          null,
-          2,
-          null,
-          null
-        ],
-        "branches": {
-          "[:if, 0, 21, 4, 26, 7]": {
-            "[:then, 1, 22, 6, 23, 80]": 2,
-            "[:else, 2, 25, 6, 25, 87]": 1
-          }
-        }
-      },
-      "/opt/scanaegis/app/controllers/api/assets_api_controller.rb": {
-        "lines": [
-          1,
-          1,
-          1,
-          null,
-          1,
-          4,
-          null,
-          4,
-          4,
-          2,
-          null,
-          2,
-          1,
-          2,
-          null,
-          1,
-          null,
-          1,
-          null,
-          null,
-          6,
-          null,
-          null,
-          1,
-          2,
-          1,
-          1,
-          1,
-          1,
-          null,
-          1,
-          null,
-          null,
-          null,
-          1,
-          null,
-          null,
-          null,
-          null,
-          1,
-          5,
-          5,
-          5,
-          null,
-          5,
-          null,
-          null,
-          null,
-          5,
-          5,
-          null,
-          5,
-          4,
-          1,
-          1,
-          null,
-          null,
-          3,
-          3,
-          4,
-          null,
-          null,
-          null,
-          null,
-          null,
-          null,
-          null,
-          null,
-          3,
-          3,
-          null,
-          2,
-          null,
-          5,
-          null,
-          null,
-          2,
-          null,
-          null,
-          1,
-          2,
-          1,
-          null,
-          1,
-          1,
-          null,
-          1,
-          null,
-          null,
-          1,
-          null,
-          1,
-          null,
-          8,
-          null,
-          null,
-          null,
-          null,
-          null,
-          null,
-          null,
-          null,
-          null,
-          null,
-          null,
-          null,
-          1,
-          1,
-          null,
-          null,
-          1,
-          5,
-          5,
-          4,
-          2,
-          null,
-          2,
-          1,
-          null,
-          null,
-          1,
-          null,
-          null,
-          null
-        ],
-        "branches": {
-          "[:if, 0, 9, 6, 20, 9]": {
-            "[:then, 1, 10, 8, 18, 90]": 2,
-            "[:else, 2, 9, 6, 20, 9]": 2
-          },
-          "[:if, 3, 31, 24, 31, 68]": {
-            "[:then, 4, 31, 36, 31, 62]": 1,
-            "[:else, 5, 31, 65, 31, 68]": 0
-          },
-          "[:if, 6, 53, 6, 56, 9]": {
-            "[:then, 7, 54, 8, 55, 14]": 1,
-            "[:else, 8, 53, 6, 56, 9]": 3
-          },
-          "[:unless, 9, 69, 8, 69, 69]": {
-            "[:else, 10, 69, 8, 69, 69]": 0,
-            "[:then, 11, 69, 8, 69, 44]": 3
-          },
-          "[:if, 12, 114, 6, 119, 9]": {
-            "[:then, 13, 115, 8, 115, 19]": 2,
-            "[:else, 14, 117, 8, 118, 45]": 2
-          },
-          "[:if, 15, 117, 8, 117, 74]": {
-            "[:then, 16, 117, 8, 117, 54]": 1,
-            "[:else, 17, 117, 8, 117, 74]": 1
-          }
-        }
-      },
-      "/opt/scanaegis/app/controllers/accounts_controller.rb": {
-        "lines": [
-          1,
-          1,
-          1,
-          null,
-          1,
-          5,
-          5,
-          4,
-          null,
-          null,
-          3,
-          null,
-          3,
-          2,
-          null,
-          1,
-          null,
-          1,
-          null,
-          1,
-          1,
-          null,
-          null,
-          1,
-          null,
-          null,
-          1,
-          4,
-          4,
-          3,
-          null,
-          1,
-          1,
-          null,
-          null,
-          1,
-          3,
-          3,
-          1,
-          1,
-          1,
-          null,
-          2,
-          null,
-          null,
-          null,
-          1,
-          2,
-          2,
-          2,
-          2,
-          2,
-          1,
-          null,
-          1,
-          null,
-          2,
-          null,
-          null,
-          1,
-          1,
-          1,
-          1,
-          null,
-          null,
-          1,
-          null,
-          1,
-          4,
-          null,
-          null,
-          1,
-          5,
-          null,
-          null,
-          null
-        ],
-        "branches": {
-          "[:\"&.\", 0, 20, 61, 20, 70]": {
-            "[:then, 1, 20, 61, 20, 70]": 1,
-            "[:else, 2, 20, 61, 20, 70]": 0
-          },
-          "[:\"&.\", 3, 28, 39, 28, 68]": {
-            "[:then, 4, 28, 39, 28, 68]": 4,
-            "[:else, 5, 28, 39, 28, 68]": 0
-          },
-          "[:\"&.\", 6, 28, 39, 28, 78]": {
-            "[:then, 7, 28, 39, 28, 78]": 4,
-            "[:else, 8, 28, 39, 28, 78]": 0
-          },
-          "[:if, 9, 29, 4, 29, 54]": {
-            "[:then, 10, 29, 4, 29, 46]": 2,
-            "[:else, 11, 29, 4, 29, 54]": 2
-          },
-          "[:if, 12, 38, 4, 44, 7]": {
-            "[:then, 13, 39, 6, 41, 72]": 1,
-            "[:else, 14, 43, 6, 43, 83]": 2
-          },
-          "[:if, 15, 52, 4, 56, 7]": {
-            "[:then, 16, 53, 6, 53, 32]": 1,
-            "[:else, 17, 55, 6, 55, 19]": 1
-          }
-        }
-      },
-      "/opt/scanaegis/app/mailers/email_verify_mailer.rb": {
-        "lines": [
-          1,
-          1,
-          11,
-          11,
-          null,
-          null
-        ],
-        "branches": {}
       },
       "/opt/scanaegis/app/controllers/api/sites_api_controller.rb": {
         "lines": [
@@ -3979,200 +3800,193 @@
         ],
         "branches": {}
       },
-      "/opt/scanaegis/app/services/ollama_service.rb": {
+      "/opt/scanaegis/app/controllers/api/api_controller.rb": {
         "lines": [
           1,
           1,
-          null,
-          1,
-          1,
-          1,
-          1,
-          null,
-          null,
-          null,
-          null,
-          1,
-          6,
-          6,
-          null,
-          null,
-          null,
-          null,
-          null,
-          null,
-          null,
-          null,
-          null,
-          null,
-          null,
-          null,
-          null,
-          null,
-          null,
-          null,
-          null,
-          null,
-          null,
-          null,
-          null,
-          null,
-          null,
-          null,
-          6,
-          5,
-          null,
-          1,
-          null,
-          null,
-          null,
-          null,
-          null,
-          1,
-          3,
-          2,
-          null,
-          null,
-          null,
-          null,
-          null,
-          null,
-          null,
-          null,
-          null,
-          null,
-          null,
-          null,
-          null,
-          null,
-          null,
-          null,
-          null,
-          null,
-          1,
-          null,
-          null,
-          null,
-          null,
-          null,
-          null,
-          null,
-          null,
-          null,
-          null,
-          null,
-          null,
-          null,
-          3,
-          null,
-          1,
-          1,
-          null,
-          null,
-          null,
-          null,
-          null,
-          1,
-          3,
-          null,
-          null,
-          null,
-          null,
-          null,
-          null,
-          null,
-          null,
-          null,
-          null,
-          null,
-          null,
-          null,
-          null,
-          null,
-          null,
-          null,
-          null,
-          null,
-          3,
-          2,
-          2,
-          2,
-          null,
-          1,
-          null,
-          null,
           1,
           1,
           null,
           1,
-          12,
           null,
-          12,
+          1,
+          109,
+          109,
+          99,
+          null,
+          10,
           null,
           null,
           null,
+          1,
+          60,
+          13,
           null,
-          null,
-          null,
-          12,
-          9,
-          9,
-          9,
-          9,
-          9,
           null,
           null,
           null
         ],
         "branches": {
-          "[:if, 0, 49, 13, 81, 7]": {
-            "[:then, 1, 50, 6, 50, 15]": 2,
-            "[:else, 2, 69, 6, 69, 15]": 1
+          "[:if, 0, 10, 6, 14, 9]": {
+            "[:then, 1, 11, 8, 11, 28]": 99,
+            "[:else, 2, 13, 8, 13, 72]": 10
           },
-          "[:\"&.\", 3, 114, 13, 114, 65]": {
-            "[:then, 4, 114, 13, 114, 65]": 1,
-            "[:else, 5, 114, 13, 114, 65]": 1
-          },
-          "[:\"&.\", 6, 115, 13, 115, 71]": {
-            "[:then, 7, 115, 13, 115, 71]": 1,
-            "[:else, 8, 115, 13, 115, 71]": 1
+          "[:unless, 3, 18, 6, 20, 9]": {
+            "[:else, 4, 18, 6, 20, 9]": 47,
+            "[:then, 5, 19, 8, 19, 75]": 13
           }
         }
       },
-      "/opt/scanaegis/app/controllers/code_analysis_controller.rb": {
+      "/opt/scanaegis/app/controllers/assets_controller.rb": {
         "lines": [
           1,
-          1,
           null,
           1,
-          null,
-          1,
-          1,
-          1,
-          null,
           null,
           1,
           4,
           4,
           3,
+          3,
+          3,
           null,
           2,
           2,
+          1,
           2,
           null,
+          null,
+          1,
+          null,
+          null,
+          3,
+          null,
+          null,
+          null,
+          1,
+          1,
+          null,
+          null,
+          1,
+          5,
+          5,
+          5,
+          null,
+          5,
+          null,
+          null,
+          null,
+          5,
+          5,
+          null,
+          5,
+          null,
+          4,
+          1,
+          1,
+          null,
+          null,
+          3,
+          3,
+          4,
+          null,
+          null,
+          null,
+          null,
+          null,
+          null,
+          null,
+          null,
+          4,
+          4,
+          null,
+          null,
+          3,
+          3,
+          null,
+          1,
+          null,
+          null,
+          1,
+          3,
+          1,
+          1,
+          1,
+          null,
+          2,
+          null,
+          null,
+          1,
+          2,
+          1,
+          1,
+          1,
+          null,
+          1,
+          null,
+          null,
+          1,
+          null,
+          1,
+          5,
+          5,
+          4,
+          2,
+          null,
+          2,
+          1,
+          null,
+          null,
+          1,
+          null,
+          null
+        ],
+        "branches": {
+          "[:if, 0, 7, 4, 22, 7]": {
+            "[:then, 1, 8, 6, 21, 35]": 3,
+            "[:else, 2, 7, 4, 22, 7]": 1
+          },
+          "[:if, 3, 10, 6, 20, 9]": {
+            "[:then, 4, 12, 10, 18, 19]": 2,
+            "[:else, 5, 10, 6, 20, 9]": 1
+          },
+          "[:if, 6, 43, 4, 46, 7]": {
+            "[:then, 7, 44, 6, 45, 12]": 1,
+            "[:else, 8, 43, 4, 46, 7]": 3
+          },
+          "[:unless, 9, 59, 6, 59, 67]": {
+            "[:else, 10, 59, 6, 59, 67]": 0,
+            "[:then, 11, 59, 6, 59, 42]": 4
+          },
+          "[:if, 12, 92, 4, 97, 7]": {
+            "[:then, 13, 93, 6, 93, 17]": 2,
+            "[:else, 14, 95, 6, 96, 43]": 2
+          },
+          "[:if, 15, 95, 6, 95, 72]": {
+            "[:then, 16, 95, 6, 95, 52]": 1,
+            "[:else, 17, 95, 6, 95, 72]": 1
+          }
+        }
+      },
+      "/opt/scanaegis/app/jobs/dns_lookup_job.rb": {
+        "lines": [
+          1,
+          1,
+          null,
+          1,
+          4,
+          4,
+          null,
+          2,
           2,
           2,
           null,
           null
         ],
         "branches": {
-          "[:unless, 0, 13, 4, 13, 100]": {
-            "[:else, 1, 13, 4, 13, 100]": 3,
-            "[:then, 2, 13, 4, 13, 69]": 1
-          },
-          "[:if, 3, 14, 4, 14, 107]": {
-            "[:then, 4, 14, 4, 14, 78]": 1,
-            "[:else, 5, 14, 4, 14, 107]": 2
+          "[:unless, 0, 6, 4, 6, 48]": {
+            "[:else, 1, 6, 4, 6, 48]": 2,
+            "[:then, 2, 6, 4, 6, 10]": 2
           }
         }
       },
@@ -4394,8 +4208,8 @@
             "[:else, 5, 64, 77, 64, 89]": 0
           },
           "[:if, 6, 65, 26, 65, 70]": {
-            "[:then, 7, 65, 42, 65, 54]": 0,
-            "[:else, 8, 65, 57, 65, 70]": 2
+            "[:then, 7, 65, 42, 65, 54]": 1,
+            "[:else, 8, 65, 57, 65, 70]": 1
           },
           "[:if, 9, 66, 26, 66, 85]": {
             "[:then, 10, 66, 45, 66, 64]": 2,
@@ -4448,56 +4262,6 @@
           "[:if, 45, 155, 4, 158, 7]": {
             "[:then, 46, 156, 6, 157, 105]": 1,
             "[:else, 47, 155, 4, 158, 7]": 0
-          }
-        }
-      },
-      "/opt/scanaegis/app/controllers/findings_controller.rb": {
-        "lines": [
-          1,
-          1,
-          4,
-          null,
-          null,
-          null,
-          null,
-          3,
-          2,
-          2,
-          null,
-          null,
-          null,
-          2,
-          2,
-          null,
-          null,
-          3,
-          null,
-          1,
-          null,
-          null,
-          1,
-          2,
-          null,
-          null,
-          null,
-          1,
-          null,
-          null,
-          null,
-          null,
-          null,
-          1,
-          null,
-          null
-        ],
-        "branches": {
-          "[:if, 0, 8, 4, 16, 7]": {
-            "[:then, 1, 9, 6, 15, 81]": 2,
-            "[:else, 2, 8, 4, 16, 7]": 1
-          },
-          "[:\"&.\", 3, 11, 66, 11, 87]": {
-            "[:then, 4, 11, 66, 11, 87]": 2,
-            "[:else, 5, 11, 66, 11, 87]": 0
           }
         }
       },
@@ -4642,164 +4406,267 @@
           }
         }
       },
-      "/opt/scanaegis/app/services/scan_report_csv.rb": {
+      "/opt/scanaegis/app/controllers/sites_controller.rb": {
         "lines": [
           1,
+          1,
           null,
           1,
           1,
-          8,
           null,
           null,
           1,
-          8,
-          8,
-          8,
-          22,
+          2,
           null,
+          null,
+          null,
+          null,
+          1,
+          1,
+          null,
+          1,
+          null,
+          null,
+          1,
+          2,
+          1,
+          1,
+          1,
+          null,
+          1,
           null,
           null
         ],
         "branches": {}
       },
-      "/opt/scanaegis/app/services/aegis/reports/whitebox_payload.rb": {
+      "/opt/scanaegis/lib/aegis/msf/output_parser.rb": {
         "lines": [
           null,
+          null,
+          null,
+          null,
+          null,
           1,
           1,
           1,
           1,
-          6,
+          null,
+          null,
+          null,
+          null,
+          1,
+          9,
+          9,
+          3,
+          9,
+          9,
+          9,
+          null,
+          null,
+          null,
+          null,
+          1,
+          10,
+          10,
+          10,
+          10,
+          null,
+          null,
+          null,
+          null
+        ],
+        "branches": {
+          "[:if, 0, 28, 19, 28, 88]": {
+            "[:then, 1, 28, 49, 28, 71]": 1,
+            "[:else, 2, 28, 74, 28, 88]": 9
+          }
+        }
+      },
+      "/opt/scanaegis/app/controllers/read_only_accounts_controller.rb": {
+        "lines": [
+          1,
+          1,
+          1,
+          null,
+          1,
+          3,
+          3,
+          1,
+          1,
           null,
           null,
           1,
           null,
-          6,
+          1,
           null,
           null,
+          1,
+          3,
+          2,
+          1,
+          1,
+          1,
+          null,
+          1,
           null,
           null,
+          1,
           null,
+          null,
+          1,
           null,
           1,
           3,
           null,
           null,
+          null
+        ],
+        "branches": {
+          "[:\"&.\", 0, 7, 62, 7, 91]": {
+            "[:then, 1, 7, 62, 7, 91]": 3,
+            "[:else, 2, 7, 62, 7, 91]": 0
+          },
+          "[:if, 3, 19, 4, 25, 7]": {
+            "[:then, 4, 20, 6, 22, 65]": 1,
+            "[:else, 5, 24, 6, 24, 98]": 1
+          }
+        }
+      },
+      "/opt/scanaegis/app/mailers/email_verify_mailer.rb": {
+        "lines": [
           1,
-          null,
           1,
-          6,
-          6,
-          5,
-          null,
-          null,
-          1,
-          null,
-          5,
-          null,
-          null,
-          null,
-          null,
-          null,
-          null,
-          null,
-          null,
-          null,
-          null,
-          null,
+          11,
+          11,
           null,
           null
         ],
         "branches": {}
       },
-      "/opt/scanaegis/app/controllers/api/code_analysis_api_controller.rb": {
+      "/opt/scanaegis/app/controllers/accounts_controller.rb": {
         "lines": [
           1,
           1,
           1,
           null,
           1,
+          5,
+          5,
+          4,
+          null,
+          null,
+          3,
+          null,
+          3,
+          2,
+          null,
+          1,
+          null,
+          1,
+          null,
+          1,
+          1,
+          null,
+          null,
+          1,
+          null,
+          null,
+          1,
+          4,
+          4,
+          3,
+          null,
+          1,
+          1,
+          null,
+          null,
+          1,
+          3,
+          3,
+          1,
+          1,
+          1,
+          null,
+          2,
           null,
           null,
           null,
+          1,
+          2,
+          2,
+          2,
+          2,
+          2,
+          1,
+          null,
+          1,
+          null,
+          2,
+          null,
+          null,
+          1,
+          1,
+          1,
+          1,
+          null,
+          null,
+          1,
+          null,
+          1,
+          4,
           null,
           null,
           1,
           5,
-          2,
-          2,
-          1,
-          1,
-          null,
-          1,
-          1,
-          1,
-          3,
-          2,
-          2,
-          2,
-          null,
-          1,
-          null,
-          1,
-          null,
-          null,
-          3,
-          3,
-          1,
-          null,
-          2,
-          null,
           null,
           null,
           null
         ],
         "branches": {
-          "[:if, 0, 12, 6, 29, 9]": {
-            "[:then, 1, 13, 8, 20, 60]": 2,
-            "[:else, 2, 21, 6, 28, 14]": 3
+          "[:\"&.\", 0, 20, 61, 20, 70]": {
+            "[:then, 1, 20, 61, 20, 70]": 1,
+            "[:else, 2, 20, 61, 20, 70]": 0
           },
-          "[:if, 3, 14, 8, 17, 11]": {
-            "[:then, 4, 15, 10, 16, 16]": 1,
-            "[:else, 5, 14, 8, 17, 11]": 1
+          "[:\"&.\", 3, 28, 39, 28, 68]": {
+            "[:then, 4, 28, 39, 28, 68]": 4,
+            "[:else, 5, 28, 39, 28, 68]": 0
           },
-          "[:if, 6, 21, 6, 28, 14]": {
-            "[:then, 7, 22, 8, 24, 60]": 2,
-            "[:else, 8, 26, 8, 28, 14]": 1
+          "[:\"&.\", 6, 28, 39, 28, 78]": {
+            "[:then, 7, 28, 39, 28, 78]": 4,
+            "[:else, 8, 28, 39, 28, 78]": 0
           },
-          "[:if, 9, 32, 6, 36, 9]": {
-            "[:then, 10, 33, 8, 33, 76]": 1,
-            "[:else, 11, 35, 8, 35, 39]": 2
+          "[:if, 9, 29, 4, 29, 54]": {
+            "[:then, 10, 29, 4, 29, 46]": 2,
+            "[:else, 11, 29, 4, 29, 54]": 2
+          },
+          "[:if, 12, 38, 4, 44, 7]": {
+            "[:then, 13, 39, 6, 41, 72]": 1,
+            "[:else, 14, 43, 6, 43, 83]": 2
+          },
+          "[:if, 15, 52, 4, 56, 7]": {
+            "[:then, 16, 53, 6, 53, 32]": 1,
+            "[:else, 17, 55, 6, 55, 19]": 1
           }
         }
       },
-      "/opt/scanaegis/app/controllers/api/scan_profiles_api_controller.rb": {
+      "/opt/scanaegis/app/controllers/passwords_controller.rb": {
         "lines": [
           1,
           1,
           1,
           null,
           1,
-          1,
-          3,
-          null,
           null,
           null,
           1,
           4,
+          2,
           null,
-          null,
-          null,
-          null,
-          1,
           null,
           4,
-          3,
           null,
-          3,
           null,
           1,
-          null,
           null,
           null,
           1,
@@ -4807,161 +4674,25 @@
           1,
           null,
           1,
-          1,
           null,
-          1,
           null,
           null,
           1,
-          null,
           1,
+          6,
           null,
-          5,
-          null,
-          null,
-          null,
-          null,
-          null,
-          null,
-          null,
+          3,
           null,
           null
         ],
         "branches": {
-          "[:if, 0, 19, 6, 25, 9]": {
-            "[:then, 1, 20, 8, 22, 78]": 3,
-            "[:else, 2, 24, 8, 24, 102]": 1
-          }
-        }
-      },
-      "/opt/scanaegis/app/controllers/assets_controller.rb": {
-        "lines": [
-          1,
-          null,
-          1,
-          null,
-          1,
-          4,
-          4,
-          3,
-          3,
-          3,
-          null,
-          2,
-          2,
-          1,
-          2,
-          null,
-          null,
-          1,
-          null,
-          null,
-          3,
-          null,
-          null,
-          null,
-          1,
-          1,
-          null,
-          null,
-          1,
-          5,
-          5,
-          5,
-          null,
-          5,
-          null,
-          null,
-          null,
-          5,
-          5,
-          null,
-          5,
-          null,
-          4,
-          1,
-          1,
-          null,
-          null,
-          3,
-          3,
-          4,
-          null,
-          null,
-          null,
-          null,
-          null,
-          null,
-          null,
-          null,
-          4,
-          4,
-          null,
-          null,
-          3,
-          3,
-          null,
-          1,
-          null,
-          null,
-          1,
-          3,
-          1,
-          1,
-          1,
-          null,
-          2,
-          null,
-          null,
-          1,
-          2,
-          1,
-          1,
-          1,
-          null,
-          1,
-          null,
-          null,
-          1,
-          null,
-          1,
-          5,
-          5,
-          4,
-          2,
-          null,
-          2,
-          1,
-          null,
-          null,
-          1,
-          null,
-          null
-        ],
-        "branches": {
-          "[:if, 0, 7, 4, 22, 7]": {
-            "[:then, 1, 8, 6, 21, 35]": 3,
-            "[:else, 2, 7, 4, 22, 7]": 1
+          "[:if, 0, 9, 4, 11, 7]": {
+            "[:then, 1, 10, 6, 10, 45]": 2,
+            "[:else, 2, 9, 4, 11, 7]": 2
           },
-          "[:if, 3, 10, 6, 20, 9]": {
-            "[:then, 4, 12, 10, 18, 19]": 2,
-            "[:else, 5, 10, 6, 20, 9]": 1
-          },
-          "[:if, 6, 43, 4, 46, 7]": {
-            "[:then, 7, 44, 6, 45, 12]": 1,
-            "[:else, 8, 43, 4, 46, 7]": 3
-          },
-          "[:unless, 9, 59, 6, 59, 67]": {
-            "[:else, 10, 59, 6, 59, 67]": 0,
-            "[:then, 11, 59, 6, 59, 42]": 4
-          },
-          "[:if, 12, 92, 4, 97, 7]": {
-            "[:then, 13, 93, 6, 93, 17]": 2,
-            "[:else, 14, 95, 6, 96, 43]": 2
-          },
-          "[:if, 15, 95, 6, 95, 72]": {
-            "[:then, 16, 95, 6, 95, 52]": 1,
-            "[:else, 17, 95, 6, 95, 72]": 1
+          "[:if, 3, 20, 4, 24, 7]": {
+            "[:then, 4, 21, 6, 21, 70]": 1,
+            "[:else, 5, 23, 6, 23, 87]": 1
           }
         }
       },
@@ -5118,338 +4849,23 @@
           }
         }
       },
-      "/opt/scanaegis/app/controllers/agents_controller.rb": {
+      "/opt/scanaegis/app/mailers/scan_mailer.rb": {
         "lines": [
           1,
           1,
-          1,
-          1,
-          null,
-          1,
-          1,
-          null,
-          null,
-          1,
-          1,
           3,
-          null,
-          null,
-          null,
-          1,
-          2,
-          null,
-          null,
-          null,
-          null,
-          1,
-          1,
-          null,
-          1,
-          null,
-          null,
-          1,
-          2,
-          1,
-          1,
-          1,
-          null,
-          1,
-          null,
-          null,
-          null,
-          1,
-          1,
-          1,
-          1,
-          1,
-          1,
-          null,
-          null,
-          null,
-          null,
-          null,
-          null,
-          1,
-          1,
-          1,
-          null,
-          null,
-          null,
-          2,
-          null,
-          null,
-          null,
-          null,
-          2,
-          null,
-          2,
-          null,
-          null,
-          null,
-          null,
-          null,
-          null,
+          3,
+          3,
           null,
           null,
           1,
           3,
-          null,
-          1,
-          1,
-          1,
-          null,
-          1,
-          null,
-          1,
-          null,
-          1,
-          null,
-          1,
+          3,
+          3,
           null,
           null
         ],
-        "branches": {
-          "[:if, 0, 63, 21, 63, 84]": {
-            "[:then, 1, 63, 35, 63, 74]": 2,
-            "[:else, 2, 63, 77, 63, 84]": 0
-          },
-          "[:if, 3, 76, 4, 76, 78]": {
-            "[:then, 4, 76, 4, 76, 48]": 1,
-            "[:else, 5, 76, 4, 76, 78]": 0
-          },
-          "[:if, 6, 77, 4, 77, 78]": {
-            "[:then, 7, 77, 4, 77, 48]": 1,
-            "[:else, 8, 77, 4, 77, 78]": 0
-          }
-        }
-      },
-      "/opt/scanaegis/app/controllers/reports_controller.rb": {
-        "lines": [
-          1,
-          null,
-          1,
-          4,
-          3,
-          null,
-          3,
-          null,
-          null,
-          3,
-          null,
-          null,
-          null,
-          null,
-          3,
-          3,
-          3,
-          null,
-          3,
-          1,
-          1,
-          null,
-          null,
-          null,
-          3,
-          3,
-          3,
-          3,
-          null,
-          3,
-          2,
-          null,
-          null,
-          null,
-          null,
-          null,
-          2,
-          1,
-          null,
-          null,
-          3,
-          null,
-          1,
-          2,
-          1,
-          null,
-          1,
-          null,
-          null,
-          null,
-          3,
-          null,
-          null,
-          null,
-          3,
-          null,
-          null,
-          1,
-          null,
-          null,
-          1,
-          3,
-          2,
-          null,
-          2,
-          1,
-          null,
-          null,
-          1,
-          null,
-          null,
-          1,
-          null,
-          null,
-          1,
-          2,
-          1,
-          1,
-          1,
-          null,
-          1,
-          null,
-          null,
-          1,
-          3,
-          1,
-          1,
-          null,
-          null,
-          null,
-          null,
-          2,
-          null,
-          null,
-          1,
-          3,
-          2,
-          2,
-          1,
-          1,
-          null,
-          null,
-          1,
-          null,
-          null,
-          null,
-          null,
-          1,
-          null,
-          null,
-          1,
-          2,
-          1,
-          1,
-          1,
-          null,
-          null,
-          null,
-          null,
-          1,
-          null,
-          null,
-          1,
-          2,
-          1,
-          1,
-          1,
-          null,
-          null,
-          null,
-          null,
-          1,
-          null,
-          null,
-          1,
-          2,
-          1,
-          null,
-          1,
-          null,
-          null,
-          1,
-          null,
-          1,
-          21,
-          null,
-          null,
-          null
-        ],
-        "branches": {
-          "[:if, 0, 21, 6, 21, 60]": {
-            "[:then, 1, 21, 6, 21, 33]": 0,
-            "[:else, 2, 21, 6, 21, 60]": 1
-          },
-          "[:if, 3, 30, 4, 53, 7]": {
-            "[:then, 4, 31, 6, 52, 9]": 2,
-            "[:else, 5, 30, 4, 53, 7]": 1
-          },
-          "[:if, 6, 37, 6, 52, 9]": {
-            "[:then, 7, 38, 8, 51, 82]": 1,
-            "[:else, 8, 37, 6, 52, 9]": 1
-          },
-          "[:if, 9, 44, 10, 48, 13]": {
-            "[:then, 10, 45, 12, 45, 42]": 1,
-            "[:else, 11, 47, 12, 47, 36]": 1
-          },
-          "[:if, 12, 65, 4, 70, 7]": {
-            "[:then, 13, 66, 6, 67, 101]": 1,
-            "[:else, 14, 69, 6, 69, 64]": 1
-          },
-          "[:unless, 15, 98, 4, 101, 7]": {
-            "[:else, 16, 98, 4, 101, 7]": 1,
-            "[:then, 17, 99, 6, 100, 12]": 1
-          }
-        }
-      },
-      "/opt/scanaegis/app/controllers/read_only_accounts_controller.rb": {
-        "lines": [
-          1,
-          1,
-          1,
-          null,
-          1,
-          3,
-          3,
-          1,
-          1,
-          null,
-          null,
-          1,
-          null,
-          1,
-          null,
-          null,
-          1,
-          3,
-          2,
-          1,
-          1,
-          1,
-          null,
-          1,
-          null,
-          null,
-          1,
-          null,
-          null,
-          1,
-          null,
-          1,
-          3,
-          null,
-          null,
-          null
-        ],
-        "branches": {
-          "[:\"&.\", 0, 7, 62, 7, 91]": {
-            "[:then, 1, 7, 62, 7, 91]": 3,
-            "[:else, 2, 7, 62, 7, 91]": 0
-          },
-          "[:if, 3, 19, 4, 25, 7]": {
-            "[:then, 4, 20, 6, 22, 65]": 1,
-            "[:else, 5, 24, 6, 24, 98]": 1
-          }
-        }
+        "branches": {}
       },
       "/opt/scanaegis/app/controllers/exploits_controller.rb": {
         "lines": [
@@ -5522,98 +4938,142 @@
           }
         }
       },
-      "/opt/scanaegis/app/jobs/exploit_sync_job.rb": {
+      "/opt/scanaegis/app/services/aegis/exploits/module_counter.rb": {
         "lines": [
+          null,
+          null,
+          null,
           1,
           1,
+          1,
+          1,
+          5,
+          5,
+          null,
+          null,
+          1,
+          3,
+          3,
+          null,
+          null,
+          null,
           null,
           null,
           1,
           2,
+          2,
+          2620,
           null,
           null,
           1,
-          6,
-          6,
           null,
-          6,
-          6,
+          1,
+          2634,
           null,
-          6,
+          null,
+          1,
+          8,
+          null,
+          null,
+          null,
+          1,
+          5,
           12,
           null,
-          10,
-          16,
-          16,
-          null,
-          11,
-          null,
-          null,
-          11,
-          11,
-          null,
-          11,
-          8,
-          null,
-          null,
-          null,
-          null,
-          null,
-          null,
-          8,
-          8,
-          null,
-          3,
-          3,
-          null,
-          null,
-          null,
-          null,
-          6,
           2,
           null,
           null,
           null,
-          null,
-          null,
-          null,
-          null,
-          6,
           null,
           null
         ],
         "branches": {
-          "[:unless, 0, 17, 6, 17, 34]": {
-            "[:else, 1, 17, 6, 17, 34]": 10,
-            "[:then, 2, 17, 6, 17, 10]": 2
+          "[:unless, 0, 13, 8, 13, 40]": {
+            "[:else, 1, 13, 8, 13, 40]": 3,
+            "[:then, 2, 13, 8, 13, 16]": 0
           },
-          "[:if, 3, 21, 8, 21, 47]": {
-            "[:then, 4, 21, 8, 21, 12]": 5,
-            "[:else, 5, 21, 8, 21, 47]": 11
+          "[:unless, 3, 21, 8, 21, 41]": {
+            "[:else, 4, 21, 8, 21, 41]": 2,
+            "[:then, 5, 21, 8, 21, 17]": 0
           },
-          "[:if, 6, 46, 4, 53, 7]": {
-            "[:then, 7, 47, 6, 52, 18]": 2,
-            "[:else, 8, 46, 4, 53, 7]": 4
+          "[:if, 6, 22, 17, 22, 55]": {
+            "[:then, 7, 22, 30, 22, 42]": 0,
+            "[:else, 8, 22, 45, 22, 55]": 2
+          },
+          "[:if, 9, 29, 18, 29, 94]": {
+            "[:then, 10, 29, 31, 29, 62]": 1,
+            "[:else, 11, 29, 65, 29, 94]": 4
+          },
+          "[:if, 12, 33, 18, 34, 79]": {
+            "[:then, 13, 33, 31, 33, 89]": 1,
+            "[:else, 14, 34, 31, 34, 79]": 4
+          },
+          "[:if, 15, 38, 8, 42, 11]": {
+            "[:then, 16, 39, 10, 39, 64]": 3,
+            "[:else, 17, 41, 10, 41, 37]": 2
           }
         }
       },
-      "/opt/scanaegis/app/mailers/scan_mailer.rb": {
+      "/opt/scanaegis/app/controllers/api/scan_profiles_api_controller.rb": {
         "lines": [
           1,
           1,
+          1,
+          null,
+          1,
+          1,
           3,
-          3,
-          3,
+          null,
           null,
           null,
           1,
+          4,
+          null,
+          null,
+          null,
+          null,
+          1,
+          null,
+          4,
           3,
+          null,
           3,
-          3,
+          null,
+          1,
+          null,
+          null,
+          null,
+          1,
+          2,
+          1,
+          null,
+          1,
+          1,
+          null,
+          1,
+          null,
+          null,
+          1,
+          null,
+          1,
+          null,
+          5,
+          null,
+          null,
+          null,
+          null,
+          null,
+          null,
+          null,
           null,
           null
         ],
-        "branches": {}
+        "branches": {
+          "[:if, 0, 19, 6, 25, 9]": {
+            "[:then, 1, 20, 8, 22, 78]": 3,
+            "[:else, 2, 24, 8, 24, 102]": 1
+          }
+        }
       },
       "/opt/scanaegis/app/controllers/api/findings_api_controller.rb": {
         "lines": [
@@ -5708,9 +5168,549 @@
             "[:else, 20, 48, 24, 48, 41]": 0
           }
         }
+      },
+      "/opt/scanaegis/app/controllers/findings_controller.rb": {
+        "lines": [
+          1,
+          1,
+          4,
+          null,
+          null,
+          null,
+          null,
+          3,
+          2,
+          2,
+          null,
+          null,
+          null,
+          2,
+          2,
+          null,
+          null,
+          3,
+          null,
+          1,
+          null,
+          null,
+          1,
+          2,
+          null,
+          null,
+          null,
+          1,
+          null,
+          null,
+          null,
+          null,
+          null,
+          1,
+          null,
+          null
+        ],
+        "branches": {
+          "[:if, 0, 8, 4, 16, 7]": {
+            "[:then, 1, 9, 6, 15, 81]": 2,
+            "[:else, 2, 8, 4, 16, 7]": 1
+          },
+          "[:\"&.\", 3, 11, 66, 11, 87]": {
+            "[:then, 4, 11, 66, 11, 87]": 2,
+            "[:else, 5, 11, 66, 11, 87]": 0
+          }
+        }
+      },
+      "/opt/scanaegis/app/controllers/api/exploits_api_controller.rb": {
+        "lines": [
+          1,
+          1,
+          1,
+          null,
+          null,
+          null,
+          1,
+          3,
+          3,
+          3,
+          3,
+          3,
+          3,
+          3,
+          null,
+          null,
+          null,
+          3,
+          null,
+          null,
+          null,
+          1,
+          2,
+          1,
+          null,
+          1,
+          null,
+          null,
+          null,
+          null,
+          1,
+          2,
+          2,
+          null,
+          2,
+          1,
+          1,
+          null,
+          null,
+          1,
+          null,
+          1,
+          1,
+          null,
+          null,
+          null,
+          1,
+          null,
+          1,
+          null,
+          4,
+          null,
+          null,
+          null,
+          null,
+          null,
+          null,
+          null,
+          null,
+          null,
+          null,
+          null,
+          null,
+          null,
+          null,
+          null
+        ],
+        "branches": {
+          "[:if, 0, 9, 6, 9, 106]": {
+            "[:then, 1, 9, 6, 9, 74]": 1,
+            "[:else, 2, 9, 6, 9, 106]": 2
+          },
+          "[:if, 3, 35, 6, 44, 9]": {
+            "[:then, 4, 36, 8, 40, 33]": 1,
+            "[:else, 5, 42, 8, 43, 45]": 1
+          },
+          "[:if, 6, 36, 17, 36, 51]": {
+            "[:then, 7, 36, 24, 36, 37]": 0,
+            "[:else, 8, 36, 40, 36, 51]": 1
+          }
+        }
+      },
+      "/opt/scanaegis/app/controllers/api/assets_api_controller.rb": {
+        "lines": [
+          1,
+          1,
+          1,
+          null,
+          1,
+          4,
+          null,
+          4,
+          4,
+          2,
+          null,
+          2,
+          1,
+          2,
+          null,
+          1,
+          null,
+          1,
+          null,
+          null,
+          6,
+          null,
+          null,
+          1,
+          2,
+          1,
+          1,
+          1,
+          1,
+          null,
+          1,
+          null,
+          null,
+          null,
+          1,
+          null,
+          null,
+          null,
+          null,
+          1,
+          5,
+          5,
+          5,
+          null,
+          5,
+          null,
+          null,
+          null,
+          5,
+          5,
+          null,
+          5,
+          4,
+          1,
+          1,
+          null,
+          null,
+          3,
+          3,
+          4,
+          null,
+          null,
+          null,
+          null,
+          null,
+          null,
+          null,
+          null,
+          3,
+          3,
+          null,
+          2,
+          null,
+          5,
+          null,
+          null,
+          2,
+          null,
+          null,
+          1,
+          2,
+          1,
+          null,
+          1,
+          1,
+          null,
+          1,
+          null,
+          null,
+          1,
+          null,
+          1,
+          null,
+          8,
+          null,
+          null,
+          null,
+          null,
+          null,
+          null,
+          null,
+          null,
+          null,
+          null,
+          null,
+          null,
+          1,
+          1,
+          null,
+          null,
+          1,
+          5,
+          5,
+          4,
+          2,
+          null,
+          2,
+          1,
+          null,
+          null,
+          1,
+          null,
+          null,
+          null
+        ],
+        "branches": {
+          "[:if, 0, 9, 6, 20, 9]": {
+            "[:then, 1, 10, 8, 18, 90]": 2,
+            "[:else, 2, 9, 6, 20, 9]": 2
+          },
+          "[:if, 3, 31, 24, 31, 68]": {
+            "[:then, 4, 31, 36, 31, 62]": 1,
+            "[:else, 5, 31, 65, 31, 68]": 0
+          },
+          "[:if, 6, 53, 6, 56, 9]": {
+            "[:then, 7, 54, 8, 55, 14]": 1,
+            "[:else, 8, 53, 6, 56, 9]": 3
+          },
+          "[:unless, 9, 69, 8, 69, 69]": {
+            "[:else, 10, 69, 8, 69, 69]": 0,
+            "[:then, 11, 69, 8, 69, 44]": 3
+          },
+          "[:if, 12, 114, 6, 119, 9]": {
+            "[:then, 13, 115, 8, 115, 19]": 2,
+            "[:else, 14, 117, 8, 118, 45]": 2
+          },
+          "[:if, 15, 117, 8, 117, 74]": {
+            "[:then, 16, 117, 8, 117, 54]": 1,
+            "[:else, 17, 117, 8, 117, 74]": 1
+          }
+        }
+      },
+      "/opt/scanaegis/app/controllers/api/agents_api_controller.rb": {
+        "lines": [
+          1,
+          1,
+          1,
+          null,
+          1,
+          1,
+          3,
+          null,
+          null,
+          null,
+          1,
+          2,
+          null,
+          null,
+          null,
+          null,
+          1,
+          null,
+          1,
+          null,
+          1,
+          null,
+          null,
+          1,
+          2,
+          1,
+          null,
+          1,
+          1,
+          null,
+          1,
+          null,
+          null,
+          1,
+          2,
+          1,
+          1,
+          null,
+          null,
+          null,
+          null,
+          1,
+          null,
+          null,
+          1,
+          1,
+          1,
+          null,
+          null,
+          null,
+          2,
+          null,
+          null,
+          2,
+          null,
+          null,
+          null,
+          1,
+          null,
+          1,
+          null,
+          5,
+          null,
+          null,
+          null,
+          null,
+          null,
+          null,
+          null,
+          null,
+          null,
+          null,
+          null,
+          null,
+          null,
+          null
+        ],
+        "branches": {}
+      },
+      "/opt/scanaegis/app/controllers/api/code_analysis_api_controller.rb": {
+        "lines": [
+          1,
+          1,
+          1,
+          null,
+          1,
+          null,
+          null,
+          null,
+          null,
+          null,
+          1,
+          5,
+          2,
+          2,
+          1,
+          1,
+          null,
+          1,
+          1,
+          1,
+          3,
+          2,
+          2,
+          2,
+          null,
+          1,
+          null,
+          1,
+          null,
+          null,
+          3,
+          3,
+          1,
+          null,
+          2,
+          null,
+          null,
+          null,
+          null
+        ],
+        "branches": {
+          "[:if, 0, 12, 6, 29, 9]": {
+            "[:then, 1, 13, 8, 20, 60]": 2,
+            "[:else, 2, 21, 6, 28, 14]": 3
+          },
+          "[:if, 3, 14, 8, 17, 11]": {
+            "[:then, 4, 15, 10, 16, 16]": 1,
+            "[:else, 5, 14, 8, 17, 11]": 1
+          },
+          "[:if, 6, 21, 6, 28, 14]": {
+            "[:then, 7, 22, 8, 24, 60]": 2,
+            "[:else, 8, 26, 8, 28, 14]": 1
+          },
+          "[:if, 9, 32, 6, 36, 9]": {
+            "[:then, 10, 33, 8, 33, 76]": 1,
+            "[:else, 11, 35, 8, 35, 39]": 2
+          }
+        }
+      },
+      "/opt/scanaegis/app/controllers/api/account_api_controller.rb": {
+        "lines": [
+          1,
+          1,
+          null,
+          1,
+          2,
+          2,
+          null,
+          null,
+          null,
+          null,
+          null,
+          null,
+          null,
+          null,
+          null,
+          null,
+          null,
+          null,
+          null,
+          null,
+          null
+        ],
+        "branches": {}
+      },
+      "/opt/scanaegis/app/controllers/code_analysis_controller.rb": {
+        "lines": [
+          1,
+          1,
+          null,
+          1,
+          null,
+          1,
+          1,
+          1,
+          null,
+          null,
+          1,
+          4,
+          4,
+          3,
+          null,
+          2,
+          2,
+          2,
+          null,
+          2,
+          2,
+          null,
+          null
+        ],
+        "branches": {
+          "[:unless, 0, 13, 4, 13, 100]": {
+            "[:else, 1, 13, 4, 13, 100]": 3,
+            "[:then, 2, 13, 4, 13, 69]": 1
+          },
+          "[:if, 3, 14, 4, 14, 107]": {
+            "[:then, 4, 14, 4, 14, 78]": 1,
+            "[:else, 5, 14, 4, 14, 107]": 2
+          }
+        }
+      },
+      "/opt/scanaegis/app/controllers/scan_profiles_controller.rb": {
+        "lines": [
+          1,
+          1,
+          null,
+          1,
+          1,
+          null,
+          null,
+          1,
+          1,
+          1,
+          null,
+          null,
+          1,
+          3,
+          null,
+          null,
+          null,
+          null,
+          1,
+          null,
+          3,
+          2,
+          2,
+          null,
+          1,
+          null,
+          null,
+          null,
+          1,
+          3,
+          1,
+          1,
+          1,
+          null,
+          2,
+          null,
+          null
+        ],
+        "branches": {
+          "[:if, 0, 21, 4, 26, 7]": {
+            "[:then, 1, 22, 6, 23, 80]": 2,
+            "[:else, 2, 25, 6, 25, 87]": 1
+          }
+        }
       }
     },
-    "timestamp": 1777580963
+    "timestamp": 1777582276
   },
   "Unit Tests": {
     "coverage": {
@@ -6040,8 +6040,12 @@
           null,
           1,
           6,
+          null,
+          null,
           5,
           5,
+          5,
+          1,
           1,
           1,
           null,
@@ -6051,6 +6055,7 @@
           8,
           1,
           null,
+          3,
           3,
           3,
           null,
@@ -6248,7 +6253,7 @@
           null,
           3,
           null,
-          206,
+          207,
           null,
           null,
           null,
@@ -6440,7 +6445,7 @@
           null,
           8,
           null,
-          350,
+          373,
           2,
           1,
           null,
@@ -6716,287 +6721,291 @@
             "[:then, 118, 302, 4, 302, 35]": 1,
             "[:else, 119, 302, 4, 302, 63]": 5
           },
-          "[:unless, 120, 304, 4, 307, 7]": {
-            "[:else, 121, 304, 4, 307, 7]": 4,
-            "[:then, 122, 305, 6, 306, 16]": 1
+          "[:if, 120, 305, 4, 305, 54]": {
+            "[:then, 121, 305, 4, 305, 14]": 0,
+            "[:else, 122, 305, 4, 305, 54]": 5
           },
-          "[:if, 123, 321, 4, 321, 33]": {
-            "[:then, 124, 321, 4, 321, 14]": 2,
-            "[:else, 125, 321, 4, 321, 33]": 5
+          "[:unless, 123, 307, 4, 311, 7]": {
+            "[:else, 124, 307, 4, 311, 7]": 4,
+            "[:then, 125, 308, 6, 310, 16]": 1
           },
-          "[:if, 126, 323, 4, 332, 7]": {
-            "[:then, 127, 324, 6, 326, 74]": 2,
-            "[:else, 128, 328, 6, 331, 77]": 3
+          "[:if, 126, 326, 4, 326, 33]": {
+            "[:then, 127, 326, 4, 326, 14]": 2,
+            "[:else, 128, 326, 4, 326, 33]": 5
           },
-          "[:if, 129, 412, 4, 412, 60]": {
-            "[:then, 130, 412, 4, 412, 46]": 1,
-            "[:else, 131, 412, 4, 412, 60]": 0
+          "[:if, 129, 328, 4, 337, 7]": {
+            "[:then, 130, 329, 6, 331, 74]": 2,
+            "[:else, 131, 333, 6, 336, 77]": 3
           },
-          "[:unless, 132, 345, 4, 348, 7]": {
-            "[:else, 133, 345, 4, 348, 7]": 4,
-            "[:then, 134, 346, 6, 347, 46]": 1
+          "[:if, 132, 417, 4, 417, 60]": {
+            "[:then, 133, 417, 4, 417, 46]": 1,
+            "[:else, 134, 417, 4, 417, 60]": 0
           },
           "[:unless, 135, 350, 4, 353, 7]": {
-            "[:else, 136, 350, 4, 353, 7]": 2,
-            "[:then, 137, 351, 6, 352, 30]": 2
+            "[:else, 136, 350, 4, 353, 7]": 4,
+            "[:then, 137, 351, 6, 352, 46]": 1
           },
-          "[:if, 138, 408, 6, 408, 67]": {
-            "[:then, 139, 408, 6, 408, 56]": 2,
-            "[:else, 140, 408, 6, 408, 67]": 2
+          "[:unless, 138, 355, 4, 358, 7]": {
+            "[:else, 139, 355, 4, 358, 7]": 2,
+            "[:then, 140, 356, 6, 357, 30]": 2
           },
-          "[:if, 141, 370, 9, 370, 41]": {
-            "[:then, 142, 370, 16, 370, 35]": 4,
-            "[:else, 143, 370, 38, 370, 41]": 0
+          "[:if, 141, 413, 6, 413, 67]": {
+            "[:then, 142, 413, 6, 413, 56]": 2,
+            "[:else, 143, 413, 6, 413, 67]": 2
           },
-          "[:if, 144, 376, 9, 376, 45]": {
-            "[:then, 145, 376, 17, 376, 39]": 0,
-            "[:else, 146, 376, 42, 376, 45]": 4
+          "[:if, 144, 375, 9, 375, 41]": {
+            "[:then, 145, 375, 16, 375, 35]": 4,
+            "[:else, 146, 375, 38, 375, 41]": 0
           },
-          "[:if, 147, 380, 90, 380, 118]": {
-            "[:then, 148, 380, 98, 380, 113]": 0,
-            "[:else, 149, 380, 116, 380, 118]": 4
+          "[:if, 147, 381, 9, 381, 45]": {
+            "[:then, 148, 381, 17, 381, 39]": 0,
+            "[:else, 149, 381, 42, 381, 45]": 4
           },
-          "[:while, 150, 389, 6, 401, 9]": {
-            "[:body, 151, 390, 8, 400, 11]": 3
+          "[:if, 150, 385, 90, 385, 118]": {
+            "[:then, 151, 385, 98, 385, 113]": 0,
+            "[:else, 152, 385, 116, 385, 118]": 4
           },
-          "[:if, 152, 394, 8, 394, 45]": {
-            "[:then, 153, 394, 8, 394, 13]": 3,
-            "[:else, 154, 394, 8, 394, 45]": 0
+          "[:while, 153, 394, 6, 406, 9]": {
+            "[:body, 154, 395, 8, 405, 11]": 3
           },
-          "[:if, 155, 395, 8, 400, 11]": {
-            "[:then, 156, 396, 10, 396, 30]": 0,
-            "[:else, 157, 398, 10, 399, 40]": 0
+          "[:if, 155, 399, 8, 399, 45]": {
+            "[:then, 156, 399, 8, 399, 13]": 3,
+            "[:else, 157, 399, 8, 399, 45]": 0
           },
-          "[:if, 158, 399, 10, 399, 40]": {
-            "[:then, 159, 399, 10, 399, 15]": 0,
-            "[:else, 160, 399, 10, 399, 40]": 0
+          "[:if, 158, 400, 8, 405, 11]": {
+            "[:then, 159, 401, 10, 401, 30]": 0,
+            "[:else, 160, 403, 10, 404, 40]": 0
           },
-          "[:if, 161, 404, 6, 404, 115]": {
-            "[:then, 162, 404, 6, 404, 89]": 3,
-            "[:else, 163, 404, 6, 404, 115]": 0
+          "[:if, 161, 404, 10, 404, 40]": {
+            "[:then, 162, 404, 10, 404, 15]": 0,
+            "[:else, 163, 404, 10, 404, 40]": 0
           },
-          "[:if, 164, 405, 11, 405, 129]": {
-            "[:then, 165, 405, 30, 405, 78]": 2,
-            "[:else, 166, 405, 81, 405, 129]": 1
+          "[:if, 164, 409, 6, 409, 115]": {
+            "[:then, 165, 409, 6, 409, 89]": 3,
+            "[:else, 166, 409, 6, 409, 115]": 0
           },
-          "[:if, 167, 481, 4, 481, 56]": {
-            "[:then, 168, 481, 4, 481, 42]": 1,
-            "[:else, 169, 481, 4, 481, 56]": 0
+          "[:if, 167, 410, 11, 410, 129]": {
+            "[:then, 168, 410, 30, 410, 78]": 2,
+            "[:else, 169, 410, 81, 410, 129]": 1
           },
-          "[:unless, 170, 421, 4, 424, 7]": {
-            "[:else, 171, 421, 4, 424, 7]": 2,
-            "[:then, 172, 422, 6, 423, 30]": 2
+          "[:if, 170, 486, 4, 486, 56]": {
+            "[:then, 171, 486, 4, 486, 42]": 1,
+            "[:else, 172, 486, 4, 486, 56]": 0
           },
-          "[:if, 173, 477, 6, 477, 67]": {
-            "[:then, 174, 477, 6, 477, 56]": 2,
-            "[:else, 175, 477, 6, 477, 67]": 2
+          "[:unless, 173, 426, 4, 429, 7]": {
+            "[:else, 174, 426, 4, 429, 7]": 2,
+            "[:then, 175, 427, 6, 428, 30]": 2
           },
-          "[:if, 176, 438, 9, 438, 41]": {
-            "[:then, 177, 438, 16, 438, 35]": 4,
-            "[:else, 178, 438, 38, 438, 41]": 0
+          "[:if, 176, 482, 6, 482, 67]": {
+            "[:then, 177, 482, 6, 482, 56]": 2,
+            "[:else, 178, 482, 6, 482, 67]": 2
           },
-          "[:if, 179, 439, 9, 439, 45]": {
-            "[:then, 180, 439, 17, 439, 39]": 0,
-            "[:else, 181, 439, 42, 439, 45]": 4
+          "[:if, 179, 443, 9, 443, 41]": {
+            "[:then, 180, 443, 16, 443, 35]": 4,
+            "[:else, 181, 443, 38, 443, 41]": 0
           },
-          "[:while, 182, 451, 6, 470, 9]": {
-            "[:body, 183, 452, 8, 469, 11]": 7
+          "[:if, 182, 444, 9, 444, 45]": {
+            "[:then, 183, 444, 17, 444, 39]": 0,
+            "[:else, 184, 444, 42, 444, 45]": 4
           },
-          "[:if, 184, 460, 8, 460, 45]": {
-            "[:then, 185, 460, 8, 460, 13]": 2,
-            "[:else, 186, 460, 8, 460, 45]": 5
+          "[:while, 185, 456, 6, 475, 9]": {
+            "[:body, 186, 457, 8, 474, 11]": 7
           },
-          "[:if, 187, 464, 8, 469, 11]": {
-            "[:then, 188, 465, 10, 465, 30]": 2,
-            "[:else, 189, 467, 10, 468, 40]": 3
+          "[:if, 187, 465, 8, 465, 45]": {
+            "[:then, 188, 465, 8, 465, 13]": 2,
+            "[:else, 189, 465, 8, 465, 45]": 5
           },
-          "[:if, 190, 468, 10, 468, 40]": {
-            "[:then, 191, 468, 10, 468, 15]": 1,
-            "[:else, 192, 468, 10, 468, 40]": 2
+          "[:if, 190, 469, 8, 474, 11]": {
+            "[:then, 191, 470, 10, 470, 30]": 2,
+            "[:else, 192, 472, 10, 473, 40]": 3
           },
-          "[:if, 193, 473, 6, 473, 141]": {
-            "[:then, 194, 473, 6, 473, 115]": 3,
-            "[:else, 195, 473, 6, 473, 141]": 0
+          "[:if, 193, 473, 10, 473, 40]": {
+            "[:then, 194, 473, 10, 473, 15]": 1,
+            "[:else, 195, 473, 10, 473, 40]": 2
           },
-          "[:if, 196, 474, 11, 474, 129]": {
-            "[:then, 197, 474, 30, 474, 72]": 1,
-            "[:else, 198, 474, 75, 474, 129]": 2
+          "[:if, 196, 478, 6, 478, 141]": {
+            "[:then, 197, 478, 6, 478, 115]": 3,
+            "[:else, 198, 478, 6, 478, 141]": 0
           },
-          "[:if, 199, 498, 80, 498, 117]": {
-            "[:then, 200, 498, 88, 498, 103]": 0,
-            "[:else, 201, 498, 106, 498, 117]": 4
+          "[:if, 199, 479, 11, 479, 129]": {
+            "[:then, 200, 479, 30, 479, 72]": 1,
+            "[:else, 201, 479, 75, 479, 129]": 2
           },
-          "[:if, 202, 526, 15, 530, 9]": {
-            "[:then, 203, 527, 8, 527, 66]": 1,
-            "[:else, 204, 529, 8, 529, 89]": 2
+          "[:if, 202, 503, 80, 503, 117]": {
+            "[:then, 203, 503, 88, 503, 103]": 0,
+            "[:else, 204, 503, 106, 503, 117]": 4
           },
-          "[:if, 205, 531, 6, 531, 149]": {
-            "[:then, 206, 531, 6, 531, 123]": 3,
-            "[:else, 207, 531, 6, 531, 149]": 0
+          "[:if, 205, 531, 15, 535, 9]": {
+            "[:then, 206, 532, 8, 532, 66]": 1,
+            "[:else, 207, 534, 8, 534, 89]": 2
           },
-          "[:if, 208, 532, 67, 532, 102]": {
-            "[:then, 209, 532, 86, 532, 96]": 0,
-            "[:else, 210, 532, 99, 532, 102]": 1
+          "[:if, 208, 536, 6, 536, 149]": {
+            "[:then, 209, 536, 6, 536, 123]": 3,
+            "[:else, 210, 536, 6, 536, 149]": 0
           },
-          "[:if, 211, 542, 4, 555, 7]": {
-            "[:then, 212, 543, 6, 543, 42]": 1,
-            "[:else, 213, 545, 6, 553, 45]": 1
+          "[:if, 211, 537, 67, 537, 102]": {
+            "[:then, 212, 537, 86, 537, 96]": 0,
+            "[:else, 213, 537, 99, 537, 102]": 1
           },
-          "[:if, 214, 553, 28, 553, 43]": {
-            "[:then, 215, 553, 28, 553, 38]": 9,
-            "[:else, 216, 553, 28, 553, 43]": 1
+          "[:if, 214, 547, 4, 560, 7]": {
+            "[:then, 215, 548, 6, 548, 42]": 1,
+            "[:else, 216, 550, 6, 558, 45]": 1
           },
-          "[:\"&.\", 217, 562, 28, 562, 37]": {
-            "[:then, 218, 562, 28, 562, 37]": 0,
-            "[:else, 219, 562, 28, 562, 37]": 12
+          "[:if, 217, 558, 28, 558, 43]": {
+            "[:then, 218, 558, 28, 558, 38]": 9,
+            "[:else, 219, 558, 28, 558, 43]": 1
           },
-          "[:if, 220, 563, 18, 563, 101]": {
-            "[:then, 221, 563, 28, 563, 71]": 4,
-            "[:else, 222, 563, 74, 563, 101]": 8
+          "[:\"&.\", 220, 567, 28, 567, 37]": {
+            "[:then, 221, 567, 28, 567, 37]": 0,
+            "[:else, 222, 567, 28, 567, 37]": 12
           },
-          "[:\"&.\", 223, 566, 20, 566, 29]": {
-            "[:then, 224, 566, 20, 566, 29]": 0,
-            "[:else, 225, 566, 20, 566, 29]": 12
+          "[:if, 223, 568, 18, 568, 101]": {
+            "[:then, 224, 568, 28, 568, 71]": 4,
+            "[:else, 225, 568, 74, 568, 101]": 8
           },
-          "[:if, 226, 589, 4, 590, 81]": {
-            "[:then, 227, 589, 32, 589, 83]": 2,
-            "[:else, 228, 590, 32, 590, 81]": 4
+          "[:\"&.\", 226, 571, 20, 571, 29]": {
+            "[:then, 227, 571, 20, 571, 29]": 0,
+            "[:else, 228, 571, 20, 571, 29]": 12
           },
-          "[:if, 229, 601, 7, 601, 39]": {
-            "[:then, 230, 601, 14, 601, 33]": 4,
-            "[:else, 231, 601, 36, 601, 39]": 2
+          "[:if, 229, 594, 4, 595, 81]": {
+            "[:then, 230, 594, 32, 594, 83]": 2,
+            "[:else, 231, 595, 32, 595, 81]": 4
           },
-          "[:if, 232, 602, 7, 602, 47]": {
-            "[:then, 233, 602, 17, 602, 41]": 1,
-            "[:else, 234, 602, 44, 602, 47]": 5
+          "[:if, 232, 606, 7, 606, 39]": {
+            "[:then, 233, 606, 14, 606, 33]": 4,
+            "[:else, 234, 606, 36, 606, 39]": 2
           },
-          "[:if, 235, 606, 7, 606, 43]": {
-            "[:then, 236, 606, 15, 606, 37]": 1,
-            "[:else, 237, 606, 40, 606, 43]": 5
+          "[:if, 235, 607, 7, 607, 47]": {
+            "[:then, 236, 607, 17, 607, 41]": 1,
+            "[:else, 237, 607, 44, 607, 47]": 5
           },
-          "[:if, 238, 618, 7, 618, 39]": {
-            "[:then, 239, 618, 14, 618, 33]": 2,
-            "[:else, 240, 618, 36, 618, 39]": 1
+          "[:if, 238, 611, 7, 611, 43]": {
+            "[:then, 239, 611, 15, 611, 37]": 1,
+            "[:else, 240, 611, 40, 611, 43]": 5
           },
-          "[:if, 241, 619, 7, 619, 43]": {
-            "[:then, 242, 619, 15, 619, 37]": 1,
-            "[:else, 243, 619, 40, 619, 43]": 2
+          "[:if, 241, 623, 7, 623, 39]": {
+            "[:then, 242, 623, 14, 623, 33]": 2,
+            "[:else, 243, 623, 36, 623, 39]": 1
           },
-          "[:\"&.\", 244, 628, 22, 628, 31]": {
-            "[:then, 245, 628, 22, 628, 31]": 10,
-            "[:else, 246, 628, 22, 628, 31]": 1
+          "[:if, 244, 624, 7, 624, 43]": {
+            "[:then, 245, 624, 15, 624, 37]": 1,
+            "[:else, 246, 624, 40, 624, 43]": 2
           },
-          "[:unless, 247, 628, 4, 628, 43]": {
-            "[:else, 248, 628, 4, 628, 43]": 9,
-            "[:then, 249, 628, 4, 628, 14]": 2
+          "[:\"&.\", 247, 633, 22, 633, 31]": {
+            "[:then, 248, 633, 22, 633, 31]": 10,
+            "[:else, 249, 633, 22, 633, 31]": 1
           },
-          "[:\"&.\", 250, 635, 4, 635, 34]": {
-            "[:then, 251, 635, 4, 635, 34]": 8,
-            "[:else, 252, 635, 4, 635, 34]": 0
+          "[:unless, 250, 633, 4, 633, 43]": {
+            "[:else, 251, 633, 4, 633, 43]": 9,
+            "[:then, 252, 633, 4, 633, 14]": 2
           },
-          "[:unless, 253, 642, 4, 642, 32]": {
-            "[:else, 254, 642, 4, 642, 32]": 7,
-            "[:then, 255, 642, 4, 642, 10]": 1
+          "[:\"&.\", 253, 640, 4, 640, 34]": {
+            "[:then, 254, 640, 4, 640, 34]": 8,
+            "[:else, 255, 640, 4, 640, 34]": 0
           },
-          "[:\"&.\", 256, 654, 18, 654, 27]": {
-            "[:then, 257, 654, 18, 654, 27]": 6,
-            "[:else, 258, 654, 18, 654, 27]": 1
+          "[:unless, 256, 647, 4, 647, 32]": {
+            "[:else, 257, 647, 4, 647, 32]": 7,
+            "[:then, 258, 647, 4, 647, 10]": 1
           },
-          "[:unless, 259, 654, 4, 654, 53]": {
-            "[:else, 260, 654, 4, 654, 53]": 6,
-            "[:then, 261, 654, 4, 654, 10]": 1
+          "[:\"&.\", 259, 659, 18, 659, 27]": {
+            "[:then, 260, 659, 18, 659, 27]": 6,
+            "[:else, 261, 659, 18, 659, 27]": 1
           },
-          "[:if, 262, 655, 18, 655, 95]": {
-            "[:then, 263, 655, 78, 655, 84]": 5,
-            "[:else, 264, 655, 87, 655, 95]": 1
+          "[:unless, 262, 659, 4, 659, 53]": {
+            "[:else, 263, 659, 4, 659, 53]": 6,
+            "[:then, 264, 659, 4, 659, 10]": 1
           },
-          "[:\"&.\", 265, 665, 18, 665, 27]": {
-            "[:then, 266, 665, 18, 665, 27]": 5,
-            "[:else, 267, 665, 18, 665, 27]": 1
+          "[:if, 265, 660, 18, 660, 95]": {
+            "[:then, 266, 660, 78, 660, 84]": 5,
+            "[:else, 267, 660, 87, 660, 95]": 1
           },
-          "[:unless, 268, 665, 4, 665, 53]": {
-            "[:else, 269, 665, 4, 665, 53]": 5,
-            "[:then, 270, 665, 4, 665, 10]": 1
+          "[:\"&.\", 268, 670, 18, 670, 27]": {
+            "[:then, 269, 670, 18, 670, 27]": 5,
+            "[:else, 270, 670, 18, 670, 27]": 1
           },
-          "[:\"&.\", 271, 666, 58, 666, 76]": {
-            "[:then, 272, 666, 58, 666, 76]": 4,
-            "[:else, 273, 666, 58, 666, 76]": 1
+          "[:unless, 271, 670, 4, 670, 53]": {
+            "[:else, 272, 670, 4, 670, 53]": 5,
+            "[:then, 273, 670, 4, 670, 10]": 1
           },
-          "[:if, 274, 666, 20, 666, 108]": {
-            "[:then, 275, 666, 80, 666, 97]": 4,
-            "[:else, 276, 666, 100, 666, 108]": 1
+          "[:\"&.\", 274, 671, 58, 671, 76]": {
+            "[:then, 275, 671, 58, 671, 76]": 4,
+            "[:else, 276, 671, 58, 671, 76]": 1
           },
-          "[:if, 277, 668, 20, 668, 45]": {
-            "[:then, 278, 668, 27, 668, 36]": 4,
-            "[:else, 279, 668, 39, 668, 45]": 1
+          "[:if, 277, 671, 20, 671, 108]": {
+            "[:then, 278, 671, 80, 671, 97]": 4,
+            "[:else, 279, 671, 100, 671, 108]": 1
           },
-          "[:unless, 280, 696, 4, 696, 37]": {
-            "[:else, 281, 696, 4, 696, 37]": 8,
-            "[:then, 282, 696, 4, 696, 10]": 1
+          "[:if, 280, 673, 20, 673, 45]": {
+            "[:then, 281, 673, 27, 673, 36]": 4,
+            "[:else, 282, 673, 39, 673, 45]": 1
           },
-          "[:if, 283, 703, 8, 706, 11]": {
-            "[:then, 284, 704, 10, 705, 41]": 2,
-            "[:else, 285, 703, 8, 706, 11]": 348
+          "[:unless, 283, 701, 4, 701, 37]": {
+            "[:else, 284, 701, 4, 701, 37]": 8,
+            "[:then, 285, 701, 4, 701, 10]": 1
           },
-          "[:if, 286, 716, 4, 724, 7]": {
-            "[:then, 287, 717, 6, 719, 48]": 1,
-            "[:else, 288, 721, 6, 723, 39]": 3
+          "[:if, 286, 708, 8, 711, 11]": {
+            "[:then, 287, 709, 10, 710, 41]": 2,
+            "[:else, 288, 708, 8, 711, 11]": 371
           },
-          "[:if, 289, 726, 12, 727, 51]": {
-            "[:then, 290, 726, 24, 726, 78]": 4,
-            "[:else, 291, 727, 24, 727, 51]": 0
+          "[:if, 289, 721, 4, 729, 7]": {
+            "[:then, 290, 722, 6, 724, 48]": 1,
+            "[:else, 291, 726, 6, 728, 39]": 3
           },
-          "[:if, 292, 730, 4, 733, 7]": {
-            "[:then, 293, 731, 6, 732, 41]": 1,
-            "[:else, 294, 730, 4, 733, 7]": 3
+          "[:if, 292, 731, 12, 732, 51]": {
+            "[:then, 293, 731, 24, 731, 78]": 4,
+            "[:else, 294, 732, 24, 732, 51]": 0
           },
-          "[:if, 295, 731, 15, 731, 62]": {
-            "[:then, 296, 731, 43, 731, 53]": 0,
-            "[:else, 297, 731, 56, 731, 62]": 1
+          "[:if, 295, 735, 4, 738, 7]": {
+            "[:then, 296, 736, 6, 737, 41]": 1,
+            "[:else, 297, 735, 4, 738, 7]": 3
           },
-          "[:if, 298, 735, 4, 737, 7]": {
-            "[:then, 299, 736, 6, 736, 102]": 1,
-            "[:else, 300, 735, 4, 737, 7]": 3
+          "[:if, 298, 736, 15, 736, 62]": {
+            "[:then, 299, 736, 43, 736, 53]": 0,
+            "[:else, 300, 736, 56, 736, 62]": 1
           },
-          "[:if, 301, 740, 4, 740, 80]": {
-            "[:then, 302, 740, 25, 740, 73]": 1,
-            "[:else, 303, 740, 76, 740, 80]": 3
+          "[:if, 301, 740, 4, 742, 7]": {
+            "[:then, 302, 741, 6, 741, 102]": 1,
+            "[:else, 303, 740, 4, 742, 7]": 3
           },
-          "[:if, 304, 752, 4, 764, 7]": {
-            "[:then, 305, 753, 6, 763, 19]": 2,
-            "[:else, 306, 752, 4, 764, 7]": 1
+          "[:if, 304, 745, 4, 745, 80]": {
+            "[:then, 305, 745, 25, 745, 73]": 1,
+            "[:else, 306, 745, 76, 745, 80]": 3
           },
-          "[:if, 307, 775, 16, 775, 88]": {
-            "[:then, 308, 775, 34, 775, 83]": 3,
-            "[:else, 309, 775, 86, 775, 88]": 1
+          "[:if, 307, 757, 4, 769, 7]": {
+            "[:then, 308, 758, 6, 768, 19]": 2,
+            "[:else, 309, 757, 4, 769, 7]": 1
           },
-          "[:if, 310, 784, 14, 789, 9]": {
-            "[:then, 311, 785, 8, 785, 11]": 1,
-            "[:else, 312, 787, 8, 788, 61]": 2
+          "[:if, 310, 780, 16, 780, 88]": {
+            "[:then, 311, 780, 34, 780, 83]": 3,
+            "[:else, 312, 780, 86, 780, 88]": 1
           },
-          "[:if, 313, 788, 8, 788, 61]": {
-            "[:then, 314, 788, 16, 788, 55]": 2,
-            "[:else, 315, 788, 58, 788, 61]": 0
+          "[:if, 313, 789, 14, 794, 9]": {
+            "[:then, 314, 790, 8, 790, 11]": 1,
+            "[:else, 315, 792, 8, 793, 61]": 2
           },
-          "[:if, 316, 790, 11, 790, 98]": {
-            "[:then, 317, 790, 19, 790, 59]": 2,
-            "[:else, 318, 790, 62, 790, 98]": 1
+          "[:if, 316, 793, 8, 793, 61]": {
+            "[:then, 317, 793, 16, 793, 55]": 2,
+            "[:else, 318, 793, 58, 793, 61]": 0
           },
-          "[:if, 319, 800, 4, 800, 35]": {
-            "[:then, 320, 800, 4, 800, 16]": 6,
-            "[:else, 321, 800, 4, 800, 35]": 107
+          "[:if, 319, 795, 11, 795, 98]": {
+            "[:then, 320, 795, 19, 795, 59]": 2,
+            "[:else, 321, 795, 62, 795, 98]": 1
           },
-          "[:if, 322, 805, 4, 808, 7]": {
-            "[:then, 323, 806, 6, 807, 65]": 102,
-            "[:else, 324, 805, 4, 808, 7]": 5
+          "[:if, 322, 805, 4, 805, 35]": {
+            "[:then, 323, 805, 4, 805, 16]": 6,
+            "[:else, 324, 805, 4, 805, 35]": 107
           },
-          "[:if, 325, 807, 6, 807, 65]": {
-            "[:then, 326, 807, 6, 807, 27]": 101,
-            "[:else, 327, 807, 6, 807, 65]": 1
+          "[:if, 325, 810, 4, 813, 7]": {
+            "[:then, 326, 811, 6, 812, 65]": 102,
+            "[:else, 327, 810, 4, 813, 7]": 5
           },
-          "[:if, 328, 812, 4, 812, 41]": {
-            "[:then, 329, 812, 17, 812, 22]": 5,
-            "[:else, 330, 812, 25, 812, 41]": 1
+          "[:if, 328, 812, 6, 812, 65]": {
+            "[:then, 329, 812, 6, 812, 27]": 101,
+            "[:else, 330, 812, 6, 812, 65]": 1
+          },
+          "[:if, 331, 817, 4, 817, 41]": {
+            "[:then, 332, 817, 17, 817, 22]": 5,
+            "[:else, 333, 817, 25, 817, 41]": 1
           }
         }
       },
@@ -7321,49 +7330,6 @@
         ],
         "branches": {}
       },
-      "/opt/scanaegis/lib/aegis/msf/output_parser.rb": {
-        "lines": [
-          null,
-          null,
-          null,
-          null,
-          null,
-          1,
-          1,
-          1,
-          1,
-          null,
-          null,
-          null,
-          null,
-          1,
-          4,
-          4,
-          0,
-          4,
-          4,
-          4,
-          null,
-          null,
-          null,
-          null,
-          1,
-          5,
-          5,
-          5,
-          5,
-          null,
-          null,
-          null,
-          null
-        ],
-        "branches": {
-          "[:if, 0, 28, 19, 28, 88]": {
-            "[:then, 1, 28, 49, 28, 71]": 0,
-            "[:else, 2, 28, 74, 28, 88]": 5
-          }
-        }
-      },
       "/opt/scanaegis/lib/aegis/msf/platform_dirs.rb": {
         "lines": [
           null,
@@ -7426,29 +7392,11 @@
           }
         }
       },
-      "/opt/scanaegis/app/services/aegis/notifications/scan_lifecycle.rb": {
+      "/opt/scanaegis/lib/aegis/network/tcp_probe.rb": {
         "lines": [
-          null,
-          null,
-          null,
-          null,
           1,
           1,
           1,
-          1,
-          null,
-          1,
-          0,
-          null,
-          null,
-          null,
-          null,
-          null,
-          null,
-          null,
-          1,
-          6,
-          null,
           null,
           null,
           null,
@@ -7463,72 +7411,146 @@
           1,
           1,
           null,
-          null,
-          null,
-          null,
-          null,
-          null,
-          null,
           1,
-          7,
-          null,
           0,
           null,
           null,
           1,
-          7,
+          0,
+          0,
+          0,
+          null,
+          null,
+          0,
+          null,
+          0,
+          0,
+          0,
+          null,
+          0,
+          0,
+          null,
+          0,
+          null,
+          null,
+          null,
+          0,
+          0,
+          null,
+          0,
+          0,
+          null,
+          null,
+          1,
+          0,
+          0,
+          null,
+          0,
+          null,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          null,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          null,
+          null,
+          null,
+          0,
+          0,
+          null,
+          0,
+          null,
+          null,
+          null,
+          0,
+          0,
+          null,
+          0,
+          0,
+          null,
+          null,
+          1,
+          0,
+          0,
           null,
           null,
           null,
           null
         ],
         "branches": {
-          "[:\"&.\", 0, 15, 45, 15, 60]": {
-            "[:then, 1, 15, 45, 15, 60]": 0,
-            "[:else, 2, 15, 45, 15, 60]": 0
+          "[:if, 0, 19, 8, 19, 60]": {
+            "[:then, 1, 19, 16, 19, 40]": 0,
+            "[:else, 2, 19, 43, 19, 60]": 0
           },
-          "[:\"&.\", 3, 24, 45, 24, 60]": {
-            "[:then, 4, 24, 45, 24, 60]": 6,
-            "[:else, 5, 24, 45, 24, 60]": 0
+          "[:if, 3, 23, 8, 26, 11]": {
+            "[:then, 4, 24, 10, 25, 18]": 0,
+            "[:else, 5, 23, 8, 26, 11]": 0
           },
-          "[:\"&.\", 6, 32, 33, 32, 48]": {
-            "[:then, 7, 32, 33, 32, 48]": 1,
-            "[:else, 8, 32, 33, 32, 48]": 0
+          "[:unless, 6, 50, 8, 50, 61]": {
+            "[:else, 7, 50, 8, 50, 61]": 0,
+            "[:then, 8, 50, 8, 50, 16]": 0
           },
-          "[:if, 9, 33, 8, 33, 71]": {
-            "[:then, 10, 33, 8, 33, 51]": 0,
-            "[:else, 11, 33, 8, 33, 71]": 1
+          "[:unless, 9, 57, 14, 60, 17]": {
+            "[:else, 10, 57, 14, 60, 17]": 0,
+            "[:then, 11, 58, 16, 59, 20]": 0
+          },
+          "[:if, 12, 65, 14, 68, 17]": {
+            "[:then, 13, 66, 16, 67, 24]": 0,
+            "[:else, 14, 65, 14, 68, 17]": 0
           }
         }
       },
-      "/opt/scanaegis/app/models/activity_log.rb": {
+      "/opt/scanaegis/lib/aegis/msf/output_parser.rb": {
         "lines": [
+          null,
+          null,
+          null,
+          null,
+          null,
           1,
           1,
           1,
-          null,
           1,
           null,
-          1,
           null,
-          1,
           null,
-          1,
           null,
           1,
-          7,
-          null,
-          null,
-          null,
-          7,
-          null,
-          null,
-          null,
+          4,
+          4,
           0,
+          4,
+          4,
+          4,
+          null,
+          null,
+          null,
+          null,
+          1,
+          5,
+          5,
+          5,
+          5,
+          null,
+          null,
           null,
           null
         ],
-        "branches": {}
+        "branches": {
+          "[:if, 0, 28, 19, 28, 88]": {
+            "[:then, 1, 28, 49, 28, 71]": 0,
+            "[:else, 2, 28, 74, 28, 88]": 5
+          }
+        }
       },
       "/opt/scanaegis/lib/aegis/msf_module_parser.rb": {
         "lines": [
@@ -7719,16 +7741,8 @@
           }
         }
       },
-      "/opt/scanaegis/lib/aegis/network/tcp_probe.rb": {
+      "/opt/scanaegis/app/services/aegis/notifications/scan_lifecycle.rb": {
         "lines": [
-          1,
-          1,
-          1,
-          null,
-          null,
-          null,
-          null,
-          null,
           null,
           null,
           null,
@@ -7742,99 +7756,94 @@
           0,
           null,
           null,
-          1,
-          0,
-          0,
-          0,
-          null,
-          null,
-          0,
-          null,
-          0,
-          0,
-          0,
-          null,
-          0,
-          0,
-          null,
-          0,
           null,
           null,
           null,
-          0,
-          0,
-          null,
-          0,
-          0,
           null,
           null,
           1,
-          0,
-          0,
-          null,
-          0,
-          null,
-          0,
-          0,
-          0,
-          0,
-          0,
-          0,
-          null,
-          0,
-          0,
-          0,
-          0,
-          0,
-          0,
-          0,
+          6,
           null,
           null,
           null,
-          0,
-          0,
-          null,
-          0,
           null,
           null,
           null,
-          0,
-          0,
           null,
-          0,
+          null,
+          null,
+          null,
+          1,
+          1,
+          1,
+          1,
+          null,
+          null,
+          null,
+          null,
+          null,
+          null,
+          null,
+          1,
+          7,
+          null,
           0,
           null,
           null,
           1,
-          0,
-          0,
+          7,
           null,
           null,
           null,
           null
         ],
         "branches": {
-          "[:if, 0, 19, 8, 19, 60]": {
-            "[:then, 1, 19, 16, 19, 40]": 0,
-            "[:else, 2, 19, 43, 19, 60]": 0
+          "[:\"&.\", 0, 15, 45, 15, 60]": {
+            "[:then, 1, 15, 45, 15, 60]": 0,
+            "[:else, 2, 15, 45, 15, 60]": 0
           },
-          "[:if, 3, 23, 8, 26, 11]": {
-            "[:then, 4, 24, 10, 25, 18]": 0,
-            "[:else, 5, 23, 8, 26, 11]": 0
+          "[:\"&.\", 3, 24, 45, 24, 60]": {
+            "[:then, 4, 24, 45, 24, 60]": 6,
+            "[:else, 5, 24, 45, 24, 60]": 0
           },
-          "[:unless, 6, 50, 8, 50, 61]": {
-            "[:else, 7, 50, 8, 50, 61]": 0,
-            "[:then, 8, 50, 8, 50, 16]": 0
+          "[:\"&.\", 6, 32, 33, 32, 48]": {
+            "[:then, 7, 32, 33, 32, 48]": 1,
+            "[:else, 8, 32, 33, 32, 48]": 0
           },
-          "[:unless, 9, 57, 14, 60, 17]": {
-            "[:else, 10, 57, 14, 60, 17]": 0,
-            "[:then, 11, 58, 16, 59, 20]": 0
-          },
-          "[:if, 12, 65, 14, 68, 17]": {
-            "[:then, 13, 66, 16, 67, 24]": 0,
-            "[:else, 14, 65, 14, 68, 17]": 0
+          "[:if, 9, 33, 8, 33, 71]": {
+            "[:then, 10, 33, 8, 33, 51]": 0,
+            "[:else, 11, 33, 8, 33, 71]": 1
           }
         }
+      },
+      "/opt/scanaegis/app/models/activity_log.rb": {
+        "lines": [
+          1,
+          1,
+          1,
+          null,
+          1,
+          null,
+          1,
+          null,
+          1,
+          null,
+          1,
+          null,
+          1,
+          7,
+          null,
+          null,
+          null,
+          7,
+          null,
+          null,
+          null,
+          0,
+          null,
+          null
+        ],
+        "branches": {}
       },
       "/opt/scanaegis/app/controllers/accounts_controller.rb": {
         "lines": [
@@ -10769,6 +10778,6 @@
         "branches": {}
       }
     },
-    "timestamp": 1777582195
+    "timestamp": 1777582860
   }
 }
