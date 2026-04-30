@@ -91,4 +91,21 @@ class AgentsControllerTest < ActionDispatch::IntegrationTest
     assert_includes response.headers["Content-Disposition"], "attachment"
     assert_includes response.headers["Content-Disposition"], agent.agent_id
   end
+
+  test "POST /agents surfaces creation errors with alert" do
+    sign_in_as(users(:admin_user))
+    Agent.stub(:create!, ->(*) { raise "no agents allowed" }) do
+      post agents_path, params: { agent: { site_id: "", network_range: "" } }
+    end
+    assert_redirected_to agents_path
+    assert_match(/Failed to create agent/, flash[:alert].to_s)
+  end
+
+  test "POST heartbeat returns 500 on unexpected error" do
+    Agent.stub(:find_by!, ->(*) { raise "db crashed" }) do
+      post agent_heartbeat_path(agent_id: "anything"), as: :json
+    end
+    assert_response :internal_server_error
+    assert_match(/db crashed/, JSON.parse(response.body)["error"])
+  end
 end

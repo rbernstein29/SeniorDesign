@@ -83,4 +83,32 @@ class Api::ScansApiControllerTest < ActionDispatch::IntegrationTest
     get "/api/bad_key/scans"
     assert_response :unauthorized
   end
+
+  test "POST /api/:key/scans/trigger returns 422 when asset_ids belong to another org" do
+    other_user = users(:other_org_user)
+    other_asset = Asset.create!(
+      ip_address:      "10.20.30.40",
+      organization_id: other_user.organization_id
+    )
+    post "/api/#{@admin_key}/scans/trigger", params: { asset_ids: [other_asset.id] }
+    assert_response :unprocessable_entity
+    assert_match(/No valid assets/, JSON.parse(response.body)["error"])
+  end
+
+  test "POST /api/:key/scans/trigger applies profile module allowlist when profile selected" do
+    profile = ScanProfile.create!(
+      organization_id: organizations(:acme).id,
+      name: "API Picky",
+      exploit_ids: [exploits(:exploit_one).id],
+      safe_mode: false
+    )
+    asset = assets(:asset_one)
+    assert_enqueued_with(job: ScanJob) do
+      post "/api/#{@admin_key}/scans/trigger",
+        params: { asset_ids: [asset.id], profile_id: profile.id }
+    end
+    job = ActiveJob::Base.queue_adapter.enqueued_jobs.last
+    filter_params = job[:args][1]
+    assert filter_params["module_allowlist"]&.any?
+  end
 end

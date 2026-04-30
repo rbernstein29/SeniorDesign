@@ -38,4 +38,13 @@ class SessionsControllerTest < ActionDispatch::IntegrationTest
     end
     assert_redirected_to login_path
   end
+
+  test "POST /session with unverified email redirects to verify_pending" do
+    user = users(:admin_user)
+    user.update_column(:email_verified_at, nil)
+    assert_no_difference "Session.count" do
+      post session_path, params: { email_address: user.email_address, password: TEST_FIXTURE_PASSWORD }
+    end
+    assert_redirected_to verify_pending_path
+  end
 end

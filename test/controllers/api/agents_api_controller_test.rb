@@ -67,4 +67,32 @@ class Api::AgentsApiControllerTest < ActionDispatch::IntegrationTest
     get "/api/bad_key/agents"
     assert_response :unauthorized
   end
+
+  test "POST /api/:key/agents returns 422 when create fails" do
+    Agent.stub(:create!, ->(*) { raise ActiveRecord::RecordInvalid.new(Agent.new) }) do
+      post "/api/#{@admin_key}/agents", params: { network_range: "boom" }
+    end
+    assert_response :unprocessable_entity
+    assert JSON.parse(response.body)["error"].present?
+  end
+
+  test "GET /api/:key/agents/:id/download sends a zip" do
+    agent = agents(:agent_offline)
+    AgentZipBuilder.stub(:build, ->(*) {
+      f = Tempfile.new(["fake", ".zip"])
+      f.write("PK\x03\x04fake")
+      f.flush
+      f.path
+    }) do
+      get "/api/#{@admin_key}/agents/#{agent.id}/download"
+    end
+    assert_response :success
+    assert_equal "application/zip", response.content_type
+    assert_includes response.headers["Content-Disposition"], "attachment"
+  end
+
+  test "GET /api/:key/agents/:id/download 404 for missing agent" do
+    get "/api/#{@admin_key}/agents/0/download"
+    assert_response :not_found
+  end
 end

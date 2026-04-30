@@ -82,4 +82,31 @@ class Api::AssetsApiControllerTest < ActionDispatch::IntegrationTest
     get "/api/bad_key/assets"
     assert_response :unauthorized
   end
+
+  test "GET /api/:key/assets with invalid cidr returns 422" do
+    get "/api/#{@admin_key}/assets", params: { cidr: "not-a-cidr" }
+    assert_response :unprocessable_entity
+    assert_equal "Invalid CIDR", JSON.parse(response.body)["error"]
+  end
+
+  test "POST /api/:key/assets surfaces creation errors with 422" do
+    Asset.stub(:create!, ->(*) { raise "kaboom" }) do
+      post "/api/#{@admin_key}/assets", params: { network: "10.99.99.1" }
+    end
+    assert_response :unprocessable_entity
+    assert_match(/kaboom/, JSON.parse(response.body)["error"])
+  end
+
+  test "POST /api/:key/assets with /30 CIDR creates the host range" do
+    assert_difference "Asset.count", 2 do
+      post "/api/#{@admin_key}/assets", params: { network: "10.55.0.0/30" }
+    end
+    assert_response :created
+  end
+
+  test "POST /api/:key/assets rejects oversized CIDR with 422" do
+    post "/api/#{@admin_key}/assets", params: { network: "10.0.0.0/8" }
+    assert_response :unprocessable_entity
+    assert_match(/Range too large/, JSON.parse(response.body)["error"])
+  end
 end

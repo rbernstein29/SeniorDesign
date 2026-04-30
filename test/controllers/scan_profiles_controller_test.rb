@@ -49,4 +49,34 @@ class ScanProfilesControllerTest < ActionDispatch::IntegrationTest
       delete scan_profile_path(other_profile)
     end
   end
+
+  test "GET /scan_profiles/new renders for admin" do
+    sign_in_as(users(:admin_user))
+    get new_scan_profile_path
+    assert_response :success
+  end
+
+  test "POST /scan_profiles preserves exploit_ids whitelist" do
+    sign_in_as(users(:admin_user))
+    post scan_profiles_path, params: {
+      name: "Picky", safe_mode: "true", exploit_ids: [exploits(:exploit_one).id]
+    }
+    profile = ScanProfile.order(:id).last
+    assert_equal [exploits(:exploit_one).id], profile.exploit_ids
+    assert profile.safe_mode
+  end
+
+  test "POST /scan_profiles with invalid params redirects with alert" do
+    sign_in_as(users(:admin_user))
+    post scan_profiles_path, params: { name: "", safe_mode: "false" }
+    assert_redirected_to new_scan_profile_path
+    assert_not_nil flash[:alert]
+  end
+
+  test "DELETE /scan_profiles/:id with non-existent id redirects with alert" do
+    sign_in_as(users(:admin_user))
+    delete scan_profile_path(id: 0)
+    assert_redirected_to scan_profiles_path
+    assert_not_nil flash[:alert]
+  end
 end

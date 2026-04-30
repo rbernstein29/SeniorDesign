@@ -59,4 +59,18 @@ class Api::ScanProfilesApiControllerTest < ActionDispatch::IntegrationTest
     get "/api/bad_key/scan-profiles"
     assert_response :unauthorized
   end
+
+  test "POST /api/:key/scan-profiles preserves exploit_ids" do
+    post "/api/#{@admin_key}/scan-profiles",
+         params: { name: "API Picky", exploit_ids: [exploits(:exploit_one).id] }
+    assert_response :created
+    profile = ScanProfile.order(:id).last
+    assert_equal [exploits(:exploit_one).id], profile.exploit_ids
+  end
+
+  test "POST /api/:key/scan-profiles returns 422 with invalid params" do
+    post "/api/#{@admin_key}/scan-profiles", params: { name: "" }
+    assert_response :unprocessable_entity
+    assert JSON.parse(response.body)["error"].present?
+  end
 end

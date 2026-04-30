@@ -139,4 +139,22 @@ class OllamaServiceTest < ActiveSupport::TestCase
   test "model constant is set" do
     assert OllamaService::MODEL.present?
   end
+
+  test "remediation_for nil exploit uses static-analysis prompt branch" do
+    finding = findings(:finding_one)
+    received_prompt = nil
+    capturing_http = Object.new
+    capturing_http.define_singleton_method(:read_timeout=) { |_| }
+    capturing_http.define_singleton_method(:request) do |req|
+      received_prompt = req.body
+      mock_resp = Object.new
+      mock_resp.define_singleton_method(:body) { { "message" => { "content" => "OK" } }.to_json }
+      mock_resp
+    end
+
+    Net::HTTP.stub(:new, capturing_http) do
+      OllamaService.remediation_for(nil, finding)
+    end
+    assert_match(/static analysis/, received_prompt)
+  end
 end

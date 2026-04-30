@@ -1,8 +1,9 @@
+require "zip"
+
 class AgentZipBuilder
   def self.build(agent, server_ip, server_port)
-    require "zip"
-
     temp_dir = "/tmp/agent-#{agent.agent_id}"
+    FileUtils.rm_rf(temp_dir)
     FileUtils.mkdir_p(temp_dir)
 
     script = generate_agent_script(agent, server_ip, server_port)

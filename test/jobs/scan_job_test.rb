@@ -80,4 +80,78 @@ class ScanJobTest < ActiveSupport::TestCase
       end
     end
   end
+
+  test "perform invokes progress callback to broadcast updates" do
+    captured_pct = nil
+    ScanService.stub(:new, ->(*args, **kwargs, &blk) {
+      obj = Object.new
+      obj.define_singleton_method(:perform) { blk.call(1, 2, "1.2.3.4") if blk }
+      obj
+    }) do
+      Turbo::StreamsChannel.stub(:broadcast_update_to, ->(stream, **opts) {
+        captured_pct ||= opts[:html].to_s[/width: (\d+)%/, 1]&.to_i
+      }) do
+        ScanJob.new.perform(@org.id, {}, @user.id, [@asset.id])
+      end
+    end
+    assert captured_pct, "progress callback should drive a broadcast_update_to call"
+  end
+
+  test "perform falls back to active asset count when asset_ids empty" do
+    ScanService.stub(:new, ->(*args, **kwargs, &blk) {
+      obj = Object.new
+      obj.define_singleton_method(:perform) {}
+      obj
+    }) do
+      Turbo::StreamsChannel.stub(:broadcast_update_to, nil) do
+        assert_difference "Scan.count", 1 do
+          ScanJob.new.perform(@org.id, {}, @user.id, [])
+        end
+      end
+    end
+    new_scan = Scan.order(created_at: :desc).first
+    expected_total = Asset.where(organization_id: @org.id, is_active: true).count
+    assert_equal expected_total, new_scan.total_assets
+  end
+
+  test "perform retest auto-remediates findings from prior scan when current results are clean" do
+    original = scans(:completed_scan)
+    finding  = findings(:finding_one)
+    finding.update!(status: "open")
+
+    ScanService.stub(:new, ->(*args, **kwargs, &blk) {
+      obj = Object.new
+      obj.define_singleton_method(:perform) do
+        new_scan = Scan.order(created_at: :desc).first
+        ScanExploit.create!(
+          scan_id:    new_scan.id,
+          asset_id:   finding.asset_id,
+          exploit_id: finding.exploit_id,
+          result:     "not_detected"
+        )
+      end
+      obj
+    }) do
+      Turbo::StreamsChannel.stub(:broadcast_update_to, nil) do
+        ScanJob.new.perform(@org.id, {}, @user.id, [finding.asset_id], { retest_of: original.id })
+      end
+    end
+
+    finding.reload
+    assert_equal "remediated", finding.status
+  end
+
+  test "broadcast_progress rescues Turbo errors so the job continues" do
+    Turbo::StreamsChannel.stub(:broadcast_update_to, ->(*) { raise "no streams" }) do
+      ScanService.stub(:new, ->(*args, **kwargs, &blk) {
+        obj = Object.new
+        obj.define_singleton_method(:perform) {}
+        obj
+      }) do
+        assert_nothing_raised do
+          ScanJob.new.perform(@org.id, {}, @user.id, [@asset.id])
+        end
+      end
+    end
+  end
 end

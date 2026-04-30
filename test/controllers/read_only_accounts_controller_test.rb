@@ -46,4 +46,25 @@ class ReadOnlyAccountsControllerTest < ActionDispatch::IntegrationTest
     assert_redirected_to read_only_accounts_path
     assert_not_nil flash[:alert]
   end
+
+  test "POST /read_only_accounts redirects with validation error" do
+    sign_in_as(users(:admin_user))
+    post read_only_accounts_path, params: {
+      user: { name: "", email_address: "bad", password: "x", password_confirmation: "y" }
+    }
+    assert_redirected_to create_ro_account_path
+    assert_not_nil flash[:alert]
+  end
+
+  test "POST /read_only_accounts surfaces duplicate-email error" do
+    sign_in_as(users(:admin_user))
+    User.stub(:create!, ->(*) { raise ActiveRecord::RecordNotUnique.new("dup") }) do
+      post read_only_accounts_path, params: {
+        user: { name: "RO Dup", email_address: "dup@example.com",
+                 password: "Sup3rSecret!Password!", password_confirmation: "Sup3rSecret!Password!" }
+      }
+    end
+    assert_redirected_to create_ro_account_path
+    assert_match(/already registered/, flash[:alert].to_s)
+  end
 end

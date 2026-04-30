@@ -37,4 +37,11 @@ class SitesControllerTest < ActionDispatch::IntegrationTest
     end
     assert_redirected_to sites_path
   end
+
+  test "DELETE /sites/:id with non-existent id redirects with alert" do
+    sign_in_as(users(:admin_user))
+    delete site_path(id: 0)
+    assert_redirected_to sites_path
+    assert_not_nil flash[:alert]
+  end
 end

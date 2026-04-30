@@ -49,4 +49,12 @@ class Api::SitesApiControllerTest < ActionDispatch::IntegrationTest
     get "/api/bad_key/sites"
     assert_response :unauthorized
   end
+
+  test "POST /api/:key/sites surfaces RecordInvalid as 422" do
+    Site.stub(:create!, ->(*) { raise ActiveRecord::RecordInvalid.new(Site.new) }) do
+      post "/api/#{@admin_key}/sites", params: { name: "" }
+    end
+    assert_response :unprocessable_entity
+    assert JSON.parse(response.body)["error"].present?
+  end
 end

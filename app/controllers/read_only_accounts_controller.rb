@@ -14,13 +14,6 @@ class ReadOnlyAccountsController < ApplicationController
     redirect_to create_ro_account_path, alert: "That email is already registered."
   end
 
-  def index
-    @read_only_users = User.where(
-      organization_id: Current.user.organization_id,
-      access_level: "read_only"
-    )
-  end
-
   def destroy
     user = User.find(params[:id])
     if user.organization_id == Current.user.organization_id && user.access_level == "read_only"

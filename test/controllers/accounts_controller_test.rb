@@ -165,4 +165,42 @@ class AccountsControllerTest < ActionDispatch::IntegrationTest
     end
     assert_redirected_to login_path
   end
+
+  test "POST /accounts redirects to verify_pending when verification email fails" do
+    EmailVerifyMailer.stub(:verify, ->(*) { raise "smtp gone" }) do
+      post accounts_path, params: {
+        organization: { org_name: "Mailer Fail Org" },
+        user: { name: "MF", email_address: "mailfail@example.com",
+                password: TEST_FIXTURE_PASSWORD, password_confirmation: TEST_FIXTURE_PASSWORD }
+      }
+    end
+    assert_redirected_to verify_pending_path
+  end
+
+  test "POST /accounts surfaces RecordNotUnique on duplicate email" do
+    User.stub(:create!, ->(*) { raise ActiveRecord::RecordNotUnique.new("dup") }) do
+      post accounts_path, params: {
+        organization: { org_name: "Unique Org Test" },
+        user: { name: "Dup", email_address: "dup@new.com",
+                password: TEST_FIXTURE_PASSWORD, password_confirmation: TEST_FIXTURE_PASSWORD }
+      }
+    end
+    assert_redirected_to login_path
+    assert_match(/already registered/, flash[:alert].to_s)
+  end
+
+  test "POST /resend_verification swallows mailer errors and shows generic notice" do
+    user = User.create!(
+      name: "RV2", email_address: "rv2@test.com",
+      password: TEST_FIXTURE_PASSWORD,
+      organization_id: organizations(:acme).id,
+      access_level: "read_only",
+      email_verified_at: nil
+    )
+    EmailVerifyMailer.stub(:verify, ->(*) { raise "smtp gone" }) do
+      post resend_verification_path, params: { email_address: user.email_address }
+    end
+    assert_redirected_to verify_pending_path
+    assert_not_nil flash[:notice]
+  end
 end
