@@ -620,17 +620,21 @@ class ScanServiceTest < ActiveSupport::TestCase
       assert_match %r{^set LHOST 10\.0\.0\.5$}, rc
       assert_match %r{^set Proxies socks5://10\.0\.0\.1:1080$}, rc
       assert_match %r{^run -z$}, rc
+      refute_match %r{sessions -l}, rc
       assert rc.end_with?("\n")
     end
   end
 
-  test "build_exploit_rc omits port/payload/proxy when not provided" do
+  test "build_exploit_rc omits port/payload/proxy when not provided and no compatible payload found" do
     s = build
     s.stub(:outbound_ip_for, "127.0.0.1") do
-      rc = s.send(:build_exploit_rc, { "metasploit_module" => "exploit/x" }, "1.1.1.1", nil, nil)
-      refute_match %r{set RPORT}, rc
-      refute_match %r{set PAYLOAD}, rc
-      refute_match %r{set Proxies}, rc
+      s.stub(:select_payload, nil) do
+        rc = s.send(:build_exploit_rc, { "metasploit_module" => "exploit/x" }, "1.1.1.1", nil, nil)
+        refute_match %r{set RPORT}, rc
+        refute_match %r{set PAYLOAD}, rc
+        refute_match %r{set Proxies}, rc
+        refute_match %r{sessions -l}, rc
+      end
     end
   end
 
@@ -737,29 +741,35 @@ class ScanServiceTest < ActiveSupport::TestCase
 
   # ── rpc_run_exploit ─────────────────────────────────────────────────────────
 
-  test "rpc_run_exploit returns success when a new session opens" do
+  test "rpc_run_exploit returns success when session line appears in console output" do
     s = build
+    s.define_singleton_method(:sleep) { |*| nil }
     s.stub(:outbound_ip_for, "127.0.0.1") do
-      session_seq = [{}, { "1" => { "tunnel_local" => "lan", "tunnel_peer" => "p", "session_type" => "shell" } }]
+      Thread.current[:msf_exploit_console] = nil
+      read_seq = [
+        { "data" => "", "busy" => false },
+        { "data" => "", "busy" => false },
+        { "data" => "[*] Started reverse handler\n[*] Meterpreter session 1 opened (127.0.0.1:4444 -> 1.1.1.1:54321)\nExploit completed\n", "busy" => false }
+      ]
       handlers = {
-        "session.list"   => -> { session_seq.shift || {} },
-        "module.execute" => -> { { "job_id" => 42 } },
-        "job.list"       => -> { {} },
-        "job.stop"       => -> { nil },
-        "session.stop"   => -> { nil },
+        "console.create"  => -> { { "id" => "E1" } },
+        "console.write"   => -> { nil },
+        "console.read"    => -> { read_seq.shift || { "data" => "", "busy" => false } },
+        "console.destroy" => -> { nil },
         "module.compatible_payloads" => -> { { "payloads" => ["cmd/unix/reverse_netcat"] } }
       }
       client = Object.new
-      client.define_singleton_method(:call) { |method, *_a| handlers[method].call }
-
+      client.define_singleton_method(:call) { |method, *_a| handlers[method]&.call }
       silence_stdout do
         result = s.send(:rpc_run_exploit, client,
                         { "metasploit_module" => "exploit/x", "default_payload" => nil },
-                        "1.1.1.1", 80, nil, 5)
+                        "1.1.1.1", 80, nil, 10)
         assert result[:success]
-        assert_match(/Session 1/, result[:evidence])
+        assert_match(/Meterpreter session 1 opened/, result[:evidence])
       end
     end
+  ensure
+    Thread.current[:msf_exploit_console] = nil
   end
 
   test "rpc_run_exploit returns failure when no payload selected" do
@@ -780,52 +790,70 @@ class ScanServiceTest < ActiveSupport::TestCase
     end
   end
 
-  test "rpc_run_exploit handles execute error" do
+  test "rpc_run_exploit returns failure when exploit completes without session" do
     s = build
+    s.define_singleton_method(:sleep) { |*| nil }
     s.stub(:outbound_ip_for, "127.0.0.1") do
+      Thread.current[:msf_exploit_console] = nil
+      read_seq = [
+        { "data" => "", "busy" => false },
+        { "data" => "", "busy" => false },
+        { "data" => "[-] Exploit failed: no connection\nExploit completed\n", "busy" => false }
+      ]
       handlers = {
-        "session.list"   => -> { {} },
-        "module.execute" => -> { { "error" => true, "error_message" => "no pop" } },
-        "job.stop"       => -> { nil }
+        "console.create"  => -> { { "id" => "E2" } },
+        "console.write"   => -> { nil },
+        "console.read"    => -> { read_seq.shift || { "data" => "", "busy" => false } },
+        "console.destroy" => -> { nil }
       }
       client = Object.new
       client.define_singleton_method(:call) { |method, *_a| handlers[method]&.call }
       silence_stdout do
         result = s.send(:rpc_run_exploit, client,
                         { "metasploit_module" => "exploit/x", "default_payload" => "cmd/foo" },
-                        "1.1.1.1", 80, nil, 5)
+                        "1.1.1.1", 80, nil, 10)
         refute result[:success]
       end
     end
+  ensure
+    Thread.current[:msf_exploit_console] = nil
   end
 
-  test "rpc_run_exploit returns failure when sync path produces no session" do
+  test "rpc_run_exploit uses shared console when one is open on the thread" do
     s = build
     s.define_singleton_method(:sleep) { |*| nil }
     s.stub(:outbound_ip_for, "127.0.0.1") do
+      Thread.current[:msf_exploit_console] = "SHARED_E"
+      saw = []
+      read_seq = [
+        { "data" => "", "busy" => false },
+        { "data" => "", "busy" => false },
+        { "data" => "Meterpreter session 1 opened\nExploit completed\n", "busy" => false }
+      ]
       handlers = {
-        "session.list"   => -> { {} },
-        "module.execute" => -> { { "job_id" => nil } },
-        "job.stop"       => -> { nil }
+        "console.create"  => -> { saw << :create; { "id" => "X" } },
+        "console.write"   => -> { saw << :write; nil },
+        "console.read"    => -> { saw << :read; read_seq.shift || { "data" => "", "busy" => false } },
+        "console.destroy" => -> { saw << :destroy; nil }
       }
       client = Object.new
       client.define_singleton_method(:call) { |method, *_a| handlers[method]&.call }
-      base   = Time.now
-      offset = 0.0
-      Time.stub(:now, ->(*) { offset += 100.0; base + offset }) do
-        silence_stdout do
-          result = s.send(:rpc_run_exploit, client,
-                          { "metasploit_module" => "exploit/x", "default_payload" => "cmd/foo" },
-                          "1.1.1.1", 80, nil, 5)
-          refute result[:success]
-        end
+      silence_stdout do
+        s.send(:rpc_run_exploit, client,
+               { "metasploit_module" => "exploit/x", "default_payload" => "cmd/foo" },
+               "1.1.1.1", 80, nil, 10)
       end
+      refute_includes saw, :create
+      refute_includes saw, :destroy
     end
+  ensure
+    Thread.current[:msf_exploit_console] = nil
   end
 
-  test "rpc_run_exploit rescues Msf::RPC::ServerException" do
+  test "rpc_run_exploit rescues Msf::RPC::ServerException and clears shared console" do
     s = build
     s.stub(:outbound_ip_for, "127.0.0.1") do
+      Thread.current[:msf_exploit_console] = "SHARED_E2"
       client = Object.new
       client.define_singleton_method(:call) { |*| raise Msf::RPC::ServerException.new(nil, nil, nil) }
       silence_stdout do
@@ -833,8 +861,11 @@ class ScanServiceTest < ActiveSupport::TestCase
                         { "metasploit_module" => "exploit/x", "default_payload" => "cmd/foo" },
                         "1.1.1.1", 80, nil, 5)
         refute result[:success]
+        assert_nil Thread.current[:msf_exploit_console]
       end
     end
+  ensure
+    Thread.current[:msf_exploit_console] = nil
   end
 
   # ── rpc_run_auxiliary ───────────────────────────────────────────────────────
@@ -1030,6 +1061,35 @@ class ScanServiceTest < ActiveSupport::TestCase
     assert_nil Thread.current[:msf_aux_console]
   end
 
+  test "perform opens and closes shared exploit console in exploit mode" do
+    scan = scans(:running_scan)
+    asset_id = assets(:asset_one).id
+    exploit  = exploits(:exploit_one)
+    s = build(scan: scan, asset_ids: [asset_id], options: {})
+
+    fake_exploit_client = Object.new
+    fake_exploit_client.define_singleton_method(:call) do |method, *_a|
+      method == "console.create" ? { "id" => "EXP1" } : nil
+    end
+
+    s.define_singleton_method(:get_targets) do |_org_id|
+      [{ "ip" => "1.1.1.1", "asset_id" => asset_id, "ports" => [80], "proxy" => nil, "os" => "linux" }]
+    end
+    s.define_singleton_method(:rpc_client) { fake_exploit_client }
+    s.define_singleton_method(:connect_network) { |*| 1 }
+    s.define_singleton_method(:get_modules_for_target) { |*| [{ path: "exploit/x", file: "/tmp/x.rb" }] }
+    s.define_singleton_method(:read_module_rank) { |*| "high" }
+    s.define_singleton_method(:get_or_create_exploit_record) { |*| exploit }
+    s.define_singleton_method(:attack) { |*| { success: false, evidence: nil } }
+
+    silence_stdout do
+      assert_nothing_raised { s.send(:perform) }
+    end
+    scan.reload
+    assert_equal "completed", scan.status
+    assert_nil Thread.current[:msf_exploit_console]
+  end
+
   test "perform records exploit_code and isVulnerable when use_agent enabled" do
     scan = scans(:running_scan)
     asset_id = assets(:asset_one).id
@@ -1148,77 +1208,6 @@ class ScanServiceTest < ActiveSupport::TestCase
     Aegis.singleton_class.alias_method(:config, :_orig_config)
     Aegis.singleton_class.send(:remove_method, :_orig_config)
     Thread.current[:msf_rpc] = nil
-  end
-
-  # ── rpc_run_exploit async path ─────────────────────────────────────────────
-
-  test "rpc_run_exploit async path catches session after job ends in grace window" do
-    s = build
-    s.define_singleton_method(:sleep) { |*| nil }
-    s.stub(:outbound_ip_for, "127.0.0.1") do
-      # The session never appears during the main async poll; the JOB exits first
-      # (job.list no longer contains job_id), THEN the session arrives in grace.
-      session_seq = [
-        {}, # existing snapshot
-        {}, # immediate check
-        {}, # iter 1 inside async loop
-        {}, {}, # grace iter 1, 2
-        { "7" => { "tunnel_local" => "L", "tunnel_peer" => "P", "session_type" => "shell" } }
-      ]
-      jobs_seq = [{}] # already gone — first job.list call shows job_ended
-      handlers = {
-        "session.list"   => -> { session_seq.shift || {} },
-        "module.execute" => -> { { "job_id" => 99 } },
-        "job.list"       => -> { jobs_seq.shift || {} },
-        "job.stop"       => -> { nil },
-        "session.stop"   => -> { nil }
-      }
-      client = Object.new
-      client.define_singleton_method(:call) { |method, *_a| handlers[method]&.call }
-
-      base   = Time.now
-      offset = 0.0
-      Time.stub(:now, ->(*) { offset += 1.0; base + offset }) do
-        silence_stdout do
-          result = s.send(:rpc_run_exploit, client,
-                          { "metasploit_module" => "exploit/x", "default_payload" => "cmd/foo" },
-                          "1.1.1.1", 80, nil, 60)
-          assert result[:success]
-          assert_match(/Session 7/, result[:evidence])
-        end
-      end
-    end
-  end
-
-  test "rpc_run_exploit sync path returns success when session appears mid-poll" do
-    s = build
-    s.define_singleton_method(:sleep) { |*| nil }
-    s.stub(:outbound_ip_for, "127.0.0.1") do
-      session_seq = [
-        {}, # existing
-        {}, # immediate check
-        { "9" => { "tunnel_local" => "lan", "tunnel_peer" => "p", "session_type" => "shell" } }
-      ]
-      handlers = {
-        "session.list"   => -> { session_seq.shift || {} },
-        "module.execute" => -> { { "job_id" => nil } },
-        "job.stop"       => -> { nil },
-        "session.stop"   => -> { nil }
-      }
-      client = Object.new
-      client.define_singleton_method(:call) { |method, *_a| handlers[method]&.call }
-
-      base   = Time.now
-      offset = 0.0
-      Time.stub(:now, ->(*) { offset += 1.0; base + offset }) do
-        silence_stdout do
-          result = s.send(:rpc_run_exploit, client,
-                          { "metasploit_module" => "exploit/x", "default_payload" => "cmd/foo" },
-                          "1.1.1.1", 80, nil, 30)
-          assert result[:success]
-        end
-      end
-    end
   end
 
   # ── rpc_run_auxiliary busy-state path ──────────────────────────────────────
