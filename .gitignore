@@ -8,6 +8,7 @@ bootsnap/
 
 # Logs
 /log/*.log
+/log/*.log.*
 /log/*.pid
 /logs/
 
