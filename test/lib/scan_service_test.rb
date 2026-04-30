@@ -625,16 +625,14 @@ class ScanServiceTest < ActiveSupport::TestCase
     end
   end
 
-  test "build_exploit_rc omits port/payload/proxy when not provided and no compatible payload found" do
+  test "build_exploit_rc omits port/payload/proxy when not provided" do
     s = build
     s.stub(:outbound_ip_for, "127.0.0.1") do
-      s.stub(:select_payload, nil) do
-        rc = s.send(:build_exploit_rc, { "metasploit_module" => "exploit/x" }, "1.1.1.1", nil, nil)
-        refute_match %r{set RPORT}, rc
-        refute_match %r{set PAYLOAD}, rc
-        refute_match %r{set Proxies}, rc
-        refute_match %r{sessions -l}, rc
-      end
+      rc = s.send(:build_exploit_rc, { "metasploit_module" => "exploit/x" }, "1.1.1.1", nil, nil)
+      refute_match %r{set RPORT}, rc
+      refute_match %r{set PAYLOAD}, rc
+      refute_match %r{set Proxies}, rc
+      refute_match %r{sessions -l}, rc
     end
   end
 

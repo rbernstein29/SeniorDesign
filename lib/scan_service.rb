@@ -591,12 +591,9 @@ class ScanService
   end
 
   def build_exploit_rc(exploit, target_ip, port, proxy)
-    lhost    = outbound_ip_for(target_ip)
-    lport    = Aegis.config.msf.lport
-    use_bind = proxy.present?
-    mod_name = exploit['metasploit_module'].sub(/\Aexploit\//, '')
-    payload  = exploit['default_payload'].presence ||
-               select_payload(rpc_client, mod_name, use_bind)
+    lhost   = outbound_ip_for(target_ip)
+    lport   = Aegis.config.msf.lport
+    payload = exploit['default_payload'].presence
 
     lines = [
       "use #{exploit['metasploit_module']}",
