@@ -1,10 +1,9 @@
 require "zip"
+require "tmpdir"
 
 class AgentZipBuilder
   def self.build(agent, server_ip, server_port)
-    temp_dir = "/tmp/agent-#{agent.agent_id}"
-    FileUtils.rm_rf(temp_dir)
-    FileUtils.mkdir_p(temp_dir)
+    temp_dir = Dir.mktmpdir("agent-#{agent.agent_id}-")
 
     script = generate_agent_script(agent, server_ip, server_port)
     File.write("#{temp_dir}/scanner_agent.py", script)
@@ -48,10 +47,10 @@ class AgentZipBuilder
     README
     File.write("#{temp_dir}/README.txt", readme)
 
-    zip_path = "/tmp/scanner-agent-#{agent.agent_id}.zip"
-    FileUtils.rm_f(zip_path)
+    zip_path = "#{temp_dir}/scanner-agent-#{agent.agent_id}.zip"
     Zip::File.open(zip_path, create: true) do |zipfile|
       Dir["#{temp_dir}/*"].each do |file|
+        next if File.basename(file) == File.basename(zip_path)
         zipfile.add(File.basename(file), file)
       end
     end
