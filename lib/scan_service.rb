@@ -283,7 +283,7 @@ class ScanService
 
     cid = con['id'].to_s
     safe_ip = Shellwords.escape(target_ip)
-    cmd = "ruby -e \"require 'socket'; puts UDPSocket.open { |s| s.connect('#{safe_ip}', 1); s.addr.last }\"\n"
+    cmd = "ruby require 'socket'; puts UDPSocket.open { |s| s.connect('#{safe_ip}', 1); s.addr.last }\n"
     client.call('console.write', cid, cmd)
     sleep 2
     output = (client.call('console.read', cid) rescue {})['data'].to_s
