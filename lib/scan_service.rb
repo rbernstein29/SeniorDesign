@@ -59,8 +59,16 @@ class ScanService
               con = shared_client.call('console.create') rescue nil
               if con
                 cid = con['id'].to_s
-                # Wait for console to finish initialising before writing anything to it
-                30.times { break unless (shared_client.call('console.read', cid) rescue {})['busy']; sleep 1 }
+                # Wait for the MSF banner to appear in console output, then for busy
+                # to clear. Checking busy=false alone is unreliable — the console can
+                # report not-busy before initialisation has even started.
+                banner_seen = false
+                30.times do
+                  sleep 1
+                  res  = shared_client.call('console.read', cid) rescue {}
+                  banner_seen = true if res['data'].to_s.include?('msf')
+                  break if banner_seen && !res['busy']
+                end
                 if @scan_options[:safe_mode]
                   Thread.current[:msf_aux_console]     = cid
                   puts "[SafeMode] Shared console #{cid} ready for #{target_ip}"
