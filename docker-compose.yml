@@ -27,11 +27,10 @@ services:
       start_period: 30s
 
   msfrpc:
-    image: metasploitframework/metasploit-framework:latest
+    image: ubuntu:24.04
     network_mode: host
     restart: unless-stopped
     env_file: .env
-    entrypoint: ""
     volumes:
       - /opt/metasploit-framework:/opt/metasploit-framework:ro
     command: >
