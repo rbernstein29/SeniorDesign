@@ -296,7 +296,7 @@ class ScanService
     cmd = "ruby require 'socket'; puts UDPSocket.open { |s| s.connect('#{safe_ip}', 1); s.addr.last }\n"
     client.call('console.write', cid, cmd)
     output = ''
-    5.times do
+    15.times do
       sleep 1
       chunk = (client.call('console.read', cid) rescue {})['data'].to_s
       output += chunk
