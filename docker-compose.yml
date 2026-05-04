@@ -31,11 +31,12 @@ services:
     network_mode: host
     restart: unless-stopped
     env_file: .env
+    entrypoint: ""
     volumes:
       - /opt/metasploit-framework:/opt/metasploit-framework:ro
     command: >
-      msfrpcd -U ${MSF_RPC_USER} -P ${MSF_RPC_PASS}
-              -p ${MSF_RPC_PORT} -a 0.0.0.0 -f
+      /opt/metasploit-framework/bin/msfrpcd -U ${MSF_RPC_USER} -P ${MSF_RPC_PASS}
+                                             -p ${MSF_RPC_PORT} -a 0.0.0.0 -f
 
   rails:
     build: .
