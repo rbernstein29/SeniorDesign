@@ -35,7 +35,7 @@ services:
       - /opt/metasploit-framework:/opt/metasploit-framework:ro
     command: >
       /opt/metasploit-framework/bin/msfrpcd -U ${MSF_RPC_USER} -P ${MSF_RPC_PASS}
-                                             -p ${MSF_RPC_PORT} -a 0.0.0.0 -f
+                                             -p ${MSF_RPC_PORT} -a 0.0.0.0 -S -f
 
   rails:
     build: .
