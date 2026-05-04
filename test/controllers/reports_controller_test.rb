@@ -163,7 +163,7 @@ class ReportsControllerTest < ActionDispatch::IntegrationTest
     assert_response :success
   end
 
-  test "GET show enriches findings with unenriched CVEs via NVD" do
+  test "GET show enqueues NvdEnrichmentJob for unenriched CVEs" do
     sign_in_as(users(:admin_user))
     report = reports(:report_one)
     report.update_columns(scan_id: scans(:completed_scan).id)
@@ -176,12 +176,10 @@ class ReportsControllerTest < ActionDispatch::IntegrationTest
     )
     exploits(:exploit_two).update_columns(cve_id: "CVE-2026-0001", cvss_score: nil)
 
-    enriched_with = nil
-    NvdEnrichmentService.stub(:enrich, ->(e) { enriched_with = e }) do
+    assert_enqueued_with(job: NvdEnrichmentJob) do
       get report_path(report)
     end
     assert_response :success
-    assert enriched_with, "expected NvdEnrichmentService.enrich to receive at least one exploit"
   end
 
   # ── POST /reports/:id/retest ────────────────────────────────────────────────

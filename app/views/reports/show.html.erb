@@ -311,7 +311,7 @@
                     </div>
                   </div>
                   <!-- AI Remediation: full width -->
-                  <div style="margin-top:16px;padding:12px;background:var(--card-bg);border-radius:6px;border:1px solid var(--border);">
+                  <div style="margin-top:16px;padding:12px;background:var(--card-bg);border-radius:6px;border:1px solid var(--border);overflow:hidden;min-width:0;">
                     <div style="font-family:var(--mono);font-size:10px;color:var(--muted);letter-spacing:1px;margin-bottom:8px;">AI REMEDIATION</div>
                     <div id="ai-wrap-<%= finding.id %>">
                       <% if finding.ai_remediation.present? %>
@@ -343,14 +343,15 @@
 </div>
 
 <style>
-.ai-remediation-md { overflow-wrap: break-word; word-break: break-word; }
+.ai-remediation-md { overflow:hidden; min-width:0; overflow-wrap:break-word; word-break:break-word; }
+.ai-remediation-md * { max-width:100%; box-sizing:border-box; }
 .ai-remediation-md h1,.ai-remediation-md h2,.ai-remediation-md h3 { font-size:14px; font-weight:600; margin:12px 0 4px; }
 .ai-remediation-md p  { margin:4px 0; }
 .ai-remediation-md ul,.ai-remediation-md ol { margin:4px 0 4px 20px; padding:0; }
 .ai-remediation-md li { margin:2px 0; }
-.ai-remediation-md code { font-family:var(--mono); font-size:12px; background:var(--bg); padding:1px 4px; border-radius:3px; }
-.ai-remediation-md pre { font-family:var(--mono); font-size:12px; background:var(--bg); padding:8px; border-radius:4px; overflow-x:auto; margin:6px 0; }
-.ai-remediation-md pre code { background:none; padding:0; }
+.ai-remediation-md code { font-family:var(--mono); font-size:12px; background:var(--bg); padding:1px 4px; border-radius:3px; overflow-wrap:break-word; word-break:break-all; }
+.ai-remediation-md pre { font-family:var(--mono); font-size:12px; background:var(--bg); padding:8px; border-radius:4px; overflow-x:auto; margin:6px 0; white-space:pre-wrap; }
+.ai-remediation-md pre code { background:none; padding:0; word-break:normal; }
 </style>
 
 <script>

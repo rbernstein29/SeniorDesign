@@ -11,15 +11,12 @@ class ReportsController < ApplicationController
                        .includes(:exploit, :asset)
                        .order(severity_order, :discovered_at)
 
-    # Lazily enrich up to N unenriched CVEs from NVD (free tier: 5 req/30s)
-    nvd        = Aegis.config.nvd
-    unenriched = @findings.map(&:exploit).compact.uniq
-                          .select { |e| e.cve_id.present? && e.cvss_score.nil? }
-                          .first(nvd.max_per_request)
-    unenriched.each_with_index do |exploit, i|
-      NvdEnrichmentService.enrich(exploit)
-      sleep(nvd.rate_limit_sleep) if i < unenriched.size - 1
-    end
+    # Enrich unenriched CVEs in the background so the page loads immediately.
+    unenriched_ids = @findings.map(&:exploit).compact.uniq
+                              .select { |e| e.cve_id.present? && e.cvss_score.nil? }
+                              .first(Aegis.config.nvd.max_per_request)
+                              .map(&:id)
+    NvdEnrichmentJob.perform_later(unenriched_ids) if unenriched_ids.any?
 
     # Scan-over-scan comparison
     @prev_scan             = nil
