@@ -256,6 +256,15 @@ class ScanService
     { host: msf.rpc_host, port: msf.rpc_port, ssl: msf.rpc_ssl, uri: '/api/' }
   end
 
+  def local_network?(ip)
+    require 'ipaddr'
+    addr = IPAddr.new(ip)
+    [IPAddr.new('10.0.0.0/8'), IPAddr.new('172.16.0.0/12'),
+     IPAddr.new('192.168.0.0/16'), IPAddr.new('100.64.0.0/10')].any? { |r| r.include?(addr) }
+  rescue
+    false
+  end
+
   def outbound_ip_for(target_ip)
     explicit = Aegis.config.msf.lhost
     return explicit if explicit.present?
@@ -269,6 +278,7 @@ class ScanService
       @lhost_cache ||= {}
       @lhost_cache[target_ip] ||= detect_lhost_via_msfrpc(target_ip)
       return @lhost_cache[target_ip] if @lhost_cache[target_ip].present?
+      return nil if ENV['RUNNING_IN_DOCKER'] == '1'  # container IP is unreachable by targets
     end
 
     detected || '127.0.0.1'
@@ -285,8 +295,13 @@ class ScanService
     safe_ip = Shellwords.escape(target_ip)
     cmd = "ruby require 'socket'; puts UDPSocket.open { |s| s.connect('#{safe_ip}', 1); s.addr.last }\n"
     client.call('console.write', cid, cmd)
-    sleep 2
-    output = (client.call('console.read', cid) rescue {})['data'].to_s
+    output = ''
+    5.times do
+      sleep 1
+      chunk = (client.call('console.read', cid) rescue {})['data'].to_s
+      output += chunk
+      break if output.match?(/\b\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3}\b/)
+    end
     client.call('console.destroy', cid) rescue nil
 
     ip = output.scan(/\b(\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3})\b/).flatten
@@ -342,7 +357,7 @@ class ScanService
 
   def rpc_run_exploit(client, exploit, target_ip, port, proxy, timeout_secs)
     mod_name   = exploit['metasploit_module'].sub(/\Aexploit\//, '')
-    use_bind   = proxy.present?
+    use_bind   = proxy.present? || !local_network?(target_ip)
     payload    = exploit['default_payload'].presence || select_payload(client, mod_name, use_bind)
     shared_cid = Thread.current[:msf_exploit_console]
     own_cid    = nil
@@ -374,7 +389,7 @@ class ScanService
         "set RHOSTS #{target_ip}",
         (port ? "set RPORT #{port}" : nil),
         "set PAYLOAD #{payload}",
-        "set LHOST #{lhost}",
+        (lhost ? "set LHOST #{lhost}" : nil),
         "set LPORT #{lport}",
         "set ConnectTimeout 15",
         "set ExitOnSession false",

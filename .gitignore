@@ -43,6 +43,4 @@ bootsnap/
 .idea/
 .env
 
-/coverage/.last_run.json
-/coverage/.resultset.json
-/coverage/index.html
+/coverage/

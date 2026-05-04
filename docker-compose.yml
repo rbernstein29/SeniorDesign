@@ -26,6 +26,17 @@ services:
       retries: 40
       start_period: 30s
 
+  msfrpc:
+    image: metasploitframework/metasploit-framework:latest
+    network_mode: host
+    restart: unless-stopped
+    env_file: .env
+    volumes:
+      - /opt/metasploit-framework:/opt/metasploit-framework:ro
+    command: >
+      msfrpcd -U ${MSF_RPC_USER} -P ${MSF_RPC_PASS}
+              -p ${MSF_RPC_PORT} -a 0.0.0.0 -f
+
   rails:
     build: .
     ports:
@@ -41,11 +52,6 @@ services:
       MSF_RPC_PORT: "55553"
       MSF_RPC_SSL:  "false"
       MSF_RPC_USER: msf
-      # MSF_LHOST must be set to the host's Tailscale/LAN IP so reverse-shell
-      # payloads call back to an address reachable from scan targets.
-      # In Docker the container's internal IP is returned by socket routing,
-      # which msfrpcd cannot bind to — set this to e.g. 100.69.88.107.
-      MSF_LHOST: ""
       APP_PORT:          "3000"
       RUNNING_IN_DOCKER: "1"
       MSFCONSOLE_PATH:   "/opt/metasploit-framework/bin/msfconsole"
