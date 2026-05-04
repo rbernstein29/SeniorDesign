@@ -805,25 +805,27 @@ class ScanServiceTest < ActiveSupport::TestCase
     end
   end
 
-  test "rpc_run_exploit calls module.execute with RHOSTS PAYLOAD and no LHOST" do
+  test "rpc_run_exploit calls module.execute with RHOSTS PAYLOAD and detected LHOST" do
     s = build
     s.define_singleton_method(:sleep) { |*| nil }
-    captured_opts = nil
-    handlers = {
-      "module.execute" => ->(*a) { captured_opts = a[2]; { "job_id" => 1 } },
-      "session.list"   => -> { {} },
-      "job.stop"       => -> { nil }
-    }
-    client = Object.new
-    client.define_singleton_method(:call) { |method, *a| handlers[method]&.call(*a) }
-    silence_stdout do
-      s.send(:rpc_run_exploit, client,
-             { "metasploit_module" => "exploit/x", "default_payload" => "cmd/unix/reverse_netcat" },
-             "192.168.56.102", 21, nil, 0)
+    s.stub(:outbound_ip_for, "192.168.56.1") do
+      captured_opts = nil
+      handlers = {
+        "module.execute" => ->(*a) { captured_opts = a[2]; { "job_id" => 1 } },
+        "session.list"   => -> { {} },
+        "job.stop"       => -> { nil }
+      }
+      client = Object.new
+      client.define_singleton_method(:call) { |method, *a| handlers[method]&.call(*a) }
+      silence_stdout do
+        s.send(:rpc_run_exploit, client,
+               { "metasploit_module" => "exploit/x", "default_payload" => "cmd/unix/reverse_netcat" },
+               "192.168.56.102", 21, nil, 0)
+      end
+      assert_equal "192.168.56.102", captured_opts["RHOSTS"]
+      assert_equal "cmd/unix/reverse_netcat", captured_opts["PAYLOAD"]
+      assert_equal "192.168.56.1", captured_opts["LHOST"]
     end
-    assert_equal "192.168.56.102", captured_opts["RHOSTS"]
-    assert_equal "cmd/unix/reverse_netcat", captured_opts["PAYLOAD"]
-    refute captured_opts.key?("LHOST"), "LHOST should be omitted so msfrpcd auto-detects it"
   end
 
   test "rpc_run_exploit rescues Msf::RPC::ServerException and returns failure" do

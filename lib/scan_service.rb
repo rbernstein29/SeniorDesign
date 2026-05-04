@@ -51,15 +51,22 @@ class ScanService
             modules    = get_modules_for_target(target_os)
             sev_filter = @filter_params['severities']
 
-            # Safe mode: open one shared MSF console for all modules on this target
-            # so we avoid the overhead of create/destroy per module
-            if @scan_options[:safe_mode]
-              aux_client = rpc_client
-              if aux_client
-                con = aux_client.call('console.create') rescue nil
-                if con
-                  Thread.current[:msf_aux_console] = con['id'].to_s
-                  puts "[SafeMode] Shared console #{Thread.current[:msf_aux_console]} opened for #{target_ip}"
+            # Open a shared console for this target. Safe mode uses it to run auxiliary
+            # modules; exploit mode uses it only for LHOST detection (modules themselves
+            # run via module.execute, not via console).
+            shared_client = rpc_client
+            if shared_client
+              con = shared_client.call('console.create') rescue nil
+              if con
+                cid = con['id'].to_s
+                # Wait for console to finish initialising before writing anything to it
+                30.times { break unless (shared_client.call('console.read', cid) rescue {})['busy']; sleep 1 }
+                if @scan_options[:safe_mode]
+                  Thread.current[:msf_aux_console]     = cid
+                  puts "[SafeMode] Shared console #{cid} ready for #{target_ip}"
+                else
+                  Thread.current[:msf_lhost_console]   = cid
+                  puts "[ExploitMode] LHOST console #{cid} ready for #{target_ip}"
                 end
               end
             end
@@ -135,11 +142,15 @@ class ScanService
               end
             end
 
-            # Destroy the shared auxiliary console now that all modules are done
-            if @scan_options[:safe_mode] && Thread.current[:msf_aux_console]
+            if Thread.current[:msf_aux_console]
               rpc_client&.call('console.destroy', Thread.current[:msf_aux_console]) rescue nil
               puts "[SafeMode] Shared console closed for #{target_ip}"
               Thread.current[:msf_aux_console] = nil
+            end
+            if Thread.current[:msf_lhost_console]
+              rpc_client&.call('console.destroy', Thread.current[:msf_lhost_console]) rescue nil
+              puts "[ExploitMode] LHOST console closed for #{target_ip}"
+              Thread.current[:msf_lhost_console] = nil
             end
 
             disconnect_network()
@@ -372,6 +383,8 @@ class ScanService
       return { success: false, evidence: nil }
     end
 
+    lhost = use_bind ? nil : outbound_ip_for(target_ip, cid: Thread.current[:msf_lhost_console])
+
     opts = {
       'RHOSTS'         => target_ip,
       'PAYLOAD'        => payload,
@@ -379,12 +392,11 @@ class ScanService
       'ConnectTimeout' => 15,
       'ExitOnSession'  => false
     }
-    opts['RPORT']   = port if port
-    opts['Proxies'] = proxy if proxy.present?
-    # LHOST is intentionally omitted — msfrpcd runs on the host network and
-    # auto-detects the correct outbound interface for each target via UDPSocket routing.
+    opts['RPORT']   = port   if port
+    opts['LHOST']   = lhost  if lhost
+    opts['Proxies'] = proxy  if proxy.present?
 
-    puts "RPC module.execute: #{target_ip}:#{port} [#{mod_name}] payload=#{payload}#{proxy ? " via #{proxy}" : ""}"
+    puts "RPC module.execute: #{target_ip}:#{port} [#{mod_name}] payload=#{payload} lhost=#{lhost.inspect}#{proxy ? " via #{proxy}" : ""}"
 
     sessions_before = ((client.call('session.list') rescue nil) || {}).keys.map(&:to_s).to_set
 
