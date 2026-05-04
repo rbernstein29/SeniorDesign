@@ -753,8 +753,10 @@ class ScanServiceTest < ActiveSupport::TestCase
         session_calls += 1
         session_calls > 1 ? { "7" => { "tunnel_local" => "192.168.56.1:4444", "tunnel_peer" => "192.168.56.102:54321", "type" => "shell" } } : {}
       },
-      "session.stop" => -> { nil },
-      "job.stop"     => -> { nil }
+      "session.shell_write" => -> { nil },
+      "session.shell_read"  => -> { { "data" => "uid=0(root) gid=0(root)\n" } },
+      "session.stop"        => -> { nil },
+      "job.stop"            => -> { nil }
     }
     client = Object.new
     client.define_singleton_method(:call) { |method, *_a| handlers[method]&.call }
@@ -763,7 +765,8 @@ class ScanServiceTest < ActiveSupport::TestCase
                       { "metasploit_module" => "exploit/x", "default_payload" => nil },
                       "192.168.56.102", 21, nil, 30)
       assert result[:success]
-      assert_match(/Session 7 opened/, result[:evidence])
+      assert_match(/192\.168\.56\.102/, result[:evidence])
+      assert_match(/uid=0\(root\)/, result[:evidence])
     end
   end
 

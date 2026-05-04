@@ -345,6 +345,23 @@ class ScanService
     nil
   end
 
+  def collect_session_output(client, sid, session_type)
+    cmd = "id; uname -a; hostname\n"
+    if session_type.include?('meterpreter')
+      client.call('session.meterpreter_run_single', sid, 'sysinfo') rescue nil
+      sleep 2
+      res = client.call('session.meterpreter_read', sid) rescue {}
+      res['data'].to_s.strip
+    else
+      client.call('session.shell_write', sid, cmd) rescue nil
+      sleep 2
+      res = client.call('session.shell_read', sid) rescue {}
+      res['data'].to_s.strip
+    end
+  rescue => e
+    "session read failed: #{e.message}"
+  end
+
   def rpc_run_exploit(client, exploit, target_ip, port, proxy, timeout_secs)
     mod_name = exploit['metasploit_module'].sub(/\Aexploit\//, '')
     use_bind = proxy.present? || !local_network?(target_ip)
@@ -384,11 +401,16 @@ class ScanService
       new_sessions = sessions_now.reject { |id, _| sessions_before.include?(id.to_s) }
       if new_sessions.any?
         sid, sinfo = new_sessions.first
-        evidence = "Session #{sid} opened: #{sinfo['tunnel_local']} -> #{sinfo['tunnel_peer']} (#{sinfo['type']})"
-        success  = true
+        session_type = sinfo['type'].to_s
+        output = collect_session_output(client, sid.to_s, session_type)
         client.call('session.stop', sid.to_s) rescue nil
+        evidence = "#{session_type} session on #{sinfo['tunnel_peer']}\n#{output}".strip
+        success  = true
         break
       end
+      # Exit early if the job has already finished — no point waiting out the full
+      # timeout when MSF has already moved on without opening a session.
+      break if job_id && !((client.call('job.list') rescue {}) || {}).key?(job_id)
     end
 
     client.call('job.stop', job_id) rescue nil if job_id
