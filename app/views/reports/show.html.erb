@@ -312,7 +312,7 @@
                     <div style="font-family:var(--mono);font-size:10px;color:var(--muted);letter-spacing:1px;margin-bottom:8px;">AI REMEDIATION</div>
                     <div id="ai-wrap-<%= finding.id %>">
                       <% if finding.ai_remediation.present? %>
-                        <div style="font-size:13px;line-height:1.6;white-space:pre-wrap;"><%= finding.ai_remediation %></div>
+                        <div class="ai-remediation-md" style="font-size:13px;line-height:1.6;" data-md="<%= ERB::Util.html_escape(finding.ai_remediation) %>"></div>
                       <% elsif finding.ai_remediation_pending? %>
                         <button disabled data-ai-pending="<%= finding.id %>"
                                 id="ai-btn-<%= finding.id %>"
@@ -348,14 +348,18 @@ function toggleFinding(id) {
   chevron.textContent   = open ? '▶' : '▼';
 }
 
+function renderMd(el, text) {
+  el.style.cssText = 'font-size:13px;line-height:1.6;';
+  el.innerHTML = (typeof marked !== 'undefined') ? marked.parse(text) : text.replace(/\n/g, '<br>');
+}
+
 function showAiText(id, text) {
   var wrap = document.getElementById('ai-wrap-' + id);
   if (!wrap) return;
   var div = document.createElement('div');
-  div.style.cssText = 'font-size:13px;line-height:1.6;white-space:pre-wrap;';
-  div.textContent = text;
   wrap.innerHTML = '';
   wrap.appendChild(div);
+  renderMd(div, text);
 }
 
 function getAiRemediation(id) {
@@ -406,6 +410,9 @@ function pollAiStatus(id) {
 }
 
 document.addEventListener('DOMContentLoaded', function() {
+  document.querySelectorAll('.ai-remediation-md[data-md]').forEach(function(el) {
+    renderMd(el, el.dataset.md);
+  });
   document.querySelectorAll('[data-ai-pending]').forEach(function(el) {
     pollAiStatus(el.dataset.aiPending);
   });
