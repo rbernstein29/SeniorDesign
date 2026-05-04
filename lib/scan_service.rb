@@ -265,7 +265,7 @@ class ScanService
     false
   end
 
-  def outbound_ip_for(target_ip)
+  def outbound_ip_for(target_ip, cid: nil)
     explicit = Aegis.config.msf.lhost
     return explicit if explicit.present?
 
@@ -276,7 +276,7 @@ class ScanService
     # running on the host — to do the same routing lookup from the host's side.
     if detected.nil? || (ENV['RUNNING_IN_DOCKER'] == '1' && detected =~ /\A(172\.|10\.)/)
       @lhost_cache ||= {}
-      @lhost_cache[target_ip] ||= detect_lhost_via_msfrpc(target_ip)
+      @lhost_cache[target_ip] ||= detect_lhost_via_msfrpc(target_ip, cid: cid)
       return @lhost_cache[target_ip] if @lhost_cache[target_ip].present?
       return nil if ENV['RUNNING_IN_DOCKER'] == '1'  # container IP is unreachable by targets
     end
@@ -284,14 +284,20 @@ class ScanService
     detected || '127.0.0.1'
   end
 
-  def detect_lhost_via_msfrpc(target_ip)
+  def detect_lhost_via_msfrpc(target_ip, cid: nil)
     client = rpc_client
     return nil unless client
 
-    con = client.call('console.create') rescue nil
-    return nil unless con
+    # Prefer a caller-supplied console (already initialised) to avoid paying
+    # the MSF banner/init cost (~10-20s) on a fresh console every call.
+    own_cid = nil
+    unless cid
+      con = client.call('console.create') rescue nil
+      return nil unless con
+      own_cid = con['id'].to_s
+      cid = own_cid
+    end
 
-    cid = con['id'].to_s
     safe_ip = Shellwords.escape(target_ip)
     cmd = "ruby require 'socket'; puts UDPSocket.open { |s| s.connect('#{safe_ip}', 1); s.addr.last }\n"
     client.call('console.write', cid, cmd)
@@ -302,7 +308,7 @@ class ScanService
       output += chunk
       break if output.match?(/\b\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3}\b/)
     end
-    client.call('console.destroy', cid) rescue nil
+    client.call('console.destroy', own_cid) rescue nil if own_cid
 
     ip = output.scan(/\b(\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3})\b/).flatten
               .reject { |a| a == '127.0.0.1' }.first
@@ -381,7 +387,13 @@ class ScanService
         2.times { client.call('console.read', cid) rescue nil }
       end
 
-      lhost = outbound_ip_for(target_ip)
+      lhost = outbound_ip_for(target_ip, cid: cid)
+
+      # Drain ruby command output left by LHOST detection before running the exploit.
+      begin
+        2.times { client.call('console.read', cid) rescue nil }
+      end
+
       lport = Aegis.config.msf.lport
 
       cmds = [

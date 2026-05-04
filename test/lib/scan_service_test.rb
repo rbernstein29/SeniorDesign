@@ -750,6 +750,8 @@ class ScanServiceTest < ActiveSupport::TestCase
       read_seq = [
         { "data" => "", "busy" => false },
         { "data" => "", "busy" => false },
+        { "data" => "", "busy" => false },
+        { "data" => "", "busy" => false },
         { "data" => "[*] Started reverse handler\n[*] Meterpreter session 1 opened (127.0.0.1:4444 -> 1.1.1.1:54321)\nExploit completed\n", "busy" => false }
       ]
       handlers = {
@@ -1148,7 +1150,7 @@ class ScanServiceTest < ActiveSupport::TestCase
     UDPSocket.singleton_class.alias_method(:_orig_open, :open)
     UDPSocket.define_singleton_method(:open) { |&blk| blk.call(fake_socket) }
     ENV["RUNNING_IN_DOCKER"] = "1"
-    s.define_singleton_method(:detect_lhost_via_msfrpc) { |_| "10.99.0.1" }
+    s.define_singleton_method(:detect_lhost_via_msfrpc) { |_, **| "10.99.0.1" }
 
     silence_stdout do
       assert_equal "10.99.0.1", s.send(:outbound_ip_for, "8.8.8.8")
