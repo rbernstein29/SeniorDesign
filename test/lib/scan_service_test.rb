@@ -196,6 +196,12 @@ class ScanServiceTest < ActiveSupport::TestCase
     fake_socket.define_singleton_method(:addr) { ["AF_INET", 0, "x", "10.0.0.5"] }
     UDPSocket.singleton_class.alias_method(:_orig_open, :open)
     UDPSocket.define_singleton_method(:open) { |&blk| blk.call(fake_socket) }
+    msf = Aegis.config.msf
+    overlay = Struct.new(*msf.members).new(*msf.members.map { |m| msf[m] })
+    overlay.lhost = nil
+    config_stub = Struct.new(:msf, :scan, :nvd).new(overlay, Aegis.config.scan, Aegis.config.nvd)
+    Aegis.singleton_class.alias_method(:_orig_config, :config)
+    Aegis.define_singleton_method(:config) { config_stub }
     begin
       silence_stdout do
         ENV["RUNNING_IN_DOCKER"] = nil
@@ -205,6 +211,9 @@ class ScanServiceTest < ActiveSupport::TestCase
       UDPSocket.singleton_class.send(:remove_method, :open)
       UDPSocket.singleton_class.alias_method(:open, :_orig_open)
       UDPSocket.singleton_class.send(:remove_method, :_orig_open)
+      Aegis.singleton_class.remove_method(:config)
+      Aegis.singleton_class.alias_method(:config, :_orig_config)
+      Aegis.singleton_class.remove_method(:_orig_config)
     end
   end
 
@@ -1120,6 +1129,12 @@ class ScanServiceTest < ActiveSupport::TestCase
     UDPSocket.define_singleton_method(:open) { |&blk| blk.call(fake_socket) }
     ENV["RUNNING_IN_DOCKER"] = "1"
     s.define_singleton_method(:detect_lhost_via_msfrpc) { |_, **| "10.99.0.1" }
+    msf = Aegis.config.msf
+    overlay = Struct.new(*msf.members).new(*msf.members.map { |m| msf[m] })
+    overlay.lhost = nil
+    config_stub = Struct.new(:msf, :scan, :nvd).new(overlay, Aegis.config.scan, Aegis.config.nvd)
+    Aegis.singleton_class.alias_method(:_orig_config, :config)
+    Aegis.define_singleton_method(:config) { config_stub }
 
     silence_stdout do
       assert_equal "10.99.0.1", s.send(:outbound_ip_for, "8.8.8.8")
@@ -1129,6 +1144,9 @@ class ScanServiceTest < ActiveSupport::TestCase
     UDPSocket.singleton_class.alias_method(:open, :_orig_open)
     UDPSocket.singleton_class.send(:remove_method, :_orig_open)
     ENV.delete("RUNNING_IN_DOCKER")
+    Aegis.singleton_class.remove_method(:config) rescue nil
+    Aegis.singleton_class.alias_method(:config, :_orig_config) rescue nil
+    Aegis.singleton_class.remove_method(:_orig_config) rescue nil
   end
 
   # ── rpc_client error/login paths ───────────────────────────────────────────
