@@ -140,7 +140,7 @@
         <p>This scan produced no findings.</p>
       </div>
     <% else %>
-      <table style="width:100%;" id="findings-table">
+      <table style="width:100%;table-layout:fixed;" id="findings-table">
         <thead>
           <tr>
             <th style="width:16px;"></th>
@@ -220,15 +220,15 @@
             </tr>
             <!-- Expanded detail panel -->
             <tr id="detail-<%= finding.id %>" style="display:none;">
-              <td colspan="9" style="padding:0;">
-                <div style="padding:16px 24px;background:var(--surface2);border-top:1px solid var(--border);border-bottom:1px solid var(--border);">
-                  <div style="display:grid;grid-template-columns:1fr 1fr;gap:20px;">
+              <td colspan="9" style="padding:0;max-width:0;">
+                <div style="padding:16px 24px;background:var(--surface2);border-top:1px solid var(--border);border-bottom:1px solid var(--border);overflow:hidden;">
+                  <div style="display:grid;grid-template-columns:1fr 1fr;gap:20px;min-width:0;">
 
                     <!-- Left column -->
                     <div>
                       <div style="margin-bottom:12px;">
                         <div style="font-family:var(--mono);font-size:10px;color:var(--muted);letter-spacing:1px;margin-bottom:4px;">DESCRIPTION</div>
-                        <div style="font-size:13px;line-height:1.5;"><%= exploit&.description || '—' %></div>
+                        <div style="font-size:13px;line-height:1.5;overflow-wrap:break-word;word-break:break-word;"><%= exploit&.description || '—' %></div>
                       </div>
                       <% if finding.evidence.present? %>
                         <div style="margin-bottom:12px;">
