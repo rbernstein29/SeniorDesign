@@ -1,4 +1,7 @@
 <% content_for :title, "Aegis - #{@report.report_name}" %>
+<% content_for :head do %>
+  <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js" defer></script>
+<% end %>
 
 <%= render 'shared/sidebar', current_page: 'reports' %>
 
