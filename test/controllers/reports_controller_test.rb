@@ -163,25 +163,6 @@ class ReportsControllerTest < ActionDispatch::IntegrationTest
     assert_response :success
   end
 
-  test "GET show enqueues NvdEnrichmentJob for unenriched CVEs" do
-    sign_in_as(users(:admin_user))
-    report = reports(:report_one)
-    report.update_columns(scan_id: scans(:completed_scan).id)
-    Finding.create!(
-      scan_id:    report.scan_id,
-      asset_id:   assets(:asset_one).id,
-      exploit_id: exploits(:exploit_two).id,
-      severity:   "high", status: "open", confidence: "medium",
-      port: "22", discovered_at: 1.minute.ago
-    )
-    exploits(:exploit_two).update_columns(cve_id: "CVE-2026-0001", cvss_score: nil)
-
-    assert_enqueued_with(job: NvdEnrichmentJob) do
-      get report_path(report)
-    end
-    assert_response :success
-  end
-
   # ── POST /reports/:id/retest ────────────────────────────────────────────────
 
   test "POST retest queues a job and redirects to scans" do

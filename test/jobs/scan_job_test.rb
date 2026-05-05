@@ -141,6 +141,32 @@ class ScanJobTest < ActiveSupport::TestCase
     assert_equal "remediated", finding.status
   end
 
+  test "perform enqueues NvdEnrichmentJob for findings with unenriched CVE exploits" do
+    exploit   = exploits(:exploit_one)
+    asset_id  = assets(:asset_one).id
+    exploit_id = exploit.id
+    exploit.update_columns(cvss_score: nil) # exploit_one already has cve_id
+
+    ScanService.stub(:new, ->(*args, **kwargs, &blk) {
+      obj = Object.new
+      obj.define_singleton_method(:perform) do
+        new_scan = Scan.order(created_at: :desc).first
+        Finding.create!(
+          scan_id: new_scan.id, asset_id: asset_id,
+          exploit_id: exploit_id, severity: "high", status: "open",
+          confidence: "medium", port: "22", discovered_at: Time.current
+        )
+      end
+      obj
+    }) do
+      Turbo::StreamsChannel.stub(:broadcast_update_to, nil) do
+        assert_enqueued_with(job: NvdEnrichmentJob) do
+          ScanJob.new.perform(@org.id, {}, @user.id, [@asset.id])
+        end
+      end
+    end
+  end
+
   test "broadcast_progress rescues Turbo errors so the job continues" do
     Turbo::StreamsChannel.stub(:broadcast_update_to, ->(*) { raise "no streams" }) do
       ScanService.stub(:new, ->(*args, **kwargs, &blk) {
