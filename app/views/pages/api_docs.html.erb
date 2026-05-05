@@ -252,7 +252,7 @@
         <div class="auth-box">
           <div class="auth-box-title">API Key Authentication</div>
           <p>Every request must include your API key as the second path segment:</p>
-          <div class="code-block">https://your-server/api/<span style="color:#ec4899">{api_key}</span>/resource</div>
+          <div class="code-block">https://scanaegis.com/api/<span style="color:#ec4899">{api_key}</span>/resource</div>
           <p>You can retrieve your key programmatically via the auth endpoint below, or view/regenerate it in <a href="<%= settings_path %>" style="color:#ec4899;">Settings → Account</a>. Keys are unique per user and scoped to your organization.</p>
           <p>Invalid keys return <code style="font-family:var(--mono);color:#f87171;">401 Unauthorized</code>. Write operations (POST/DELETE) require an <span class="access-badge access-admin">admin</span> account. Read operations are available to all <span class="access-badge access-all">all users</span>.</p>
         </div>
@@ -273,7 +273,7 @@
   "password": "your-password"
 }</div>
             <div class="code-block-label">Example Request</div>
-            <div class="code-block">curl -X POST https://your-server/api/auth \
+            <div class="code-block">curl -X POST https://scanaegis.com/api/auth \
   -H "Content-Type: application/json" \
   -d '{"email_address":"you@example.com","password":"your-password"}'</div>
             <div class="code-block-label">Example Response</div>
@@ -302,7 +302,7 @@
           <div class="api-endpoint-body">
             <div class="ep-desc">Returns the authenticated user's profile and organization details.</div>
             <div class="code-block-label">Example Request</div>
-            <div class="code-block">curl https://your-server/api/YOUR_KEY/account</div>
+            <div class="code-block">curl https://scanaegis.com/api/YOUR_KEY/account</div>
             <div class="code-block-label">Example Response</div>
             <div class="code-block">{
   "account": {
@@ -339,8 +339,8 @@
               <tr><td class="param-name">cidr</td><td class="param-type">string</td><td><span class="param-required opt">optional</span></td><td>Filter to assets in range — returns <code style="font-family:var(--mono);">{ count: N }</code></td></tr>
             </table>
             <div class="code-block-label">Example Request</div>
-            <div class="code-block">curl https://your-server/api/YOUR_KEY/assets
-curl https://your-server/api/YOUR_KEY/assets?cidr=10.0.0.0/24</div>
+            <div class="code-block">curl https://scanaegis.com/api/YOUR_KEY/assets
+curl https://scanaegis.com/api/YOUR_KEY/assets?cidr=10.0.0.0/24</div>
           </div>
         </div>
 
@@ -375,11 +375,11 @@ curl https://your-server/api/YOUR_KEY/assets?cidr=10.0.0.0/24</div>
               <tr><td class="param-name">notes</td><td class="param-type">string</td><td><span class="param-required opt">optional</span></td><td>Free-text notes</td></tr>
             </table>
             <div class="code-block-label">Example Request</div>
-            <div class="code-block">curl -X POST https://your-server/api/YOUR_KEY/assets \
+            <div class="code-block">curl -X POST https://scanaegis.com/api/YOUR_KEY/assets \
   -d "network=10.0.0.1&criticality=high&notes=web+server"
 
 # Add a full /24 subnet
-curl -X POST https://your-server/api/YOUR_KEY/assets \
+curl -X POST https://scanaegis.com/api/YOUR_KEY/assets \
   -d "network=192.168.1.0/24"</div>
             <div class="code-block-label">Example Response</div>
             <div class="code-block">{
@@ -488,7 +488,7 @@ curl -X POST https://your-server/api/YOUR_KEY/assets \
               <tr><td class="param-name">exploit_ids[]</td><td class="param-type">integer[]</td><td><span class="param-required opt">optional</span></td><td>Array of exploit IDs to include</td></tr>
             </table>
             <div class="code-block-label">Example Request</div>
-            <div class="code-block">curl -X POST https://your-server/api/YOUR_KEY/scan-profiles \
+            <div class="code-block">curl -X POST https://scanaegis.com/api/YOUR_KEY/scan-profiles \
   -d "name=Linux+Critical&safe_mode=false&exploit_ids[]=12&exploit_ids[]=45"</div>
           </div>
         </div>
@@ -499,7 +499,11 @@ curl -X POST https://your-server/api/YOUR_KEY/assets \
             <span class="endpoint-path">/api/<span class="path-param">{api_key}</span>/scan-profiles/<span class="path-param">{id}</span></span>
             <span class="endpoint-desc">Delete profile</span>
           </div>
-          <div class="api-endpoint-body"></div>
+          <div class="api-endpoint-body">
+            <div class="ep-desc">Permanently deletes a scan profile. Does not affect scans already run using the profile.</div>
+            <div class="code-block-label">Example Response</div>
+            <div class="code-block">{ "deleted": true, "id": 3 }</div>
+          </div>
         </div>
       </div>
 
@@ -568,7 +572,7 @@ curl -X POST https://your-server/api/YOUR_KEY/assets \
               <tr><td class="param-name">use_agent</td><td class="param-type">boolean</td><td><span class="param-required opt">optional</span></td><td>Route scan through a network agent</td></tr>
             </table>
             <div class="code-block-label">Example Request</div>
-            <div class="code-block">curl -X POST https://your-server/api/YOUR_KEY/scans/trigger \
+            <div class="code-block">curl -X POST https://scanaegis.com/api/YOUR_KEY/scans/trigger \
   -d "asset_ids[]=1&asset_ids[]=2&safe_mode=false&platform=linux"</div>
             <div class="code-block-label">Example Response</div>
             <div class="code-block">{ "queued": true, "asset_count": 2 }  // HTTP 202</div>
@@ -587,7 +591,7 @@ curl -X POST https://your-server/api/YOUR_KEY/assets \
               <tr><td class="param-name">scan_id</td><td class="param-type">integer</td><td><span class="param-required req">required</span></td><td>ID of the running scan to cancel</td></tr>
             </table>
             <div class="code-block-label">Example Request</div>
-            <div class="code-block">curl -X POST https://your-server/api/YOUR_KEY/scans/stop \
+            <div class="code-block">curl -X POST https://scanaegis.com/api/YOUR_KEY/scans/stop \
   -d "scan_id=7"</div>
           </div>
         </div>
@@ -615,7 +619,20 @@ curl -X POST https://your-server/api/YOUR_KEY/assets \
             <span class="endpoint-path">/api/<span class="path-param">{api_key}</span>/reports/<span class="path-param">{id}</span></span>
             <span class="endpoint-desc">Get report</span>
           </div>
-          <div class="api-endpoint-body"></div>
+          <div class="api-endpoint-body">
+            <div class="ep-desc">Returns metadata for a single report including scan info, finding counts by severity, and export links.</div>
+            <div class="code-block-label">Example Response</div>
+            <div class="code-block">{
+  "report": {
+    "id": 15,
+    "scan_id": 7,
+    "scan_name": "Scan-2026-04-27",
+    "created_at": "2026-04-27T10:09:00Z",
+    "findings_count": 3,
+    "critical": 1, "high": 2, "medium": 0, "low": 0
+  }
+}</div>
+          </div>
         </div>
 
         <div class="api-endpoint">
@@ -637,7 +654,7 @@ curl -X POST https://your-server/api/YOUR_KEY/assets \
           </div>
           <div class="api-endpoint-body">
             <div class="code-block-label">Example Request</div>
-            <div class="code-block">curl https://your-server/api/YOUR_KEY/reports/15/download_json \
+            <div class="code-block">curl https://scanaegis.com/api/YOUR_KEY/reports/15/download_json \
   -o report.json</div>
           </div>
         </div>
@@ -651,7 +668,7 @@ curl -X POST https://your-server/api/YOUR_KEY/assets \
           <div class="api-endpoint-body">
             <div class="ep-desc">Returns an XLSX workbook with a summary sheet and a detailed findings sheet.</div>
             <div class="code-block-label">Example Request</div>
-            <div class="code-block">curl https://your-server/api/YOUR_KEY/reports/15/download_xlsx \
+            <div class="code-block">curl https://scanaegis.com/api/YOUR_KEY/reports/15/download_xlsx \
   -o report.xlsx</div>
           </div>
         </div>
@@ -662,7 +679,12 @@ curl -X POST https://your-server/api/YOUR_KEY/assets \
             <span class="endpoint-path">/api/<span class="path-param">{api_key}</span>/reports/<span class="path-param">{id}</span>/download_csv</span>
             <span class="endpoint-desc">Download as CSV</span>
           </div>
-          <div class="api-endpoint-body"></div>
+          <div class="api-endpoint-body">
+            <div class="ep-desc">Returns a CSV file with one row per finding. Includes asset IP, exploit name, CVE, severity, status, and evidence.</div>
+            <div class="code-block-label">Example Request</div>
+            <div class="code-block">curl https://scanaegis.com/api/YOUR_KEY/reports/15/download_csv \
+  -o report.csv</div>
+          </div>
         </div>
 
         <div class="api-endpoint">
@@ -695,7 +717,11 @@ curl -X POST https://your-server/api/YOUR_KEY/assets \
             <span class="endpoint-path">/api/<span class="path-param">{api_key}</span>/reports/<span class="path-param">{id}</span></span>
             <span class="endpoint-desc">Delete report</span>
           </div>
-          <div class="api-endpoint-body"></div>
+          <div class="api-endpoint-body">
+            <div class="ep-desc">Permanently deletes a report and its associated findings.</div>
+            <div class="code-block-label">Example Response</div>
+            <div class="code-block">{ "deleted": true, "id": 15 }</div>
+          </div>
         </div>
       </div>
 
@@ -719,7 +745,7 @@ curl -X POST https://your-server/api/YOUR_KEY/assets \
               <tr><td class="param-name">status</td><td class="param-type">string</td><td><span class="param-required opt">optional</span></td><td>open, remediated</td></tr>
             </table>
             <div class="code-block-label">Example Request</div>
-            <div class="code-block">curl "https://your-server/api/YOUR_KEY/findings?scan_id=7&severity=critical"</div>
+            <div class="code-block">curl "https://scanaegis.com/api/YOUR_KEY/findings?scan_id=7&severity=critical"</div>
             <div class="code-block-label">Example Response</div>
             <div class="code-block">{
   "findings": [{
@@ -745,7 +771,22 @@ curl -X POST https://your-server/api/YOUR_KEY/assets \
             <span class="endpoint-path">/api/<span class="path-param">{api_key}</span>/findings/<span class="path-param">{id}</span></span>
             <span class="endpoint-desc">Get finding</span>
           </div>
-          <div class="api-endpoint-body"></div>
+          <div class="api-endpoint-body">
+            <div class="ep-desc">Returns full detail for a single finding including evidence, AI remediation (if generated), and associated asset info.</div>
+            <div class="code-block-label">Example Response</div>
+            <div class="code-block">{
+  "finding": {
+    "id": 88,
+    "exploit_name": "MS17-010 EternalBlue",
+    "cve_id": "CVE-2017-0144",
+    "severity": "critical",
+    "status": "open",
+    "evidence": "Session opened on target",
+    "ai_remediation": "**Root Cause:** ...",
+    "asset": { "id": 2, "ip_address": "10.0.0.5" }
+  }
+}</div>
+          </div>
         </div>
 
         <div class="api-endpoint">
@@ -833,10 +874,10 @@ curl -X POST https://your-server/api/YOUR_KEY/assets \
               <tr><td class="param-name">filename</td><td class="param-type">string</td><td><span class="param-required opt">with B</span></td><td>Filename with extension (used to detect language)</td></tr>
             </table>
             <div class="code-block-label">Example — File Upload</div>
-            <div class="code-block">curl -X POST https://your-server/api/YOUR_KEY/code-analysis \
+            <div class="code-block">curl -X POST https://scanaegis.com/api/YOUR_KEY/code-analysis \
   -F "source_file=@app.rb"</div>
             <div class="code-block-label">Example — Raw Content</div>
-            <div class="code-block">curl -X POST https://your-server/api/YOUR_KEY/code-analysis \
+            <div class="code-block">curl -X POST https://scanaegis.com/api/YOUR_KEY/code-analysis \
   -d "filename=login.py" \
   --data-urlencode "content=$(cat login.py)"</div>
             <div class="code-block-label">Example Response</div>
@@ -906,7 +947,7 @@ curl -X POST https://your-server/api/YOUR_KEY/assets \
           <div class="api-endpoint-body">
             <div class="ep-desc">Returns a ZIP file containing the Python agent script, SSH keys, install script, and README.</div>
             <div class="code-block-label">Example Request</div>
-            <div class="code-block">curl https://your-server/api/YOUR_KEY/agents/5/download \
+            <div class="code-block">curl https://scanaegis.com/api/YOUR_KEY/agents/5/download \
   -o scanner-agent.zip</div>
           </div>
         </div>
@@ -917,7 +958,11 @@ curl -X POST https://your-server/api/YOUR_KEY/assets \
             <span class="endpoint-path">/api/<span class="path-param">{api_key}</span>/agents/<span class="path-param">{id}</span></span>
             <span class="endpoint-desc">Delete agent</span>
           </div>
-          <div class="api-endpoint-body"></div>
+          <div class="api-endpoint-body">
+            <div class="ep-desc">Removes the agent record and revokes its SSH keys. The tunnel will disconnect on the next heartbeat cycle.</div>
+            <div class="code-block-label">Example Response</div>
+            <div class="code-block">{ "deleted": true, "id": 5 }</div>
+          </div>
         </div>
       </div>
 
