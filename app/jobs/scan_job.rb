@@ -39,6 +39,14 @@ class ScanJob < ApplicationJob
       broadcast_progress(user_id, pct, "Scanned #{ip} (#{done}/#{total} targets)")
     end.perform
 
+    cve_exploit_ids = Finding.where(scan_id: scan.id)
+                             .joins(:exploit)
+                             .where.not(exploits: { cve_id: [nil, ''] })
+                             .where(exploits: { cvss_score: nil })
+                             .pluck('exploits.id')
+                             .uniq
+    NvdEnrichmentJob.perform_later(cve_exploit_ids) if cve_exploit_ids.any?
+
     # Auto-remediate findings from the original scan if this is a retest
     if scan_options[:retest_of].present?
       original_scan_id = scan_options[:retest_of].to_i

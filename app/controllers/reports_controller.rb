@@ -11,13 +11,6 @@ class ReportsController < ApplicationController
                        .includes(:exploit, :asset)
                        .order(severity_order, :discovered_at)
 
-    # Enrich unenriched CVEs in the background so the page loads immediately.
-    unenriched_ids = @findings.map(&:exploit).compact.uniq
-                              .select { |e| e.cve_id.present? && e.cvss_score.nil? }
-                              .first(Aegis.config.nvd.max_per_request)
-                              .map(&:id)
-    NvdEnrichmentJob.perform_later(unenriched_ids) if unenriched_ids.any?
-
     # Scan-over-scan comparison
     @prev_scan             = nil
     @new_finding_ids       = Set.new
